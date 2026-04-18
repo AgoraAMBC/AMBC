@@ -1,0 +1,46 @@
+# ===== Sistema operacional =====
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ===== Editor / IDE =====
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== Logs =====
+*.log
+logs/
+npm-debug.log*
+
+# ===== Dependências (caso entrem no futuro) =====
+node_modules/
+vendor/
+
+# ===== Build / Distribuição =====
+dist/
+build/
+.cache/
+
+# ===== Ambiente =====
+.env
+.env.local
+.env.*.local
+
+# ===== Backend PHP (futuro) =====
+*.php~
+config/database.php
+uploads/
+
+# ===== Arquivos temporários =====
+*.tmp
+*.bak
+*.old
