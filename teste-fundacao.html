@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- ==========================================================================
+       AMBC - Plataforma de Gestão
+       Associação dos Moradores do Bairro Califórnia
+       Arquivo: index.html (ponto de entrada da SPA)
+       ========================================================================== -->
+
+  <!-- Metadados básicos -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO e descrição -->
+  <meta name="description" content="Plataforma de Gestão da Associação dos Moradores do Bairro Califórnia (AMBC)">
+  <meta name="author" content="AMBC">
+  <meta name="theme-color" content="#1E5BA8">
+
+  <!-- Título da aba -->
+  <title>AMBC - Plataforma de Gestão</title>
+
+  <!-- Favicon (placeholder — depois substituímos pelo logo real) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231E5BA8'/><text x='50' y='68' font-family='Arial' font-size='48' font-weight='bold' fill='white' text-anchor='middle'>A</text></svg>">
+
+  <!-- Material Icons (ícones do Google) -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- ============================================
+       CSS - Fundação (ordem importa!)
+       ============================================ -->
+  <link rel="stylesheet" href="css/base/variables.css">
+  <link rel="stylesheet" href="css/base/reset.css">
+  <link rel="stylesheet" href="css/base/typography.css">
+  <link rel="stylesheet" href="css/base/global.css">
+</head>
+
+<body>
+
+  <!-- Container principal da aplicação -->
+  <div id="app">
+
+    <!-- =========================================
+         ⚠️ PÁGINA DE TESTE DA FUNDAÇÃO VISUAL
+         (será substituída pelo sistema real)
+         ========================================= -->
+    <main class="conteudo-principal">
+
+      <!-- Cabeçalho de teste -->
+      <header class="mb-xl">
+        <h1>🏡 AMBC — Fundação Visual</h1>
+        <p class="texto-auxiliar mt-sm">
+          Plataforma de Gestão da Associação dos Moradores do Bairro Califórnia
+        </p>
+        <hr>
+      </header>
+
+      <!-- ===== Teste 1: Paleta de Cores ===== -->
+      <section class="mb-xl">
+        <h2 class="mb-md">🎨 Paleta de Cores</h2>
+
+        <div class="d-flex flex-wrap gap-md">
+          <div class="bg-primaria p-lg raio-md sombra-md" style="min-width: 180px;">
+            <strong style="color: white;">Primária</strong>
+            <p class="texto-pequeno" style="color: white; opacity: 0.9;">#1E5BA8</p>
+          </div>
+
+          <div class="bg-primaria-clara p-lg raio-md sombra-md" style="min-width: 180px;">
+            <strong class="texto-primario">Primária Clara</strong>
+            <p class="texto-pequeno texto-primario">#E8F1FB</p>
+          </div>
+
+          <div class="bg-sucesso p-lg raio-md sombra-md" style="min-width: 180px;">
+            <strong class="texto-sucesso">Sucesso</strong>
+            <p class="texto-pequeno texto-sucesso">#10B981</p>
+          </div>
+
+          <div class="bg-alerta p-lg raio-md sombra-md" style="min-width: 180px;">
+            <strong class="texto-alerta">Alerta</strong>
+            <p class="texto-pequeno texto-alerta">#F59E0B</p>
+          </div>
+
+          <div class="bg-erro p-lg raio-md sombra-md" style="min-width: 180px;">
+            <strong class="texto-erro">Erro</strong>
+            <p class="texto-pequeno texto-erro">#EF4444</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Teste 2: Tipografia ===== -->
+      <section class="bg-branco p-lg raio-md sombra-sm mb-xl">
+        <h2 class="mb-md">🔤 Hierarquia Tipográfica</h2>
+
+        <h1>H1 — Título da Página (30px)</h1>
+        <h2>H2 — Seção Principal (24px)</h2>
+        <h3>H3 — Subseção (20px)</h3>
+        <h4>H4 — Bloco Interno (18px)</h4>
+        <h5>H5 — Rótulo (16px)</h5>
+        <h6>H6 — Menor Rótulo (14px)</h6>
+
+        <hr>
+
+        <p>
+          Este é um parágrafo padrão do sistema. A fonte utilizada é a
+          <strong>Inter</strong>, carregada via Google Fonts. Você pode usar
+          <em>itálico</em>, <strong>negrito</strong>, <a href="#">links</a>,
+          <code>código inline</code> e <mark>texto destacado</mark>.
+        </p>
+
+        <p class="texto-auxiliar mt-sm">
+          Este é um texto auxiliar — usado para descrições, legendas e ajudas.
+        </p>
+
+        <p class="texto-pequeno">
+          Este é um texto pequeno — usado para hints e informações secundárias.
+        </p>
+
+        <blockquote>
+          "A tipografia bem definida é a base de qualquer interface profissional."
+        </blockquote>
+      </section>
+
+      <!-- ===== Teste 3: Cores Semânticas ===== -->
+      <section class="bg-branco p-lg raio-md sombra-sm mb-xl">
+        <h2 class="mb-md">🎯 Textos Semânticos</h2>
+        <p class="texto-primario">● Texto primário — destaque de marca</p>
+        <p class="texto-sucesso">● Texto de sucesso — operações bem-sucedidas</p>
+        <p class="texto-alerta">● Texto de alerta — atenção necessária</p>
+        <p class="texto-erro">● Texto de erro — falhas e validações</p>
+        <p class="texto-info">● Texto informativo — dicas e avisos</p>
+        <p class="texto-mudo">● Texto mudo — informações secundárias</p>
+      </section>
+
+      <!-- ===== Teste 4: Material Icons ===== -->
+      <section class="bg-branco p-lg raio-md sombra-sm mb-xl">
+        <h2 class="mb-md">🎨 Material Icons (teste)</h2>
+        <div class="d-flex gap-lg align-centro">
+          <span class="material-icons texto-primario" style="font-size: 32px;">dashboard</span>
+          <span class="material-icons texto-primario" style="font-size: 32px;">person_add</span>
+          <span class="material-icons texto-primario" style="font-size: 32px;">account_balance</span>
+          <span class="material-icons texto-primario" style="font-size: 32px;">table_chart</span>
+          <span class="material-icons texto-primario" style="font-size: 32px;">settings</span>
+          <span class="material-icons texto-primario" style="font-size: 32px;">logout</span>
+        </div>
+        <p class="texto-auxiliar mt-md">
+          Se você vê ícones coloridos acima, o Material Icons está funcionando! ✅
+        </p>
+      </section>
+
+      <!-- ===== Teste 5: Botão simulado ===== -->
+      <section class="bg-branco p-lg raio-md sombra-sm mb-xl">
+        <h2 class="mb-md">🔘 Exemplo de botão (estilo inline — temporário)</h2>
+        <div class="d-flex gap-md">
+          <button class="bg-primaria px-lg py-sm raio-md texto-semibold"
+                  style="color: white; border: none; cursor: pointer;">
+            <span class="material-icons" style="vertical-align: middle; font-size: 18px;">add</span>
+            Novo Associado
+          </button>
+
+          <button class="bg-cinza px-lg py-sm raio-md texto-semibold borda"
+                  style="cursor: pointer;">
+            Cancelar
+          </button>
+        </div>
+        <p class="texto-auxiliar mt-md">
+          Ainda são botões "provisórios". No próximo passo criaremos o componente oficial <code>.btn</code>.
+        </p>
+      </section>
+
+      <!-- ===== Rodapé de status ===== -->
+      <footer class="bg-primaria-clara p-lg raio-md texto-centro">
+        <h3 class="texto-primario">✅ Fundação Visual Funcionando!</h3>
+        <p class="texto-primario mt-sm">
+          Variáveis • Reset • Tipografia • Global — tudo operacional.
+        </p>
+        <p class="texto-pequeno texto-mudo mt-sm">
+          AMBC © 2026 — Versão 0.1.0 (fundação)
+        </p>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- ============================================
+       JS - (virão nos próximos passos)
+       ============================================ -->
+  <!-- <script type="module" src="js/app.js"></script> -->
+
+</body>
+</html>

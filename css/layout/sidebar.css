@@ -1,0 +1,204 @@
+/* ==========================================================================
+   AMBC - Estilos da Sidebar (Menu Lateral)
+   Arquivo: css/layout/sidebar.css
+   Descrição: Estiliza cabeçalho, seções, itens e submenus da sidebar
+   ========================================================================== */
+
+/* ============================================
+   🏷️ CABEÇALHO DA SIDEBAR (Logo + Nome)
+   ============================================ */
+.sidebar__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  height: var(--altura-header);
+  padding: 0 var(--esp-lg);
+  border-bottom: var(--borda-padrao);
+  background-color: var(--cor-primaria);
+  color: var(--cor-primaria-contraste);
+}
+
+.sidebar__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raio-md);
+  background-color: var(--cor-primaria-contraste);
+  color: var(--cor-primaria);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  flex-shrink: 0;
+}
+
+.sidebar__titulo {
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__subtitulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  opacity: 0.85;
+  line-height: var(--lh-tight);
+}
+
+/* ============================================
+   📂 NAVEGAÇÃO (Container das seções)
+   ============================================ */
+.sidebar__nav {
+  padding: var(--esp-md) 0;
+}
+
+/* ============================================
+   📑 SEÇÕES DO MENU (PRINCIPAL / SISTEMA)
+   ============================================ */
+.sidebar__secao {
+  margin-bottom: var(--esp-lg);
+}
+
+.sidebar__secao-titulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cor-cinza-500);
+  padding: 0 var(--esp-lg);
+  margin-bottom: var(--esp-sm);
+}
+
+/* ============================================
+   📋 LISTA DE ITENS
+   ============================================ */
+.sidebar__lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar__item {
+  position: relative;
+}
+
+/* ============================================
+   🔗 LINK / BOTÃO DE ITEM DO MENU
+   ============================================ */
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  width: 100%;
+  padding: var(--esp-sm) var(--esp-lg);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--cor-cinza-700);
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transicao-rapida),
+              color var(--transicao-rapida);
+}
+
+.sidebar__link:hover {
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.sidebar__link:focus-visible {
+  outline: var(--borda-foco);
+  outline-offset: -2px;
+}
+
+/* Estado ATIVO (rota atual) */
+.sidebar__link.is-ativo {
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: var(--fw-semibold);
+  box-shadow: inset 3px 0 0 var(--cor-primaria);
+}
+
+/* ============================================
+   🎨 ÍCONES DOS ITENS
+   ============================================ */
+.sidebar__icone {
+  font-size: 20px;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+/* ============================================
+   🔤 TEXTO DO ITEM
+   ============================================ */
+.sidebar__texto {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   ▶️ SETA DE EXPANSÃO (para itens com submenu)
+   ============================================ */
+.sidebar__seta {
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: transform var(--transicao-rapida);
+}
+
+.sidebar__item.is-aberto > .sidebar__link .sidebar__seta {
+  transform: rotate(90deg);
+}
+
+/* ============================================
+   📁 SUBMENU (itens filhos)
+   ============================================ */
+.sidebar__submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  background-color: var(--cor-cinza-50);
+  transition: max-height var(--transicao-padrao);
+}
+
+.sidebar__item.is-aberto > .sidebar__submenu {
+  max-height: 500px; /* valor grande o bastante para expandir */
+}
+
+.sidebar__submenu .sidebar__link {
+  padding-left: calc(var(--esp-lg) + var(--esp-xl));
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  color: var(--cor-cinza-600);
+}
+
+.sidebar__submenu .sidebar__link:hover {
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.sidebar__submenu .sidebar__link.is-ativo {
+  background-color: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: var(--fw-semibold);
+  box-shadow: inset 3px 0 0 var(--cor-primaria);
+}
+
+/* ============================================
+   🔚 RODAPÉ DA SIDEBAR (opcional — versão, usuário, etc.)
+   ============================================ */
+.sidebar__rodape {
+  padding: var(--esp-md) var(--esp-lg);
+  border-top: var(--borda-padrao);
+  font-size: var(--fs-xs);
+  color: var(--cor-cinza-500);
+  text-align: center;
+}

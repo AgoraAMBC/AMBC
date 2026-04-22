@@ -1,0 +1,171 @@
+/* ==========================================================================
+   MAIN — Área de conteúdo interno das páginas
+   --------------------------------------------------------------------------
+   Estiliza o <main class="app-shell__conteudo"> e define o padrão visual
+   de todas as páginas do sistema (cabeçalho + corpo).
+
+   Estrutura esperada:
+   <main class="app-shell__conteudo">
+     <header class="pagina__cabecalho">
+       <div class="pagina__titulo-grupo">
+         <h1 class="pagina__titulo">Título</h1>
+         <p class="pagina__descricao">Descrição</p>
+       </div>
+       <div class="pagina__acoes"> ... </div>
+     </header>
+     <div class="pagina__corpo"> ... </div>
+   </main>
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Área de conteúdo principal (o próprio <main>)
+   -------------------------------------------------------------------------- */
+.app-shell__conteudo {
+  /* Scroll interno: topbar e sidebar permanecem fixas */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Espaçamento interno padrão (desktop) */
+  padding: var(--esp-xl);
+
+  /* Fundo da área de trabalho */
+  background-color: var(--cor-fundo);
+
+  /* Scroll suave ao clicar em links âncora */
+  scroll-behavior: smooth;
+}
+
+/* Customização da barra de rolagem (WebKit: Chrome, Edge, Safari) */
+.app-shell__conteudo::-webkit-scrollbar {
+  width: 10px;
+}
+
+.app-shell__conteudo::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-shell__conteudo::-webkit-scrollbar-thumb {
+  background-color: var(--cor-borda);
+  border-radius: var(--raio-md);
+  border: 2px solid var(--cor-fundo);
+}
+
+.app-shell__conteudo::-webkit-scrollbar-thumb:hover {
+  background-color: var(--cor-texto-secundario);
+}
+
+/* Customização da barra de rolagem (Firefox) */
+.app-shell__conteudo {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-borda) transparent;
+}
+
+
+/* --------------------------------------------------------------------------
+   Cabeçalho da página (título + ações)
+   -------------------------------------------------------------------------- */
+.pagina__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-lg);
+
+  margin-bottom: var(--esp-xl);
+  padding-bottom: var(--esp-lg);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+
+/* --------------------------------------------------------------------------
+   Grupo do título (título + descrição)
+   -------------------------------------------------------------------------- */
+.pagina__titulo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-xs);
+  min-width: 0; /* permite truncar textos longos */
+}
+
+
+/* --------------------------------------------------------------------------
+   Título principal da página (h1)
+   -------------------------------------------------------------------------- */
+.pagina__titulo {
+  font-size: var(--fonte-tam-2xl);
+  font-weight: var(--fonte-peso-bold);
+  line-height: var(--fonte-altura-apertada);
+  color: var(--cor-texto-primario);
+  margin: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Descrição/subtítulo da página (opcional)
+   -------------------------------------------------------------------------- */
+.pagina__descricao {
+  font-size: var(--fonte-tam-sm);
+  color: var(--cor-texto-secundario);
+  line-height: var(--fonte-altura-normal);
+  margin: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Área de ações do cabeçalho (botões: Novo, Exportar, etc.)
+   -------------------------------------------------------------------------- */
+.pagina__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  flex-shrink: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   Corpo da página (onde entram cards, tabelas, formulários, etc.)
+   -------------------------------------------------------------------------- */
+.pagina__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+}
+
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+
+/* Tablet (até 1024px) */
+@media (max-width: 1024px) {
+  .app-shell__conteudo {
+    padding: var(--esp-lg);
+  }
+
+  .pagina__cabecalho {
+    margin-bottom: var(--esp-lg);
+  }
+}
+
+/* Mobile (até 768px) */
+@media (max-width: 768px) {
+  .app-shell__conteudo {
+    padding: var(--esp-md);
+  }
+
+  /* Cabeçalho empilha verticalmente: título em cima, ações embaixo */
+  .pagina__cabecalho {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--esp-md);
+  }
+
+  .pagina__acoes {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .pagina__titulo {
+    font-size: var(--fonte-tam-xl);
+  }
+}

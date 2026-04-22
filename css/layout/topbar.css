@@ -1,0 +1,292 @@
+/* ==========================================================================
+   AMBC - Estilos da Topbar (Barra Superior)
+   Arquivo: css/layout/topbar.css
+   Descrição: Estiliza elementos internos da topbar
+              (botão menu, título, busca, ações, usuário)
+   ========================================================================== */
+
+/* ============================================
+   🧱 ESTRUTURA INTERNA DA TOPBAR
+   ============================================ */
+.topbar__inicio {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  flex: 1;
+  min-width: 0; /* permite truncar texto */
+}
+
+.topbar__centro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2;
+  max-width: 480px;
+}
+
+.topbar__fim {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  margin-left: auto;
+}
+
+/* ============================================
+   🍔 BOTÃO HAMBURGER (toggle da sidebar)
+   ============================================ */
+.topbar__toggle {
+  display: none; /* visível apenas em tablet/mobile */
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-md);
+  color: var(--cor-cinza-700);
+  cursor: pointer;
+  transition: background-color var(--transicao-rapida);
+}
+
+.topbar__toggle:hover {
+  background-color: var(--cor-cinza-100);
+}
+
+.topbar__toggle:focus-visible {
+  outline: var(--borda-foco);
+}
+
+.topbar__toggle .material-icons {
+  font-size: 24px;
+}
+
+/* ============================================
+   📍 TÍTULO DA PÁGINA ATUAL
+   ============================================ */
+.topbar__titulo {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--cor-cinza-800);
+  line-height: var(--lh-tight);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar__subtitulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  color: var(--cor-cinza-500);
+  line-height: var(--lh-tight);
+}
+
+/* ============================================
+   🔍 CAMPO DE BUSCA
+   ============================================ */
+.topbar__busca {
+  position: relative;
+  width: 100%;
+}
+
+.topbar__busca-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 var(--esp-md) 0 calc(var(--esp-md) + 24px);
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-sm);
+  color: var(--cor-cinza-800);
+  background-color: var(--cor-cinza-100);
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+  transition: background-color var(--transicao-rapida),
+              border-color var(--transicao-rapida),
+              box-shadow var(--transicao-rapida);
+}
+
+.topbar__busca-input::placeholder {
+  color: var(--cor-cinza-400);
+}
+
+.topbar__busca-input:hover {
+  background-color: var(--cor-cinza-200);
+}
+
+.topbar__busca-input:focus {
+  outline: none;
+  background-color: var(--cor-branco);
+  border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
+}
+
+.topbar__busca-icone {
+  position: absolute;
+  left: var(--esp-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: var(--cor-cinza-400);
+  pointer-events: none;
+}
+
+/* ============================================
+   🔔 BOTÕES DE AÇÃO (notificações, mensagens, etc.)
+   ============================================ */
+.topbar__acao {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--raio-full);
+  color: var(--cor-cinza-600);
+  cursor: pointer;
+  transition: background-color var(--transicao-rapida),
+              color var(--transicao-rapida);
+}
+
+.topbar__acao:hover {
+  background-color: var(--cor-cinza-100);
+  color: var(--cor-primaria);
+}
+
+.topbar__acao:focus-visible {
+  outline: var(--borda-foco);
+}
+
+.topbar__acao .material-icons {
+  font-size: 22px;
+}
+
+/* Badge de notificação (bolinha vermelha com número) */
+.topbar__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  color: var(--cor-primaria-contraste);
+  background-color: var(--cor-erro);
+  border: 2px solid var(--cor-branco);
+  border-radius: var(--raio-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ============================================
+   👤 MENU DO USUÁRIO
+   ============================================ */
+.topbar__usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: var(--esp-xs) var(--esp-sm);
+  background: none;
+  border: none;
+  border-radius: var(--raio-md);
+  cursor: pointer;
+  transition: background-color var(--transicao-rapida);
+}
+
+.topbar__usuario:hover {
+  background-color: var(--cor-cinza-100);
+}
+
+.topbar__usuario:focus-visible {
+  outline: var(--borda-foco);
+}
+
+.topbar__usuario-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raio-full);
+  background-color: var(--cor-primaria);
+  color: var(--cor-primaria-contraste);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.topbar__usuario-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.topbar__usuario-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: var(--lh-tight);
+  text-align: left;
+}
+
+.topbar__usuario-nome {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--cor-cinza-800);
+}
+
+.topbar__usuario-cargo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  color: var(--cor-cinza-500);
+}
+
+.topbar__usuario-seta {
+  font-size: 18px;
+  color: var(--cor-cinza-500);
+}
+
+/* ============================================
+   ➖ DIVISOR VERTICAL (entre grupos de ações)
+   ============================================ */
+.topbar__divisor {
+  width: 1px;
+  height: 24px;
+  background-color: var(--cor-cinza-200);
+  margin: 0 var(--esp-xs);
+}
+
+/* ============================================
+   📱 RESPONSIVIDADE — Tablet (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .topbar__toggle {
+    display: inline-flex; /* aparece o hamburger */
+  }
+
+  .topbar__centro {
+    display: none; /* esconde busca no tablet */
+  }
+}
+
+/* ============================================
+   📱 RESPONSIVIDADE — Mobile (≤ 640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .topbar__subtitulo {
+    display: none;
+  }
+
+  .topbar__usuario-info {
+    display: none; /* só mostra o avatar */
+  }
+
+  .topbar__usuario-seta {
+    display: none;
+  }
+}

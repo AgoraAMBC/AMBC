@@ -1,0 +1,132 @@
+/* ==========================================================================
+   AMBC - Estrutura Principal da Aplicação (App Shell)
+   Arquivo: css/layout/app-shell.css
+   Descrição: Define o esqueleto base do sistema autenticado
+              (sidebar + topbar + área de conteúdo)
+   ========================================================================== */
+
+/* ============================================
+   🧱 CONTAINER PRINCIPAL DO APP
+   ============================================ */
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--largura-sidebar) 1fr;
+  grid-template-rows: var(--altura-header) 1fr;
+  grid-template-areas:
+    "sidebar topbar"
+    "sidebar conteudo";
+  min-height: 100vh;
+  background-color: var(--cor-cinza-50);
+}
+
+/* ============================================
+   📚 SIDEBAR (Menu lateral esquerdo)
+   ============================================ */
+.app-shell__sidebar {
+  grid-area: sidebar;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--largura-sidebar);
+  height: 100vh;
+  background-color: var(--cor-branco);
+  border-right: var(--borda-padrao);
+  box-shadow: var(--sombra-sm);
+  z-index: var(--z-sidebar);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform var(--transicao-padrao),
+              width var(--transicao-padrao);
+}
+
+/* ============================================
+   🔝 TOPBAR (Barra superior)
+   ============================================ */
+.app-shell__topbar {
+  grid-area: topbar;
+  position: fixed;
+  top: 0;
+  left: var(--largura-sidebar);
+  right: 0;
+  height: var(--altura-header);
+  background-color: var(--cor-branco);
+  border-bottom: var(--borda-padrao);
+  box-shadow: var(--sombra-sm);
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--esp-lg);
+}
+
+/* ============================================
+   📄 ÁREA DE CONTEÚDO PRINCIPAL
+   ============================================ */
+.app-shell__conteudo {
+  grid-area: conteudo;
+  margin-top: var(--altura-header);
+  margin-left: var(--largura-sidebar);
+  padding: var(--esp-lg);
+  max-width: var(--largura-max-conteudo);
+  width: 100%;
+  min-height: calc(100vh - var(--altura-header));
+}
+
+/* ============================================
+   📱 RESPONSIVIDADE — Tablet (≤ 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "conteudo";
+  }
+
+  /* Sidebar vira off-canvas (escondida por padrão) */
+  .app-shell__sidebar {
+    transform: translateX(-100%);
+  }
+
+  .app-shell__sidebar.is-aberta {
+    transform: translateX(0);
+  }
+
+  .app-shell__topbar {
+    left: 0;
+  }
+
+  .app-shell__conteudo {
+    margin-left: 0;
+  }
+}
+
+/* ============================================
+   📱 RESPONSIVIDADE — Mobile (≤ 640px)
+   ============================================ */
+@media (max-width: 640px) {
+  .app-shell__topbar {
+    padding: 0 var(--esp-md);
+  }
+
+  .app-shell__conteudo {
+    padding: var(--esp-md);
+  }
+}
+
+/* ============================================
+   🌫️ OVERLAY (fundo escuro ao abrir sidebar no mobile)
+   ============================================ */
+.app-shell__overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-overlay);
+  opacity: 0;
+  transition: opacity var(--transicao-padrao);
+}
+
+.app-shell__overlay.is-visivel {
+  display: block;
+  opacity: 1;
+}
