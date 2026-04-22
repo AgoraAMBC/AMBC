@@ -1,0 +1,316 @@
+/* ==========================================================================
+   AMBC - Estilos Globais
+   Arquivo: css/base/global.css
+   Descrição: Comportamentos globais, utilitários de layout e acessibilidade
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. HTML e Body — fundo e cor base da aplicação
+   -------------------------------------------------------------------------- */
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--cor-cinza-50);
+  color: var(--cor-cinza-700);
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   2. Scrollbar customizada (Webkit — Chrome, Edge, Safari)
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cor-cinza-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cor-cinza-300);
+  border-radius: var(--raio-full);
+  border: 2px solid var(--cor-cinza-100);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cor-cinza-400);
+}
+
+/* Scrollbar fina em Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cor-cinza-300) var(--cor-cinza-100);
+}
+
+/* --------------------------------------------------------------------------
+   3. Foco acessível — anel visível ao navegar por teclado (Tab)
+   -------------------------------------------------------------------------- */
+*:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+  border-radius: var(--raio-sm);
+}
+
+/* Foco customizado para inputs e botões */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
+}
+
+/* --------------------------------------------------------------------------
+   4. Container principal do aplicativo
+   -------------------------------------------------------------------------- */
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Conteúdo principal com largura máxima */
+.conteudo-principal {
+  width: 100%;
+  max-width: var(--largura-max-conteudo);
+  margin: 0 auto;
+  padding: var(--esp-lg);
+}
+
+/* --------------------------------------------------------------------------
+   5. Utilitários de DISPLAY
+   -------------------------------------------------------------------------- */
+.d-none           { display: none !important; }
+.d-block          { display: block; }
+.d-inline         { display: inline; }
+.d-inline-block   { display: inline-block; }
+.d-flex           { display: flex; }
+.d-inline-flex    { display: inline-flex; }
+.d-grid           { display: grid; }
+
+/* Visibilidade (ocupa espaço mas não aparece) */
+.invisivel        { visibility: hidden; }
+.visivel          { visibility: visible; }
+
+/* --------------------------------------------------------------------------
+   6. Utilitários de FLEXBOX
+   -------------------------------------------------------------------------- */
+.flex-row         { flex-direction: row; }
+.flex-col         { flex-direction: column; }
+.flex-wrap        { flex-wrap: wrap; }
+.flex-nowrap      { flex-wrap: nowrap; }
+
+/* Justify (eixo principal) */
+.justify-inicio   { justify-content: flex-start; }
+.justify-centro   { justify-content: center; }
+.justify-fim      { justify-content: flex-end; }
+.justify-entre    { justify-content: space-between; }
+.justify-ao-redor { justify-content: space-around; }
+
+/* Align (eixo secundário) */
+.align-inicio     { align-items: flex-start; }
+.align-centro     { align-items: center; }
+.align-fim        { align-items: flex-end; }
+.align-stretch    { align-items: stretch; }
+
+/* Gap (espaçamento entre itens flex/grid) */
+.gap-xs           { gap: var(--esp-xs); }
+.gap-sm           { gap: var(--esp-sm); }
+.gap-md           { gap: var(--esp-md); }
+.gap-lg           { gap: var(--esp-lg); }
+.gap-xl           { gap: var(--esp-xl); }
+
+/* Crescimento de itens flex */
+.flex-1           { flex: 1; }
+.flex-auto        { flex: auto; }
+.flex-none        { flex: none; }
+
+/* --------------------------------------------------------------------------
+   7. Utilitários de ESPAÇAMENTO (margin e padding)
+   Padrão: m=margin, p=padding | t=top, r=right, b=bottom, l=left, x=horizontal, y=vertical
+   -------------------------------------------------------------------------- */
+
+/* MARGIN */
+.m-0  { margin: 0; }
+.m-xs { margin: var(--esp-xs); }
+.m-sm { margin: var(--esp-sm); }
+.m-md { margin: var(--esp-md); }
+.m-lg { margin: var(--esp-lg); }
+.m-xl { margin: var(--esp-xl); }
+
+.mt-0  { margin-top: 0; }
+.mt-xs { margin-top: var(--esp-xs); }
+.mt-sm { margin-top: var(--esp-sm); }
+.mt-md { margin-top: var(--esp-md); }
+.mt-lg { margin-top: var(--esp-lg); }
+.mt-xl { margin-top: var(--esp-xl); }
+
+.mb-0  { margin-bottom: 0; }
+.mb-xs { margin-bottom: var(--esp-xs); }
+.mb-sm { margin-bottom: var(--esp-sm); }
+.mb-md { margin-bottom: var(--esp-md); }
+.mb-lg { margin-bottom: var(--esp-lg); }
+.mb-xl { margin-bottom: var(--esp-xl); }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.my-auto { margin-top: auto; margin-bottom: auto; }
+
+/* PADDING */
+.p-0  { padding: 0; }
+.p-xs { padding: var(--esp-xs); }
+.p-sm { padding: var(--esp-sm); }
+.p-md { padding: var(--esp-md); }
+.p-lg { padding: var(--esp-lg); }
+.p-xl { padding: var(--esp-xl); }
+
+.px-xs { padding-left: var(--esp-xs); padding-right: var(--esp-xs); }
+.px-sm { padding-left: var(--esp-sm); padding-right: var(--esp-sm); }
+.px-md { padding-left: var(--esp-md); padding-right: var(--esp-md); }
+.px-lg { padding-left: var(--esp-lg); padding-right: var(--esp-lg); }
+
+.py-xs { padding-top: var(--esp-xs); padding-bottom: var(--esp-xs); }
+.py-sm { padding-top: var(--esp-sm); padding-bottom: var(--esp-sm); }
+.py-md { padding-top: var(--esp-md); padding-bottom: var(--esp-md); }
+.py-lg { padding-top: var(--esp-lg); padding-bottom: var(--esp-lg); }
+
+/* --------------------------------------------------------------------------
+   8. Utilitários de LARGURA e ALTURA
+   -------------------------------------------------------------------------- */
+.w-100    { width: 100%; }
+.w-auto   { width: auto; }
+.w-fit    { width: fit-content; }
+.h-100    { height: 100%; }
+.h-auto   { height: auto; }
+.h-tela   { height: 100vh; }
+.min-h-tela { min-height: 100vh; }
+
+/* --------------------------------------------------------------------------
+   9. Utilitários de POSIÇÃO
+   -------------------------------------------------------------------------- */
+.pos-relativa  { position: relative; }
+.pos-absoluta  { position: absolute; }
+.pos-fixa      { position: fixed; }
+.pos-sticky    { position: sticky; }
+
+/* --------------------------------------------------------------------------
+   10. Utilitários de BORDA e RAIO
+   -------------------------------------------------------------------------- */
+.borda            { border: var(--borda-padrao); }
+.borda-primaria   { border: 2px solid var(--cor-primaria); }
+.sem-borda        { border: none; }
+
+.raio-sm          { border-radius: var(--raio-sm); }
+.raio-md          { border-radius: var(--raio-md); }
+.raio-lg          { border-radius: var(--raio-lg); }
+.raio-full        { border-radius: var(--raio-full); }
+
+/* --------------------------------------------------------------------------
+   11. Utilitários de SOMBRA
+   -------------------------------------------------------------------------- */
+.sombra-sm        { box-shadow: var(--sombra-sm); }
+.sombra-md        { box-shadow: var(--sombra-md); }
+.sombra-lg        { box-shadow: var(--sombra-lg); }
+.sombra-none      { box-shadow: none; }
+
+/* --------------------------------------------------------------------------
+   12. Utilitários de FUNDO
+   -------------------------------------------------------------------------- */
+.bg-branco        { background-color: var(--cor-branco); }
+.bg-cinza-claro   { background-color: var(--cor-cinza-50); }
+.bg-cinza         { background-color: var(--cor-cinza-100); }
+.bg-primaria      { background-color: var(--cor-primaria); color: var(--cor-primaria-contraste); }
+.bg-primaria-clara { background-color: var(--cor-primaria-clara); }
+.bg-sucesso       { background-color: var(--cor-sucesso-clara); }
+.bg-alerta        { background-color: var(--cor-alerta-clara); }
+.bg-erro          { background-color: var(--cor-erro-clara); }
+
+/* --------------------------------------------------------------------------
+   13. Utilitários diversos
+   -------------------------------------------------------------------------- */
+.cursor-ponteiro  { cursor: pointer; }
+.cursor-proibido  { cursor: not-allowed; }
+.overflow-hidden  { overflow: hidden; }
+.overflow-auto    { overflow: auto; }
+.sem-selecao      { user-select: none; }
+
+/* --------------------------------------------------------------------------
+   14. Responsividade — ocultar em telas específicas
+   -------------------------------------------------------------------------- */
+
+/* Ocultar em telas pequenas (mobile) */
+@media (max-width: 767px) {
+  .ocultar-mobile { display: none !important; }
+}
+
+/* Ocultar em telas médias (tablet) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ocultar-tablet { display: none !important; }
+}
+
+/* Ocultar em telas grandes (desktop) */
+@media (min-width: 1024px) {
+  .ocultar-desktop { display: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   15. Animações base reutilizáveis
+   -------------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animar-fade       { animation: fadeIn var(--transicao-padrao); }
+.animar-fade-cima  { animation: fadeInUp var(--transicao-padrao); }
+.animar-girar      { animation: spin 1s linear infinite; }
+
+/* --------------------------------------------------------------------------
+   16. Estado "carregando" genérico
+   -------------------------------------------------------------------------- */
+.carregando {
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* --------------------------------------------------------------------------
+   17. Impressão — otimização para imprimir relatórios
+   -------------------------------------------------------------------------- */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .nao-imprimir,
+  .sidebar,
+  .header,
+  button {
+    display: none !important;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+}

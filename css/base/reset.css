@@ -1,0 +1,187 @@
+/* ==========================================================================
+   AMBC - Reset CSS
+   Arquivo: css/base/reset.css
+   Descrição: Normaliza estilos padrão dos navegadores para base consistente
+   Baseado em: Josh Comeau's CSS Reset + ajustes do projeto
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Box-sizing universal
+   Garante que padding e border fiquem DENTRO da largura/altura definidas.
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   2. Remover margens e paddings padrão de TODOS os elementos
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   3. HTML e Body — configurações base
+   -------------------------------------------------------------------------- */
+html {
+  /* Scroll suave ao navegar por âncoras */
+  scroll-behavior: smooth;
+
+  /* Previne ajuste automático de fonte no iOS em orientação landscape */
+  -webkit-text-size-adjust: 100%;
+
+  /* Melhora renderização de fontes */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  /* Fonte e cores reais virão do global.css usando as variáveis */
+}
+
+/* --------------------------------------------------------------------------
+   4. Mídia responsiva (imagens, vídeos, SVGs)
+   Nunca estouram o container pai.
+   -------------------------------------------------------------------------- */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* --------------------------------------------------------------------------
+   5. Formulários — herdar fonte do sistema
+   Por padrão, inputs NÃO herdam a fonte do body. Corrigimos isso.
+   -------------------------------------------------------------------------- */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Remove aparência nativa de botões */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Remove aparência nativa de inputs numéricos (setinhas) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Remove borda de foco padrão (vamos definir a nossa no global.css) */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus,
+a:focus {
+  outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   6. Listas — remover marcadores padrão
+   (reaplicamos nas listas de conteúdo via classe específica, se necessário)
+   -------------------------------------------------------------------------- */
+ul,
+ol {
+  list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Links — remover sublinhado e herdar cor
+   -------------------------------------------------------------------------- */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   8. Tabelas — remover espaçamento entre células
+   -------------------------------------------------------------------------- */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. Títulos e parágrafos — quebra de palavra adequada
+   -------------------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  overflow-wrap: break-word;
+}
+
+/* Títulos herdam peso e tamanho — definiremos em typography.css */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   10. Acessibilidade — respeitar preferência de "reduzir animações"
+   Usuários com essa preferência ativa no SO verão animações mínimas.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. Melhor seleção de texto (cor customizada)
+   -------------------------------------------------------------------------- */
+::selection {
+  background-color: var(--cor-primaria);
+  color: var(--cor-primaria-contraste);
+}
+
+/* --------------------------------------------------------------------------
+   12. Elementos ocultos visualmente mas acessíveis a leitores de tela
+   Uso: class="sr-only" (screen reader only)
+   -------------------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

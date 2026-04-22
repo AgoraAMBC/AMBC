@@ -1,0 +1,274 @@
+/* ==========================================================================
+   AMBC - Tipografia
+   Arquivo: css/base/typography.css
+   Descrição: Define estilos de texto (títulos, parágrafos, links, listas)
+   Fonte: Inter (Google Fonts)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Importação da fonte Inter (Google Fonts)
+   Pesos: 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   2. Body — tipografia base de toda a aplicação
+   -------------------------------------------------------------------------- */
+body {
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-base);        /* 16px */
+  font-weight: var(--fw-regular);   /* 400 */
+  line-height: var(--lh-base);      /* 1.5 */
+  color: var(--cor-cinza-700);      /* Texto padrão cinza escuro */
+}
+
+/* --------------------------------------------------------------------------
+   3. Hierarquia de títulos (H1 ao H6)
+   -------------------------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--fonte-principal);
+  color: var(--cor-cinza-800);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+}
+
+/* H1 — Título principal da página (ex: "Dashboard", "Associados") */
+h1 {
+  font-size: var(--fs-2xl);         /* 30px */
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+}
+
+/* H2 — Seções principais dentro da página */
+h2 {
+  font-size: var(--fs-xl);          /* 24px */
+  font-weight: var(--fw-semibold);
+}
+
+/* H3 — Subseções / cards importantes */
+h3 {
+  font-size: var(--fs-lg);          /* 20px */
+  font-weight: var(--fw-semibold);
+}
+
+/* H4 — Títulos de cards / blocos */
+h4 {
+  font-size: var(--fs-md);          /* 18px */
+  font-weight: var(--fw-semibold);
+}
+
+/* H5 — Rótulos de seção menores */
+h5 {
+  font-size: var(--fs-base);        /* 16px */
+  font-weight: var(--fw-semibold);
+}
+
+/* H6 — Menor hierarquia (raramente usado) */
+h6 {
+  font-size: var(--fs-sm);          /* 14px */
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cor-cinza-600);
+}
+
+/* --------------------------------------------------------------------------
+   4. Parágrafos
+   -------------------------------------------------------------------------- */
+p {
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--cor-cinza-700);
+}
+
+/* Parágrafo com destaque reduzido (legendas, textos auxiliares) */
+p.texto-auxiliar,
+.texto-auxiliar {
+  font-size: var(--fs-sm);
+  color: var(--cor-cinza-500);
+}
+
+/* Parágrafo pequeno (hints, ajudas de formulário) */
+p.texto-pequeno,
+.texto-pequeno {
+  font-size: var(--fs-xs);
+  color: var(--cor-cinza-500);
+}
+
+/* --------------------------------------------------------------------------
+   5. Links
+   -------------------------------------------------------------------------- */
+a {
+  color: var(--cor-primaria);
+  font-weight: var(--fw-medium);
+  transition: color var(--transicao-rapida);
+  cursor: pointer;
+}
+
+a:hover {
+  color: var(--cor-primaria-hover);
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--cor-primaria-ativa);
+}
+
+/* Link "apagado" — para navegação secundária */
+a.link-discreto {
+  color: var(--cor-cinza-600);
+  font-weight: var(--fw-regular);
+}
+
+a.link-discreto:hover {
+  color: var(--cor-primaria);
+}
+
+/* --------------------------------------------------------------------------
+   6. Textos em negrito e destacados
+   -------------------------------------------------------------------------- */
+strong,
+b {
+  font-weight: var(--fw-semibold);
+  color: var(--cor-cinza-800);
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+/* Texto destacado (marcação amarela) */
+mark {
+  background-color: var(--cor-alerta-clara);
+  color: var(--cor-cinza-800);
+  padding: 0 var(--esp-xs);
+  border-radius: var(--raio-sm);
+}
+
+/* --------------------------------------------------------------------------
+   7. Listas (quando precisarmos de marcadores em conteúdo real)
+   Uso: adicione a classe "lista-conteudo" em <ul> ou <ol>
+   -------------------------------------------------------------------------- */
+.lista-conteudo {
+  padding-left: var(--esp-lg);
+  margin: var(--esp-sm) 0;
+}
+
+.lista-conteudo ul {
+  list-style: disc;
+}
+
+.lista-conteudo ol {
+  list-style: decimal;
+}
+
+.lista-conteudo li {
+  margin-bottom: var(--esp-xs);
+  line-height: var(--lh-relaxed);
+}
+
+/* --------------------------------------------------------------------------
+   8. Código inline e blocos de código
+   -------------------------------------------------------------------------- */
+code,
+kbd,
+samp {
+  font-family: var(--fonte-mono);
+  font-size: 0.9em;
+  background-color: var(--cor-cinza-100);
+  color: var(--cor-cinza-800);
+  padding: 0.15em 0.4em;
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--cor-cinza-200);
+}
+
+pre {
+  font-family: var(--fonte-mono);
+  font-size: var(--fs-sm);
+  background-color: var(--cor-cinza-100);
+  color: var(--cor-cinza-800);
+  padding: var(--esp-md);
+  border-radius: var(--raio-md);
+  border: 1px solid var(--cor-cinza-200);
+  overflow-x: auto;
+  line-height: var(--lh-relaxed);
+}
+
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   9. Citações
+   -------------------------------------------------------------------------- */
+blockquote {
+  border-left: 4px solid var(--cor-primaria);
+  padding: var(--esp-sm) var(--esp-md);
+  margin: var(--esp-md) 0;
+  color: var(--cor-cinza-600);
+  font-style: italic;
+  background-color: var(--cor-primaria-clara);
+  border-radius: 0 var(--raio-md) var(--raio-md) 0;
+}
+
+/* --------------------------------------------------------------------------
+   10. Linha horizontal separadora
+   -------------------------------------------------------------------------- */
+hr {
+  border: none;
+  border-top: 1px solid var(--cor-cinza-200);
+  margin: var(--esp-lg) 0;
+}
+
+/* --------------------------------------------------------------------------
+   11. Classes utilitárias de texto
+   -------------------------------------------------------------------------- */
+
+/* Alinhamento */
+.texto-esquerda   { text-align: left; }
+.texto-centro     { text-align: center; }
+.texto-direita    { text-align: right; }
+.texto-justificado { text-align: justify; }
+
+/* Transformações */
+.texto-maiusculo  { text-transform: uppercase; letter-spacing: 0.05em; }
+.texto-minusculo  { text-transform: lowercase; }
+.texto-capitalizado { text-transform: capitalize; }
+
+/* Pesos */
+.texto-regular    { font-weight: var(--fw-regular); }
+.texto-medium     { font-weight: var(--fw-medium); }
+.texto-semibold   { font-weight: var(--fw-semibold); }
+.texto-bold       { font-weight: var(--fw-bold); }
+
+/* Cores semânticas */
+.texto-primario   { color: var(--cor-primaria); }
+.texto-sucesso    { color: var(--cor-sucesso-escura); }
+.texto-alerta     { color: var(--cor-alerta-escura); }
+.texto-erro       { color: var(--cor-erro-escura); }
+.texto-info       { color: var(--cor-info-escura); }
+.texto-mudo       { color: var(--cor-cinza-500); }
+
+/* Truncamento (uma linha com "...") */
+.texto-truncado {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Truncamento multilinha (2 linhas) */
+.texto-truncado-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
