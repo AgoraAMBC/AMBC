@@ -27,6 +27,12 @@
   <link rel="stylesheet" href="css/base/reset.css" />
   <link rel="stylesheet" href="css/base/tipografia.css" />
   <link rel="stylesheet" href="css/base/global.css" />
+<!-- Components (Semana 3) -->
+<link rel="stylesheet" href="css/components/botoes.css"/>
+<link rel="stylesheet" href="css/components/badges.css"/>
+<link rel="stylesheet" href="css/components/formularios.css"/>
+<link rel="stylesheet" href="css/components/alertas.css"/>
+<link rel="stylesheet" href="css/components/breadcrumbs.css"/>
 
   <!-- ==========================================================
        🧱 CSS — Layout (shell → sidebar → topbar → main)
@@ -35,7 +41,6 @@
   <link rel="stylesheet" href="css/layout/sidebar.css" />
   <link rel="stylesheet" href="css/layout/topbar.css" />
   <link rel="stylesheet" href="css/layout/main.css" />
-  <link rel="stylesheet" href="css/pages/usuarios.css" />
 </head>
 
 <body>
@@ -49,161 +54,172 @@
          ====================================================== -->
     <aside class="app-shell__sidebar sidebar" id="sidebar" aria-label="Menu principal">
 
-      <!-- Cabeçalho da sidebar (logo + nome + subtítulo) -->
-      <div class="sidebar__cabecalho">
-        <div class="sidebar__logo" aria-hidden="true">A</div>
-        <div>
-          <div class="sidebar__titulo">AMBC</div>
-          <div class="sidebar__subtitulo">Bairro Califórnia</div>
-        </div>
-      </div>
+  <!-- Cabeçalho da sidebar (logo + nome + subtítulo) -->
+  <div class="sidebar__cabecalho">
+    <div class="sidebar__logo" aria-hidden="true">A</div>
+    <div>
+      <div class="sidebar__titulo">AMBC</div>
+      <div class="sidebar__subtitulo">Bairro Califórnia</div>
+    </div>
+  </div>
 
-      <!-- Navegação principal -->
-      <nav class="sidebar__nav" aria-label="Navegação">
+  <!-- Navegação principal -->
+  <nav class="sidebar__nav" aria-label="Navegação">
 
-        <!-- Seção: PRINCIPAL -->
-        <div class="sidebar__secao">
-          <div class="sidebar__secao-titulo">Principal</div>
-          <ul class="sidebar__lista">
+    <!-- Seção: PRINCIPAL -->
+    <div class="sidebar__secao">
+      <div class="sidebar__secao-titulo">Principal</div>
+      <ul class="sidebar__lista">
 
-            <li class="sidebar__item">
-              <a href="#painel" class="sidebar__link is-ativo">
-                <span class="material-icons sidebar__icone">dashboard</span>
-                <span class="sidebar__texto">Painel</span>
+        <li class="sidebar__item">
+          <a href="#/dashboard" class="sidebar__link">
+            <span class="material-icons sidebar__icone">dashboard</span>
+            <span class="sidebar__texto">Painel</span>
+          </a>
+        </li>
+
+        <li class="sidebar__item" data-submenu-pai="cadastro">
+          <button type="button" class="sidebar__link" data-toggle-submenu="cadastro" aria-expanded="false" aria-controls="submenu-cadastro">
+            <span class="material-icons sidebar__icone">badge</span>
+            <span class="sidebar__texto">Cadastro</span>
+            <span class="material-icons sidebar__seta">chevron_right</span>
+          </button>
+          <ul class="sidebar__submenu" id="submenu-cadastro">
+            <li>
+              <a href="#/cadastro/listar" class="sidebar__link">
+                <span class="sidebar__texto">Listar Todos</span>
               </a>
             </li>
-
-            <li class="sidebar__item">
-              <a href="#cadastro" class="sidebar__link" data-submenu="cadastro">
-                <span class="material-icons sidebar__icone">badge</span>
-                <span class="sidebar__texto">Cadastro</span>
-                <span class="material-icons sidebar__seta">chevron_right</span>
+            <li>
+              <a href="#/cadastro/novo-associado" class="sidebar__link">
+                <span class="sidebar__texto">Novo Associado</span>
               </a>
-              <ul class="sidebar__submenu" id="submenu-cadastro">
-                <li>
-                  <a href="#cadastro/listar" class="sidebar__link">
-                    <span class="sidebar__texto">Listar Todos</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#cadastro/novo-associado" class="sidebar__link">
-                    <span class="sidebar__texto">Novo Associado</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#cadastro/novo-parceiro" class="sidebar__link">
-                    <span class="sidebar__texto">Novo Parceiro</span>
-                  </a>
-                </li>
-              </ul>
             </li>
-
-            <li class="sidebar__item">
-              <a href="#financeiro" class="sidebar__link" data-submenu="financeiro">
-                <span class="material-icons sidebar__icone">account_balance_wallet</span>
-                <span class="sidebar__texto">Financeiro</span>
-                <span class="material-icons sidebar__seta">chevron_right</span>
+            <li>
+              <a href="#/cadastro/novo-parceiro" class="sidebar__link">
+                <span class="sidebar__texto">Novo Parceiro</span>
               </a>
-              <ul class="sidebar__submenu" id="submenu-financeiro">
-                <li>
-                  <a href="#financeiro/visao-geral" class="sidebar__link">
-                    <span class="sidebar__texto">Visão Geral</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#financeiro/novo-lancamento" class="sidebar__link">
-                    <span class="sidebar__texto">Novo Lançamento</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#financeiro/relatorios" class="sidebar__link">
-                    <span class="sidebar__texto">Relatórios</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#financeiro/contas-regentes" class="sidebar__link">
-                    <span class="sidebar__texto">Contas Regentes</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#financeiro/contas-subordinadas" class="sidebar__link">
-                    <span class="sidebar__texto">Contas Subordinadas</span>
-                  </a>
-                </li>
-              </ul>
             </li>
-
-            <li class="sidebar__item">
-              <a href="#tabelas-auxiliares" class="sidebar__link" data-submenu="tabelas">
-                <span class="material-icons sidebar__icone">table_chart</span>
-                <span class="sidebar__texto">Tabelas Auxiliares</span>
-                <span class="material-icons sidebar__seta">chevron_right</span>
-              </a>
-              <ul class="sidebar__submenu" id="submenu-tabelas">
-                <li>
-                  <a href="#tabelas-auxiliares/ver" class="sidebar__link">
-                    <span class="sidebar__texto">Ver Tabelas</span>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
           </ul>
-        </div>
+        </li>
 
-        <!-- Seção: SISTEMA -->
-        <div class="sidebar__secao">
-          <div class="sidebar__secao-titulo">Sistema</div>
-          <ul class="sidebar__lista">
-
-            <li class="sidebar__item">
-              <a href="#configuracoes" class="sidebar__link" data-submenu="configuracoes">
-                <span class="material-icons sidebar__icone">settings</span>
-                <span class="sidebar__texto">Configurações</span>
-                <span class="material-icons sidebar__seta">chevron_right</span>
-              </a>
-              <ul class="sidebar__submenu" id="submenu-configuracoes">
-                <li>
-                  <a href="#configuracoes/usuarios" class="sidebar__link">
-                    <span class="sidebar__texto">Gestão de Usuários</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#configuracoes/associacao" class="sidebar__link">
-                    <span class="sidebar__texto">Associação</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#configuracoes/relacionamentos" class="sidebar__link">
-                    <span class="sidebar__texto">Relacionamentos</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#configuracoes/gerais" class="sidebar__link">
-                    <span class="sidebar__texto">Config. Gerais</span>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="sidebar__item">
-              <a href="#sair" class="sidebar__link">
-                <span class="material-icons sidebar__icone">logout</span>
-                <span class="sidebar__texto">Sair</span>
+        <li class="sidebar__item" data-submenu-pai="financeiro">
+          <button type="button" class="sidebar__link" data-toggle-submenu="financeiro" aria-expanded="false" aria-controls="submenu-financeiro">
+            <span class="material-icons sidebar__icone">account_balance_wallet</span>
+            <span class="sidebar__texto">Financeiro</span>
+            <span class="material-icons sidebar__seta">chevron_right</span>
+          </button>
+          <ul class="sidebar__submenu" id="submenu-financeiro">
+            <li>
+              <a href="#/financeiro/visao-geral" class="sidebar__link">
+                <span class="sidebar__texto">Visão Geral</span>
               </a>
             </li>
-
+            <li>
+              <a href="#/financeiro/novo-lancamento" class="sidebar__link">
+                <span class="sidebar__texto">Novo Lançamento</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/financeiro/relatorios" class="sidebar__link">
+                <span class="sidebar__texto">Relatórios</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/financeiro/contas-regentes" class="sidebar__link">
+                <span class="sidebar__texto">Contas Regentes</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/financeiro/contas-subordinadas" class="sidebar__link">
+                <span class="sidebar__texto">Contas Subordinadas</span>
+              </a>
+            </li>
           </ul>
-        </div>
+        </li>
 
-      </nav>
+        <li class="sidebar__item" data-submenu-pai="tabelas">
+          <button type="button" class="sidebar__link" data-toggle-submenu="tabelas" aria-expanded="false" aria-controls="submenu-tabelas">
+            <span class="material-icons sidebar__icone">table_chart</span>
+            <span class="sidebar__texto">Tabelas Auxiliares</span>
+            <span class="material-icons sidebar__seta">chevron_right</span>
+          </button>
+          <ul class="sidebar__submenu" id="submenu-tabelas">
+            <li>
+              <a href="#/tabelas/ver" class="sidebar__link">
+                <span class="sidebar__texto">Ver Tabelas</span>
+              </a>
+            </li>
+          </ul>
+        </li>
 
-      <!-- Rodapé da sidebar -->
-      <div class="sidebar__rodape">
-        AMBC © 2026 • v0.1.0
-      </div>
+      </ul>
+    </div>
 
-    </aside>
+    <!-- Seção: SISTEMA -->
+    <div class="sidebar__secao">
+      <div class="sidebar__secao-titulo">Sistema</div>
+      <ul class="sidebar__lista">
+
+        <li class="sidebar__item" data-submenu-pai="configuracoes">
+          <button type="button" class="sidebar__link" data-toggle-submenu="configuracoes" aria-expanded="false" aria-controls="submenu-configuracoes">
+            <span class="material-icons sidebar__icone">settings</span>
+            <span class="sidebar__texto">Configurações</span>
+            <span class="material-icons sidebar__seta">chevron_right</span>
+          </button>
+          <ul class="sidebar__submenu" id="submenu-configuracoes">
+            <li>
+              <a href="#/configuracoes/usuarios" class="sidebar__link">
+                <span class="sidebar__texto">Gestão de Usuários</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/configuracoes/associacao" class="sidebar__link">
+                <span class="sidebar__texto">Associação</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/configuracoes/relacionamentos" class="sidebar__link">
+                <span class="sidebar__texto">Relacionamentos</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/configuracoes/config-gerais" class="sidebar__link">
+                <span class="sidebar__texto">Config. Gerais</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="sidebar__item">
+          <button type="button" class="sidebar__link" data-action="logout">
+            <span class="material-icons sidebar__icone">logout</span>
+            <span class="sidebar__texto">Sair</span>
+          </button>
+        </li>
+
+      </ul>
+    </div>
+
+  </nav>
+
+  <!-- Rodapé da sidebar -->
+  <div class="sidebar__rodape">
+    AMBC © 2026 • v0.1.0
+  </div>
+
+</aside>
+<div class="app-shell__overlay" id="overlay-sidebar" aria-hidden="true"></div>
+
+  <header class="app-shell__topbar topbar" ...>
+    ...
+  </header>
+
+  <main class="app-shell__conteudo" ...>
+    ...
+  </main>
+
+</div>
 
     <!-- ======================================================
          🔝 TOPBAR — Barra superior
@@ -268,6 +284,10 @@
   <!-- ==========================================================
        ⚙️ JS — Será adicionado na FASE 5 (router, eventos, etc.)
        ========================================================== -->
-  <script type="module" src="js/app.js"></script>
+  <!-- <script type="module" src="js/app.js"></script> -->
+<!-- ======================================================
+     🚀 SCRIPT PRINCIPAL — Entry point da aplicacao SPA
+     ====================================================== -->
+<script type="module" src="js/core/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,205 @@
+/* ==========================================================================
+   AMBC - Componente: Botões
+   Arquivo: css/components/botoes.css
+   Descrição: Todos os estilos de botões do sistema (variantes + tamanhos)
+   ========================================================================== */
+
+/* ============================================
+   🔘 BOTÃO BASE
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-xs);
+  padding: var(--esp-sm) var(--esp-md);
+  border: 1px solid transparent;
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all var(--transicao-rapida);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--sombra-foco);
+}
+
+.btn:disabled,
+.btn.desabilitado {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Ícone dentro do botão — alinha com texto */
+.btn .mi,
+.btn .material-symbols-outlined {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* ============================================
+   🎨 VARIANTES
+   ============================================ */
+
+/* Primário — ação principal da tela */
+.btn-primario {
+  background: var(--cor-primaria);
+  color: var(--cor-primaria-contraste);
+}
+.btn-primario:hover:not(:disabled) {
+  background: var(--cor-primaria-hover);
+}
+.btn-primario:active:not(:disabled) {
+  background: var(--cor-primaria-ativa);
+}
+
+/* Secundário — ação alternativa, neutro */
+.btn-secundario {
+  background: var(--fundo-card);
+  color: var(--texto-secundario);
+  border-color: var(--cor-cinza-200);
+}
+.btn-secundario:hover:not(:disabled) {
+  background: var(--fundo-pagina);
+  border-color: var(--cor-cinza-300);
+  color: var(--texto-principal);
+}
+
+/* Perigo — ações destrutivas (excluir) */
+.btn-perigo {
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro);
+}
+.btn-perigo:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+/* Sucesso — confirmação positiva */
+.btn-sucesso {
+  background: var(--cor-sucesso);
+  color: var(--cor-primaria-contraste);
+}
+.btn-sucesso:hover:not(:disabled) {
+  background: var(--cor-sucesso-escura);
+}
+
+/* Fantasma — sem fundo, mais discreto */
+.btn-fantasma {
+  background: transparent;
+  color: var(--cor-primaria);
+}
+.btn-fantasma:hover:not(:disabled) {
+  background: var(--cor-primaria-clara);
+}
+
+/* ============================================
+   📏 TAMANHOS
+   ============================================ */
+
+/* Pequeno */
+.btn-sm {
+  padding: 5px 11px;
+  font-size: var(--fs-xs);
+}
+.btn-sm .mi,
+.btn-sm .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Extra pequeno */
+.btn-xs {
+  padding: 4px 9px;
+  font-size: 11px;
+}
+.btn-xs .mi,
+.btn-xs .material-symbols-outlined {
+  font-size: 14px;
+}
+
+/* Grande */
+.btn-lg {
+  padding: 11px 20px;
+  font-size: var(--fs-base);
+}
+.btn-lg .mi,
+.btn-lg .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Largura total (ocupa 100% do container) */
+.btn-bloco {
+  width: 100%;
+}
+
+/* ============================================
+   🔘 BOTÃO DE ÍCONE (apenas ícone, sem texto)
+   ============================================ */
+.btn-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: all var(--transicao-rapida);
+}
+
+.btn-icone:hover {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.btn-icone:focus-visible {
+  outline: none;
+  box-shadow: var(--sombra-foco);
+}
+
+.btn-icone .mi,
+.btn-icone .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* Variante perigo para ícone (ex: excluir) */
+.btn-icone-perigo:hover {
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro);
+}
+
+/* Tamanho grande pra ícone */
+.btn-icone-lg {
+  width: 40px;
+  height: 40px;
+}
+.btn-icone-lg .mi,
+.btn-icone-lg .material-symbols-outlined {
+  font-size: 22px;
+}
+
+/* ============================================
+   🔗 GRUPO DE BOTÕES
+   ============================================ */
+.btn-grupo {
+  display: inline-flex;
+  gap: var(--esp-sm);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-grupo-fim {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--esp-sm);
+}

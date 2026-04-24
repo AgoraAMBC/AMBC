@@ -1,53 +1,56 @@
 # 📍 Checkpoint — AMBC V2
 
-> **Última sessão:** 21/04/2026 (terça-feira)  
-> **Próxima sessão:** retomar na Fase 2 — Navegação SPA
+> **Última sessão:** 22/04/2026 (quarta-feira)  
+> **Próxima sessão:** Fase 3 — Biblioteca de Componentes UI
 
 ---
 
 ## 🎯 Onde paramos
 
-Concluímos **100% da Fase 1** — toda a fundação visual do sistema está pronta
-e funcionando sem erros. O "esqueleto" da aplicação está de pé.
+Concluímos **100% da Fase 2** — toda a navegação SPA está funcionando:
+roteamento por hash, sidebar com accordion, menu mobile com overlay,
+e 15 views placeholder carregando via fetch.
 
-### 🏆 Conquistas da última sessão
-- ✅ Layout completo (sidebar + topbar + main + footer)
-- ✅ Scroll interno no `<main>` funcionando
-- ✅ Sidebar com seções PRINCIPAL e SISTEMA
-- ✅ Topbar com título dinâmico e perfil do usuário
-- ✅ Design tokens centralizados em `variaveis.css`
-- ✅ Console F12 limpo, sem erros
-- ✅ Todos os CSS carregando corretamente
-
----
-
-## 🚀 Por onde começar amanhã
-
-### Próxima tarefa: **Fase 2.1 — Roteamento SPA**
-
-Vamos criar o arquivo `js/core/router.js`, responsável por:
-1. Detectar mudanças na URL (hash `#painel`, `#cadastro/listar`, etc.)
-2. Carregar a página correspondente
-3. Atualizar o título na topbar
-4. Marcar o item ativo na sidebar
-
-### ⚙️ Antes de codar, vamos decidir:
-1. Estrutura de pastas do JS (`js/core/`, `js/layout/`, `js/paginas/`)
-2. Formato do mapa de rotas (objeto JS central)
-3. Se cada página será um arquivo `.html` separado (carregado via fetch)
-   **OU** uma função JS que monta o HTML dinamicamente
-4. Estratégia de transição entre páginas (fade, slide, nenhuma)
+### 🏆 Conquistas desta sessão
+- ✅ Router SPA (`js/core/router.js`) com cache de views
+- ✅ Sidebar interativa (`js/layout/sidebar.js`) com accordion
+- ✅ Topbar com hambúrguer + overlay + ESC (`js/layout/topbar.js`)
+- ✅ Orquestrador central (`js/core/app.js`)
+- ✅ 15 views HTML placeholder (todas as rotas do sistema)
+- ✅ Integração router ↔ sidebar ↔ topbar
+- ✅ Menu mobile 100% funcional
+- ✅ Console F12 limpo
 
 ---
 
-## 📝 Lembretes importantes
+## 🚀 Por onde começar na próxima sessão
 
-- 🔤 **Padrão de nomenclatura:** BEM em português (`bloco__elemento--modificador`)
-- 📁 **Nomes de arquivos:** sempre em português (ex: `cadastro.js`, não `registration.js`)
-- 🎨 **Sempre usar variáveis CSS** (nunca hardcoded colors/spacings)
-- 📱 **Sempre pensar em responsivo** (mobile first quando fizer sentido)
+### Próxima tarefa: **Fase 3 — Biblioteca de Componentes UI**
+
+Antes de entrar nos módulos funcionais (dashboard real, cadastro, financeiro),
+vamos construir uma biblioteca de componentes reutilizáveis.
+
+### ⚙️ Antes de codar, decidir:
+1. Ordem dos componentes (sugestão: botões → inputs → cards → tabelas → modais)
+2. Se criamos um arquivo CSS por componente em `css/components/`
+3. Se haverá JS para componentes interativos (modal, toast, dropdown)
+4. Se manteremos uma "página showcase" pra visualizar os componentes
+
+### 🔄 Pendências da Fase 2 (revisitar se fizer sentido)
+- [ ] Ciclo de vida formal das páginas (montar/desmontar)
+- [ ] Persistência de submenus abertos (localStorage)
+- [ ] Transições suaves entre páginas
+
+---
+
+## 📐 Padrões do projeto (lembrete)
+
+- 📝 **Nomes de arquivos:** sempre em português
+- 🎨 **Sempre usar variáveis CSS** (nunca hardcoded)
+- 📱 **Sempre pensar em responsivo**
 - ♻️ **Sempre reutilizável** (componente antes de página)
-- 🚫 **Sem frameworks** (decisão do projeto — JS Vanilla puro)
+- 🚫 **Sem frameworks** (JS Vanilla puro)
+- 🏷️ **BEM em português** para classes CSS
 
 ---
 
@@ -55,6 +58,7 @@ Vamos criar o arquivo `js/core/router.js`, responsável por:
 
 ### HTML
 - `index.html`
+- 15 views em `views/**/*.html`
 
 ### CSS — Base
 - `css/base/reset.css`
@@ -68,21 +72,37 @@ Vamos criar o arquivo `js/core/router.js`, responsável por:
 - `css/layout/topbar.css`
 - `css/layout/main.css`
 
+### JavaScript — Core
+- `js/core/app.js`
+- `js/core/router.js`
+
+### JavaScript — Layout
+- `js/layout/sidebar.js`
+- `js/layout/topbar.js`
+
+### JavaScript — Páginas (stubs)
+- `js/pages/dashboard.js`
+- `js/pages/cadastro.js`
+- `js/pages/dependentes.js`
+- `js/pages/financeiro.js`
+- `js/pages/tabelas.js`
+- `js/pages/configuracoes.js`
+
 ### Documentação
-- `ROADMAP.md`
-- `CHECKPOINT.md`
+- `docs/ROADMAP.md`
+- `docs/CHECKPOINT.md`
+- `docs/specificacao.md`
+- `docs/specificacao.pdf`
 
 ---
 
-## 💬 Como retomar amanhã
+## 💬 Como retomar na próxima sessão
 
 Abra o chat e mande algo como:
 
-> "Oi! Vamos continuar o projeto AMBC V2. Parei na Fase 2 — Navegação SPA.
-> Já temos toda a Fase 1 concluída. Me ajude a começar o roteamento."
+> "Oi! Vamos continuar o AMBC V2. Parei na Fase 3 — Biblioteca de Componentes UI.
+> Fase 2 (Navegação SPA) está 100% concluída. Lê o CHECKPOINT.md e o ROADMAP.md."
 
 Ou simplesmente:
 
 > "Vamos continuar de onde paramos no AMBC V2."
-
-Eu vou ler o `CHECKPOINT.md` e o `ROADMAP.md` e já sei exatamente por onde seguir. 🚀

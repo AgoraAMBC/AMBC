@@ -46,3 +46,6 @@ uploads/
 
 # ===== Lixeira (backups locais, não versionar) =====
 lixeira/
+
+# ===== Mock API =====
+mock/db.json
