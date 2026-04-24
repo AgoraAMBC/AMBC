@@ -35,7 +35,7 @@ AMBC-V2/
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/ambc-v2.git
+   git clone https://github.com/fabiomachado1212-lgtm/ambc-v2
    ```
 2. Abra no VS Code
 3. Instale a extensão **Live Server**
