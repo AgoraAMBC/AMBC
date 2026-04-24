@@ -35,12 +35,14 @@ build/
 .env.local
 .env.*.local
 
-# ===== Backend PHP (futuro) =====
+# ===== Backend PHP =====
 *.php~
-config/database.php
 uploads/
 
 # ===== Arquivos temporários =====
 *.tmp
 *.bak
 *.old
+
+# ===== Lixeira (backups locais, não versionar) =====
+lixeira/
