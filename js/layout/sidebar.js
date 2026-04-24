@@ -16,7 +16,8 @@ const SELETOR_OVERLAY = '#overlay-sidebar';
 const CLASSE_ATIVO = 'is-ativo';
 const CLASSE_ABERTO = 'is-aberto';
 const CLASSE_SIDEBAR_ABERTA = 'is-aberta'; // usada no mobile (ver etapa futura)
-const BREAKPOINT_MOBILE = 768; // px
+const BREAKPOINT_MOBILE = 1024; // px — alinhado com CSS do app-shell
+
 
 /* ---------------------------------------------------------
    2. FUNCAO: alterna submenu (abre/fecha)

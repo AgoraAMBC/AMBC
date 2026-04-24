@@ -91,7 +91,14 @@ const rotas = {
     view: 'views/configuracoes/config-gerais.html',
     page: 'configuracoes',
     titulo: 'Configurações Gerais'
-  }
+  },
+    // ----- SHOWCASE (vitrine de componentes) -----
+  '#/showcase': {
+    view: 'views/showcase.html',
+    page: 'showcase',
+    titulo: 'Showcase de Componentes'
+  },
+
 };
 
 /* ---------------------------------------------------------

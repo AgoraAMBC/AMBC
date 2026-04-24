@@ -44,3 +44,5 @@ uploads/
 *.tmp
 *.bak
 *.old
+# Mock API (não precisa versionar)
+node_modules/

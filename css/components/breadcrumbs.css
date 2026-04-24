@@ -1,0 +1,108 @@
+/* ==========================================================================
+   AMBC - Componente: Breadcrumbs (Trilha de Navegação)
+   Arquivo: css/components/breadcrumbs.css
+   Descrição: Navegação hierárquica indicando a localização atual do usuário
+   ========================================================================== */
+
+/* ============================================
+   🧭 TRILHA DE NAVEGAÇÃO
+   ============================================ */
+.trilha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-xs);
+  color: var(--texto-suave);
+  margin-bottom: 14px;
+  padding: 0;
+  list-style: none;
+}
+
+/* ============================================
+   🔗 ITEM (link navegável)
+   ============================================ */
+.trilha__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.trilha__link {
+  color: var(--texto-suave);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: var(--fw-medium);
+  transition: color var(--transicao-rapida);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.trilha__link:hover {
+  color: var(--cor-primaria);
+  background: var(--cor-primaria-clara);
+}
+
+.trilha__link:focus-visible {
+  outline: none;
+  box-shadow: var(--sombra-foco);
+}
+
+/* ============================================
+   ➡️ SEPARADOR
+   ============================================ */
+.trilha__separador {
+  display: inline-flex;
+  align-items: center;
+  color: var(--cor-cinza-300);
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ============================================
+   📍 ITEM ATUAL (página em que o usuário está)
+   ============================================ */
+.trilha__atual {
+  color: var(--texto-principal);
+  font-weight: var(--fw-semibold);
+  cursor: default;
+}
+
+/* ============================================
+   🏠 ÍCONE INICIAL (home, opcional)
+   ============================================ */
+.trilha__icone {
+  font-size: 14px;
+  line-height: 1;
+  margin-right: 2px;
+}
+
+/* ============================================
+   📏 VARIANTE COMPACTA
+   ============================================ */
+.trilha-compacta {
+  font-size: 11px;
+  margin-bottom: var(--esp-sm);
+  gap: 3px;
+}
+
+.trilha-compacta .trilha__separador {
+  font-size: 14px;
+}
+
+/* ============================================
+   📱 RESPONSIVO
+   ============================================ */
+@media (max-width: 640px) {
+  .trilha {
+    font-size: 11px;
+  }
+  
+  /* Em telas pequenas, esconde itens do meio (mantém primeiro e último) */
+  .trilha__item--truncavel {
+    display: none;
+  }
+}

@@ -1,0 +1,294 @@
+/* ==========================================================================
+   AMBC - Componente: Formulários
+   Arquivo: css/components/formularios.css
+   Descrição: Inputs, selects, textareas, labels e estruturas de formulário
+   ========================================================================== */
+
+/* ============================================
+   📦 ESTRUTURA: GRUPO DE CAMPO
+   ============================================ */
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+/* Grupo inline (label + input lado a lado) */
+.campo-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--esp-md);
+}
+
+.campo-inline .form-label {
+  margin-bottom: 0;
+  min-width: 120px;
+}
+
+/* ============================================
+   🏷️ LABEL
+   ============================================ */
+.form-label {
+  display: block;
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--cor-cinza-700);
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+/* Indicador de campo obrigatório */
+.form-label-obrigatorio::after {
+  content: " *";
+  color: var(--cor-erro);
+  font-weight: var(--fw-bold);
+}
+
+/* Texto auxiliar (hint) abaixo do input */
+.form-ajuda {
+  font-size: 11px;
+  color: var(--texto-suave);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Mensagem de erro abaixo do input */
+.form-erro {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--cor-erro);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.form-erro .mi,
+.form-erro .material-symbols-outlined {
+  font-size: 14px;
+}
+
+/* ============================================
+   ⌨️ INPUT BASE
+   ============================================ */
+.form-input {
+  width: 100%;
+  padding: 8px 11px;
+  border: var(--borda-input);
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-sm);
+  color: var(--texto-principal);
+  background: var(--fundo-card);
+  outline: none;
+  transition: border-color var(--transicao-rapida),
+              box-shadow var(--transicao-rapida);
+}
+
+.form-input::placeholder {
+  color: var(--texto-suave);
+}
+
+.form-input:hover:not(:disabled):not(:focus) {
+  border-color: var(--cor-cinza-300);
+}
+
+.form-input:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
+}
+
+.form-input:disabled {
+  background: var(--cor-cinza-100);
+  color: var(--texto-suave);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.form-input[readonly] {
+  background: var(--fundo-secao);
+  cursor: default;
+}
+
+/* ============================================
+   🎨 ESTADOS DE VALIDAÇÃO
+   ============================================ */
+.form-input.invalido,
+.form-input[aria-invalid="true"] {
+  border-color: var(--cor-erro);
+}
+.form-input.invalido:focus,
+.form-input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+.form-input.valido {
+  border-color: var(--cor-sucesso);
+}
+.form-input.valido:focus {
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+/* ============================================
+   📏 TAMANHOS
+   ============================================ */
+.form-input-sm {
+  padding: 6px 9px;
+  font-size: var(--fs-xs);
+}
+
+.form-input-lg {
+  padding: 11px 14px;
+  font-size: var(--fs-base);
+}
+
+/* ============================================
+   📝 TEXTAREA
+   ============================================ */
+textarea.form-input {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.5;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* ============================================
+   🔽 SELECT (dropdown)
+   ============================================ */
+select.form-input {
+  cursor: pointer;
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+
+select.form-input:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a73e8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* ============================================
+   ☑️ CHECKBOX / RADIO
+   ============================================ */
+.form-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.form-check input[type="checkbox"],
+.form-check input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cor-primaria);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.form-check-label {
+  font-size: var(--fs-sm);
+  color: var(--texto-secundario);
+  line-height: 1.4;
+}
+
+/* ============================================
+   🔍 INPUT COM ÍCONE
+   ============================================ */
+.input-com-icone {
+  position: relative;
+}
+
+.input-com-icone .mi,
+.input-com-icone .material-symbols-outlined {
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  transform: translateY(-50%);
+  color: var(--texto-suave);
+  font-size: 18px;
+  pointer-events: none;
+  transition: color var(--transicao-rapida);
+}
+
+.input-com-icone .form-input {
+  padding-left: 36px;
+}
+
+.input-com-icone .form-input:focus ~ .mi,
+.input-com-icone .form-input:focus ~ .material-symbols-outlined {
+  color: var(--cor-primaria);
+}
+
+/* Variante: ícone à direita */
+.input-com-icone-direita .mi,
+.input-com-icone-direita .material-symbols-outlined {
+  left: auto;
+  right: 11px;
+}
+
+.input-com-icone-direita .form-input {
+  padding-left: 11px;
+  padding-right: 36px;
+}
+
+/* ============================================
+   📐 GRID DE CAMPOS (helpers de layout)
+   ============================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+/* Ocupação de colunas */
+.form-col-2  { grid-column: span 2; }
+.form-col-3  { grid-column: span 3; }
+.form-col-4  { grid-column: span 4; }
+.form-col-6  { grid-column: span 6; }
+.form-col-8  { grid-column: span 8; }
+.form-col-9  { grid-column: span 9; }
+.form-col-12 { grid-column: span 12; }
+
+/* Responsivo: em telas menores, tudo vira coluna única */
+@media (max-width: 768px) {
+  .form-col-2,
+  .form-col-3,
+  .form-col-4,
+  .form-col-6,
+  .form-col-8,
+  .form-col-9 {
+    grid-column: span 12;
+  }
+}
+
+/* ============================================
+   🎯 FIELDSET / SEÇÃO DE FORMULÁRIO
+   ============================================ */
+.form-secao {
+  border: none;
+  padding: 0;
+  margin: 0 0 var(--esp-lg) 0;
+}
+
+.form-secao-titulo {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--cor-primaria);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--cor-primaria-clara);
+}

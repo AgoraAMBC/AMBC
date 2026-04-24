@@ -1,0 +1,175 @@
+/* ==========================================================================
+   AMBC - Componente: Alertas (Mensagens informativas/feedback)
+   Arquivo: css/components/alertas.css
+   Descrição: Banners e caixas de mensagem para feedback ao usuário
+   ========================================================================== */
+
+/* ============================================
+   💬 ALERTA BASE
+   ============================================ */
+.alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-sm);
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+
+/* Ícone do alerta (Material Icons à esquerda) */
+.alerta__icone {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Conteúdo textual do alerta */
+.alerta__conteudo {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Título do alerta (opcional) */
+.alerta__titulo {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+  margin-bottom: 4px;
+}
+
+/* Texto/mensagem do alerta */
+.alerta__mensagem {
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  line-height: 1.6;
+}
+
+/* Botão de fechar (X) */
+.alerta__fechar {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin-left: auto;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transicao-rapida);
+}
+
+.alerta__fechar:hover {
+  opacity: 1;
+}
+
+.alerta__fechar .mi,
+.alerta__fechar .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* ============================================
+   🎨 VARIANTES
+   ============================================ */
+
+/* Informação (azul) — padrão */
+.alerta-info {
+  background: var(--cor-primaria-palida);
+  border-color: #bfdbfe;
+  color: var(--cor-primaria);
+}
+.alerta-info .alerta__icone {
+  color: var(--cor-primaria);
+}
+
+/* Sucesso (verde) */
+.alerta-sucesso {
+  background: var(--cor-sucesso-clara);
+  border-color: #86efac;
+  color: var(--cor-sucesso-escura);
+}
+.alerta-sucesso .alerta__icone {
+  color: var(--cor-sucesso);
+}
+.alerta-sucesso .alerta__titulo {
+  color: var(--cor-sucesso-escura);
+}
+
+/* Aviso (amarelo) */
+.alerta-aviso {
+  background: var(--cor-alerta-clara);
+  border-color: #fde68a;
+  color: var(--cor-alerta-escura);
+}
+.alerta-aviso .alerta__icone {
+  color: var(--cor-alerta);
+}
+.alerta-aviso .alerta__titulo {
+  color: var(--cor-alerta-escura);
+}
+
+/* Erro (vermelho) */
+.alerta-erro {
+  background: var(--cor-erro-clara);
+  border-color: #fca5a5;
+  color: var(--cor-erro-escura);
+}
+.alerta-erro .alerta__icone {
+  color: var(--cor-erro);
+}
+.alerta-erro .alerta__titulo {
+  color: var(--cor-erro-escura);
+}
+
+/* Neutro (cinza) */
+.alerta-neutro {
+  background: var(--cor-cinza-100);
+  border-color: var(--cor-cinza-200);
+  color: var(--texto-secundario);
+}
+.alerta-neutro .alerta__icone {
+  color: var(--cor-cinza-500);
+}
+.alerta-neutro .alerta__titulo {
+  color: var(--texto-principal);
+}
+
+/* ============================================
+   🌈 VARIANTE COM GRADIENTE (destaque visual)
+   ============================================ */
+.alerta-gradiente {
+  background: linear-gradient(135deg, var(--cor-primaria-palida), var(--cor-primaria-clara));
+  border-color: #bfdbfe;
+  padding: 16px 18px;
+}
+.alerta-gradiente .alerta__icone {
+  color: var(--cor-primaria);
+}
+.alerta-gradiente .alerta__titulo {
+  color: var(--texto-principal);
+  font-size: var(--fs-sm);
+  margin-bottom: 4px;
+}
+.alerta-gradiente .alerta__mensagem {
+  color: var(--texto-secundario);
+  line-height: 1.6;
+}
+
+/* ============================================
+   📏 VARIANTE COMPACTA (inline, menor)
+   ============================================ */
+.alerta-compacto {
+  padding: 8px 12px;
+  font-size: var(--fs-xs);
+}
+.alerta-compacto .alerta__icone {
+  font-size: 16px;
+}

@@ -1,0 +1,109 @@
+/* ==========================================================================
+   AMBC - Componente: Badges (Etiquetas/Tags de Status)
+   Arquivo: css/components/badges.css
+   Descrição: Etiquetas coloridas para status, categorias e indicadores
+   ========================================================================== */
+
+/* ============================================
+   🏷️ BADGE BASE
+   ============================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: var(--fonte-principal);
+  font-size: 10px;
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* ============================================
+   🎨 VARIANTES DE COR
+   ============================================ */
+
+/* Verde — Ativo, Pago, Sucesso, Receita */
+.badge-verde {
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso);
+}
+
+/* Vermelho — Inativo, Atrasado, Erro, Despesa */
+.badge-vermelho {
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro);
+}
+
+/* Amarelo — Pendente, Atenção, Aguardando */
+.badge-amarelo {
+  background: var(--cor-alerta-clara);
+  color: var(--cor-alerta);
+}
+
+/* Azul — Associado, Celular, Destaque, Informação */
+.badge-azul {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+/* Cinza — Neutro, Inativo suave, Categoria genérica */
+.badge-cinza {
+  background: var(--cor-cinza-100);
+  color: var(--cor-cinza-500);
+}
+
+/* Roxo — Dependente, Categoria especial */
+.badge-roxo {
+  background: var(--cor-roxo-clara);
+  color: var(--cor-roxo);
+}
+
+/* Teal — Parceiro, Premium, Especial */
+.badge-teal {
+  background: var(--cor-teal-clara);
+  color: var(--cor-teal);
+}
+
+/* ============================================
+   📏 TAMANHOS
+   ============================================ */
+
+/* Badge maior (para destaques) */
+.badge-lg {
+  padding: 5px 12px;
+  font-size: 11px;
+}
+
+/* Badge menor (compacto) */
+.badge-sm {
+  padding: 2px 6px;
+  font-size: 9px;
+}
+
+/* ============================================
+   🔵 MODIFICADORES
+   ============================================ */
+
+/* Badge em formato pílula (mais arredondado) */
+.badge-pilula {
+  border-radius: var(--raio-full);
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+/* Badge com ponto indicador (antes do texto) */
+.badge-ponto::before {
+  content: "●";
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+/* Badge com borda (outline) ao invés de fundo */
+.badge-contorno {
+  background: transparent;
+  border: 1px solid currentColor;
+}

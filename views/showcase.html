@@ -1,0 +1,424 @@
+<!-- ==========================================================================
+   AMBC - View: Showcase de Componentes
+   Arquivo: views/showcase.html
+   Descrição: Vitrine com todos os componentes do design system.
+   ========================================================================== -->
+
+<div class="pagina">
+
+  <!-- ============================================
+       🧭 TRILHA DE NAVEGAÇÃO
+       ============================================ -->
+  <nav class="trilha" aria-label="Trilha de navegação">
+    <span class="trilha__item">
+      <a class="trilha__link" href="#/painel">
+        <span class="mi trilha__icone">home</span>
+        Início
+      </a>
+    </span>
+    <span class="trilha__separador mi">chevron_right</span>
+    <span class="trilha__item">
+      <span class="trilha__atual">Showcase</span>
+    </span>
+  </nav>
+
+  <!-- ============================================
+       📝 CABEÇALHO DA PÁGINA
+       ============================================ -->
+  <header style="margin-bottom: var(--esp-xl);">
+    <h1 style="font-size: var(--fs-2xl); font-weight: var(--fw-bold); color: var(--texto-principal); margin-bottom: var(--esp-xs);">
+      🎭 Showcase de Componentes
+    </h1>
+    <p style="color: var(--texto-secundario); font-size: var(--fs-sm);">
+      Vitrine do Design System da AMBC — todos os componentes reutilizáveis em um só lugar.
+    </p>
+  </header>
+
+  <!-- ============================================
+       🔘 SEÇÃO: BOTÕES
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">smart_button</span>
+        Botões
+      </legend>
+    </fieldset>
+
+    <!-- Variantes -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Variantes</h3>
+    <div class="btn-grupo" style="margin-bottom: var(--esp-lg);">
+      <button class="btn btn-primario">
+        <span class="mi">save</span>
+        Primário
+      </button>
+      <button class="btn btn-secundario">Secundário</button>
+      <button class="btn btn-sucesso">
+        <span class="mi">check</span>
+        Sucesso
+      </button>
+      <button class="btn btn-perigo">
+        <span class="mi">delete</span>
+        Perigo
+      </button>
+      <button class="btn btn-fantasma">Fantasma</button>
+      <button class="btn btn-primario" disabled>Desabilitado</button>
+    </div>
+
+    <!-- Tamanhos -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Tamanhos</h3>
+    <div class="btn-grupo" style="margin-bottom: var(--esp-lg); align-items: center;">
+      <button class="btn btn-primario btn-xs">Extra pequeno</button>
+      <button class="btn btn-primario btn-sm">Pequeno</button>
+      <button class="btn btn-primario">Padrão</button>
+      <button class="btn btn-primario btn-lg">Grande</button>
+    </div>
+
+    <!-- Botões de ícone -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Botões de Ícone</h3>
+    <div class="btn-grupo">
+      <button class="btn-icone" aria-label="Editar">
+        <span class="mi">edit</span>
+      </button>
+      <button class="btn-icone btn-icone-perigo" aria-label="Excluir">
+        <span class="mi">delete</span>
+      </button>
+      <button class="btn-icone btn-icone-lg" aria-label="Configurações">
+        <span class="mi">settings</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       🏷️ SEÇÃO: BADGES
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">label</span>
+        Badges (Etiquetas)
+      </legend>
+    </fieldset>
+
+    <!-- Cores -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">7 Cores disponíveis</h3>
+    <div style="display: flex; gap: var(--esp-sm); flex-wrap: wrap; margin-bottom: var(--esp-lg);">
+      <span class="badge badge-verde">Verde</span>
+      <span class="badge badge-vermelho">Vermelho</span>
+      <span class="badge badge-amarelo">Amarelo</span>
+      <span class="badge badge-azul">Azul</span>
+      <span class="badge badge-cinza">Cinza</span>
+      <span class="badge badge-roxo">Roxo</span>
+      <span class="badge badge-teal">Teal</span>
+    </div>
+
+    <!-- Com ponto -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Com indicador (ponto)</h3>
+    <div style="display: flex; gap: var(--esp-sm); flex-wrap: wrap; margin-bottom: var(--esp-lg);">
+      <span class="badge badge-verde badge-ponto">Ativo</span>
+      <span class="badge badge-amarelo badge-ponto">Pendente</span>
+      <span class="badge badge-vermelho badge-ponto">Atrasado</span>
+      <span class="badge badge-cinza badge-ponto">Inativo</span>
+    </div>
+
+    <!-- Variantes -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Variantes (pílula, contorno, tamanhos)</h3>
+    <div style="display: flex; gap: var(--esp-sm); flex-wrap: wrap; align-items: center;">
+      <span class="badge badge-azul badge-pilula">Pílula</span>
+      <span class="badge badge-verde badge-contorno">Contorno</span>
+      <span class="badge badge-roxo badge-sm">Pequeno</span>
+      <span class="badge badge-teal">Padrão</span>
+      <span class="badge badge-amarelo badge-lg">Grande</span>
+    </div>
+  </section>
+
+  <!-- ============================================
+       💬 SEÇÃO: ALERTAS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">notifications</span>
+        Alertas
+      </legend>
+    </fieldset>
+
+    <div style="display: flex; flex-direction: column; gap: var(--esp-md);">
+      <!-- Info -->
+      <div class="alerta alerta-info">
+        <span class="mi alerta__icone">info</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__mensagem">
+            Esta é uma mensagem informativa padrão do sistema.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sucesso com título e X -->
+      <div class="alerta alerta-sucesso">
+        <span class="mi alerta__icone">check_circle</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__titulo">Cadastro salvo com sucesso!</p>
+          <p class="alerta__mensagem">O associado foi registrado no sistema.</p>
+        </div>
+        <button class="alerta__fechar" aria-label="Fechar">
+          <span class="mi">close</span>
+        </button>
+      </div>
+
+      <!-- Aviso -->
+      <div class="alerta alerta-aviso">
+        <span class="mi alerta__icone">warning</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__titulo">Atenção necessária</p>
+          <p class="alerta__mensagem">Existem 3 mensalidades atrasadas neste cadastro.</p>
+        </div>
+        <button class="alerta__fechar" aria-label="Fechar">
+          <span class="mi">close</span>
+        </button>
+      </div>
+
+      <!-- Erro -->
+      <div class="alerta alerta-erro">
+        <span class="mi alerta__icone">error</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__titulo">Erro ao processar</p>
+          <p class="alerta__mensagem">Não foi possível salvar o registro. Tente novamente.</p>
+        </div>
+      </div>
+
+      <!-- Neutro -->
+      <div class="alerta alerta-neutro">
+        <span class="mi alerta__icone">help_outline</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__mensagem">
+            Nenhum resultado encontrado para a busca atual.
+          </p>
+        </div>
+      </div>
+
+      <!-- Gradiente -->
+      <div class="alerta alerta-gradiente">
+        <span class="mi alerta__icone">lightbulb</span>
+        <div class="alerta__conteudo">
+          <p class="alerta__titulo">Dica: como funciona?</p>
+          <p class="alerta__mensagem">
+            Quando um novo lançamento financeiro é criado, o sistema verifica 
+            a categoria e sugere a conta subordinada correspondente automaticamente.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ⌨️ SEÇÃO: FORMULÁRIOS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">edit_note</span>
+        Formulários
+      </legend>
+    </fieldset>
+
+    <!-- Grid com exemplos de campos -->
+    <div class="form-grid">
+      <!-- Nome (6 colunas) -->
+      <div class="campo form-col-6">
+        <label class="form-label form-label-obrigatorio">Nome Completo</label>
+        <input type="text" class="form-input" placeholder="Ex: João da Silva" data-demo="validacao"/>
+        <span class="form-ajuda">Digite menos de 3 caracteres pra ver validação em ação.</span>
+      </div>
+
+      <!-- CPF (3 colunas) -->
+      <div class="campo form-col-3">
+        <label class="form-label">CPF</label>
+        <input type="text" class="form-input" placeholder="000.000.000-00"/>
+      </div>
+
+      <!-- Status (3 colunas) -->
+      <div class="campo form-col-3">
+        <label class="form-label">Status</label>
+        <select class="form-input">
+          <option>Ativo</option>
+          <option>Inativo</option>
+          <option>Pendente</option>
+        </select>
+      </div>
+
+      <!-- E-mail com erro (6 colunas) -->
+      <div class="campo form-col-6">
+        <label class="form-label">E-mail (exemplo de erro)</label>
+        <input type="email" class="form-input invalido" value="emailinvalido"/>
+        <span class="form-erro">
+          <span class="mi">error</span>
+          Informe um e-mail válido.
+        </span>
+      </div>
+
+      <!-- Busca com ícone (6 colunas) -->
+      <div class="campo form-col-6">
+        <label class="form-label">Buscar</label>
+        <div class="input-com-icone">
+          <span class="mi">search</span>
+          <input type="text" class="form-input" placeholder="Buscar por nome..."/>
+        </div>
+      </div>
+
+      <!-- Observações (12 colunas) -->
+      <div class="campo form-col-12">
+        <label class="form-label">Observações</label>
+        <textarea class="form-input" rows="3" placeholder="Digite suas observações..."></textarea>
+      </div>
+
+      <!-- Desabilitado (6 colunas) -->
+      <div class="campo form-col-6">
+        <label class="form-label">Campo desabilitado</label>
+        <input type="text" class="form-input" value="Não editável" disabled/>
+      </div>
+
+      <!-- Readonly (6 colunas) -->
+      <div class="campo form-col-6">
+        <label class="form-label">Campo somente leitura</label>
+        <input type="text" class="form-input" value="Valor fixo" readonly/>
+      </div>
+    </div>
+
+    <!-- Checkboxes e Radios -->
+    <div style="margin-top: var(--esp-lg); display: flex; gap: var(--esp-lg); flex-wrap: wrap;">
+      <label class="form-check">
+        <input type="checkbox" checked/>
+        <span class="form-check-label">Lembrar de mim</span>
+      </label>
+      <label class="form-check">
+        <input type="checkbox"/>
+        <span class="form-check-label">Aceitar termos</span>
+      </label>
+      <label class="form-check">
+        <input type="radio" name="tipo" checked/>
+        <span class="form-check-label">Associado</span>
+      </label>
+      <label class="form-check">
+        <input type="radio" name="tipo"/>
+        <span class="form-check-label">Parceiro</span>
+      </label>
+    </div>
+
+    <!-- Botões de ação no final do form -->
+    <div class="btn-grupo-fim" style="margin-top: var(--esp-lg); padding-top: var(--esp-md); border-top: 1px solid var(--cor-cinza-200);">
+      <button class="btn btn-secundario">Cancelar</button>
+      <button class="btn btn-primario">
+        <span class="mi">save</span>
+        Salvar
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       🧭 SEÇÃO: BREADCRUMBS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">route</span>
+        Trilhas de Navegação
+      </legend>
+    </fieldset>
+
+    <!-- Trilha simples -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Padrão</h3>
+    <nav class="trilha" aria-label="Exemplo 1">
+      <span class="trilha__item">
+        <a class="trilha__link" href="#/painel">Início</a>
+      </span>
+      <span class="trilha__separador mi">chevron_right</span>
+      <span class="trilha__item">
+        <a class="trilha__link" href="#/listar">Cadastro</a>
+      </span>
+      <span class="trilha__separador mi">chevron_right</span>
+      <span class="trilha__item">
+        <span class="trilha__atual">Novo Associado</span>
+      </span>
+    </nav>
+
+    <!-- Com ícone de home -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin: var(--esp-lg) 0 var(--esp-sm); color: var(--texto-secundario);">Com ícone inicial</h3>
+    <nav class="trilha" aria-label="Exemplo 2">
+      <span class="trilha__item">
+        <a class="trilha__link" href="#/painel">
+          <span class="mi trilha__icone">home</span>
+          Início
+        </a>
+      </span>
+      <span class="trilha__separador mi">chevron_right</span>
+      <span class="trilha__item">
+        <a class="trilha__link" href="#/configuracoes">Configurações</a>
+      </span>
+      <span class="trilha__separador mi">chevron_right</span>
+      <span class="trilha__item">
+        <span class="trilha__atual">Associação</span>
+      </span>
+    </nav>
+
+    <!-- Compacta -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin: var(--esp-lg) 0 var(--esp-sm); color: var(--texto-secundario);">Compacta</h3>
+    <nav class="trilha trilha-compacta" aria-label="Exemplo 3">
+      <span class="trilha__item">
+        <a class="trilha__link" href="#/financeiro">Financeiro</a>
+      </span>
+      <span class="trilha__separador mi">chevron_right</span>
+      <span class="trilha__item">
+        <span class="trilha__atual">Relatórios</span>
+      </span>
+    </nav>
+  </section>
+
+  <!-- ============================================
+       🎨 SEÇÃO: PALETA DE CORES (BÔNUS)
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">palette</span>
+        Paleta de Cores
+      </legend>
+    </fieldset>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--esp-sm);">
+      <div style="text-align: center;">
+        <div style="background: var(--cor-primaria); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Primária</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-sucesso); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Sucesso</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-alerta); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Alerta</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-erro); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Erro</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-info); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Info</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-roxo); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Roxo</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-teal); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Teal</small>
+      </div>
+      <div style="text-align: center;">
+        <div style="background: var(--cor-cinza-500); height: 60px; border-radius: var(--raio-sm); margin-bottom: 4px;"></div>
+        <small style="font-size: 11px; color: var(--texto-secundario);">Cinza</small>
+      </div>
+    </div>
+  </section>
+
+</div>

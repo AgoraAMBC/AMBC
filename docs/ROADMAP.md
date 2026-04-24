@@ -1,7 +1,7 @@
 # 🗺️ Roadmap — AMBC V2
 
 > Plataforma de Gestão — Associação dos Moradores do Bairro Califórnia  
-> Última atualização: 21/04/2026
+> Última atualização: 22/04/2026
 
 ---
 
@@ -46,25 +46,48 @@ preparado para futura integração com backend PHP + PostgreSQL.
 
 ---
 
-## 🔜 FASE 2 — Navegação SPA (PRÓXIMA)
+## ✅ FASE 2 — Navegação SPA (CONCLUÍDA em 22/04/2026)
 
-### 2.1 Roteamento
-- [ ] `js/core/router.js` — Roteador baseado em hash (#painel, #cadastro/listar, etc.)
-- [ ] Mapa de rotas centralizado
-- [ ] Atualização automática do título na topbar
-- [ ] Marcação do item ativo na sidebar
-- [ ] Rota padrão (fallback) e 404
+### 2.1 Roteamento ✅
+- [x] `js/core/router.js` — Roteador baseado em hash (#painel, #cadastro/listar, etc.)
+- [x] Mapa de rotas centralizado
+- [x] Atualização automática do título na topbar
+- [x] Marcação do item ativo na sidebar
+- [x] Rota padrão (fallback) e 404
+- [x] Cache de views carregadas via fetch
 
-### 2.2 Comportamento da Sidebar
-- [ ] `js/layout/sidebar.js` — Expandir/colapsar submenus
-- [ ] Persistir estado dos submenus (localStorage)
-- [ ] Destacar item ativo conforme rota
-- [ ] Modo mobile (toggle de abrir/fechar)
+### 2.2 Comportamento da Sidebar ✅
+- [x] `js/layout/sidebar.js` — Expandir/colapsar submenus (accordion)
+- [x] Destacar item ativo conforme rota
+- [x] Fechamento automático no mobile ao navegar
+- [x] Integração com o router
 
-### 2.3 Gerenciamento de páginas
-- [ ] `js/core/paginas.js` — Carregador de páginas
-- [ ] Estrutura de cada página em `js/paginas/*.js`
-- [ ] Ciclo de vida (montar / desmontar)
+### 2.3 Menu Mobile ✅
+- [x] `js/layout/topbar.js` — Botão hambúrguer funcional
+- [x] Overlay escuro ao abrir sidebar no mobile
+- [x] Fechamento via overlay, ESC ou seleção de item
+- [x] Título dinâmico na topbar conforme rota
+
+### 2.4 Views (páginas HTML) ✅
+- [x] `views/dashboard/dashboard.html`
+- [x] `views/cadastro/listar.html`
+- [x] `views/cadastro/novo-associado.html`
+- [x] `views/cadastro/novo-parceiro.html`
+- [x] `views/cadastro/dependentes.html`
+- [x] `views/financeiro/visao-geral.html`
+- [x] `views/financeiro/novo-lancamento.html`
+- [x] `views/financeiro/relatorios.html`
+- [x] `views/financeiro/contas-regentes.html`
+- [x] `views/financeiro/contas-subordinadas.html`
+- [x] `views/tabelas/ver-tabelas.html`
+- [x] `views/configuracoes/associacao.html`
+- [x] `views/configuracoes/relacionamentos.html`
+- [x] `views/configuracoes/config-gerais.html`
+- [x] `views/404.html`
+
+### 2.5 Pendências (revisitar na próxima fase)
+- [ ] Ciclo de vida formal das páginas (montar / desmontar)
+- [ ] Persistência do estado dos submenus (localStorage)
 - [ ] Transições suaves entre páginas
 
 ---
@@ -136,8 +159,3 @@ preparado para futura integração com backend PHP + PostgreSQL.
 - [ ] Performance (lazy load, minificação)
 - [ ] Testes de responsividade em dispositivos reais
 - [ ] Documentação de componentes
-
----
-
-## 📁 Estrutura atual do projeto
-
