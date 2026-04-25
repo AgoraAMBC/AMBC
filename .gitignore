@@ -35,14 +35,17 @@ build/
 .env.local
 .env.*.local
 
-# ===== Backend PHP (futuro) =====
+# ===== Backend PHP =====
 *.php~
-config/database.php
 uploads/
 
 # ===== Arquivos temporários =====
 *.tmp
 *.bak
 *.old
-# Mock API (não precisa versionar)
-node_modules/
+
+# ===== Lixeira (backups locais, não versionar) =====
+lixeira/
+
+# ===== Mock API =====
+mock/db.json

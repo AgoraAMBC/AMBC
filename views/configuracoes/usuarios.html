@@ -1,0 +1,139 @@
+<div class="gu-pagina">
+
+  <!-- ── Cabeçalho ──────────────────────────────────────────────── -->
+  <div class="gu-card">
+    <div class="gu-card__topo">
+      <div class="gu-card__titulo-grupo">
+        <span class="material-icons gu-card__icone">manage_accounts</span>
+        <div>
+          <h2 class="gu-card__titulo">Usuários do Sistema</h2>
+          <p class="gu-card__subtitulo">Gerencie acessos e permissões dos usuários</p>
+        </div>
+      </div>
+      <button type="button" class="gu-btn gu-btn--primario" id="btn-novo-usuario">
+        <span class="material-icons">person_add</span>
+        Novo Usuário
+      </button>
+    </div>
+
+    <!-- ── Filtros ───────────────────────────────────────────────── -->
+    <div class="gu-filtros">
+      <div class="gu-filtros__busca-wrapper">
+        <span class="material-icons gu-filtros__icone-busca">search</span>
+        <input
+          type="search"
+          class="gu-filtros__busca"
+          id="filtro-busca"
+          placeholder="Buscar por nome ou e-mail…"
+        />
+      </div>
+      <select class="gu-filtros__select" id="filtro-perfil">
+        <option value="">Todos os perfis</option>
+      </select>
+      <select class="gu-filtros__select" id="filtro-status">
+        <option value="">Todos os status</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+    </div>
+
+    <!-- ── Tabela ────────────────────────────────────────────────── -->
+    <div class="gu-tabela-wrapper">
+      <table class="gu-tabela">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Perfil</th>
+            <th>Status</th>
+            <th>1º Acesso</th>
+            <th>Último Acesso</th>
+            <th class="gu-tabela__th--acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="corpo-tabela">
+          <tr><td colspan="6" class="gu-tabela__estado">Carregando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Paginação ─────────────────────────────────────────────── -->
+    <div class="gu-paginacao" id="paginacao"></div>
+  </div>
+
+</div>
+
+<!-- ── Modal: Cadastro / Edição ───────────────────────────────────── -->
+<div class="gu-modal" id="modal-usuario" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">person</span>
+        <h3 class="gu-modal__titulo" id="modal-titulo">Novo Usuário</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form class="gu-modal__formulario" id="form-usuario" novalidate>
+      <input type="hidden" id="campo-id" />
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="campo-nome">Nome completo *</label>
+          <input type="text" class="gu-campo__input" id="campo-nome" placeholder="Nome do usuário" required />
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="campo-email">E-mail *</label>
+          <input type="email" class="gu-campo__input" id="campo-email" placeholder="email@ambc.org.br" required />
+        </div>
+      </div>
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="campo-perfil">Perfil de acesso *</label>
+          <select class="gu-campo__input" id="campo-perfil" required>
+            <option value="">Selecione…</option>
+          </select>
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="campo-senha">Senha temporária</label>
+          <input type="password" class="gu-campo__input" id="campo-senha" placeholder="Definir senha inicial" />
+        </div>
+      </div>
+
+      <div class="gu-campo">
+        <label class="gu-campo__label">Permissões por módulo</label>
+        <div class="gu-permissoes" id="lista-permissoes">
+          <p class="gu-tabela__estado">Carregando módulos…</p>
+        </div>
+      </div>
+
+      <div class="gu-modal__acoes">
+        <button type="button" class="gu-btn gu-btn--secundario" id="btn-cancelar">Cancelar</button>
+        <button type="submit" class="gu-btn gu-btn--primario">
+          <span class="material-icons">save</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmação ─────────────────────────────────────────── -->
+<div class="gu-modal" id="modal-confirmacao" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="confirmacao-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <h3 class="gu-modal__titulo" id="confirmacao-titulo">Confirmar ação</h3>
+    </div>
+    <div class="gu-modal__corpo">
+      <p class="gu-modal__mensagem" id="confirmacao-mensagem"></p>
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="gu-btn gu-btn--secundario" id="btn-confirmacao-cancelar">Cancelar</button>
+      <button type="button" class="gu-btn gu-btn--perigo" id="btn-confirmacao-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
