@@ -1,0 +1,380 @@
+/* =========================================================
+   cadastro-listar.css
+   Estilos específicos da página "Listar Todos os Cadastros".
+   Usa variáveis globais (css/base/variaveis.css).
+========================================================= */
+
+/* ---------- WRAPPER ---------- */
+.view--cadastro-listar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-6, 1.5rem);
+  padding: var(--espaco-6, 1.5rem);
+}
+
+/* ---------- CABEÇALHO ---------- */
+.cadastro-listar__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-4, 1rem);
+  flex-wrap: wrap;
+}
+
+.cadastro-listar__titulo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--cor-texto-principal, #0f172a);
+  margin: 0 0 0.25rem 0;
+}
+
+.cadastro-listar__subtitulo {
+  font-size: 0.95rem;
+  color: var(--cor-texto-secundario, #64748b);
+  margin: 0;
+}
+
+/* ---------- FILTROS ---------- */
+.cadastro-listar__filtros {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--espaco-3, 0.75rem);
+  background: var(--cor-superficie, #fff);
+  padding: var(--espaco-4, 1rem);
+  border-radius: var(--raio-md, 8px);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+}
+
+.cadastro-listar__busca {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cadastro-listar__busca-icone {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--cor-texto-secundario, #94a3b8);
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.cadastro-listar__busca-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: var(--raio-md, 8px);
+  font-family: inherit;
+  font-size: 0.9rem;
+  background: var(--cor-fundo, #f8fafc);
+  color: var(--cor-texto-principal, #0f172a);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+.cadastro-listar__busca-input:focus {
+  outline: none;
+  border-color: var(--cor-primaria, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.cadastro-listar__select {
+  padding: 0.625rem 2rem 0.625rem 0.875rem;
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: var(--raio-md, 8px);
+  background: var(--cor-superficie, #fff);
+  color: var(--cor-texto-principal, #0f172a);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  min-width: 160px;
+}
+
+.cadastro-listar__select:focus {
+  outline: none;
+  border-color: var(--cor-primaria, #2563eb);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ---------- TABELA ---------- */
+.cadastro-listar__tabela-wrapper {
+  background: var(--cor-superficie, #fff);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: var(--raio-md, 8px);
+  overflow: hidden;
+}
+
+.cadastro-listar__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.cadastro-listar__tabela thead th {
+  text-align: left;
+  padding: 0.875rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--cor-texto-secundario, #64748b);
+  background: var(--cor-fundo, #f8fafc);
+  border-bottom: 1px solid var(--cor-borda, #e2e8f0);
+}
+
+.cadastro-listar__tabela tbody td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--cor-borda, #f1f5f9);
+  vertical-align: middle;
+}
+
+.cadastro-listar__tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cadastro-listar__tabela tbody tr:hover {
+  background: var(--cor-fundo, #f8fafc);
+}
+
+/* ---------- CÉLULA: NOME + EMAIL + AVATAR ---------- */
+.cadastro-listar__pessoa {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cadastro-listar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Cores de avatar variadas (por hash do nome) */
+.cadastro-listar__avatar--cor-1 { background: #3b82f6; } /* azul */
+.cadastro-listar__avatar--cor-2 { background: #8b5cf6; } /* roxo */
+.cadastro-listar__avatar--cor-3 { background: #10b981; } /* verde */
+.cadastro-listar__avatar--cor-4 { background: #f59e0b; } /* laranja */
+.cadastro-listar__avatar--cor-5 { background: #ef4444; } /* vermelho */
+.cadastro-listar__avatar--cor-6 { background: #06b6d4; } /* ciano */
+
+.cadastro-listar__pessoa-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.cadastro-listar__pessoa-nome {
+  font-weight: 600;
+  color: var(--cor-texto-principal, #0f172a);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cadastro-listar__pessoa-email {
+  font-size: 0.8rem;
+  color: var(--cor-texto-secundario, #64748b);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- BADGES (TIPO E STATUS) ---------- */
+.cadastro-listar__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cadastro-listar__badge--associado  { background: #dbeafe; color: #1e40af; }
+.cadastro-listar__badge--dependente { background: #ede9fe; color: #6d28d9; }
+.cadastro-listar__badge--parceiro   { background: #d1fae5; color: #065f46; }
+
+.cadastro-listar__badge--ativo,
+.cadastro-listar__badge--inativo {
+  background: transparent;
+  padding-left: 0;
+  text-transform: uppercase;
+}
+
+.cadastro-listar__badge--ativo::before,
+.cadastro-listar__badge--inativo::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.cadastro-listar__badge--ativo   { color: #047857; }
+.cadastro-listar__badge--ativo::before   { background: #10b981; }
+
+.cadastro-listar__badge--inativo { color: #64748b; }
+.cadastro-listar__badge--inativo::before { background: #94a3b8; }
+
+/* ---------- AÇÕES ---------- */
+.cadastro-listar__col-acoes {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.cadastro-listar__acoes {
+  display: inline-flex;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.cadastro-listar__acao {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: var(--raio-sm, 6px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cor-texto-secundario, #64748b);
+  transition: background 150ms, color 150ms;
+}
+
+.cadastro-listar__acao .material-icons {
+  font-size: 1.125rem;
+}
+
+.cadastro-listar__acao:hover {
+  background: var(--cor-fundo, #f1f5f9);
+  color: var(--cor-texto-principal, #0f172a);
+}
+
+.cadastro-listar__acao--excluir:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ---------- ESTADO VAZIO ---------- */
+.cadastro-listar__vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--cor-texto-secundario, #94a3b8);
+  text-align: center;
+}
+
+.cadastro-listar__vazio .material-icons {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  color: var(--cor-borda, #cbd5e1);
+}
+
+.cadastro-listar__vazio p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ---------- RODAPÉ (CONTADOR + PAGINAÇÃO) ---------- */
+.cadastro-listar__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--espaco-3, 0.75rem);
+  padding: var(--espaco-3, 0.75rem) var(--espaco-4, 1rem);
+  background: var(--cor-superficie, #fff);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: var(--raio-md, 8px);
+}
+
+.cadastro-listar__contador {
+  font-size: 0.85rem;
+  color: var(--cor-texto-secundario, #64748b);
+}
+
+.cadastro-listar__paginacao {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.cadastro-listar__pagina-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  background: var(--cor-superficie, #fff);
+  border-radius: var(--raio-sm, 6px);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--cor-texto-principal, #0f172a);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 150ms, border-color 150ms;
+}
+
+.cadastro-listar__pagina-btn:hover:not(:disabled) {
+  background: var(--cor-fundo, #f1f5f9);
+  border-color: var(--cor-primaria, #2563eb);
+}
+
+.cadastro-listar__pagina-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cadastro-listar__pagina-btn--ativo {
+  background: var(--cor-primaria, #2563eb);
+  color: #fff;
+  border-color: var(--cor-primaria, #2563eb);
+  font-weight: 600;
+}
+
+.cadastro-listar__pagina-btn--ativo:hover:not(:disabled) {
+  background: var(--cor-primaria, #2563eb);
+}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width: 768px) {
+  .cadastro-listar__filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .cadastro-listar__select {
+    width: 100%;
+  }
+
+  .cadastro-listar__tabela {
+    font-size: 0.85rem;
+  }
+
+  .cadastro-listar__tabela thead th,
+  .cadastro-listar__tabela tbody td {
+    padding: 0.625rem 0.5rem;
+  }
+
+  .cadastro-listar__pessoa-email {
+    display: none;
+  }
+}

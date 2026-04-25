@@ -88,6 +88,684 @@
       </button>
     </div>
   </section>
+  <!-- ============================================
+       🃏 SEÇÃO: CARDS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">dashboard</span>
+        Cards
+      </legend>
+    </fieldset>
+
+    <!-- 📊 Cards de Estatística -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Cards de Estatística (Dashboard)</h3>
+    <div class="card-grid" style="margin-bottom: var(--esp-lg);">
+
+      <!-- Associados ativos -->
+      <div class="card-stat">
+        <div class="card-stat__topo">
+          <span class="card-stat__label">Associados Ativos</span>
+          <div class="card-stat__icone">
+            <span class="mi">groups</span>
+          </div>
+        </div>
+        <p class="card-stat__valor">342</p>
+        <div class="card-stat__rodape">
+          <span class="card-stat__variacao card-stat__variacao-positiva">
+            <span class="mi">arrow_upward</span>
+            12%
+          </span>
+          <span>vs. mês anterior</span>
+        </div>
+      </div>
+
+      <!-- Receita mensal -->
+      <div class="card-stat">
+        <div class="card-stat__topo">
+          <span class="card-stat__label">Receita do Mês</span>
+          <div class="card-stat__icone card-stat__icone-sucesso">
+            <span class="mi">attach_money</span>
+          </div>
+        </div>
+        <p class="card-stat__valor">R$ 8.450</p>
+        <div class="card-stat__rodape">
+          <span class="card-stat__variacao card-stat__variacao-positiva">
+            <span class="mi">arrow_upward</span>
+            5,2%
+          </span>
+          <span>vs. mês anterior</span>
+        </div>
+      </div>
+
+      <!-- Inadimplência -->
+      <div class="card-stat">
+        <div class="card-stat__topo">
+          <span class="card-stat__label">Inadimplência</span>
+          <div class="card-stat__icone card-stat__icone-erro">
+            <span class="mi">warning</span>
+          </div>
+        </div>
+        <p class="card-stat__valor">14</p>
+        <div class="card-stat__rodape">
+          <span class="card-stat__variacao card-stat__variacao-negativa">
+            <span class="mi">arrow_upward</span>
+            3
+          </span>
+          <span>novos este mês</span>
+        </div>
+      </div>
+
+      <!-- Parceiros -->
+      <div class="card-stat">
+        <div class="card-stat__topo">
+          <span class="card-stat__label">Parceiros Ativos</span>
+          <div class="card-stat__icone card-stat__icone-teal">
+            <span class="mi">handshake</span>
+          </div>
+        </div>
+        <p class="card-stat__valor">28</p>
+        <div class="card-stat__rodape">
+          <span class="card-stat__variacao card-stat__variacao-neutra">
+            <span class="mi">remove</span>
+            0
+          </span>
+          <span>sem alteração</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 🔹 Card Base (com cabeçalho, corpo e rodapé) -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Card Base (com cabeçalho, corpo e rodapé)</h3>
+    <div class="card-grid card-grid-2" style="margin-bottom: var(--esp-lg);">
+
+      <!-- Card padrão -->
+      <div class="card">
+        <div class="card__cabecalho">
+          <div>
+            <h4 class="card__titulo">
+              <span class="mi">description</span>
+              Relatório Mensal
+            </h4>
+            <span class="card__subtitulo">Outubro de 2026</span>
+          </div>
+          <div class="card__acoes">
+            <button class="btn-icone" aria-label="Mais opções">
+              <span class="mi">more_vert</span>
+            </button>
+          </div>
+        </div>
+        <div class="card__corpo">
+          <p style="color: var(--texto-secundario); font-size: var(--fs-sm); margin: 0;">
+            Resumo completo das movimentações financeiras do mês com detalhamento por categoria.
+          </p>
+        </div>
+        <div class="card__rodape">
+          <button class="btn btn-secundario btn-sm">Ver depois</button>
+          <button class="btn btn-primario btn-sm">
+            <span class="mi">download</span>
+            Baixar PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Card com borda de destaque -->
+      <div class="card card-destaque card-destaque-alerta">
+        <div class="card__cabecalho">
+          <h4 class="card__titulo">
+            <span class="mi" style="color: var(--cor-alerta);">notifications_active</span>
+            Pendências
+          </h4>
+        </div>
+        <div class="card__corpo">
+          <p style="color: var(--texto-secundario); font-size: var(--fs-sm); margin: 0;">
+            Você tem <strong style="color: var(--texto-principal);">3 mensalidades</strong> aguardando confirmação de pagamento.
+          </p>
+        </div>
+        <div class="card__rodape">
+          <button class="btn btn-primario btn-sm">Revisar agora</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 📑 Card Lista -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Card Lista (itens com avatar + ação)</h3>
+    <div class="card-lista" style="max-width: 560px;">
+
+      <div class="card-lista__item">
+        <div class="card-lista__avatar">JS</div>
+        <div class="card-lista__conteudo">
+          <p class="card-lista__titulo">João da Silva</p>
+          <p class="card-lista__descricao">Associado desde Jan/2024 • Em dia</p>
+        </div>
+        <div class="card-lista__acao">
+          <span class="badge badge-verde badge-ponto">Ativo</span>
+          <button class="btn-icone" aria-label="Ver detalhes">
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-lista__item">
+        <div class="card-lista__avatar" style="background: var(--cor-alerta-clara); color: var(--cor-alerta-escura);">MO</div>
+        <div class="card-lista__conteudo">
+          <p class="card-lista__titulo">Maria Oliveira</p>
+          <p class="card-lista__descricao">Associada desde Mar/2023 • 2 pendências</p>
+        </div>
+        <div class="card-lista__acao">
+          <span class="badge badge-amarelo badge-ponto">Pendente</span>
+          <button class="btn-icone" aria-label="Ver detalhes">
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-lista__item">
+        <div class="card-lista__avatar" style="background: var(--cor-teal-clara); color: var(--cor-teal);">
+          <span class="mi">store</span>
+        </div>
+        <div class="card-lista__conteudo">
+          <p class="card-lista__titulo">Padaria do Bairro</p>
+          <p class="card-lista__descricao">Parceiro • Desconto de 10% para associados</p>
+        </div>
+        <div class="card-lista__acao">
+          <span class="badge badge-teal">Parceiro</span>
+          <button class="btn-icone" aria-label="Ver detalhes">
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-lista__item">
+        <div class="card-lista__avatar" style="background: var(--cor-erro-clara); color: var(--cor-erro-escura);">CS</div>
+        <div class="card-lista__conteudo">
+          <p class="card-lista__titulo">Carlos Souza</p>
+          <p class="card-lista__descricao">Associado • 4 meses em atraso</p>
+        </div>
+        <div class="card-lista__acao">
+          <span class="badge badge-vermelho badge-ponto">Atrasado</span>
+          <button class="btn-icone" aria-label="Ver detalhes">
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+  <!-- ============================================
+       📋 SEÇÃO: TABELAS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">table_chart</span>
+        Tabelas
+      </legend>
+    </fieldset>
+
+    <!-- 📊 Tabela padrão com ações -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Tabela Padrão (com avatares, badges e ações)</h3>
+    <div class="tabela-responsiva" style="margin-bottom: var(--esp-lg);">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th class="ordenavel ordem-asc">Associado</th>
+            <th class="ordenavel">CPF</th>
+            <th class="ordenavel">Status</th>
+            <th class="ordenavel tabela__num">Mensalidade</th>
+            <th class="ordenavel">Desde</th>
+            <th class="tabela__th-acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="tabela__usuario">
+                <div class="tabela__avatar">JS</div>
+                <div class="tabela__usuario-info">
+                  <span class="tabela__usuario-nome">João da Silva</span>
+                  <span class="tabela__usuario-email">joao.silva@email.com</span>
+                </div>
+              </div>
+            </td>
+            <td>123.456.789-00</td>
+            <td><span class="badge badge-verde badge-ponto">Ativo</span></td>
+            <td class="tabela__num">R$ 50,00</td>
+            <td>Jan/2024</td>
+            <td>
+              <div class="tabela__acoes">
+                <button class="btn-icone" aria-label="Visualizar"><span class="mi">visibility</span></button>
+                <button class="btn-icone" aria-label="Editar"><span class="mi">edit</span></button>
+                <button class="btn-icone btn-icone-perigo" aria-label="Excluir"><span class="mi">delete</span></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tabela__usuario">
+                <div class="tabela__avatar" style="background: var(--cor-alerta-clara); color: var(--cor-alerta-escura);">MO</div>
+                <div class="tabela__usuario-info">
+                  <span class="tabela__usuario-nome">Maria Oliveira</span>
+                  <span class="tabela__usuario-email">maria.o@email.com</span>
+                </div>
+              </div>
+            </td>
+            <td>987.654.321-00</td>
+            <td><span class="badge badge-amarelo badge-ponto">Pendente</span></td>
+            <td class="tabela__num">R$ 50,00</td>
+            <td>Mar/2023</td>
+            <td>
+              <div class="tabela__acoes">
+                <button class="btn-icone" aria-label="Visualizar"><span class="mi">visibility</span></button>
+                <button class="btn-icone" aria-label="Editar"><span class="mi">edit</span></button>
+                <button class="btn-icone btn-icone-perigo" aria-label="Excluir"><span class="mi">delete</span></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tabela__usuario">
+                <div class="tabela__avatar" style="background: var(--cor-erro-clara); color: var(--cor-erro-escura);">CS</div>
+                <div class="tabela__usuario-info">
+                  <span class="tabela__usuario-nome">Carlos Souza</span>
+                  <span class="tabela__usuario-email">carlos.souza@email.com</span>
+                </div>
+              </div>
+            </td>
+            <td>456.789.123-00</td>
+            <td><span class="badge badge-vermelho badge-ponto">Atrasado</span></td>
+            <td class="tabela__num">R$ 200,00</td>
+            <td>Jun/2022</td>
+            <td>
+              <div class="tabela__acoes">
+                <button class="btn-icone" aria-label="Visualizar"><span class="mi">visibility</span></button>
+                <button class="btn-icone" aria-label="Editar"><span class="mi">edit</span></button>
+                <button class="btn-icone btn-icone-perigo" aria-label="Excluir"><span class="mi">delete</span></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tabela__usuario">
+                <div class="tabela__avatar" style="background: var(--cor-teal-clara); color: var(--cor-teal);">
+                  <span class="mi">store</span>
+                </div>
+                <div class="tabela__usuario-info">
+                  <span class="tabela__usuario-nome">Padaria do Bairro</span>
+                  <span class="tabela__usuario-email">contato@padaria.com</span>
+                </div>
+              </div>
+            </td>
+            <td>12.345.678/0001-90</td>
+            <td><span class="badge badge-teal">Parceiro</span></td>
+            <td class="tabela__num">—</td>
+            <td>Set/2024</td>
+            <td>
+              <div class="tabela__acoes">
+                <button class="btn-icone" aria-label="Visualizar"><span class="mi">visibility</span></button>
+                <button class="btn-icone" aria-label="Editar"><span class="mi">edit</span></button>
+                <button class="btn-icone btn-icone-perigo" aria-label="Excluir"><span class="mi">delete</span></button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="tabela__usuario">
+                <div class="tabela__avatar" style="background: var(--cor-roxo-clara); color: var(--cor-roxo);">AP</div>
+                <div class="tabela__usuario-info">
+                  <span class="tabela__usuario-nome">Ana Pereira</span>
+                  <span class="tabela__usuario-email">ana.pereira@email.com</span>
+                </div>
+              </div>
+            </td>
+            <td>321.654.987-00</td>
+            <td><span class="badge badge-verde badge-ponto">Ativo</span></td>
+            <td class="tabela__num">R$ 50,00</td>
+            <td>Nov/2025</td>
+            <td>
+              <div class="tabela__acoes">
+                <button class="btn-icone" aria-label="Visualizar"><span class="mi">visibility</span></button>
+                <button class="btn-icone" aria-label="Editar"><span class="mi">edit</span></button>
+                <button class="btn-icone btn-icone-perigo" aria-label="Excluir"><span class="mi">delete</span></button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Rodapé com paginação -->
+      <div class="tabela-rodape">
+        <div class="tabela-rodape__info">
+          Mostrando <strong>1–5</strong> de <strong>342</strong> registros
+        </div>
+        <div class="tabela-rodape__paginacao">
+          <button class="btn btn-secundario btn-xs" disabled>
+            <span class="mi">chevron_left</span>
+            Anterior
+          </button>
+          <span style="padding: 0 var(--esp-sm);">Página <strong>1</strong> de <strong>69</strong></span>
+          <button class="btn btn-secundario btn-xs">
+            Próxima
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🦓 Tabela zebrada e compacta -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Tabela Zebrada e Compacta (lançamentos financeiros)</h3>
+    <div class="tabela-responsiva" style="margin-bottom: var(--esp-lg);">
+      <table class="tabela tabela-zebrada tabela-compacta">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th class="tabela__num">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>05/04/2026</td>
+            <td>Mensalidade — João da Silva</td>
+            <td>Mensalidades</td>
+            <td><span class="badge badge-verde badge-sm">Receita</span></td>
+            <td class="tabela__num" style="color: var(--cor-sucesso-escura); font-weight: var(--fw-semibold);">+ R$ 50,00</td>
+          </tr>
+          <tr>
+            <td>04/04/2026</td>
+            <td>Conta de luz — Sede</td>
+            <td>Despesas Fixas</td>
+            <td><span class="badge badge-vermelho badge-sm">Despesa</span></td>
+            <td class="tabela__num" style="color: var(--cor-erro-escura); font-weight: var(--fw-semibold);">− R$ 287,40</td>
+          </tr>
+          <tr>
+            <td>03/04/2026</td>
+            <td>Mensalidade — Ana Pereira</td>
+            <td>Mensalidades</td>
+            <td><span class="badge badge-verde badge-sm">Receita</span></td>
+            <td class="tabela__num" style="color: var(--cor-sucesso-escura); font-weight: var(--fw-semibold);">+ R$ 50,00</td>
+          </tr>
+          <tr>
+            <td>02/04/2026</td>
+            <td>Material de limpeza</td>
+            <td>Manutenção</td>
+            <td><span class="badge badge-vermelho badge-sm">Despesa</span></td>
+            <td class="tabela__num" style="color: var(--cor-erro-escura); font-weight: var(--fw-semibold);">− R$ 142,90</td>
+          </tr>
+          <tr>
+            <td>01/04/2026</td>
+            <td>Doação — Padaria do Bairro</td>
+            <td>Doações</td>
+            <td><span class="badge badge-verde badge-sm">Receita</span></td>
+            <td class="tabela__num" style="color: var(--cor-sucesso-escura); font-weight: var(--fw-semibold);">+ R$ 500,00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 🔍 Estado vazio -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Estado Vazio (sem resultados)</h3>
+    <div class="tabela-responsiva">
+      <div class="tabela-vazia">
+        <span class="mi tabela-vazia__icone">search_off</span>
+        <p class="tabela-vazia__titulo">Nenhum resultado encontrado</p>
+        <p class="tabela-vazia__mensagem">
+          Tente ajustar os filtros ou cadastrar um novo associado para começar.
+        </p>
+        <button class="btn btn-primario btn-sm" style="margin-top: var(--esp-sm);">
+          <span class="mi">add</span>
+          Novo Associado
+        </button>
+      </div>
+    </div>
+  </section>
+  <!-- ============================================
+       💫 SEÇÃO: MODAIS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">open_in_new</span>
+        Modais
+      </legend>
+    </fieldset>
+
+    <!-- Botões de teste -->
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Abrir modais estáticos (declarados no HTML)</h3>
+    <div class="btn-grupo" style="margin-bottom: var(--esp-lg);">
+      <button class="btn btn-primario" data-modal-abrir="modal-exemplo-md">
+        <span class="mi">info</span>
+        Modal padrão
+      </button>
+      <button class="btn btn-secundario" data-modal-abrir="modal-exemplo-sm">
+        <span class="mi">chat</span>
+        Modal pequeno
+      </button>
+      <button class="btn btn-secundario" data-modal-abrir="modal-exemplo-lg">
+        <span class="mi">description</span>
+        Modal grande
+      </button>
+      <button class="btn btn-secundario" data-modal-abrir="modal-exemplo-form">
+        <span class="mi">edit</span>
+        Modal com formulário
+      </button>
+    </div>
+
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Modais de confirmação dinâmicos (criados via JS)</h3>
+    <div class="btn-grupo">
+      <button class="btn btn-perigo" id="btn-confirmar-excluir">
+        <span class="mi">delete</span>
+        Excluir associado
+      </button>
+      <button class="btn btn-sucesso" id="btn-confirmar-salvar">
+        <span class="mi">check_circle</span>
+        Salvar alterações
+      </button>
+      <button class="btn btn-secundario" id="btn-confirmar-logout">
+        <span class="mi">logout</span>
+        Sair do sistema
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================================
+       📦 MODAIS (ficam no final do body, fora do fluxo)
+       ============================================ -->
+
+  <!-- Modal padrão (md) -->
+  <dialog class="modal modal-md" id="modal-exemplo-md">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">
+        <span class="mi">info</span>
+        Informações do Associado
+      </h3>
+      <button class="modal__fechar" data-modal-fechar aria-label="Fechar">
+        <span class="mi">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo">
+      <p>Este é um modal de tamanho padrão (<strong>500px</strong>), ideal para exibir informações detalhadas ou formulários curtos.</p>
+      <p>Você pode fechá-lo de <strong>3 formas</strong>:</p>
+      <ul style="padding-left: var(--esp-lg); margin: var(--esp-sm) 0;">
+        <li>Clicando no X no canto superior direito</li>
+        <li>Pressionando a tecla <kbd>ESC</kbd></li>
+        <li>Clicando fora do modal (no fundo escuro)</li>
+      </ul>
+    </div>
+    <div class="modal__rodape">
+      <button class="btn btn-secundario" data-modal-fechar>Fechar</button>
+      <button class="btn btn-primario" data-modal-fechar>Entendi</button>
+    </div>
+  </dialog>
+
+  <!-- Modal pequeno (sm) -->
+  <dialog class="modal modal-sm" id="modal-exemplo-sm">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">
+        <span class="mi">chat</span>
+        Aviso rápido
+      </h3>
+      <button class="modal__fechar" data-modal-fechar aria-label="Fechar">
+        <span class="mi">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo">
+      <p>Modal pequeno (<strong>380px</strong>), útil pra mensagens curtas e diretas.</p>
+    </div>
+    <div class="modal__rodape">
+      <button class="btn btn-primario" data-modal-fechar>OK</button>
+    </div>
+  </dialog>
+
+  <!-- Modal grande (lg) -->
+  <dialog class="modal modal-lg" id="modal-exemplo-lg">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">
+        <span class="mi">description</span>
+        Detalhes do Relatório
+      </h3>
+      <button class="modal__fechar" data-modal-fechar aria-label="Fechar">
+        <span class="mi">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo">
+      <p>Modal grande (<strong>720px</strong>), ideal pra tabelas, gráficos ou conteúdo extenso.</p>
+      <div class="tabela-responsiva" style="margin-top: var(--esp-md);">
+        <table class="tabela tabela-compacta">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th class="tabela__num">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Mensalidades</td><td class="tabela__num">R$ 8.450,00</td></tr>
+            <tr><td>Doações</td><td class="tabela__num">R$ 1.200,00</td></tr>
+            <tr><td>Despesas fixas</td><td class="tabela__num">R$ 2.340,50</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal__rodape">
+      <button class="btn btn-secundario" data-modal-fechar>Fechar</button>
+      <button class="btn btn-primario" data-modal-fechar>
+        <span class="mi">download</span>
+        Baixar PDF
+      </button>
+    </div>
+  </dialog>
+
+  <!-- Modal com formulário -->
+  <dialog class="modal modal-md" id="modal-exemplo-form">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">
+        <span class="mi">edit</span>
+        Editar Associado
+      </h3>
+      <button class="modal__fechar" data-modal-fechar aria-label="Fechar">
+        <span class="mi">close</span>
+      </button>
+    </div>
+    <form id="form-exemplo-modal">
+      <div class="modal__corpo">
+        <div class="form-grupo">
+          <label class="form-label" for="modal-nome">Nome completo</label>
+          <input class="form-controle" id="modal-nome" type="text" value="João da Silva" />
+        </div>
+        <div class="form-grupo">
+          <label class="form-label" for="modal-email">E-mail</label>
+          <input class="form-controle" id="modal-email" type="email" value="joao.silva@email.com" />
+        </div>
+        <div class="form-grupo">
+          <label class="form-label" for="modal-status">Status</label>
+          <select class="form-controle" id="modal-status">
+            <option>Ativo</option>
+            <option>Pendente</option>
+            <option>Atrasado</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal__rodape">
+        <button type="button" class="btn btn-secundario" data-modal-fechar>Cancelar</button>
+        <button type="submit" class="btn btn-primario">
+          <span class="mi">save</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </dialog>
+
+    <!-- ============================================
+       🔔 SEÇÃO: TOASTS
+       ============================================ -->
+  <section style="background: var(--fundo-card); padding: var(--esp-lg); border-radius: var(--raio-md); box-shadow: var(--sombra-sm); margin-bottom: var(--esp-lg);">
+    <fieldset class="form-secao">
+      <legend class="form-secao-titulo">
+        <span class="mi">notifications</span>
+        Toasts (Notificações)
+      </legend>
+    </fieldset>
+
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Tipos de notificação</h3>
+    <div class="btn-grupo" style="margin-bottom: var(--esp-lg);">
+      <button class="btn btn-sucesso" id="btn-toast-sucesso">
+        <span class="mi">check_circle</span>
+        Sucesso
+      </button>
+      <button class="btn btn-perigo" id="btn-toast-erro">
+        <span class="mi">error</span>
+        Erro
+      </button>
+      <button class="btn btn-alerta" id="btn-toast-alerta">
+        <span class="mi">warning</span>
+        Alerta
+      </button>
+      <button class="btn btn-primario" id="btn-toast-info">
+        <span class="mi">info</span>
+        Info
+      </button>
+    </div>
+
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Variações avançadas</h3>
+    <div class="btn-grupo" style="margin-bottom: var(--esp-lg);">
+      <button class="btn btn-secundario" id="btn-toast-titulo">
+        <span class="mi">title</span>
+        Com título
+      </button>
+      <button class="btn btn-secundario" id="btn-toast-longo">
+        <span class="mi">timer</span>
+        Duração longa (10s)
+      </button>
+      <button class="btn btn-secundario" id="btn-toast-permanente">
+        <span class="mi">push_pin</span>
+        Permanente (sem timer)
+      </button>
+      <button class="btn btn-secundario" id="btn-toast-multi">
+        <span class="mi">layers</span>
+        Vários de uma vez
+      </button>
+      <button class="btn btn-secundario" id="btn-toast-limpar">
+        <span class="mi">clear_all</span>
+        Limpar todos
+      </button>
+    </div>
+
+    <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm); color: var(--texto-secundario);">Mudar posição</h3>
+    <div class="btn-grupo">
+      <button class="btn btn-secundario btn-sm" data-posicao-toast="baixo-direita">↘ Baixo-direita</button>
+      <button class="btn btn-secundario btn-sm" data-posicao-toast="baixo-esquerda">↙ Baixo-esquerda</button>
+      <button class="btn btn-secundario btn-sm" data-posicao-toast="topo-direita">↗ Topo-direita</button>
+      <button class="btn btn-secundario btn-sm" data-posicao-toast="topo-esquerda">↖ Topo-esquerda</button>
+      <button class="btn btn-secundario btn-sm" data-posicao-toast="topo-centro">⬆ Topo-centro</button>
+    </div>
+  </section>
+
+
 
   <!-- ============================================
        🏷️ SEÇÃO: BADGES
@@ -422,3 +1100,4 @@
   </section>
 
 </div>
+

@@ -1,0 +1,303 @@
+/* ==========================================================================
+   AMBC - Componente: Tabelas
+   Arquivo: css/components/tabelas.css
+   Descrição: Tabelas de dados (base + responsiva + com ações + estado vazio)
+   ========================================================================== */
+
+/* ============================================
+   📦 WRAPPER RESPONSIVO
+   ============================================ */
+.tabela-responsiva {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+}
+
+/* Scrollbar discreta (Webkit) */
+.tabela-responsiva::-webkit-scrollbar {
+  height: 8px;
+}
+.tabela-responsiva::-webkit-scrollbar-track {
+  background: var(--cor-cinza-100);
+}
+.tabela-responsiva::-webkit-scrollbar-thumb {
+  background: var(--cor-cinza-300);
+  border-radius: var(--raio-full);
+}
+.tabela-responsiva::-webkit-scrollbar-thumb:hover {
+  background: var(--cor-cinza-400);
+}
+
+/* ============================================
+   📊 TABELA BASE
+   ============================================ */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fonte-principal);
+  font-size: var(--fs-sm);
+  color: var(--texto-principal);
+}
+
+/* ============================================
+   🔝 CABEÇALHO (THEAD)
+   ============================================ */
+.tabela thead {
+  background: var(--fundo-secao);
+  border-bottom: 1px solid var(--cor-cinza-200);
+}
+
+.tabela thead th {
+  padding: var(--esp-md) var(--esp-lg);
+  text-align: left;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Cabeçalho ordenável (clicável) */
+.tabela thead th.ordenavel {
+  cursor: pointer;
+  transition: color var(--transicao-rapida), background var(--transicao-rapida);
+}
+
+.tabela thead th.ordenavel:hover {
+  color: var(--cor-primaria);
+  background: var(--cor-primaria-palida);
+}
+
+.tabela thead th.ordenavel::after {
+  content: 'unfold_more';
+  font-family: 'Material Icons';
+  font-size: 14px;
+  vertical-align: middle;
+  margin-left: 4px;
+  opacity: 0.4;
+  transition: opacity var(--transicao-rapida);
+}
+
+.tabela thead th.ordenavel:hover::after {
+  opacity: 1;
+}
+
+.tabela thead th.ordem-asc::after {
+  content: 'arrow_upward';
+  opacity: 1;
+  color: var(--cor-primaria);
+}
+
+.tabela thead th.ordem-desc::after {
+  content: 'arrow_downward';
+  opacity: 1;
+  color: var(--cor-primaria);
+}
+
+/* ============================================
+   📝 CORPO (TBODY)
+   ============================================ */
+.tabela tbody tr {
+  border-bottom: 1px solid var(--cor-cinza-200);
+  transition: background var(--transicao-rapida);
+}
+
+.tabela tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabela tbody tr:hover {
+  background: var(--cor-primaria-palida);
+}
+
+.tabela tbody td {
+  padding: var(--esp-md) var(--esp-lg);
+  vertical-align: middle;
+  color: var(--texto-principal);
+}
+
+/* Texto secundário dentro de células (ex: descrição abaixo do nome) */
+.tabela__sub {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  margin-top: 2px;
+}
+
+/* Célula numérica (alinhada à direita) */
+.tabela__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fw-medium);
+}
+
+/* Célula centralizada */
+.tabela__centro {
+  text-align: center;
+}
+
+/* ============================================
+   🦓 TABELA ZEBRADA (linhas alternadas)
+   ============================================ */
+.tabela-zebrada tbody tr:nth-child(even) {
+  background: var(--fundo-secao);
+}
+
+.tabela-zebrada tbody tr:nth-child(even):hover {
+  background: var(--cor-primaria-palida);
+}
+
+/* ============================================
+   🎯 TABELA COMPACTA (padding reduzido)
+   ============================================ */
+.tabela-compacta thead th,
+.tabela-compacta tbody td {
+  padding: var(--esp-sm) var(--esp-md);
+}
+
+/* ============================================
+   ⚙️ COLUNA DE AÇÕES (botões de ícone na última coluna)
+   ============================================ */
+.tabela__acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-xs);
+  white-space: nowrap;
+}
+
+/* Cabeçalho da coluna de ações alinhado à direita */
+.tabela thead th.tabela__th-acoes {
+  text-align: right;
+}
+
+/* ============================================
+   👤 CÉLULA COM AVATAR (nome + avatar lado a lado)
+   ============================================ */
+.tabela__usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+}
+
+.tabela__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--raio-full);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-xs);
+  flex-shrink: 0;
+}
+
+.tabela__avatar .mi,
+.tabela__avatar .material-icons {
+  font-size: 18px;
+}
+
+.tabela__usuario-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tabela__usuario-nome {
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabela__usuario-email {
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+   🔍 ESTADO VAZIO
+   ============================================ */
+.tabela-vazia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-sm);
+  padding: var(--esp-2xl) var(--esp-lg);
+  text-align: center;
+  color: var(--texto-secundario);
+}
+
+.tabela-vazia__icone {
+  font-size: 48px;
+  color: var(--cor-cinza-300);
+  margin-bottom: var(--esp-xs);
+}
+
+.tabela-vazia__titulo {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.tabela-vazia__mensagem {
+  font-size: var(--fs-sm);
+  color: var(--texto-secundario);
+  margin: 0;
+  max-width: 360px;
+}
+
+/* ============================================
+   📄 RODAPÉ DA TABELA (paginação / contagem)
+   ============================================ */
+.tabela-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  padding: var(--esp-md) var(--esp-lg);
+  border-top: 1px solid var(--cor-cinza-200);
+  background: var(--fundo-secao);
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  flex-wrap: wrap;
+}
+
+.tabela-rodape__info {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+}
+
+.tabela-rodape__paginacao {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+}
+
+/* ============================================
+   📱 RESPONSIVO — telas pequenas
+   ============================================ */
+@media (max-width: 640px) {
+  .tabela thead th,
+  .tabela tbody td {
+    padding: var(--esp-sm) var(--esp-md);
+  }
+
+  .tabela__usuario-email {
+    display: none; /* esconde email no mobile pra economizar espaço */
+  }
+}

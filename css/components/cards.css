@@ -1,0 +1,306 @@
+/* ==========================================================================
+   AMBC - Componente: Cards
+   Arquivo: css/components/cards.css
+   Descrição: Containers visuais para agrupar conteúdo (base + estatísticas + lista)
+   ========================================================================== */
+
+/* ============================================
+   🔹 CARD BASE
+   ============================================ */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transicao-padrao), transform var(--transicao-padrao);
+}
+
+/* Card interativo (clicável) — hover eleva sutilmente */
+.card-hover:hover {
+  box-shadow: var(--sombra-md);
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+/* Card sem sombra — visual mais plano */
+.card-plano {
+  box-shadow: none;
+}
+
+/* Card com destaque de borda lateral (ex: alertas visuais) */
+.card-destaque {
+  border-left: 4px solid var(--cor-primaria);
+}
+.card-destaque-sucesso { border-left-color: var(--cor-sucesso); }
+.card-destaque-alerta  { border-left-color: var(--cor-alerta);  }
+.card-destaque-erro    { border-left-color: var(--cor-erro);    }
+.card-destaque-info    { border-left-color: var(--cor-info);    }
+
+/* ============================================
+   📐 ESTRUTURA INTERNA (header / body / footer)
+   ============================================ */
+.card__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  padding: var(--esp-md) var(--esp-lg);
+  border-bottom: var(--borda-padrao);
+  background: var(--fundo-secao);
+}
+
+.card__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.card__titulo .mi,
+.card__titulo .material-icons {
+  font-size: 20px;
+  color: var(--cor-primaria);
+}
+
+.card__subtitulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  color: var(--texto-secundario);
+  margin-top: 2px;
+}
+
+.card__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  flex-shrink: 0;
+}
+
+.card__corpo {
+  padding: var(--esp-lg);
+  flex: 1;
+}
+
+.card__corpo-compacto {
+  padding: var(--esp-md);
+}
+
+.card__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-sm);
+  padding: var(--esp-md) var(--esp-lg);
+  border-top: var(--borda-padrao);
+  background: var(--fundo-secao);
+}
+
+/* ============================================
+   📊 CARD DE ESTATÍSTICA (dashboard)
+   ============================================ */
+.card-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-sm);
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+  padding: var(--esp-lg);
+  transition: box-shadow var(--transicao-padrao);
+}
+
+.card-stat:hover {
+  box-shadow: var(--sombra-md);
+}
+
+/* Linha topo: label + ícone */
+.card-stat__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-sm);
+}
+
+.card-stat__label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ícone decorativo no canto superior direito */
+.card-stat__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-sm);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  flex-shrink: 0;
+}
+
+.card-stat__icone .mi,
+.card-stat__icone .material-icons {
+  font-size: 22px;
+}
+
+/* Variações de cor do ícone */
+.card-stat__icone-sucesso { background: var(--cor-sucesso-clara); color: var(--cor-sucesso-escura); }
+.card-stat__icone-alerta  { background: var(--cor-alerta-clara);  color: var(--cor-alerta-escura);  }
+.card-stat__icone-erro    { background: var(--cor-erro-clara);    color: var(--cor-erro-escura);    }
+.card-stat__icone-info    { background: var(--cor-info-clara);    color: var(--cor-info-escura);    }
+.card-stat__icone-roxo    { background: var(--cor-roxo-clara);    color: var(--cor-roxo);           }
+.card-stat__icone-teal    { background: var(--cor-teal-clara);    color: var(--cor-teal);           }
+
+/* Valor principal (número grande) */
+.card-stat__valor {
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+  line-height: var(--lh-tight);
+  margin: 0;
+}
+
+/* Rodapé: variação / comparativo */
+.card-stat__rodape {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+}
+
+.card-stat__variacao {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: var(--fw-semibold);
+  padding: 2px 6px;
+  border-radius: var(--raio-sm);
+}
+
+.card-stat__variacao .mi,
+.card-stat__variacao .material-icons {
+  font-size: 14px;
+}
+
+.card-stat__variacao-positiva {
+  color: var(--cor-sucesso-escura);
+  background: var(--cor-sucesso-clara);
+}
+
+.card-stat__variacao-negativa {
+  color: var(--cor-erro-escura);
+  background: var(--cor-erro-clara);
+}
+
+.card-stat__variacao-neutra {
+  color: var(--texto-secundario);
+  background: var(--cor-cinza-100);
+}
+
+/* ============================================
+   📑 CARD LISTA (itens com avatar/ícone + texto + ação)
+   ============================================ */
+.card-lista {
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+  overflow: hidden;
+}
+
+.card-lista__item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  padding: var(--esp-md) var(--esp-lg);
+  border-bottom: var(--borda-padrao);
+  transition: background var(--transicao-rapida);
+}
+
+.card-lista__item:last-child {
+  border-bottom: none;
+}
+
+.card-lista__item:hover {
+  background: var(--fundo-secao);
+}
+
+/* Avatar ou ícone à esquerda */
+.card-lista__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-full);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+}
+
+.card-lista__avatar .mi,
+.card-lista__avatar .material-icons {
+  font-size: 20px;
+}
+
+/* Bloco central de texto (ocupa espaço flexível) */
+.card-lista__conteudo {
+  flex: 1;
+  min-width: 0; /* permite text-overflow funcionar */
+}
+
+.card-lista__titulo {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-lista__descricao {
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ação à direita (botão, badge, etc.) */
+.card-lista__acao {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  flex-shrink: 0;
+}
+
+/* ============================================
+   🧩 GRID DE CARDS (utilitário p/ organizar)
+   ============================================ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--esp-md);
+}
+
+.card-grid-2 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.card-grid-3 { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.card-grid-4 { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }

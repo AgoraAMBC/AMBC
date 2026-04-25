@@ -1,0 +1,274 @@
+/* ==========================================================================
+   AMBC - Componente: Toasts
+   Arquivo: css/components/toasts.css
+   Descrição: Notificações flutuantes (sucesso, erro, alerta, info)
+   ========================================================================== */
+
+/* ============================================
+   📦 CONTAINER (fixo no canto da tela)
+   ============================================ */
+.toast-container {
+  position: fixed;
+  bottom: var(--esp-lg);
+  right: var(--esp-lg);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column-reverse; /* novos toasts aparecem em cima */
+  gap: var(--esp-sm);
+  pointer-events: none; /* só os toasts capturam clique */
+  max-width: calc(100vw - var(--esp-lg) * 2);
+  width: 380px;
+}
+
+/* Posições alternativas */
+.toast-container--topo-direita    { top: var(--esp-lg); bottom: auto; flex-direction: column; }
+.toast-container--topo-esquerda   { top: var(--esp-lg); left: var(--esp-lg); right: auto; bottom: auto; flex-direction: column; }
+.toast-container--baixo-esquerda  { left: var(--esp-lg); right: auto; }
+.toast-container--topo-centro     { top: var(--esp-lg); bottom: auto; left: 50%; right: auto; transform: translateX(-50%); flex-direction: column; }
+
+/* ============================================
+   🔔 TOAST BASE
+   ============================================ */
+.toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-sm);
+  padding: var(--esp-md);
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  border-left: 4px solid var(--cor-cinza-400);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-lg);
+  pointer-events: auto;
+  overflow: hidden;
+  font-family: var(--fonte-principal);
+
+  /* Animação de entrada */
+  animation: toast-entrada var(--transicao-padrao) ease-out;
+}
+
+/* Animação de saída (adicionada via JS) */
+.toast--saindo {
+  animation: toast-saida var(--transicao-padrao) ease-in forwards;
+}
+
+@keyframes toast-entrada {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-saida {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 200px;
+    margin-bottom: var(--esp-sm);
+    padding-top: var(--esp-md);
+    padding-bottom: var(--esp-md);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* Animação ajustada pra container à esquerda */
+.toast-container--topo-esquerda .toast,
+.toast-container--baixo-esquerda .toast {
+  animation-name: toast-entrada-esquerda;
+}
+
+.toast-container--topo-esquerda .toast--saindo,
+.toast-container--baixo-esquerda .toast--saindo {
+  animation-name: toast-saida-esquerda;
+}
+
+@keyframes toast-entrada-esquerda {
+  from { opacity: 0; transform: translateX(-100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-saida-esquerda {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-100%); }
+}
+
+/* ============================================
+   🎨 ÍCONE
+   ============================================ */
+.toast__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toast__icone .mi,
+.toast__icone .material-icons {
+  font-size: 22px;
+}
+
+/* ============================================
+   📝 CONTEÚDO (título + mensagem)
+   ============================================ */
+.toast__conteudo {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__titulo {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0 0 2px 0;
+  line-height: 1.3;
+}
+
+.toast__mensagem {
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--lh-base);
+  word-wrap: break-word;
+}
+
+/* Quando não há título, só mensagem */
+.toast__conteudo:not(:has(.toast__titulo)) .toast__mensagem {
+  font-size: var(--fs-sm);
+  color: var(--texto-principal);
+}
+
+/* ============================================
+   ❌ BOTÃO FECHAR
+   ============================================ */
+.toast__fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transicao-rapida);
+}
+
+.toast__fechar:hover {
+  background: var(--cor-cinza-100);
+  color: var(--texto-principal);
+}
+
+.toast__fechar .mi,
+.toast__fechar .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================
+   📊 BARRA DE PROGRESSO
+   ============================================ */
+.toast__progresso {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--cor-cinza-400);
+  transform-origin: left;
+  animation: toast-progresso linear forwards;
+}
+
+@keyframes toast-progresso {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* Pausa a barra quando o mouse está sobre o toast */
+.toast:hover .toast__progresso {
+  animation-play-state: paused;
+}
+
+/* ============================================
+   🌈 VARIANTES (cores por tipo)
+   ============================================ */
+
+/* ✅ Sucesso */
+.toast--sucesso {
+  border-left-color: var(--cor-sucesso);
+}
+.toast--sucesso .toast__icone {
+  color: var(--cor-sucesso-escura);
+}
+.toast--sucesso .toast__progresso {
+  background: var(--cor-sucesso);
+}
+
+/* ❌ Erro */
+.toast--erro {
+  border-left-color: var(--cor-erro);
+}
+.toast--erro .toast__icone {
+  color: var(--cor-erro-escura);
+}
+.toast--erro .toast__progresso {
+  background: var(--cor-erro);
+}
+
+/* ⚠️ Alerta */
+.toast--alerta {
+  border-left-color: var(--cor-alerta);
+}
+.toast--alerta .toast__icone {
+  color: var(--cor-alerta-escura);
+}
+.toast--alerta .toast__progresso {
+  background: var(--cor-alerta);
+}
+
+/* ℹ️ Info */
+.toast--info {
+  border-left-color: var(--cor-info, var(--cor-primaria));
+}
+.toast--info .toast__icone {
+  color: var(--cor-info-escura, var(--cor-primaria-escura));
+}
+.toast--info .toast__progresso {
+  background: var(--cor-info, var(--cor-primaria));
+}
+
+/* ============================================
+   📱 RESPONSIVO
+   ============================================ */
+@media (max-width: 480px) {
+  .toast-container {
+    left: var(--esp-md);
+    right: var(--esp-md);
+    bottom: var(--esp-md);
+    width: auto;
+    max-width: none;
+  }
+
+  .toast-container--topo-direita,
+  .toast-container--topo-esquerda,
+  .toast-container--topo-centro {
+    top: var(--esp-md);
+    transform: none;
+  }
+}

@@ -20,27 +20,29 @@ const rotas = {
     titulo: 'Painel'
   },
 
-  // ----- CADASTRO -----
+    // ----- CADASTRO -----
   '#/cadastro/listar': {
     view: 'views/cadastro/listar.html',
-    page: 'cadastro',
+    page: 'cadastro-listar',
     titulo: 'Listar Todos'
   },
   '#/cadastro/novo-associado': {
     view: 'views/cadastro/novo-associado.html',
-    page: 'cadastro',
+    page: 'cadastro-novo-associado',
     titulo: 'Novo Associado'
   },
   '#/cadastro/novo-parceiro': {
     view: 'views/cadastro/novo-parceiro.html',
-    page: 'cadastro',
+    page: 'cadastro-novo-parceiro',
     titulo: 'Novo Parceiro'
   },
   '#/cadastro/dependentes': {
     view: 'views/cadastro/dependentes.html',
-    page: 'dependentes',
+    page: 'cadastro-dependentes',
     titulo: 'Dependentes'
   },
+
+
 
   // ----- FINANCEIRO -----
   '#/financeiro/visao-geral': {

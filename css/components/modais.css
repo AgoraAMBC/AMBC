@@ -1,0 +1,214 @@
+/* ==========================================================================
+   AMBC - Componente: Modais
+   Arquivo: css/components/modais.css
+   Descrição: Modais baseados em <dialog> nativo (confirmação + formulário)
+   ========================================================================== */
+
+/* ============================================
+   💫 MODAL BASE (<dialog>)
+   ============================================ */
+.modal {
+  padding: 0;
+  border: none;
+  border-radius: var(--raio-md);
+  background: var(--fundo-card);
+  color: var(--texto-principal);
+  box-shadow: var(--sombra-lg);
+  max-width: 500px;
+  width: calc(100% - var(--esp-lg) * 2);
+  max-height: calc(100vh - var(--esp-lg) * 2);
+  overflow: hidden;
+
+  /* Estado inicial — invisível */
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  transition: opacity var(--transicao-padrao), transform var(--transicao-padrao);
+}
+
+/* Modal aberto — anima entrada */
+.modal[open] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Backdrop (fundo escuro atrás do modal) */
+.modal::backdrop {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  animation: modal-backdrop-fade var(--transicao-padrao) forwards;
+}
+
+@keyframes modal-backdrop-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Remove scroll da página quando modal está aberto */
+body:has(.modal[open]) {
+  overflow: hidden;
+}
+
+/* ============================================
+   📏 TAMANHOS
+   ============================================ */
+.modal-sm { max-width: 380px; }
+.modal-md { max-width: 500px; } /* padrão */
+.modal-lg { max-width: 720px; }
+.modal-xl { max-width: 960px; }
+
+/* ============================================
+   🏗️ ESTRUTURA INTERNA
+   ============================================ */
+.modal__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  padding: var(--esp-md) var(--esp-lg);
+  border-bottom: var(--borda-padrao);
+}
+
+.modal__titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.modal__titulo .mi,
+.modal__titulo .material-icons {
+  font-size: 22px;
+  color: var(--cor-primaria);
+}
+
+.modal__fechar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: all var(--transicao-rapida);
+  flex-shrink: 0;
+}
+
+.modal__fechar:hover {
+  background: var(--cor-cinza-100);
+  color: var(--texto-principal);
+}
+
+.modal__fechar:focus-visible {
+  outline: none;
+  box-shadow: var(--sombra-foco);
+}
+
+.modal__fechar .mi,
+.modal__fechar .material-icons {
+  font-size: 20px;
+}
+
+.modal__corpo {
+  padding: var(--esp-lg);
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+  color: var(--texto-principal);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-base);
+}
+
+.modal__corpo p {
+  margin: 0 0 var(--esp-sm) 0;
+}
+
+.modal__corpo p:last-child {
+  margin-bottom: 0;
+}
+
+.modal__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--esp-sm);
+  padding: var(--esp-md) var(--esp-lg);
+  border-top: var(--borda-padrao);
+  background: var(--fundo-secao);
+  flex-wrap: wrap;
+}
+
+/* ============================================
+   💬 MODAL DE CONFIRMAÇÃO (com ícone grande)
+   ============================================ */
+.modal-confirmacao .modal__corpo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-md);
+}
+
+.modal-confirmacao__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--raio-full);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  flex-shrink: 0;
+}
+
+.modal-confirmacao__icone .mi,
+.modal-confirmacao__icone .material-icons {
+  font-size: 28px;
+}
+
+/* Variações de cor do ícone */
+.modal-confirmacao__icone-sucesso { background: var(--cor-sucesso-clara); color: var(--cor-sucesso-escura); }
+.modal-confirmacao__icone-alerta  { background: var(--cor-alerta-clara);  color: var(--cor-alerta-escura);  }
+.modal-confirmacao__icone-erro    { background: var(--cor-erro-clara);    color: var(--cor-erro-escura);    }
+.modal-confirmacao__icone-info    { background: var(--cor-info-clara);    color: var(--cor-info-escura);    }
+
+.modal-confirmacao__texto {
+  flex: 1;
+}
+
+.modal-confirmacao__titulo {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0 0 var(--esp-xs) 0;
+}
+
+.modal-confirmacao__mensagem {
+  font-size: var(--fs-sm);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--lh-base);
+}
+
+/* ============================================
+   📱 RESPONSIVO — telas pequenas
+   ============================================ */
+@media (max-width: 480px) {
+  .modal {
+    width: calc(100% - var(--esp-md) * 2);
+    max-height: calc(100vh - var(--esp-md) * 2);
+  }
+
+  .modal__rodape {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .modal__rodape .btn {
+    width: 100%;
+  }
+}

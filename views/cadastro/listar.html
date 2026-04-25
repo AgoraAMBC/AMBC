@@ -1,15 +1,80 @@
 ﻿<!-- =========================================================
-  View: Listar Todos
-  Descricao: Lista de associados e parceiros
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Listar Todos">
-  <header class="view__header">
-    <h1 class="view__title">Listar Todos</h1>
-    <p class="view__subtitle">Lista de associados e parceiros</p>
+     listar.html
+     View: Listar Todos os Cadastros
+     ========================================================= -->
+<section class="view view--cadastro-listar">
+
+  <!-- Cabeçalho da página -->
+  <header class="cadastro-listar__cabecalho">
+    <div class="cadastro-listar__cabecalho-textos">
+      <h2 class="cadastro-listar__titulo">Associados e Parceiros</h2>
+      <p class="cadastro-listar__subtitulo">Gerencie todos os residentes e parceiros comerciais.</p>
+    </div>
+    <button type="button" class="botao botao--primario" id="btn-novo-cadastro">
+      <span class="material-icons">person_add</span>
+      <span>Novo Cadastro</span>
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Listar Todos</strong> sera implementado em breve.</p>
+  <!-- Barra de filtros: busca + tipo + status -->
+  <div class="cadastro-listar__filtros">
+    <div class="cadastro-listar__busca">
+      <span class="material-icons cadastro-listar__busca-icone">search</span>
+      <input
+        type="text"
+        id="input-busca"
+        class="cadastro-listar__busca-input"
+        placeholder="Buscar por nome, CPF ou e-mail..."
+        autocomplete="off"
+      />
+    </div>
+
+    <select id="filtro-tipo" class="cadastro-listar__select" aria-label="Filtrar por tipo">
+      <option value="todos">Tipo: Todos</option>
+      <option value="associado">Associado</option>
+      <option value="dependente">Dependente</option>
+      <option value="parceiro">Parceiro</option>
+    </select>
+
+    <select id="filtro-status" class="cadastro-listar__select" aria-label="Filtrar por status">
+      <option value="todos">Status: Todos</option>
+      <option value="ativo">Ativo</option>
+      <option value="inativo">Inativo</option>
+    </select>
   </div>
+
+  <!-- Tabela de cadastros -->
+  <div class="cadastro-listar__tabela-wrapper">
+    <table class="cadastro-listar__tabela">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Status</th>
+          <th scope="col">Cadastrado em</th>
+          <th scope="col" class="cadastro-listar__col-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-cadastros">
+        <!-- Linhas inseridas dinamicamente pelo JS -->
+      </tbody>
+    </table>
+
+    <!-- Estado vazio (oculto por padrão; exibido quando não há resultados) -->
+    <div class="cadastro-listar__vazio" id="estado-vazio" hidden>
+      <span class="material-icons">search_off</span>
+      <p>Nenhum cadastro encontrado com os filtros aplicados.</p>
+    </div>
+  </div>
+
+  <!-- Rodapé da tabela: contador + paginação -->
+  <footer class="cadastro-listar__rodape">
+    <span class="cadastro-listar__contador" id="contador-registros">
+      Exibindo 0 de 0 cadastros
+    </span>
+    <nav class="cadastro-listar__paginacao" id="paginacao" aria-label="Paginação">
+      <!-- Botões de paginação inseridos dinamicamente pelo JS -->
+    </nav>
+  </footer>
+
 </section>
