@@ -64,9 +64,7 @@
 .app-shell__conteudo {
   grid-area: conteudo;
   margin-top: var(--altura-header);
-  margin-left: var(--largura-sidebar);
   padding: var(--esp-lg);
-  max-width: var(--largura-max-conteudo);
   width: 100%;
   min-height: calc(100vh - var(--altura-header));
 }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Login — AMBC Gestão de Associação" />
+  <title>AMBC — Login</title>
+
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <!-- CSS base -->
+  <link rel="stylesheet" href="css/base/variaveis.css" />
+  <link rel="stylesheet" href="css/base/reset.css" />
+  <link rel="stylesheet" href="css/base/tipografia.css" />
+  <link rel="stylesheet" href="css/base/global.css" />
+
+  <!-- CSS da página -->
+  <link rel="stylesheet" href="css/pages/login.css" />
+</head>
+
+<body class="login-pagina">
+
+  <div class="login-card">
+
+    <!-- Cabeçalho com gradiente azul -->
+    <div class="login-card__cabecalho">
+      <div class="login-card__icone-marca">
+        <span class="material-icons">account_balance</span>
+      </div>
+      <div class="login-card__nome">AMBC</div>
+      <div class="login-card__descricao">Associação de Moradores do Bairro Califórnia</div>
+    </div>
+
+    <!-- Corpo do formulário -->
+    <div class="login-card__corpo">
+      <h1 class="login-card__titulo">Bem-vindo de volta</h1>
+      <p class="login-card__subtitulo">Faça login para acessar o sistema</p>
+
+      <!-- Mensagem de erro -->
+      <div class="login-erro" id="login-erro" hidden>
+        <span class="material-icons">error_outline</span>
+        <span id="login-erro-texto"></span>
+      </div>
+
+      <form class="login-form" id="form-login" novalidate>
+
+        <!-- Campo: E-mail -->
+        <div class="login-form__grupo">
+          <label class="login-form__label" for="campo-email">Usuário</label>
+          <div class="login-form__campo">
+            <span class="material-icons login-form__icone">person</span>
+            <input
+              type="email"
+              id="campo-email"
+              name="email"
+              class="login-form__input"
+              placeholder="seu@email.com"
+              autocomplete="username"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Campo: Senha -->
+        <div class="login-form__grupo">
+          <div class="login-form__label-linha">
+            <label class="login-form__label" for="campo-senha">Senha</label>
+            <a href="#" class="login-form__esqueci">Esqueci minha senha</a>
+          </div>
+          <div class="login-form__campo">
+            <span class="material-icons login-form__icone">lock</span>
+            <input
+              type="password"
+              id="campo-senha"
+              name="senha"
+              class="login-form__input"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Lembrar de mim -->
+        <div class="login-form__lembrar">
+          <label class="login-form__checkbox-label">
+            <input type="checkbox" id="lembrar-me" name="lembrar" class="login-form__checkbox" />
+            <span>Lembrar de mim</span>
+          </label>
+        </div>
+
+        <!-- Botão de submit -->
+        <button type="submit" class="login-form__btn" id="btn-entrar">
+          <span class="material-icons">login</span>
+          <span id="btn-entrar-texto">Entrar</span>
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Rodapé do card -->
+    <div class="login-card__rodape">
+      © 2024 AMBC — Todos os direitos reservados
+    </div>
+
+  </div>
+
+  <script>
+    const CHAVE_SESSAO = 'ambc_sessao';
+    const API_LOGIN    = 'http://localhost:8080/backend/auth/login.php';
+
+    // Se já está logado, vai direto pro sistema
+    (function verificarSessaoExistente() {
+      const sessao = localStorage.getItem(CHAVE_SESSAO) || sessionStorage.getItem(CHAVE_SESSAO);
+      if (sessao) window.location.replace('index.html');
+    })();
+
+    const form     = document.getElementById('form-login');
+    const btnTexto = document.getElementById('btn-entrar-texto');
+    const btn      = document.getElementById('btn-entrar');
+    const erroDiv  = document.getElementById('login-erro');
+    const erroTexto = document.getElementById('login-erro-texto');
+
+    function mostrarErro(mensagem) {
+      erroTexto.textContent = mensagem;
+      erroDiv.hidden = false;
+    }
+
+    function ocultarErro() {
+      erroDiv.hidden = true;
+    }
+
+    function setCarregando(ativo) {
+      btn.disabled = ativo;
+      btnTexto.textContent = ativo ? 'Entrando…' : 'Entrar';
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      ocultarErro();
+
+      const email = document.getElementById('campo-email').value.trim();
+      const senha = document.getElementById('campo-senha').value;
+      const lembrar = document.getElementById('lembrar-me').checked;
+
+      if (!email || !senha) {
+        mostrarErro('Preencha e-mail e senha.');
+        return;
+      }
+
+      setCarregando(true);
+
+      try {
+        const resp = await fetch(API_LOGIN, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha }),
+        });
+
+        const dados = await resp.json();
+
+        if (!resp.ok) {
+          mostrarErro(dados.erro ?? 'Erro ao autenticar.');
+          return;
+        }
+
+        const storage = lembrar ? localStorage : sessionStorage;
+        storage.setItem(CHAVE_SESSAO, JSON.stringify(dados.usuario));
+
+        window.location.replace('index.html');
+      } catch {
+        mostrarErro('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+      } finally {
+        setCarregando(false);
+      }
+    });
+  </script>
+
+</body>
+</html>

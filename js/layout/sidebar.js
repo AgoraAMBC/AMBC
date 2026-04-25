@@ -121,19 +121,10 @@ function fecharSidebarMobile() {
 --------------------------------------------------------- */
 function tratarLogout() {
   const confirmou = window.confirm('Deseja realmente sair do sistema?');
-
-  if (!confirmou) {
-    console.log('[Auth] Logout cancelado pelo usuario');
-    return;
-  }
-
-  console.log('[Auth] Logout solicitado');
-
-  // TODO: Na Fase de Autenticacao, substituir por:
-  //   - Limpar sessionStorage/localStorage
-  //   - Chamar endpoint /logout no backend
-  //   - Redirecionar: window.location.href = 'login.html'
-  window.alert('Logout realizado!\n\n(A tela de login sera implementada na Fase de Autenticacao)');
+  if (!confirmou) return;
+  localStorage.removeItem('ambc_sessao');
+  sessionStorage.removeItem('ambc_sessao');
+  window.location.replace('login.html');
 }
 
 /* ---------------------------------------------------------

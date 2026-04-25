@@ -1,0 +1,253 @@
+/* =========================================================
+   Página: Login
+   Arquivo: css/pages/login.css
+   Namespace: .login-*
+========================================================= */
+
+/* ---------------------------------------------------------
+   Fundo da página
+--------------------------------------------------------- */
+.login-pagina {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e8edf5;
+  padding: var(--esp-lg);
+  font-family: 'Inter', var(--fonte-principal);
+}
+
+/* ---------------------------------------------------------
+   Card central
+--------------------------------------------------------- */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--cor-branco);
+  border-radius: var(--raio-xl);
+  box-shadow: var(--sombra-xl);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------
+   Cabeçalho do card (gradiente azul)
+--------------------------------------------------------- */
+.login-card__cabecalho {
+  background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+  padding: var(--esp-xl) var(--esp-lg) var(--esp-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-sm);
+}
+
+.login-card__icone-marca {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.20);
+  border-radius: var(--raio-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--esp-xs);
+}
+
+.login-card__icone-marca .material-icons {
+  font-size: 28px;
+  color: var(--cor-branco);
+}
+
+.login-card__nome {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--cor-branco);
+  letter-spacing: 0.5px;
+}
+
+.login-card__descricao {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.80);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------
+   Corpo do card
+--------------------------------------------------------- */
+.login-card__corpo {
+  padding: var(--esp-xl) var(--esp-xl) var(--esp-lg);
+}
+
+.login-card__titulo {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--cor-cinza-900);
+  margin-bottom: var(--esp-xs);
+}
+
+.login-card__subtitulo {
+  font-size: var(--fs-sm);
+  color: var(--cor-primaria);
+  margin-bottom: var(--esp-xl);
+}
+
+/* ---------------------------------------------------------
+   Mensagem de erro
+--------------------------------------------------------- */
+.login-erro {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: 10px var(--esp-md);
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro-escura);
+  border-radius: var(--raio-sm);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--esp-md);
+}
+
+.login-erro .material-icons {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   Formulário
+--------------------------------------------------------- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+}
+
+.login-form__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-xs);
+}
+
+.login-form__label-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-form__label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--cor-cinza-700);
+}
+
+.login-form__esqueci {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.login-form__esqueci:hover {
+  text-decoration: underline;
+}
+
+/* Campo com ícone */
+.login-form__campo {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-form__icone {
+  position: absolute;
+  left: 12px;
+  font-size: 20px;
+  color: var(--cor-cinza-400);
+  pointer-events: none;
+  user-select: none;
+}
+
+.login-form__input {
+  width: 100%;
+  padding: 10px 12px 10px 42px;
+  font-size: var(--fs-sm);
+  font-family: inherit;
+  color: var(--cor-cinza-800);
+  background: var(--cor-branco);
+  border: var(--borda-input);
+  border-radius: var(--raio-sm);
+  outline: none;
+  transition: border-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
+}
+
+.login-form__input::placeholder {
+  color: var(--cor-cinza-400);
+}
+
+.login-form__input:focus {
+  border-color: var(--cor-primaria);
+  box-shadow: var(--sombra-foco);
+}
+
+/* Checkbox "Lembrar de mim" */
+.login-form__lembrar {
+  margin-top: calc(-1 * var(--esp-xs));
+}
+
+.login-form__checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  font-size: var(--fs-sm);
+  color: var(--cor-cinza-600);
+  cursor: pointer;
+  user-select: none;
+}
+
+.login-form__checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--cor-primaria);
+}
+
+/* Botão Entrar */
+.login-form__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-sm);
+  width: 100%;
+  padding: 12px;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-semibold);
+  font-family: inherit;
+  color: var(--cor-branco);
+  background: var(--cor-primaria);
+  border: none;
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  transition: background var(--transicao-padrao), box-shadow var(--transicao-padrao);
+  margin-top: var(--esp-xs);
+}
+
+.login-form__btn .material-icons {
+  font-size: 20px;
+}
+
+.login-form__btn:hover {
+  background: var(--cor-primaria-hover);
+  box-shadow: var(--sombra-marca);
+}
+
+.login-form__btn:active {
+  background: var(--cor-primaria-ativa);
+}
+
+/* ---------------------------------------------------------
+   Rodapé do card
+--------------------------------------------------------- */
+.login-card__rodape {
+  padding: var(--esp-md) var(--esp-xl);
+  text-align: center;
+  font-size: var(--fs-xs);
+  color: var(--cor-cinza-400);
+  border-top: var(--borda-padrao);
+}
