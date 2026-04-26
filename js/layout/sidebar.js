@@ -7,6 +7,7 @@
               - Fechamento automatico no mobile
               - Acao de logout
 ========================================================= */
+import Sessao from '../core/sessao.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
@@ -120,22 +121,17 @@ function fecharSidebarMobile() {
    7. FUNCAO: trata acao de logout
 --------------------------------------------------------- */
 function tratarLogout() {
-  const confirmou = window.confirm('Deseja realmente sair do sistema?');
+  console.log('[Sidebar] Logout solicitado');
 
+  const confirmou = window.confirm('Deseja realmente sair do sistema?');
   if (!confirmou) {
-    console.log('[Auth] Logout cancelado pelo usuario');
+    console.log('[Sidebar] Logout cancelado pelo usuario');
     return;
   }
 
-  console.log('[Auth] Logout solicitado');
-
-  // TODO: Na Fase de Autenticacao, substituir por:
-  //   - Limpar sessionStorage/localStorage
-  //   - Chamar endpoint /logout no backend
-  //   - Redirecionar: window.location.href = 'login.html'
-  window.alert('Logout realizado!\n\n(A tela de login sera implementada na Fase de Autenticacao)');
+  console.log('[Sidebar] Encerrando sessao...');
+  Sessao.encerrar(); // 🆕 usa o modulo central (limpa storage + redireciona)
 }
-
 /* ---------------------------------------------------------
    8. FUNCAO: trata cliques na sidebar (delegation)
 --------------------------------------------------------- */

@@ -5,30 +5,37 @@
               Inicializa os modulos de layout e o router.
 ========================================================= */
 
-import Router from './router.js';
+import Sessao  from './sessao.js';
+import Router  from './router.js';
 import Sidebar from '../layout/sidebar.js';
-import Topbar from '../layout/topbar.js';
+import Topbar  from '../layout/topbar.js';
 
 /* ---------------------------------------------------------
-   Inicializacao da aplicacao
+   1. Guarda de autenticacao
+      Se nao houver sessao valida, redireciona pro login.
+      Deve ser a PRIMEIRA coisa a executar.
+--------------------------------------------------------- */
+Sessao.exigirAutenticacao();
+
+/* ---------------------------------------------------------
+   2. Inicializacao da aplicacao
 --------------------------------------------------------- */
 function iniciarApp() {
   console.log('[AMBC-V2] Iniciando aplicacao...');
+  console.log('[AMBC-V2] Usuario logado:', Sessao.obter()?.nome);
 
-  // 1. Modulos de layout (devem ser iniciados ANTES do router,
-  //    pois escutam 'hashchange' e precisam estar prontos
-  //    quando o router disparar a primeira rota)
+  // Modulos de layout (antes do router, pois escutam hashchange)
   Sidebar.iniciar();
   Topbar.iniciar();
 
-  // 2. Roteador SPA
+  // Roteador SPA
   Router.iniciar();
 
   console.log('[AMBC-V2] Aplicacao pronta!');
 }
 
 /* ---------------------------------------------------------
-   Aguarda o DOM estar completamente carregado
+   3. Aguarda o DOM estar completamente carregado
 --------------------------------------------------------- */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', iniciarApp);

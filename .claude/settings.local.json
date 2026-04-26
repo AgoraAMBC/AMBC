@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php *)",
+      "PowerShell(Set-Content *)",
+      "Bash(mkdir -p /c/Users/leona/testefabio4/ambc-v2/lixeira)",
+      "Bash(mv /c/Users/leona/testefabio4/ambc-v2/backend/servidor.py /c/Users/leona/testefabio4/ambc-v2/lixeira/)",
+      "Bash(mv /c/Users/leona/testefabio4/ambc-v2/backend/listar_bancos.py /c/Users/leona/testefabio4/ambc-v2/lixeira/)",
+      "Bash(mv /c/Users/leona/testefabio4/ambc-v2/backend/seed_usuario.py /c/Users/leona/testefabio4/ambc-v2/lixeira/)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git rebase *)"
+    ]
+  }
+}

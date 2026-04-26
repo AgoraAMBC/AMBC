@@ -7,7 +7,7 @@
   <title>AMBC — Painel</title>
 
   <!-- ==========================================================
-       🔤 FONTES — Google Fonts (Inter) + Material Icons
+       FONTES — Google Fonts (Inter) + Material Icons
        ========================================================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
   <!-- ==========================================================
-       🎨 CSS — Base
+       CSS — Base
        ========================================================== -->
   <link rel="stylesheet" href="css/base/variaveis.css" />
   <link rel="stylesheet" href="css/base/reset.css" />
@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="css/base/global.css" />
 
   <!-- ==========================================================
-       🧱 CSS — Layout
+       CSS — Layout
        ========================================================== -->
   <link rel="stylesheet" href="css/layout/app-shell.css" />
   <link rel="stylesheet" href="css/layout/sidebar.css" />
@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="css/layout/main.css" />
 
   <!-- ==========================================================
-       🧩 CSS — Components
+       CSS — Components
        ========================================================== -->
   <link rel="stylesheet" href="css/components/botoes.css" />
   <link rel="stylesheet" href="css/components/badges.css" />
@@ -44,19 +44,20 @@
   <link rel="stylesheet" href="css/components/toasts.css" />
 
   <!-- ==========================================================
-       📄 CSS — Páginas
+       CSS — Páginas
        ========================================================== -->
   <link rel="stylesheet" href="css/paginas/cadastro-listar.css" />
+  <link rel="stylesheet" href="css/paginas/usuarios.css" />
 </head>
 
 <body>
   <!-- ==========================================================
-       🏗️ APP SHELL — Container principal da SPA
+       APP SHELL — Container principal da SPA
        ========================================================== -->
   <div class="app-shell">
 
     <!-- ======================================================
-         📚 SIDEBAR — Menu lateral de navegação
+         SIDEBAR — Menu lateral de navegação
          ====================================================== -->
     <aside class="app-shell__sidebar sidebar" id="sidebar" aria-label="Menu principal">
 
@@ -91,26 +92,10 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-cadastro">
-                <li>
-                  <a href="#/cadastro/listar" class="sidebar__link">
-                    <span class="sidebar__texto">Listar Todos</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#/cadastro/novo-associado" class="sidebar__link">
-                    <span class="sidebar__texto">Novo Associado</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#/cadastro/novo-parceiro" class="sidebar__link">
-                    <span class="sidebar__texto">Novo Parceiro</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#/cadastro/dependentes" class="sidebar__link">
-                    <span class="sidebar__texto">Dependentes</span>
-                  </a>
-                </li>
+                <li><a href="#/cadastro/listar" class="sidebar__link"><span class="sidebar__texto">Listar Todos</span></a></li>
+                <li><a href="#/cadastro/novo-associado" class="sidebar__link"><span class="sidebar__texto">Novo Associado</span></a></li>
+                <li><a href="#/cadastro/novo-parceiro" class="sidebar__link"><span class="sidebar__texto">Novo Parceiro</span></a></li>
+                <li><a href="#/cadastro/dependentes" class="sidebar__link"><span class="sidebar__texto">Dependentes</span></a></li>
               </ul>
             </li>
 
@@ -155,6 +140,7 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-configuracoes">
+                <li><a href="#/configuracoes/usuarios" class="sidebar__link"><span class="sidebar__texto">Gestão de Usuários</span></a></li>
                 <li><a href="#/configuracoes/associacao" class="sidebar__link"><span class="sidebar__texto">Associação</span></a></li>
                 <li><a href="#/configuracoes/relacionamentos" class="sidebar__link"><span class="sidebar__texto">Relacionamentos</span></a></li>
                 <li><a href="#/configuracoes/config-gerais" class="sidebar__link"><span class="sidebar__texto">Config. Gerais</span></a></li>
@@ -178,81 +164,13 @@
         AMBC © 2026 • v0.1.0
       </div>
 
-<<<<<<< HEAD
     </aside>
-=======
-    <!-- Seção: SISTEMA -->
-    <div class="sidebar__secao">
-      <div class="sidebar__secao-titulo">Sistema</div>
-      <ul class="sidebar__lista">
-
-        <li class="sidebar__item" data-submenu-pai="configuracoes">
-          <button type="button" class="sidebar__link" data-toggle-submenu="configuracoes" aria-expanded="false" aria-controls="submenu-configuracoes">
-            <span class="material-icons sidebar__icone">settings</span>
-            <span class="sidebar__texto">Configurações</span>
-            <span class="material-icons sidebar__seta">chevron_right</span>
-          </button>
-          <ul class="sidebar__submenu" id="submenu-configuracoes">
-            <li>
-              <a href="#/configuracoes/usuarios" class="sidebar__link">
-                <span class="sidebar__texto">Gestão de Usuários</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/configuracoes/associacao" class="sidebar__link">
-                <span class="sidebar__texto">Associação</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/configuracoes/relacionamentos" class="sidebar__link">
-                <span class="sidebar__texto">Relacionamentos</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/configuracoes/config-gerais" class="sidebar__link">
-                <span class="sidebar__texto">Config. Gerais</span>
-              </a>
-            </li>
-          </ul>
-        </li>
-
-        <li class="sidebar__item">
-          <button type="button" class="sidebar__link" data-action="logout">
-            <span class="material-icons sidebar__icone">logout</span>
-            <span class="sidebar__texto">Sair</span>
-          </button>
-        </li>
-
-      </ul>
-    </div>
-
-  </nav>
-
-  <!-- Rodapé da sidebar -->
-  <div class="sidebar__rodape">
-    AMBC © 2026 • v0.1.0
-  </div>
-
-</aside>
-<div class="app-shell__overlay" id="overlay-sidebar" aria-hidden="true"></div>
-
-  <header class="app-shell__topbar topbar" ...>
-    ...
-  </header>
-
-  <main class="app-shell__conteudo" ...>
-    ...
-  </main>
-
-</div>
->>>>>>> 88b5a7edb670a664064db141c70bc826353ced86
 
     <!-- ======================================================
-         🔝 TOPBAR — Barra superior
+         TOPBAR — Barra superior
          ====================================================== -->
     <header class="app-shell__topbar topbar" aria-label="Barra superior">
 
-      <!-- Início: botão hamburger + título da página -->
       <div class="topbar__inicio">
         <button type="button" class="topbar__toggle" id="btn-toggle-sidebar" aria-label="Abrir menu" aria-controls="sidebar" aria-expanded="false">
           <span class="material-icons">menu</span>
@@ -260,7 +178,6 @@
         <h1 class="topbar__titulo" id="topbar-titulo">Painel</h1>
       </div>
 
-      <!-- Fim: menu do usuário -->
       <div class="topbar__fim">
         <button type="button" class="topbar__usuario" id="btn-menu-usuario" aria-label="Menu do usuário" aria-haspopup="true" aria-expanded="false">
           <span class="topbar__usuario-avatar" aria-hidden="true">F</span>
@@ -275,22 +192,21 @@
     </header>
 
     <!-- ======================================================
-         📄 MAIN — Área de conteúdo da página (injetado pelo router)
+         MAIN — Área de conteúdo da página (injetado pelo router)
          ====================================================== -->
     <main class="app-shell__conteudo" id="conteudo-principal" role="main">
       <!-- Conteúdo é injetado dinamicamente pelo router.js -->
     </main>
 
     <!-- ======================================================
-         🌑 OVERLAY — Fundo escuro quando sidebar abre no mobile
+         OVERLAY — Fundo escuro quando sidebar abre no mobile
          ====================================================== -->
     <div class="app-shell__overlay" id="overlay-sidebar" aria-hidden="true"></div>
 
   </div>
 
   <!-- ==========================================================
-       🚀 JS — Entry point da SPA (ES Modules)
-       Mocks e páginas são importados pelos próprios módulos.
+       JS — Entry point da SPA (ES Modules)
        ========================================================== -->
   <script type="module" src="js/core/app.js"></script>
 </body>

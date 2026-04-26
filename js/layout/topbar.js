@@ -6,17 +6,25 @@
               - Overlay (fecha sidebar ao clicar fora)
               - Tecla ESC (fecha sidebar)
               - Atualizacao do titulo da pagina conforme a rota
+              - Exibicao dos dados do usuario logado
 ========================================================= */
+
+import Sessao from '../core/sessao.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
 --------------------------------------------------------- */
-const SELETOR_SIDEBAR = '#sidebar';
-const SELETOR_OVERLAY = '#overlay-sidebar';
-const SELETOR_BOTAO_TOGGLE = '#btn-toggle-sidebar';
-const SELETOR_TITULO = '#topbar-titulo';
+const SELETOR_SIDEBAR        = '#sidebar';
+const SELETOR_OVERLAY        = '#overlay-sidebar';
+const SELETOR_BOTAO_TOGGLE   = '#btn-toggle-sidebar';
+const SELETOR_TITULO         = '#topbar-titulo';
 
-const CLASSE_SIDEBAR_ABERTA = 'is-aberta';
+// 🆕 Seletores do bloco do usuario logado
+const SELETOR_USUARIO_NOME   = '.topbar__usuario-nome';
+const SELETOR_USUARIO_CARGO  = '.topbar__usuario-cargo';
+const SELETOR_USUARIO_AVATAR = '.topbar__usuario-avatar';
+
+const CLASSE_SIDEBAR_ABERTA  = 'is-aberta';
 const CLASSE_OVERLAY_VISIVEL = 'is-visivel';
 
 const BREAKPOINT_MOBILE = 1024; // alinhado com o CSS do app-shell
@@ -54,7 +62,7 @@ function ehMobile() {
 function abrirSidebar() {
   const sidebar = document.querySelector(SELETOR_SIDEBAR);
   const overlay = document.querySelector(SELETOR_OVERLAY);
-  const botao = document.querySelector(SELETOR_BOTAO_TOGGLE);
+  const botao   = document.querySelector(SELETOR_BOTAO_TOGGLE);
 
   if (sidebar) sidebar.classList.add(CLASSE_SIDEBAR_ABERTA);
   if (overlay) {
@@ -66,7 +74,6 @@ function abrirSidebar() {
     botao.setAttribute('aria-label', 'Fechar menu');
   }
 
-  // Trava o scroll do body enquanto o menu esta aberto
   document.body.style.overflow = 'hidden';
 }
 
@@ -76,7 +83,7 @@ function abrirSidebar() {
 function fecharSidebar() {
   const sidebar = document.querySelector(SELETOR_SIDEBAR);
   const overlay = document.querySelector(SELETOR_OVERLAY);
-  const botao = document.querySelector(SELETOR_BOTAO_TOGGLE);
+  const botao   = document.querySelector(SELETOR_BOTAO_TOGGLE);
 
   if (sidebar) sidebar.classList.remove(CLASSE_SIDEBAR_ABERTA);
   if (overlay) {
@@ -88,7 +95,6 @@ function fecharSidebar() {
     botao.setAttribute('aria-label', 'Abrir menu');
   }
 
-  // Libera o scroll do body
   document.body.style.overflow = '';
 }
 
@@ -115,7 +121,7 @@ function atualizarTitulo() {
   const tituloEl = document.querySelector(SELETOR_TITULO);
   if (!tituloEl) return;
 
-  const hashAtual = window.location.hash || '#/dashboard';
+  const hashAtual  = window.location.hash || '#/dashboard';
   const novoTitulo = TITULOS_ROTAS[hashAtual] || 'AMBC';
 
   tituloEl.textContent = novoTitulo;
@@ -123,7 +129,25 @@ function atualizarTitulo() {
 }
 
 /* ---------------------------------------------------------
-   8. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
+   8. 🆕 FUNCAO: atualiza dados do usuario logado na topbar
+   - Le os dados via Sessao.obter()
+   - Preenche nome, cargo e iniciais do avatar
+--------------------------------------------------------- */
+function atualizarUsuarioLogado() {
+  const usuario = Sessao.obter();
+  if (!usuario) return; // sem sessao, nada a fazer (guarda ja redireciona)
+
+  const elNome   = document.querySelector(SELETOR_USUARIO_NOME);
+  const elCargo  = document.querySelector(SELETOR_USUARIO_CARGO);
+  const elAvatar = document.querySelector(SELETOR_USUARIO_AVATAR);
+
+  if (elNome)   elNome.textContent   = usuario.nome   || '—';
+  if (elCargo)  elCargo.textContent  = usuario.perfil || '—';
+  if (elAvatar) elAvatar.textContent = Sessao.obterIniciais();
+}
+
+/* ---------------------------------------------------------
+   9. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
 --------------------------------------------------------- */
 function tratarTeclaEsc(evento) {
   if (evento.key !== 'Escape') return;
@@ -136,22 +160,19 @@ function tratarTeclaEsc(evento) {
 }
 
 /* ---------------------------------------------------------
-   9. FUNCAO: trata redimensionamento da janela
-   (se o usuario passar do mobile pro desktop com o menu
-    aberto, limpa os estilos pra nao travar o scroll)
+   10. FUNCAO: trata redimensionamento da janela
 --------------------------------------------------------- */
 function tratarResize() {
   if (!ehMobile()) {
-    // Voltou pro desktop: reseta tudo
     fecharSidebar();
   }
 }
 
 /* ---------------------------------------------------------
-   10. FUNCAO PUBLICA: inicializa a topbar
+   11. FUNCAO PUBLICA: inicializa a topbar
 --------------------------------------------------------- */
 function iniciar() {
-  const botao = document.querySelector(SELETOR_BOTAO_TOGGLE);
+  const botao   = document.querySelector(SELETOR_BOTAO_TOGGLE);
   const overlay = document.querySelector(SELETOR_OVERLAY);
 
   if (!botao) {
@@ -179,18 +200,20 @@ function iniciar() {
   // Atualiza titulo na troca de rota
   window.addEventListener('hashchange', atualizarTitulo);
 
-  // Atualiza titulo na carga inicial
+  // Atualizacoes na carga inicial
   atualizarTitulo();
+  atualizarUsuarioLogado(); // 🆕
 
   console.log('[Topbar] Inicializada com sucesso');
 }
 
 /* ---------------------------------------------------------
-   11. EXPORT
+   12. EXPORT
 --------------------------------------------------------- */
 export default {
   iniciar,
   abrirSidebar,
   fecharSidebar,
-  alternarSidebar
+  alternarSidebar,
+  atualizarUsuarioLogado // 🆕 exportado pra usar depois (ex: trocar perfil)
 };

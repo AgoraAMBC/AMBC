@@ -79,6 +79,11 @@ const rotas = {
   },
 
   // ----- CONFIGURAÇÕES -----
+  '#/configuracoes/usuarios': {
+    view: 'views/configuracoes/usuarios.html',
+    page: 'usuarios',
+    titulo: 'Gestão de Usuários'
+  },
   '#/configuracoes/associacao': {
     view: 'views/configuracoes/associacao.html',
     page: 'configuracoes',

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — AMBC</title>
+
+  <!-- Material Icons -->
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
+
+  <!-- Fonte Inter (usada pelo CSS) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- CSS base + variaveis (ajuste o caminho conforme seu projeto) -->
+  <link rel="stylesheet" href="css/base/variaveis.css" />
+  <link rel="stylesheet" href="css/base/reset.css" />
+
+  <!-- CSS da pagina de login -->
+  <link rel="stylesheet" href="css/paginas/login.css" />
+</head>
+
+<body class="login-pagina">
+
+  <main class="login-card">
+
+    <!-- Cabecalho com gradiente azul -->
+    <header class="login-card__cabecalho">
+      <div class="login-card__icone-marca">
+        <span class="material-icons">apartment</span>
+      </div>
+      <h1 class="login-card__nome">AMBC</h1>
+      <p class="login-card__descricao">
+        Associação dos Moradores do Bairro Califórnia
+      </p>
+    </header>
+
+    <!-- Corpo do card -->
+    <section class="login-card__corpo">
+
+      <h2 class="login-card__titulo">Bem-vindo de volta</h2>
+      <p class="login-card__subtitulo">Entre com suas credenciais para continuar</p>
+
+      <!-- Mensagem de erro -->
+      <div
+        id="login-erro"
+        class="login-erro"
+        role="alert"
+        hidden
+      >
+        <span class="material-icons">error_outline</span>
+        <span id="login-erro-texto">Mensagem de erro</span>
+      </div>
+
+      <!-- Formulario -->
+      <form id="form-login" class="login-form" novalidate>
+
+        <!-- Usuario / E-mail -->
+        <div class="login-form__grupo">
+          <div class="login-form__label-linha">
+            <label for="campo-email" class="login-form__label">Usuário ou e-mail</label>
+          </div>
+          <div class="login-form__campo">
+            <span class="material-icons login-form__icone">person</span>
+            <input
+              type="text"
+              id="campo-email"
+              name="email"
+              class="login-form__input"
+              placeholder="admin ou admin@ambc.com"
+              autocomplete="username"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Senha -->
+        <div class="login-form__grupo">
+          <div class="login-form__label-linha">
+            <label for="campo-senha" class="login-form__label">Senha</label>
+            <a href="#" class="login-form__esqueci">Esqueci minha senha</a>
+          </div>
+          <div class="login-form__campo">
+            <span class="material-icons login-form__icone">lock</span>
+            <input
+              type="password"
+              id="campo-senha"
+              name="senha"
+              class="login-form__input"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Lembrar-me -->
+        <div class="login-form__lembrar">
+          <label class="login-form__checkbox-label">
+            <input
+              type="checkbox"
+              id="lembrar-me"
+              class="login-form__checkbox"
+            />
+            <span>Lembrar de mim</span>
+          </label>
+        </div>
+
+        <!-- Botao Entrar -->
+        <button type="submit" id="btn-entrar" class="login-form__btn">
+          <span class="material-icons">login</span>
+          <span id="btn-entrar-texto">Entrar</span>
+        </button>
+
+      </form>
+
+    </section>
+
+    <!-- Rodape -->
+    <footer class="login-card__rodape">
+      &copy; 2026 AMBC — Todos os direitos reservados
+    </footer>
+
+  </main>
+
+  <!-- Script de autenticacao -->
+  <script type="module">
+    import Sessao from './js/core/sessao.js';
+
+    const API_LOGIN = 'http://localhost:8080/backend/auth/login.php';
+
+    // 🆕 MODO MOCK — desliga (false) quando o backend PHP estiver pronto
+    const USAR_MOCK = true;
+
+    // 🆕 Credenciais mock pra testar sem backend
+    const USUARIOS_MOCK = [
+      { usuario: 'admin', email: 'admin@ambc.com', senha: 'admin123', nome: 'Fabio Admin', perfil: 'Administrador' },
+      { usuario: 'user',  email: 'user@ambc.com',  senha: 'user123',  nome: 'Maria Silva', perfil: 'Operador' }
+    ];
+
+    /* ---------------------------------------------------------
+       1. Se ja esta logado, vai direto pro sistema
+    --------------------------------------------------------- */
+    if (Sessao.estaAutenticado()) {
+      console.log('[Login] Sessao ativa detectada — redirecionando para index');
+      window.location.replace('index.html');
+      throw new Error('[Login] Ja autenticado — script interrompido');
+    }
+
+    /* ---------------------------------------------------------
+       2. Pega elementos do formulario
+    --------------------------------------------------------- */
+    const form      = document.getElementById('form-login');
+    const btnTexto  = document.getElementById('btn-entrar-texto');
+    const btn       = document.getElementById('btn-entrar');
+    const erroDiv   = document.getElementById('login-erro');
+    const erroTexto = document.getElementById('login-erro-texto');
+
+    /* ---------------------------------------------------------
+       3. Verifica se todos os elementos existem no DOM
+    --------------------------------------------------------- */
+    if (!form || !btn || !btnTexto || !erroDiv || !erroTexto) {
+      console.error('[Login] Elementos do formulario nao encontrados:', {
+        form: !!form, btn: !!btn, btnTexto: !!btnTexto,
+        erroDiv: !!erroDiv, erroTexto: !!erroTexto
+      });
+      throw new Error('[Login] HTML do formulario incompleto — verifique os IDs');
+    }
+
+    /* ---------------------------------------------------------
+       4. Helpers de UI
+    --------------------------------------------------------- */
+    function mostrarErro(mensagem) {
+      erroTexto.textContent = mensagem;
+      erroDiv.hidden = false;
+    }
+    function ocultarErro() {
+      erroDiv.hidden = true;
+    }
+    function setCarregando(ativo) {
+      btn.disabled = ativo;
+      btnTexto.textContent = ativo ? 'Entrando…' : 'Entrar';
+    }
+
+    /* ---------------------------------------------------------
+       5. Login MOCK (frontend-only)
+    --------------------------------------------------------- */
+    async function loginMock(login, senha) {
+      await new Promise(r => setTimeout(r, 400));
+      const u = USUARIOS_MOCK.find(x =>
+        (x.usuario === login || x.email === login) && x.senha === senha
+      );
+      if (!u) {
+        const err = new Error('Credenciais inválidas.');
+        err.status = 401;
+        throw err;
+      }
+      return { usuario: { email: u.email, nome: u.nome, perfil: u.perfil } };
+    }
+
+    /* ---------------------------------------------------------
+       6. Login REAL (backend PHP)
+    --------------------------------------------------------- */
+    async function loginReal(login, senha) {
+      const resp = await fetch(API_LOGIN, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: login, senha }),
+      });
+      const dados = await resp.json();
+      if (!resp.ok) {
+        const err = new Error(dados.erro ?? 'Erro ao autenticar.');
+        err.status = resp.status;
+        throw err;
+      }
+      return dados;
+    }
+
+    /* ---------------------------------------------------------
+       7. Listener do submit
+    --------------------------------------------------------- */
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      ocultarErro();
+
+      const login   = document.getElementById('campo-email').value.trim();
+      const senha   = document.getElementById('campo-senha').value;
+      const lembrar = document.getElementById('lembrar-me').checked;
+
+      if (!login || !senha) {
+        mostrarErro('Preencha usuário e senha.');
+        return;
+      }
+
+      setCarregando(true);
+
+      try {
+        const dados = USAR_MOCK
+          ? await loginMock(login, senha)
+          : await loginReal(login, senha);
+
+        Sessao.salvar(dados.usuario, lembrar);
+        window.location.replace('index.html');
+      } catch (err) {
+        if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+          mostrarErro('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+        } else {
+          mostrarErro(err.message || 'Erro ao autenticar.');
+        }
+      } finally {
+        setCarregando(false);
+      }
+    });
+  </script>
+
+</body>
+</html>
