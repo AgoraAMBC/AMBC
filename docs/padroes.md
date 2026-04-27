@@ -416,8 +416,10 @@ Antes de abrir PR, confirmar:
  Conteúdo dinâmico escapado (esc())
  Testado em desktop e mobile (responsivo)
  Sem warnings no console do navegador
-🚧 10. Itens Legados (a refatorar)
-Esses pontos existem no código mas não devem ser replicados. Serão refatorados em fases futuras:
+🚧 10. | Duplo `app.js` (`js/` e `js/core/`) | ✅ RESOLVIDO | Removido em refactor/fase-1 |
+| `services/api.js` apontando pra `:3000` | ✅ RESOLVIDO | Migrado para API_BASE em config.js (Fase 2) |
+| `view-loader.js` | ✅ RESOLVIDO | Removido na Fase 3 — código morto, substituído por router.js |
+
 
 
 
