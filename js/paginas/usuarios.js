@@ -2,12 +2,11 @@
    Pagina: Gestão de Usuários
    Projeto: AMBC-V2
    Descricao: CRUD completo de usuários do sistema.
-              O router já injeta o HTML da view antes de
-              chamar init(), então apenas carregamos dados
-              e registramos eventos aqui.
+              Esta página cuida APENAS de UI e eventos.
+              As chamadas HTTP estão em services/usuarios-service.js
 ========================================================= */
 
-import { API_BASE } from '../core/config.js';
+import { UsuariosService } from '../services/usuarios-service.js';
 
 /* ---------------------------------------------------------
    Estado local da página
@@ -41,22 +40,6 @@ function iniciais(nome) {
 }
 
 /* ---------------------------------------------------------
-   API (wrapper local — futuramente migrar para services/)
---------------------------------------------------------- */
-async function api(metodo, endpoint, corpo = null) {
-  const opts = {
-    method: metodo,
-    headers: { 'Content-Type': 'application/json' }
-  };
-  if (corpo) opts.body = JSON.stringify(corpo);
-
-  const resp = await fetch(`${API_BASE}/${endpoint}`, opts);
-  const json = await resp.json();
-  if (!resp.ok) throw new Error(json.erro ?? 'Erro desconhecido');
-  return json;
-}
-
-/* ---------------------------------------------------------
    Tabela
 --------------------------------------------------------- */
 async function carregarTabela() {
@@ -65,11 +48,8 @@ async function carregarTabela() {
 
   corpo.innerHTML = '<tr><td colspan="6" class="gu-tabela__estado">Carregando…</td></tr>';
 
-  const { busca, perfil, status, pagina } = estado;
-  const params = new URLSearchParams({ pagina, busca, perfil, status });
-
   try {
-    const dados = await api('GET', `usuarios/listar.php?${params}`);
+    const dados = await UsuariosService.listar(estado);
     renderTabela(dados.dados);
     renderPaginacao(dados.pagina, dados.paginas);
   } catch (e) {
@@ -277,10 +257,10 @@ function registrarEventos() {
     };
     try {
       if (id) {
-        await api('PUT', 'usuarios/editar.php', { ...corpo, id_usuario: parseInt(id) });
+        await UsuariosService.atualizar({ ...corpo, id_usuario: parseInt(id) });
         toast('Usuário atualizado com sucesso!');
       } else {
-        await api('POST', 'usuarios/cadastrar.php', corpo);
+        await UsuariosService.criar(corpo);
         toast('Usuário cadastrado com sucesso!');
       }
       fecharModal();
@@ -328,7 +308,7 @@ function registrarEventos() {
       );
       if (!ok) return;
       try {
-        const resp = await api('PATCH', 'usuarios/alternar-status.php', { id_usuario: parseInt(btn.dataset.id) });
+        const resp = await UsuariosService.alternarStatus(parseInt(btn.dataset.id));
         toast(resp.mensagem);
         carregarTabela();
       } catch (err) {
@@ -345,13 +325,12 @@ const UsuariosPage = {
   async init() {
     console.log('[Usuarios] Inicializando página…');
 
-    // Reseta estado a cada entrada na página
     estado = { pagina: 1, busca: '', perfil: '', status: '' };
 
     try {
       [modulos, perfis] = await Promise.all([
-        api('GET', 'modulos/listar.php'),
-        api('GET', 'perfis/listar.php'),
+        UsuariosService.listarModulos(),
+        UsuariosService.listarPerfis(),
       ]);
     } catch (err) {
       console.error('[Usuarios] Falha ao carregar dados auxiliares:', err);
