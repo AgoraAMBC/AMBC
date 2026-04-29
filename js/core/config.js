@@ -12,4 +12,5 @@
  * ============================================================
  */
 
-export const API_BASE = '/backend';
+// Laragon (ambc-v2.test): trocar para '/backend'
+export const API_BASE = 'http://localhost:8080/backend';
