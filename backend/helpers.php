@@ -12,6 +12,7 @@ function configurarCors(): void {
         'http://localhost:8080',
         'http://localhost:5500',
         'http://127.0.0.1:5500',
+        'https://ambc-testes.onrender.com',
     ];
 
     if (in_array($origem, $origensPermitidas, true)) {

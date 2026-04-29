@@ -12,5 +12,6 @@
  * ============================================================
  */
 
-// Laragon (ambc-v2.test): trocar para '/backend'
-export const API_BASE = 'http://localhost:8080/backend';
+// Produção (Render) e Laragon: '/backend'
+// Desenvolvimento local Live Server + PHP server separado: 'http://localhost:8080/backend'
+export const API_BASE = '/backend';
