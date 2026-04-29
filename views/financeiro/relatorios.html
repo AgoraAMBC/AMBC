@@ -1,15 +1,41 @@
-﻿<!-- =========================================================
-  View: Relatorios
-  Descricao: Relatorios financeiros
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Relatorios">
-  <header class="view__header">
-    <h1 class="view__title">Relatorios</h1>
-    <p class="view__subtitle">Relatorios financeiros</p>
+<section class="view financeiro" data-financeiro-view="relatorios">
+  <header class="financeiro__cabecalho">
+    <div>
+      <p class="financeiro__eyebrow">Financeiro</p>
+      <h1 class="financeiro__titulo">Relat&oacute;rios</h1>
+      <p class="financeiro__subtitulo">Consolide entradas, saidas, inadimplencia e resultados por periodo.</p>
+    </div>
+    <button type="button" class="btn btn-secundario" id="btn-exportar-relatorio">
+      <span class="material-icons">download</span>
+      Exportar
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Relatorios</strong> sera implementado em breve.</p>
-  </div>
+  <section class="financeiro__painel">
+    <div class="financeiro__painel-cabecalho">
+      <h2 class="financeiro__secao-titulo">Filtros do relatorio</h2>
+      <div class="financeiro__filtros financeiro__filtros--relatorio">
+        <input class="form-input" type="month" id="relatorio-inicio" aria-label="Mes inicial" />
+        <input class="form-input" type="month" id="relatorio-fim" aria-label="Mes final" />
+        <select class="form-input" id="relatorio-tipo" aria-label="Tipo de relatorio">
+          <option value="todos">Receitas e despesas</option>
+          <option value="receita">Somente receitas</option>
+          <option value="despesa">Somente despesas</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <div class="financeiro__metricas" id="relatorio-metricas"></div>
+
+  <section class="financeiro__grid-2">
+    <div class="financeiro__painel">
+      <h2 class="financeiro__secao-titulo">Resultado mensal</h2>
+      <div class="financeiro__barras" id="relatorio-barras"></div>
+    </div>
+    <div class="financeiro__painel">
+      <h2 class="financeiro__secao-titulo">Resumo por conta</h2>
+      <div class="financeiro__lista-contas" id="relatorio-contas"></div>
+    </div>
+  </section>
 </section>

@@ -111,6 +111,10 @@ function renderTabela(usuarios) {
               <span class="material-icons">edit</span>
             </button>
             ${btnToggle}
+            <button class="gu-btn gu-btn--icone gu-btn--icone-perigo" title="Excluir"
+              data-acao="deletar" data-id="${u.id_usuario}" data-nome="${esc(u.nome)}">
+              <span class="material-icons">delete</span>
+            </button>
           </div>
         </td>
       </tr>`;
@@ -310,6 +314,21 @@ function registrarEventos() {
       try {
         const resp = await UsuariosService.alternarStatus(parseInt(btn.dataset.id));
         toast(resp.mensagem);
+        carregarTabela();
+      } catch (err) {
+        toast(err.message, 'erro');
+      }
+    }
+
+    if (btn.dataset.acao === 'deletar') {
+      const ok = await confirmar(
+        `Deseja excluir permanentemente o usuário "${btn.dataset.nome}"? Esta ação não pode ser desfeita.`,
+        'Excluir Usuário'
+      );
+      if (!ok) return;
+      try {
+        const resp = await api('DELETE', 'usuarios/deletar.php', { id_usuario: parseInt(btn.dataset.id) });
+        toast(resp.mensagem ?? 'Usuário excluído com sucesso!');
         carregarTabela();
       } catch (err) {
         toast(err.message, 'erro');

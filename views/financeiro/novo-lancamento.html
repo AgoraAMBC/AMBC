@@ -1,15 +1,99 @@
-﻿<!-- =========================================================
-  View: Novo Lancamento
-  Descricao: Criacao de novo lancamento financeiro
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Novo Lancamento">
-  <header class="view__header">
-    <h1 class="view__title">Novo Lancamento</h1>
-    <p class="view__subtitle">Criacao de novo lancamento financeiro</p>
+<section class="view financeiro" data-financeiro-view="novo-lancamento">
+  <header class="financeiro__cabecalho">
+    <div>
+      <p class="financeiro__eyebrow">Financeiro</p>
+      <h1 class="financeiro__titulo">Novo lan&ccedil;amento</h1>
+      <p class="financeiro__subtitulo">Registre receitas, despesas, mensalidades, acordos e pagamentos operacionais.</p>
+    </div>
+    <a href="#/financeiro/visao-geral" class="btn btn-secundario">
+      <span class="material-icons">arrow_back</span>
+      Voltar
+    </a>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Novo Lancamento</strong> sera implementado em breve.</p>
-  </div>
+  <form class="financeiro__formulario" id="form-lancamento">
+    <section class="financeiro__painel financeiro__painel--form">
+      <h2 class="financeiro__secao-titulo">Dados do lan&ccedil;amento</h2>
+      <div class="form-grid">
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo</label>
+          <select class="form-input" id="lancamento-tipo" required>
+            <option value="receita">Receita</option>
+            <option value="despesa">Despesa</option>
+          </select>
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-status">Status</label>
+          <select class="form-input" id="lancamento-status" required>
+            <option value="pendente">Pendente</option>
+            <option value="pago">Pago</option>
+            <option value="atrasado">Atrasado</option>
+          </select>
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
+          <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-vencimento">Vencimento</label>
+          <input class="form-input" id="lancamento-vencimento" type="date" required />
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Descricao</label>
+          <input class="form-input" id="lancamento-descricao" type="text" placeholder="Ex.: Mensalidade de associado" required />
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label" for="lancamento-conta">Conta regente</label>
+          <select class="form-input" id="lancamento-conta">
+            <option>Receitas associativas</option>
+            <option>Eventos e reservas</option>
+            <option>Despesas administrativas</option>
+            <option>Manutencao e obras</option>
+          </select>
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label" for="lancamento-subconta">Conta subordinada</label>
+          <select class="form-input" id="lancamento-subconta">
+            <option>Mensalidades</option>
+            <option>Reserva de espaco</option>
+            <option>Material de consumo</option>
+            <option>Servicos contratados</option>
+          </select>
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label" for="lancamento-pessoa">Associado, parceiro ou fornecedor</label>
+          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Nome relacionado" />
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label" for="lancamento-competencia">Competencia</label>
+          <input class="form-input" id="lancamento-competencia" type="month" />
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
+          <input class="form-input" id="lancamento-pagamento" type="date" />
+        </div>
+        <div class="campo form-col-12">
+          <label class="form-label" for="lancamento-observacao">Observacoes</label>
+          <textarea class="form-input" id="lancamento-observacao" rows="4" placeholder="Detalhes internos do lancamento"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <aside class="financeiro__resumo-form">
+      <h2 class="financeiro__secao-titulo">Resumo</h2>
+      <dl class="financeiro__dl">
+        <div><dt>Tipo</dt><dd id="resumo-tipo">Receita</dd></div>
+        <div><dt>Status</dt><dd id="resumo-status">Pendente</dd></div>
+        <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+      </dl>
+      <button type="submit" class="btn btn-primario btn-bloco">
+        <span class="material-icons">save</span>
+        Salvar lan&ccedil;amento
+      </button>
+      <button type="reset" class="btn btn-secundario btn-bloco">
+        <span class="material-icons">restart_alt</span>
+        Limpar campos
+      </button>
+    </aside>
+  </form>
 </section>
