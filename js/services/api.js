@@ -2,70 +2,87 @@
  * ============================================================
  * SERVIÇO DE API — AMBC V2
  * ============================================================
- * Camada de abstração para comunicação HTTP.
- * 
- * IMPORTANTE: Para trocar entre mock e API real,
- * basta alterar a constante API_BASE_URL abaixo.
- * 
- * - Mock (json-server):  http://localhost:3000
- * - API real (PHP):      http://localhost/ambc/api
+ * Camada de abstração para comunicação HTTP com o backend.
+ *
+ * A URL base é centralizada em `js/core/config.js` (API_BASE).
+ * Para trocar de ambiente (dev/homolog/prod), altere lá.
+ *
+ * Backend atual: PHP em const BASE_URL = '/backend';
+
  * ============================================================
  */
 
-// 🔧 CONFIGURAÇÃO — troque aqui quando o backend real estiver pronto
-const API_BASE_URL = 'http://localhost:3000';
+import { API_BASE } from '../core/config.js';
 
 /**
  * Wrapper genérico de requisições HTTP.
  * Padroniza tratamento de erros e parsing de JSON.
+ *
+ * @param {string} endpoint - Caminho relativo (ex: '/usuarios')
+ * @param {object} options  - Opções do fetch (method, body, headers, etc.)
+ * @returns {Promise<any>}  - Dados parseados em JSON
+ * @throws {Error}          - Em caso de falha HTTP ou rede
  */
 async function request(endpoint, options = {}) {
-    const url = `${API_BASE_URL}${endpoint}`;
+    const url = `${API_BASE}${endpoint}`;
 
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers
-        },
-        ...options
-    };
+const config = {
+    credentials: 'same-origin',  // 🍪 envia cookie PHPSESSID
+    headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...options.headers
+    },
+    ...options
+};
+
 
     try {
         const response = await fetch(url, config);
 
-        // Tenta parsear JSON mesmo em caso de erro
+        // Tenta parsear JSON mesmo em caso de erro (backend pode retornar { error: ... })
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            throw {
-                status: response.status,
-                message: data?.error || `Erro ${response.status}`,
-                details: data?.details || null
-            };
+            const erro = new Error(data?.error || `Erro HTTP ${response.status}`);
+            erro.status  = response.status;
+            erro.details = data?.details || null;
+            throw erro;
         }
 
         return data;
     } catch (error) {
-        console.error(`❌ Erro na requisição ${endpoint}:`, error);
+        console.error(`❌ Erro na requisição ${options.method || 'GET'} ${endpoint}:`, error);
         throw error;
     }
 }
 
 /**
  * Métodos HTTP disponíveis.
+ * Mantém a API pública igual à versão anterior (get/post/put/delete).
  */
 export const api = {
-    get: (endpoint) => request(endpoint, { method: 'GET' }),
+    get: (endpoint) =>
+        request(endpoint, { method: 'GET' }),
 
-    post: (endpoint, body) => request(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(body)
-    }),
+    post: (endpoint, body) =>
+        request(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(body)
+        }),
 
-    put: (endpoint, body) => request(endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(body)
-    }),
+    put: (endpoint, body) =>
+        request(endpoint, {
+            method: 'PUT',
+            body: JSON.stringify(body)
+        }),
 
-    delete: (endpoint) => request(endpoint, { method: 'DELETE' })
+    patch: (endpoint, body) =>
+        request(endpoint, {
+            method: 'PATCH',
+            body: JSON.stringify(body)
+        }),
+
+    delete: (endpoint) =>
+        request(endpoint, { method: 'DELETE' })
 };

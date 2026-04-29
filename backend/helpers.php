@@ -3,14 +3,29 @@ declare(strict_types=1);
 
 function configurarCors(): void {
     header('Content-Type: application/json; charset=UTF-8');
-    header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type');
+
+    // Whitelist de origens permitidas
+    $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
+    $origensPermitidas = [
+        'http://ambc-v2.test',
+        'http://localhost',
+        'http://localhost:8080',
+    ];
+
+    if (in_array($origem, $origensPermitidas, true)) {
+        header("Access-Control-Allow-Origin: $origem");
+        header('Access-Control-Allow-Credentials: true');
+    }
+
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
+
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(204);
         exit;
     }
 }
+
 
 function jsonResposta(array $dados, int $codigo = 200): void {
     http_response_code($codigo);

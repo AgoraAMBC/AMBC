@@ -21,7 +21,7 @@ function obterConexao(): PDO {
         'pgsql:host=%s;port=%s;dbname=%s',
         $_ENV['DB_HOST'] ?? 'localhost',
         $_ENV['DB_PORT'] ?? '5432',
-        $_ENV['DB_NAME'] ?? 'ambc'
+        $_ENV['DB_NAME'] ?? 'AMBC-V2'
     );
 
     try {

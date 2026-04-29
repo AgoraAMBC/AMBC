@@ -419,6 +419,7 @@ Antes de abrir PR, confirmar:
 🚧 10. | Duplo `app.js` (`js/` e `js/core/`) | ✅ RESOLVIDO | Removido em refactor/fase-1 |
 | `services/api.js` apontando pra `:3000` | ✅ RESOLVIDO | Migrado para API_BASE em config.js (Fase 2) |
 | `view-loader.js` | ✅ RESOLVIDO | Removido na Fase 3 — código morto, substituído por router.js |
+| `usuarios.js` com fetch direto | ✅ RESOLVIDO | Migrado para UsuariosService (Fase 4) |
 
 
 
