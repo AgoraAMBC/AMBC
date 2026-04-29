@@ -1,15 +1,63 @@
-﻿<!-- =========================================================
-  View: Visao Geral
-  Descricao: Visao geral financeira
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Visao Geral">
-  <header class="view__header">
-    <h1 class="view__title">Visao Geral</h1>
-    <p class="view__subtitle">Visao geral financeira</p>
+<section class="view financeiro" data-financeiro-view="visao-geral">
+  <header class="financeiro__cabecalho">
+    <div>
+      <p class="financeiro__eyebrow">Financeiro</p>
+      <h1 class="financeiro__titulo">Vis&atilde;o geral</h1>
+      <p class="financeiro__subtitulo">Acompanhe receitas, despesas, pendencias e fluxo de caixa da associacao.</p>
+    </div>
+    <div class="financeiro__acoes">
+      <a href="#/financeiro/novo-lancamento" class="btn btn-primario">
+        <span class="material-icons">add</span>
+        Novo lan&ccedil;amento
+      </a>
+      <a href="#/financeiro/relatorios" class="btn btn-secundario">
+        <span class="material-icons">summarize</span>
+        Relat&oacute;rios
+      </a>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Visao Geral</strong> sera implementado em breve.</p>
-  </div>
+  <div class="financeiro__metricas" id="financeiro-metricas"></div>
+
+  <section class="financeiro__painel">
+    <div class="financeiro__painel-cabecalho">
+      <div>
+        <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos recentes</h2>
+        <p class="financeiro__secao-texto">Movimentacoes cadastradas para o mes atual.</p>
+      </div>
+      <div class="financeiro__filtros">
+        <select class="form-input" id="filtro-tipo-lancamento" aria-label="Filtrar por tipo">
+          <option value="todos">Todos os tipos</option>
+          <option value="receita">Receitas</option>
+          <option value="despesa">Despesas</option>
+        </select>
+        <select class="form-input" id="filtro-status-lancamento" aria-label="Filtrar por status">
+          <option value="todos">Todos os status</option>
+          <option value="pago">Pagos</option>
+          <option value="pendente">Pendentes</option>
+          <option value="atrasado">Atrasados</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tabela-responsiva">
+      <table class="tabela financeiro__tabela">
+        <thead>
+          <tr>
+            <th>Descricao</th>
+            <th>Conta</th>
+            <th>Vencimento</th>
+            <th>Status</th>
+            <th class="tabela__num">Valor</th>
+          </tr>
+        </thead>
+        <tbody id="financeiro-lancamentos-tbody"></tbody>
+      </table>
+      <div class="tabela-vazia" id="financeiro-lancamentos-vazio" hidden>
+        <span class="material-icons tabela-vazia__icone">receipt_long</span>
+        <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento encontrado</h3>
+        <p class="tabela-vazia__mensagem">Ajuste os filtros ou cadastre uma nova movimentacao financeira.</p>
+      </div>
+    </div>
+  </section>
 </section>

@@ -1,15 +1,55 @@
-﻿<!-- =========================================================
-  View: Contas Regentes
-  Descricao: Gestao de contas regentes
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Contas Regentes">
-  <header class="view__header">
-    <h1 class="view__title">Contas Regentes</h1>
-    <p class="view__subtitle">Gestao de contas regentes</p>
+<section class="view financeiro" data-financeiro-view="contas-regentes">
+  <header class="financeiro__cabecalho">
+    <div>
+      <p class="financeiro__eyebrow">Plano de contas</p>
+      <h1 class="financeiro__titulo">Contas regentes</h1>
+      <p class="financeiro__subtitulo">Categorias principais usadas para organizar receitas e despesas.</p>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Contas Regentes</strong> sera implementado em breve.</p>
-  </div>
+  <section class="financeiro__grid-gestao">
+    <form class="financeiro__painel" id="form-conta-regente">
+      <h2 class="financeiro__secao-titulo">Cadastrar conta regente</h2>
+      <div class="campo">
+        <label class="form-label form-label-obrigatorio" for="regente-nome">Nome</label>
+        <input class="form-input" id="regente-nome" type="text" placeholder="Ex.: Receitas associativas" required />
+      </div>
+      <div class="campo">
+        <label class="form-label form-label-obrigatorio" for="regente-tipo">Tipo padrao</label>
+        <select class="form-input" id="regente-tipo" required>
+          <option value="receita">Receita</option>
+          <option value="despesa">Despesa</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label class="form-label" for="regente-descricao">Descricao</label>
+        <textarea class="form-input" id="regente-descricao" rows="3" placeholder="Quando esta conta deve ser utilizada"></textarea>
+      </div>
+      <button class="btn btn-primario btn-bloco" type="submit">
+        <span class="material-icons">add</span>
+        Adicionar conta
+      </button>
+    </form>
+
+    <div class="financeiro__painel">
+      <div class="financeiro__painel-cabecalho">
+        <h2 class="financeiro__secao-titulo">Contas cadastradas</h2>
+        <input class="form-input financeiro__busca" id="busca-conta-regente" type="search" placeholder="Buscar conta" />
+      </div>
+      <div class="tabela-responsiva">
+        <table class="tabela financeiro__tabela">
+          <thead>
+            <tr>
+              <th>Conta</th>
+              <th>Tipo</th>
+              <th>Subcontas</th>
+              <th>Status</th>
+              <th class="tabela__th-acoes">Acoes</th>
+            </tr>
+          </thead>
+          <tbody id="contas-regentes-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </section>
