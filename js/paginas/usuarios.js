@@ -6,7 +6,8 @@
               As chamadas HTTP estão em services/usuarios-service.js
 ========================================================= */
 
-import { UsuariosService } from '../services/usuarios-service.js';
+import { UsuariosService } from '../services/usuarios-service.js?v=2';
+
 
 /* ---------------------------------------------------------
    Estado local da página
@@ -327,7 +328,7 @@ function registrarEventos() {
       );
       if (!ok) return;
       try {
-        const resp = await api('DELETE', 'usuarios/deletar.php', { id_usuario: parseInt(btn.dataset.id) });
+        const resp = await UsuariosService.deletar(parseInt(btn.dataset.id));
         toast(resp.mensagem ?? 'Usuário excluído com sucesso!');
         carregarTabela();
       } catch (err) {
@@ -390,3 +391,4 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+

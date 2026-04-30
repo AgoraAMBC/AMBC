@@ -4,12 +4,14 @@ declare(strict_types=1);
 function configurarCors(): void {
     header('Content-Type: application/json; charset=UTF-8');
 
-    // Whitelist de origens permitidas
+    // 🌐 Whitelist de origens permitidas
     $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
     $origensPermitidas = [
         'http://ambc-v2.test',
         'http://localhost',
         'http://localhost:8080',
+        'http://127.0.0.1:5500',  // ✅ Live Server (VS Code)
+        'http://localhost:5500',  // ✅ Live Server (alternativo)
     ];
 
     if (in_array($origem, $origensPermitidas, true)) {

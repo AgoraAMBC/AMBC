@@ -8,7 +8,6 @@
  * Para trocar de ambiente (dev/homolog/prod), altere lá.
  *
  * Backend atual: PHP em const BASE_URL = '/backend';
-
  * ============================================================
  */
 
@@ -26,16 +25,15 @@ import { API_BASE } from '../core/config.js';
 async function request(endpoint, options = {}) {
     const url = `${API_BASE}${endpoint}`;
 
-const config = {
-    credentials: 'same-origin',  // 🍪 envia cookie PHPSESSID
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...options.headers
-    },
-    ...options
-};
-
+    const config = {
+        credentials: 'same-origin',  // 🍪 envia cookie PHPSESSID
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            ...options.headers
+        },
+        ...options
+    };
 
     try {
         const response = await fetch(url, config);
@@ -44,7 +42,7 @@ const config = {
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            const erro = new Error(data?.error || `Erro HTTP ${response.status}`);
+            const erro = new Error(data?.error || data?.mensagem || `Erro HTTP ${response.status}`);
             erro.status  = response.status;
             erro.details = data?.details || null;
             throw erro;
@@ -59,7 +57,7 @@ const config = {
 
 /**
  * Métodos HTTP disponíveis.
- * Mantém a API pública igual à versão anterior (get/post/put/delete).
+ * Mantém a API pública igual à versão anterior (get/post/put/patch/delete).
  */
 export const api = {
     get: (endpoint) =>
@@ -83,6 +81,9 @@ export const api = {
             body: JSON.stringify(body)
         }),
 
-    delete: (endpoint) =>
-        request(endpoint, { method: 'DELETE' })
+    delete: (endpoint, body) =>
+        request(endpoint, {
+            method: 'DELETE',
+            body: body ? JSON.stringify(body) : undefined
+        })
 };
