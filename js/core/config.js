@@ -12,6 +12,7 @@
  * ============================================================
  */
 
-// Produção (Render) e Laragon: '/backend'
-// Desenvolvimento local Live Server + PHP server separado: 'http://localhost:8080/backend'
-export const API_BASE = '/backend';
+// Live Server (porta 5500/5501) precisa de URL absoluta para o PHP server separado.
+// Render e Laragon (mesma origem) usam path relativo.
+const _liveServer = ['5500', '5501'].includes(window.location.port);
+export const API_BASE = _liveServer ? 'http://localhost:8080/backend' : '/backend';
