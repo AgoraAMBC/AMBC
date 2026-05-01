@@ -89,5 +89,13 @@ export const UsuariosService = {
      */
     listarPerfis() {
         return api.get('/perfis/listar.php');
+    },
+
+    /**
+     * Exclui permanentemente um usuário.
+     * @param {number} id
+     */
+    deletar(id) {
+        return api.delete('/usuarios/deletar.php', { id_usuario: id });
     }
 };

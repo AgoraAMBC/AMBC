@@ -327,7 +327,7 @@ function registrarEventos() {
       );
       if (!ok) return;
       try {
-        const resp = await api('DELETE', 'usuarios/deletar.php', { id_usuario: parseInt(btn.dataset.id) });
+        const resp = await UsuariosService.deletar(parseInt(btn.dataset.id));
         toast(resp.mensagem ?? 'Usuário excluído com sucesso!');
         carregarTabela();
       } catch (err) {
