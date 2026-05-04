@@ -12,6 +12,7 @@ $dados = corpoJson();
 
 $idUsuario   = (int)($dados['id_usuario'] ?? 0);
 $nome        = trim($dados['nome'] ?? '');
+$email       = trim($dados['email'] ?? '');
 $perfil      = (int)($dados['fk_perfil'] ?? 0);
 $senha       = $dados['senha'] ?? '';
 $fkAssociado = !empty($dados['fk_associado']) ? (int)$dados['fk_associado'] : null;
@@ -20,39 +21,47 @@ $permissoes  = $dados['permissoes'] ?? [];
 if ($idUsuario <= 0) jsonErro('Usuário inválido');
 if ($nome === '')    jsonErro('Nome é obrigatório');
 if ($perfil <= 0)    jsonErro('Perfil é obrigatório');
+if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) jsonErro('E-mail inválido');
 
 $stmt = $pdo->prepare('SELECT id_usuario FROM usuario WHERE id_usuario = :id');
 $stmt->execute([':id' => $idUsuario]);
 if (!$stmt->fetch()) jsonErro('Usuário não encontrado', 404);
 
+if ($email !== '') {
+    $stmt = $pdo->prepare('SELECT id_usuario FROM usuario WHERE email = :email AND id_usuario != :id');
+    $stmt->execute([':email' => $email, ':id' => $idUsuario]);
+    if ($stmt->fetch()) jsonErro('E-mail já está em uso por outro usuário');
+}
+
 try {
     $pdo->beginTransaction();
 
+    $params = [
+        ':nome'         => $nome,
+        ':perfil'       => $perfil,
+        ':fk_associado' => $fkAssociado,
+        ':id'           => $idUsuario,
+    ];
+
+    $setEmail = $email !== '' ? ', email = :email' : '';
+    if ($email !== '') $params[':email'] = $email;
+
     if ($senha !== '') {
-        $senhaHash = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 10]);
-        $pdo->prepare('
+        $params[':senha_hash'] = password_hash($senha, PASSWORD_BCRYPT, ['cost' => 10]);
+        $pdo->prepare("
             UPDATE usuario
             SET nome = :nome, fk_perfil = :perfil, fk_associado = :fk_associado,
-                senha_hash = :senha_hash, primeiro_acesso = FALSE, atualizado_em = NOW()
+                senha_hash = :senha_hash, primeiro_acesso = FALSE,
+                atualizado_em = NOW() $setEmail
             WHERE id_usuario = :id
-        ')->execute([
-            ':nome'         => $nome,
-            ':perfil'       => $perfil,
-            ':fk_associado' => $fkAssociado,
-            ':senha_hash'   => $senhaHash,
-            ':id'           => $idUsuario,
-        ]);
+        ")->execute($params);
     } else {
-        $pdo->prepare('
+        $pdo->prepare("
             UPDATE usuario
-            SET nome = :nome, fk_perfil = :perfil, fk_associado = :fk_associado, atualizado_em = NOW()
+            SET nome = :nome, fk_perfil = :perfil, fk_associado = :fk_associado,
+                atualizado_em = NOW() $setEmail
             WHERE id_usuario = :id
-        ')->execute([
-            ':nome'         => $nome,
-            ':perfil'       => $perfil,
-            ':fk_associado' => $fkAssociado,
-            ':id'           => $idUsuario,
-        ]);
+        ")->execute($params);
     }
 
     // recria permissões

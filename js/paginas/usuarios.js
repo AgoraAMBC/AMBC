@@ -145,15 +145,15 @@ function abrirModal(usuario = null) {
   const modal = document.getElementById('modal-usuario');
   if (!modal) return;
 
-  document.getElementById('modal-titulo').textContent = usuario ? 'Editar Usuário' : 'Novo Usuário';
-  document.getElementById('campo-id').value    = usuario?.id_usuario ?? '';
-  document.getElementById('campo-nome').value  = usuario?.nome ?? '';
-  document.getElementById('campo-email').value = usuario?.email ?? '';
-  document.getElementById('campo-email').readOnly = !!usuario;
-  document.getElementById('campo-perfil').value = '';
-  document.getElementById('campo-senha').value  = '';
+  document.getElementById('modal-titulo').textContent   = usuario ? 'Editar Usuário' : 'Novo Usuário';
+  document.getElementById('campo-id').value             = usuario?.id_usuario ?? '';
+  document.getElementById('campo-nome').value           = usuario?.nome ?? '';
+  document.getElementById('campo-email').value          = usuario?.email ?? '';
+  document.getElementById('campo-email').readOnly       = false;
+  document.getElementById('campo-perfil').value         = usuario?.fk_perfil ?? '';
+  document.getElementById('campo-senha').value          = '';
 
-  renderPermissoes();
+  renderPermissoes(usuario?.permissoes ?? []);
   modal.hidden = false;
 }
 
@@ -163,21 +163,27 @@ function fecharModal() {
   document.getElementById('form-usuario')?.reset();
 }
 
-function renderPermissoes() {
+function renderPermissoes(permissoesExistentes = []) {
   const lista = document.getElementById('lista-permissoes');
   if (!lista) return;
 
-  lista.innerHTML = modulos.map(m => `
+  const mapa = {};
+  permissoesExistentes.forEach(p => { mapa[p.fk_modulo] = p; });
+
+  lista.innerHTML = modulos.map(m => {
+    const p = mapa[m.id_modulo] || {};
+    return `
     <div class="gu-permissoes__item">
       <span class="gu-permissoes__modulo">${esc(m.descricao)}</span>
       <label class="gu-permissoes__opcao">
-        <input type="checkbox" data-modulo="${m.id_modulo}" data-tipo="acessar" /> Acessar
+        <input type="checkbox" data-modulo="${m.id_modulo}" data-tipo="acessar" ${p.pode_acessar ? 'checked' : ''}/> Acessar
       </label>
       <label class="gu-permissoes__opcao">
-        <input type="checkbox" data-modulo="${m.id_modulo}" data-tipo="editar" /> Editar
+        <input type="checkbox" data-modulo="${m.id_modulo}" data-tipo="editar" ${p.pode_editar ? 'checked' : ''}/> Editar
       </label>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function coletarPermissoes() {
@@ -301,7 +307,12 @@ function registrarEventos() {
     if (!btn) return;
 
     if (btn.dataset.acao === 'editar') {
-      abrirModal({ id_usuario: parseInt(btn.dataset.id) });
+      try {
+        const usuario = await UsuariosService.obter(parseInt(btn.dataset.id));
+        abrirModal(usuario);
+      } catch (err) {
+        toast(err.message, 'erro');
+      }
     }
 
     if (btn.dataset.acao === 'alternar') {
