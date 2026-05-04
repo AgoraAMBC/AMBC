@@ -393,7 +393,7 @@ export default UsuariosPage;
    Utilitários
 --------------------------------------------------------- */
 function formatarData(iso) {
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
 }
 
 function esc(str) {
