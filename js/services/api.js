@@ -81,9 +81,9 @@ export const api = {
             body: JSON.stringify(body)
         }),
 
-    delete: (endpoint, body) =>
+    delete: (endpoint, body = null) =>
         request(endpoint, {
             method: 'DELETE',
-            body: body ? JSON.stringify(body) : undefined
+            ...(body ? { body: JSON.stringify(body) } : {})
         })
 };

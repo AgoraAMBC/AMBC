@@ -134,8 +134,9 @@
   <script type="module">
     import Sessao from './js/core/sessao.js';
 
-    const API_LOGIN = '/backend/auth/login.php';
-
+    // Auto-detecta ambiente: Live Server (5500) usa PHP server separado, demais usam mesma origem
+    const _liveServer = ['5500', '5501'].includes(window.location.port);
+    const API_LOGIN = (_liveServer ? 'http://localhost:8080' : '') + '/backend/auth/login.php';
 
     // MODO MOCK — false = usa o backend PHP real
     const USAR_MOCK = false;

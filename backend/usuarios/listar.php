@@ -60,8 +60,12 @@ $stmt->execute();
 
 $usuarios = $stmt->fetchAll();
 foreach ($usuarios as &$u) {
-    $u['ativo']          = (bool)$u['ativo'];
+    $u['ativo']           = (bool)$u['ativo'];
     $u['primeiro_acesso'] = (bool)$u['primeiro_acesso'];
+    // Adiciona sufixo UTC para o JS interpretar corretamente o fuso
+    if ($u['ultimo_acesso']) {
+        $u['ultimo_acesso'] = str_replace(' ', 'T', $u['ultimo_acesso']) . '+00:00';
+    }
 }
 
 jsonResposta([

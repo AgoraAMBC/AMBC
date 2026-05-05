@@ -10,8 +10,9 @@ function configurarCors(): void {
         'http://ambc-v2.test',
         'http://localhost',
         'http://localhost:8080',
-        'http://127.0.0.1:5500',  // ✅ Live Server (VS Code)
-        'http://localhost:5500',  // ✅ Live Server (alternativo)
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'https://ambc-testes.onrender.com',
     ];
 
     if (in_array($origem, $origensPermitidas, true)) {

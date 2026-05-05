@@ -18,10 +18,11 @@ function obterConexao(): PDO {
     carregarEnv(dirname(__DIR__, 2) . '/.env');
 
     $dsn = sprintf(
-        'pgsql:host=%s;port=%s;dbname=%s',
+        'pgsql:host=%s;port=%s;dbname=%s;sslmode=%s',
         $_ENV['DB_HOST'] ?? 'localhost',
         $_ENV['DB_PORT'] ?? '5432',
-        $_ENV['DB_NAME'] ?? 'AMBC-V2'
+        $_ENV['DB_NAME'] ?? 'AMBC-V2',
+        $_ENV['DB_SSLMODE'] ?? 'prefer'
     );
 
     try {

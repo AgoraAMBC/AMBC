@@ -5,6 +5,7 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
+import { api } from '../services/api.js';
 
 const lancamentos = [
   { id: 1, descricao: 'Mensalidade - Maria Oliveira', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'pago', vencimento: '2026-04-05', valor: 85.00, pessoa: 'Maria Oliveira' },
@@ -194,8 +195,10 @@ function renderizarResumoContas() {
   `).join('');
 }
 
-function iniciarContasRegentes() {
-  renderizarContasRegentes();
+let modoEdicaoRegente = null;
+
+async function iniciarContasRegentes() {
+  await renderizarContasRegentes();
 
   const busca = document.getElementById('busca-conta-regente');
   if (busca) {
@@ -206,42 +209,108 @@ function iniciarContasRegentes() {
 
   const form = document.getElementById('form-conta-regente');
   if (form) {
-    const handler = (evento) => {
+    const handler = async (evento) => {
       evento.preventDefault();
-      Toast.sucesso('Conta regente pronta para salvar no backend.');
-      form.reset();
+      const descricao  = document.getElementById('regente-nome')?.value.trim();
+      const tipo       = document.getElementById('regente-tipo')?.value;
+      const observacao = document.getElementById('regente-descricao')?.value.trim();
+      try {
+        if (modoEdicaoRegente) {
+          await api.put('/financeiro/contas-regentes/editar.php', { id_conta_regente: modoEdicaoRegente, descricao, tipo, observacao });
+          Toast.sucesso('Conta regente atualizada com sucesso!');
+          modoEdicaoRegente = null;
+          document.querySelector('#form-conta-regente button[type=submit]').textContent = 'Adicionar conta';
+        } else {
+          await api.post('/financeiro/contas-regentes/cadastrar.php', { descricao, tipo, observacao });
+          Toast.sucesso('Conta regente cadastrada com sucesso!');
+        }
+        form.reset();
+        await renderizarContasRegentes();
+      } catch (err) {
+        Toast.erro(err.message);
+      }
     };
     form.addEventListener('submit', handler);
     cleanup.push(() => form.removeEventListener('submit', handler));
   }
+
+  const tbody = document.getElementById('contas-regentes-tbody');
+  if (tbody) {
+    const handler = async (e) => {
+      const btn = e.target.closest('[data-acao]');
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      if (btn.dataset.acao === 'editar-regente') {
+        document.getElementById('regente-nome').value       = btn.dataset.nome;
+        document.getElementById('regente-tipo').value       = btn.dataset.tipo;
+        document.getElementById('regente-descricao').value  = btn.dataset.obs || '';
+        modoEdicaoRegente = id;
+        document.querySelector('#form-conta-regente button[type=submit]').textContent = 'Salvar alterações';
+        document.getElementById('regente-nome').focus();
+      }
+      if (btn.dataset.acao === 'alternar-regente') {
+        try {
+          const resp = await api.patch('/financeiro/contas-regentes/alternar-status.php', { id_conta_regente: id });
+          Toast.sucesso(resp.mensagem);
+          await renderizarContasRegentes();
+        } catch (err) {
+          Toast.erro(err.message);
+        }
+      }
+    };
+    tbody.addEventListener('click', handler);
+    cleanup.push(() => tbody.removeEventListener('click', handler));
+  }
 }
 
-function renderizarContasRegentes() {
+async function renderizarContasRegentes() {
   const tbody = document.getElementById('contas-regentes-tbody');
   if (!tbody) return;
 
-  const termo = (document.getElementById('busca-conta-regente')?.value || '').toLowerCase();
-  const lista = contasRegentes.filter((conta) => conta.nome.toLowerCase().includes(termo));
+  const busca = document.getElementById('busca-conta-regente')?.value.trim() || '';
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Carregando…</td></tr>';
 
-  tbody.innerHTML = lista.map((conta) => `
-    <tr>
-      <td>${escaparHtml(conta.nome)}</td>
-      <td>${badgeTipo(conta.tipo)}</td>
-      <td>${conta.subcontas}</td>
-      <td>${badgeStatus(conta.status)}</td>
-      <td>
-        <div class="tabela__acoes">
-          <button class="btn-icone" type="button" aria-label="Editar"><span class="material-icons">edit</span></button>
-          <button class="btn-icone btn-icone-perigo" type="button" aria-label="Inativar"><span class="material-icons">block</span></button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  try {
+    const params = new URLSearchParams();
+    if (busca) params.set('busca', busca);
+    const { dados } = await api.get(`/financeiro/contas-regentes/listar.php?${params}`);
+
+    if (!dados.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Nenhuma conta encontrada.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = dados.map((c) => `
+      <tr>
+        <td>${escaparHtml(c.descricao)}</td>
+        <td>${badgeTipo(c.tipo)}</td>
+        <td>${c.total_subcontas}</td>
+        <td>${badgeStatus(c.ativo ? 'ativo' : 'inativo')}</td>
+        <td>
+          <div class="tabela__acoes">
+            <button class="btn-icone" type="button" data-acao="editar-regente"
+              data-id="${c.id_conta_regente}" data-nome="${escaparHtml(c.descricao)}"
+              data-tipo="${c.tipo}" data-obs="${escaparHtml(c.observacao || '')}"
+              aria-label="Editar"><span class="material-icons">edit</span></button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="alternar-regente"
+              data-id="${c.id_conta_regente}"
+              aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
+              <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1rem;color:red">${escaparHtml(err.message)}</td></tr>`;
+  }
 }
 
-function iniciarContasSubordinadas() {
-  preencherSelectsRegentes();
-  renderizarContasSubordinadas();
+let modoEdicaoSubordinada = null;
+
+async function iniciarContasSubordinadas() {
+  await preencherSelectsRegentes();
+  await renderizarContasSubordinadas();
 
   const filtro = document.getElementById('filtro-subordinada-regente');
   if (filtro) {
@@ -252,45 +321,112 @@ function iniciarContasSubordinadas() {
 
   const form = document.getElementById('form-conta-subordinada');
   if (form) {
-    const handler = (evento) => {
+    const handler = async (evento) => {
       evento.preventDefault();
-      Toast.sucesso('Conta subordinada pronta para salvar no backend.');
-      form.reset();
+      const fkRegente  = parseInt(document.getElementById('subordinada-regente')?.value);
+      const descricao  = document.getElementById('subordinada-nome')?.value.trim();
+      const observacao = document.getElementById('subordinada-descricao')?.value.trim();
+      try {
+        if (modoEdicaoSubordinada) {
+          await api.put('/financeiro/contas-subordinadas/editar.php', { id_conta_subordinada: modoEdicaoSubordinada, fk_conta_regente: fkRegente, descricao, observacao });
+          Toast.sucesso('Conta subordinada atualizada com sucesso!');
+          modoEdicaoSubordinada = null;
+          document.querySelector('#form-conta-subordinada button[type=submit]').textContent = 'Adicionar subconta';
+        } else {
+          await api.post('/financeiro/contas-subordinadas/cadastrar.php', { fk_conta_regente: fkRegente, descricao, observacao });
+          Toast.sucesso('Conta subordinada cadastrada com sucesso!');
+        }
+        form.reset();
+        await renderizarContasSubordinadas();
+      } catch (err) {
+        Toast.erro(err.message);
+      }
     };
     form.addEventListener('submit', handler);
     cleanup.push(() => form.removeEventListener('submit', handler));
   }
+
+  const tbody = document.getElementById('contas-subordinadas-tbody');
+  if (tbody) {
+    const handler = async (e) => {
+      const btn = e.target.closest('[data-acao]');
+      if (!btn) return;
+      const id = parseInt(btn.dataset.id);
+      if (btn.dataset.acao === 'editar-subordinada') {
+        document.getElementById('subordinada-regente').value    = btn.dataset.regente;
+        document.getElementById('subordinada-nome').value       = btn.dataset.nome;
+        document.getElementById('subordinada-descricao').value  = btn.dataset.obs || '';
+        modoEdicaoSubordinada = id;
+        document.querySelector('#form-conta-subordinada button[type=submit]').textContent = 'Salvar alterações';
+        document.getElementById('subordinada-nome').focus();
+      }
+      if (btn.dataset.acao === 'alternar-subordinada') {
+        try {
+          const resp = await api.patch('/financeiro/contas-subordinadas/alternar-status.php', { id_conta_subordinada: id });
+          Toast.sucesso(resp.mensagem);
+          await renderizarContasSubordinadas();
+        } catch (err) {
+          Toast.erro(err.message);
+        }
+      }
+    };
+    tbody.addEventListener('click', handler);
+    cleanup.push(() => tbody.removeEventListener('click', handler));
+  }
 }
 
-function preencherSelectsRegentes() {
-  const opcoes = contasRegentes.map((conta) => `<option value="${escaparHtml(conta.nome)}">${escaparHtml(conta.nome)}</option>`).join('');
-  const cadastro = document.getElementById('subordinada-regente');
-  const filtro = document.getElementById('filtro-subordinada-regente');
-  if (cadastro) cadastro.innerHTML = opcoes;
-  if (filtro) filtro.innerHTML = `<option value="todas">Todas as regentes</option>${opcoes}`;
+async function preencherSelectsRegentes() {
+  try {
+    const { dados } = await api.get('/financeiro/contas-regentes/listar.php?ativos=1');
+    const opcoes = dados.map((c) => `<option value="${c.id_conta_regente}">${escaparHtml(c.descricao)}</option>`).join('');
+    const cadastro = document.getElementById('subordinada-regente');
+    const filtro   = document.getElementById('filtro-subordinada-regente');
+    if (cadastro) cadastro.innerHTML = opcoes;
+    if (filtro)   filtro.innerHTML   = `<option value="0">Todas as regentes</option>${opcoes}`;
+  } catch (_) {}
 }
 
-function renderizarContasSubordinadas() {
+async function renderizarContasSubordinadas() {
   const tbody = document.getElementById('contas-subordinadas-tbody');
   if (!tbody) return;
 
-  const regente = document.getElementById('filtro-subordinada-regente')?.value || 'todas';
-  const lista = contasSubordinadas.filter((conta) => regente === 'todas' || conta.regente === regente);
+  const regente = parseInt(document.getElementById('filtro-subordinada-regente')?.value || '0');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Carregando…</td></tr>';
 
-  tbody.innerHTML = lista.map((conta) => `
-    <tr>
-      <td>${escaparHtml(conta.nome)}</td>
-      <td>${escaparHtml(conta.regente)}</td>
-      <td>${conta.movimentos}</td>
-      <td>${badgeStatus(conta.status)}</td>
-      <td>
-        <div class="tabela__acoes">
-          <button class="btn-icone" type="button" aria-label="Editar"><span class="material-icons">edit</span></button>
-          <button class="btn-icone btn-icone-perigo" type="button" aria-label="Inativar"><span class="material-icons">block</span></button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  try {
+    const params = new URLSearchParams();
+    if (regente > 0) params.set('fk_conta_regente', String(regente));
+    const { dados } = await api.get(`/financeiro/contas-subordinadas/listar.php?${params}`);
+
+    if (!dados.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Nenhuma subconta encontrada.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = dados.map((c) => `
+      <tr>
+        <td>${escaparHtml(c.descricao)}</td>
+        <td>${escaparHtml(c.regente)}</td>
+        <td>${c.total_movimentos}</td>
+        <td>${badgeStatus(c.ativo ? 'ativo' : 'inativo')}</td>
+        <td>
+          <div class="tabela__acoes">
+            <button class="btn-icone" type="button" data-acao="editar-subordinada"
+              data-id="${c.id_conta_subordinada}" data-nome="${escaparHtml(c.descricao)}"
+              data-regente="${c.fk_conta_regente}" data-obs="${escaparHtml(c.observacao || '')}"
+              aria-label="Editar"><span class="material-icons">edit</span></button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="alternar-subordinada"
+              data-id="${c.id_conta_subordinada}"
+              aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
+              <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1rem;color:red">${escaparHtml(err.message)}</td></tr>`;
+  }
 }
 
 function calcularResumo(lista) {
