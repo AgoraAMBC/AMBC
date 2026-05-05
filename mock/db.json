@@ -2,53 +2,201 @@
   "associados": [
     {
       "id": 1,
+      "matricula": "ASS-2024-0001",
       "nome": "João Silva",
       "cpf": "123.456.789-00",
+      "data_nascimento": "1980-05-15",
       "email": "joao@email.com",
       "telefone": "(51) 98888-1111",
-      "endereco": "Rua A, 100",
-      "data_cadastro": "2026-04-23 14:30:00",
+      "profissao": "Analista de Sistemas",
+      "fk_genero": 1,
+      "fk_estado_civil": 2,
+      "fk_status_pessoa": 1,
+      "fk_situacao_imovel": 1,
+      "cep": "92000-000",
+      "logradouro": "Rua A",
+      "numero": "100",
+      "complemento": "",
+      "bairro": "Califórnia",
+      "cidade": "Canoas",
+      "uf": "RS",
+      "observacoes": "",
+      "data_cadastro": "2024-04-23 14:30:00",
       "ativo": true
     },
     {
       "id": 2,
+      "matricula": "ASS-2024-0002",
       "nome": "Maria Santos",
       "cpf": "987.654.321-00",
+      "data_nascimento": "1985-08-22",
       "email": "maria@email.com",
       "telefone": "(51) 98888-2222",
-      "endereco": "Rua B, 200",
-      "data_cadastro": "2026-04-23 14:35:00",
+      "profissao": "Médica",
+      "fk_genero": 2,
+      "fk_estado_civil": 1,
+      "fk_status_pessoa": 1,
+      "fk_situacao_imovel": 2,
+      "cep": "92000-100",
+      "logradouro": "Rua B",
+      "numero": "200",
+      "complemento": "Apto 12",
+      "bairro": "Califórnia",
+      "cidade": "Canoas",
+      "uf": "RS",
+      "observacoes": "",
+      "data_cadastro": "2024-04-23 14:35:00",
       "ativo": true
     },
     {
       "id": 3,
+      "matricula": "ASS-2024-0003",
       "nome": "Carlos Oliveira",
       "cpf": "456.789.123-00",
+      "data_nascimento": "1975-12-10",
       "email": "carlos@email.com",
       "telefone": "(51) 98888-3333",
-      "endereco": "Rua C, 300",
-      "data_cadastro": "2026-04-23 14:40:00",
+      "profissao": "Comerciante",
+      "fk_genero": 1,
+      "fk_estado_civil": 2,
+      "fk_status_pessoa": 1,
+      "fk_situacao_imovel": 1,
+      "cep": "92000-200",
+      "logradouro": "Rua C",
+      "numero": "300",
+      "complemento": "",
+      "bairro": "Califórnia",
+      "cidade": "Canoas",
+      "uf": "RS",
+      "observacoes": "",
+      "data_cadastro": "2024-04-23 14:40:00",
       "ativo": true
     },
     {
       "id": 4,
+      "matricula": "ASS-2024-0004",
       "nome": "Ana Paula Ferreira",
       "cpf": "789.123.456-00",
+      "data_nascimento": "1990-03-18",
       "email": "ana@email.com",
       "telefone": "(51) 98888-4444",
-      "endereco": "Rua D, 400",
-      "data_cadastro": "2026-04-23 14:45:00",
+      "profissao": "Professora",
+      "fk_genero": 2,
+      "fk_estado_civil": 1,
+      "fk_status_pessoa": 1,
+      "fk_situacao_imovel": 3,
+      "cep": "92000-300",
+      "logradouro": "Rua D",
+      "numero": "400",
+      "complemento": "Casa 2",
+      "bairro": "Califórnia",
+      "cidade": "Canoas",
+      "uf": "RS",
+      "observacoes": "",
+      "data_cadastro": "2024-04-23 14:45:00",
       "ativo": true
     },
     {
       "id": 5,
+      "matricula": "ASS-2024-0005",
       "nome": "Roberto Almeida",
       "cpf": "321.654.987-00",
+      "data_nascimento": "1968-07-30",
       "email": "roberto@email.com",
       "telefone": "(51) 98888-5555",
-      "endereco": "Rua E, 500",
-      "data_cadastro": "2026-04-23 14:50:00",
+      "profissao": "Aposentado",
+      "fk_genero": 1,
+      "fk_estado_civil": 4,
+      "fk_status_pessoa": 2,
+      "fk_situacao_imovel": 1,
+      "cep": "92000-400",
+      "logradouro": "Rua E",
+      "numero": "500",
+      "complemento": "",
+      "bairro": "Califórnia",
+      "cidade": "Canoas",
+      "uf": "RS",
+      "observacoes": "Inativo desde 2024",
+      "data_cadastro": "2024-04-23 14:50:00",
       "ativo": false
     }
+  ],
+
+  "dependentes": [
+    {
+      "id": 1,
+      "fk_associado": 1,
+      "nome": "Pedro Silva",
+      "cpf": "111.222.333-44",
+      "data_nascimento": "2010-08-20",
+      "email": "",
+      "telefone": "",
+      "fk_parentesco": 2,
+      "fk_genero": 1,
+      "ativo": true
+    },
+    {
+      "id": 2,
+      "fk_associado": 1,
+      "nome": "Júlia Silva",
+      "cpf": "555.666.777-88",
+      "data_nascimento": "1985-04-12",
+      "email": "julia@email.com",
+      "telefone": "(51) 98888-1112",
+      "fk_parentesco": 1,
+      "fk_genero": 2,
+      "ativo": true
+    }
+  ],
+
+  "generos": [
+    { "id": 1, "descricao": "Masculino" },
+    { "id": 2, "descricao": "Feminino" },
+    { "id": 3, "descricao": "Outro" }
+  ],
+
+  "estados_civis": [
+    { "id": 1, "descricao": "Solteiro(a)" },
+    { "id": 2, "descricao": "Casado(a)" },
+    { "id": 3, "descricao": "Divorciado(a)" },
+    { "id": 4, "descricao": "Viúvo(a)" },
+    { "id": 5, "descricao": "União Estável" }
+  ],
+
+  "profissoes": [
+    { "id": 1, "descricao": "Analista de Sistemas" },
+    { "id": 2, "descricao": "Médica" },
+    { "id": 3, "descricao": "Comerciante" },
+    { "id": 4, "descricao": "Professora" },
+    { "id": 5, "descricao": "Aposentado" },
+    { "id": 6, "descricao": "Autônomo(a)" }
+  ],
+
+  "parentescos": [
+    { "id": 1, "descricao": "Cônjuge" },
+    { "id": 2, "descricao": "Filho(a)" },
+    { "id": 3, "descricao": "Pai/Mãe" },
+    { "id": 4, "descricao": "Irmão(ã)" },
+    { "id": 5, "descricao": "Outro" }
+  ],
+
+  "status_pessoa": [
+    { "id": 1, "descricao": "Ativo" },
+    { "id": 2, "descricao": "Inativo" },
+    { "id": 3, "descricao": "Pendente" }
+  ],
+
+  "status_lancamento": [
+    { "id": 1, "descricao": "Pago" },
+    { "id": 2, "descricao": "Pendente" },
+    { "id": 3, "descricao": "Atrasado" },
+    { "id": 4, "descricao": "Cancelado" }
+  ],
+
+  "situacoes_imovel": [
+    { "id": 1, "descricao": "Próprio" },
+    { "id": 2, "descricao": "Alugado" },
+    { "id": 3, "descricao": "Cedido" },
+    { "id": 4, "descricao": "Financiado" }
   ]
 }

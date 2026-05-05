@@ -1,0 +1,380 @@
+.view--cadastro-novo-associado {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cadastro-associado__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cadastro-associado__cabecalho-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cadastro-associado__titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cor-texto-primario, #0f172a);
+}
+
+.cadastro-associado__subtitulo {
+  margin: 0;
+  color: var(--cor-texto-secundario, #64748b);
+  font-size: 0.95rem;
+}
+
+.cadastro-associado__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cadastro-associado__bloco {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  padding: 1.2rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.cadastro-associado__bloco-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.cadastro-associado__bloco-topo--acoes {
+  align-items: center;
+}
+
+.cadastro-associado__bloco-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cadastro-associado__bloco-titulo .material-icons {
+  font-size: 1.2rem;
+  color: #2563eb;
+}
+
+.cadastro-associado__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.cadastro-associado__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cadastro-associado__campo label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cadastro-associado__campo input,
+.cadastro-associado__campo select,
+.cadastro-associado__campo textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.85rem 1rem;
+  border: 1px solid #c7d4e5;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 0.98rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.cadastro-associado__campo input::placeholder,
+.cadastro-associado__campo textarea::placeholder {
+  color: #94a3b8;
+}
+
+.cadastro-associado__campo input:focus,
+.cadastro-associado__campo select:focus,
+.cadastro-associado__campo textarea:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.cadastro-associado__campo textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.cadastro-associado__campo input[readonly] {
+  background: #f8fafc;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.cadastro-associado__campo--acao {
+  justify-content: flex-end;
+}
+
+.cadastro-associado__botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.cadastro-associado__botao .material-icons {
+  font-size: 1.1rem;
+}
+
+.cadastro-associado__campo--acao .cadastro-associado__botao {
+  width: 100%;
+  min-height: 48px;
+}
+
+.cadastro-associado__tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.cadastro-associado__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.cadastro-associado__tabela thead th {
+  padding: 1rem 1rem;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #557195;
+  background: #f8fbff;
+  border-bottom: 1px solid #dbe4f0;
+}
+
+.cadastro-associado__tabela tbody td {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #eef3f8;
+  color: #1e293b;
+  font-size: 0.96rem;
+}
+
+.cadastro-associado__tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cadastro-associado__estado-vazio {
+  text-align: center;
+  color: #64748b;
+  padding: 1.5rem 1rem;
+}
+
+.col-acoes {
+  width: 140px;
+}
+
+.cadastro-associado__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.cadastro-associado__botao--rodape {
+  min-width: 160px;
+}
+
+.span-1 {
+  grid-column: span 1;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+.span-3 {
+  grid-column: span 3;
+}
+
+.span-4 {
+  grid-column: span 4;
+}
+
+.span-5 {
+  grid-column: span 5;
+}
+
+.span-6 {
+  grid-column: span 6;
+}
+
+.span-7 {
+  grid-column: span 7;
+}
+
+.span-8 {
+  grid-column: span 8;
+}
+
+.span-9 {
+  grid-column: span 9;
+}
+
+.span-10 {
+  grid-column: span 10;
+}
+
+.span-11 {
+  grid-column: span 11;
+}
+
+.span-12 {
+  grid-column: span 12;
+}
+
+@media (max-width: 1200px) {
+  .span-7,
+  .span-8,
+  .span-9,
+  .span-10,
+  .span-11,
+  .span-12 {
+    grid-column: span 12;
+  }
+
+  .span-5,
+  .span-6 {
+    grid-column: span 6;
+  }
+
+  .span-4 {
+    grid-column: span 4;
+  }
+
+  .span-3 {
+    grid-column: span 3;
+  }
+
+  .span-2 {
+    grid-column: span 2;
+  }
+
+  .span-1 {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 992px) {
+  .cadastro-associado__bloco {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .cadastro-associado__grid {
+    gap: 0.85rem;
+  }
+
+  .span-6,
+  .span-5,
+  .span-4,
+  .span-3,
+  .span-2,
+  .span-1 {
+    grid-column: span 6;
+  }
+}
+
+@media (max-width: 768px) {
+  .cadastro-associado__cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cadastro-associado__bloco-topo,
+  .cadastro-associado__bloco-topo--acoes {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cadastro-associado__botao {
+    width: 100%;
+  }
+
+  .cadastro-associado__acoes {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cadastro-associado__botao--rodape {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .span-12,
+  .span-11,
+  .span-10,
+  .span-9,
+  .span-8,
+  .span-7,
+  .span-6,
+  .span-5,
+  .span-4,
+  .span-3,
+  .span-2,
+  .span-1 {
+    grid-column: span 12;
+  }
+
+  .cadastro-associado__campo input,
+  .cadastro-associado__campo select,
+  .cadastro-associado__campo textarea,
+  .cadastro-associado__campo--acao .cadastro-associado__botao {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cadastro-associado__titulo {
+    font-size: 1.25rem;
+  }
+
+  .cadastro-associado__subtitulo {
+    font-size: 0.9rem;
+  }
+
+  .cadastro-associado__bloco {
+    padding: 0.9rem;
+    border-radius: 14px;
+  }
+
+  .cadastro-associado__bloco-titulo {
+    font-size: 1rem;
+  }
+
+  .cadastro-associado__tabela thead th,
+  .cadastro-associado__tabela tbody td {
+    padding: 0.9rem 0.85rem;
+  }
+}
