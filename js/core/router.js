@@ -188,8 +188,11 @@ async function tratarRota() {
     return; // o proprio hashchange vai disparar tratarRota() de novo
   }
 
+  // Permite query strings no hash, ex: #/cadastro/novo-associado?id=123
+  const [rotaHash] = hash.split('?');
+
   // Busca a rota no mapa; se nao existir, usa a view 404
-  const rota = rotas[hash];
+  const rota = rotas[rotaHash];
 
   // Chama destroy() da pagina anterior (se existir)
   if (paginaAtual && typeof paginaAtual.destroy === 'function') {
