@@ -171,9 +171,9 @@
   white-space: nowrap;
 }
 
-/* Cabeçalho da coluna de ações alinhado à direita */
+/* Cabeçalho da coluna de ações centralizado */
 .tabela thead th.tabela__th-acoes {
-  text-align: right;
+  text-align: center;
 }
 
 /* ============================================

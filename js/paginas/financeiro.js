@@ -5,6 +5,7 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
+import Modal from '../componentes/modal.js';
 import { api } from '../services/api.js';
 
 const lancamentos = [
@@ -257,6 +258,41 @@ async function iniciarContasRegentes() {
           Toast.erro(err.message);
         }
       }
+      if (btn.dataset.acao === 'deletar-regente') {
+        const nome = btn.dataset.nome;
+        const idRegente = id;
+        Modal.confirmar({
+          titulo: 'Excluir conta regente?',
+          mensagem: `A conta <strong>${nome}</strong> será excluída permanentemente. Esta ação não pode ser desfeita.`,
+          icone: 'delete_forever',
+          variante: 'erro',
+          textoConfirmar: 'Sim, excluir',
+          textoCancelar: 'Cancelar',
+          estiloConfirmar: 'perigo',
+          aoConfirmar: () => {
+            api.delete('/financeiro/contas-regentes/deletar.php', { id_conta_regente: idRegente })
+              .then(resp => {
+                Toast.sucesso(resp.mensagem || 'Conta excluída com sucesso.');
+                renderizarContasRegentes();
+              })
+              .catch(err => {
+                if (err.status === 409) {
+                  Modal.confirmar({
+                    titulo: 'Exclusão não permitida',
+                    mensagem: err.message,
+                    icone: 'warning',
+                    variante: 'alerta',
+                    textoConfirmar: 'Entendi',
+                    textoCancelar: 'Fechar',
+                    estiloConfirmar: 'secundario',
+                  });
+                } else {
+                  Toast.erro(err.message || 'Não foi possível excluir a conta.');
+                }
+              });
+          },
+        });
+      }
     };
     tbody.addEventListener('click', handler);
     cleanup.push(() => tbody.removeEventListener('click', handler));
@@ -296,6 +332,11 @@ async function renderizarContasRegentes() {
               data-id="${c.id_conta_regente}"
               aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
               <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
+            </button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="deletar-regente"
+              data-id="${c.id_conta_regente}" data-nome="${escaparHtml(c.descricao)}"
+              aria-label="Excluir">
+              <span class="material-icons">delete</span>
             </button>
           </div>
         </td>
@@ -369,6 +410,41 @@ async function iniciarContasSubordinadas() {
           Toast.erro(err.message);
         }
       }
+      if (btn.dataset.acao === 'deletar-subordinada') {
+        const nome = btn.dataset.nome;
+        const idSubordinada = id;
+        Modal.confirmar({
+          titulo: 'Excluir subconta?',
+          mensagem: `A subconta <strong>${nome}</strong> será excluída permanentemente. Esta ação não pode ser desfeita.`,
+          icone: 'delete_forever',
+          variante: 'erro',
+          textoConfirmar: 'Sim, excluir',
+          textoCancelar: 'Cancelar',
+          estiloConfirmar: 'perigo',
+          aoConfirmar: () => {
+            api.delete('/financeiro/contas-subordinadas/deletar.php', { id_conta_subordinada: idSubordinada })
+              .then(resp => {
+                Toast.sucesso(resp.mensagem || 'Subconta excluída com sucesso.');
+                renderizarContasSubordinadas();
+              })
+              .catch(err => {
+                if (err.status === 409) {
+                  Modal.confirmar({
+                    titulo: 'Exclusão não permitida',
+                    mensagem: err.message,
+                    icone: 'warning',
+                    variante: 'alerta',
+                    textoConfirmar: 'Entendi',
+                    textoCancelar: 'Fechar',
+                    estiloConfirmar: 'secundario',
+                  });
+                } else {
+                  Toast.erro(err.message || 'Não foi possível excluir a subconta.');
+                }
+              });
+          },
+        });
+      }
     };
     tbody.addEventListener('click', handler);
     cleanup.push(() => tbody.removeEventListener('click', handler));
@@ -419,6 +495,11 @@ async function renderizarContasSubordinadas() {
               data-id="${c.id_conta_subordinada}"
               aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
               <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
+            </button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="deletar-subordinada"
+              data-id="${c.id_conta_subordinada}" data-nome="${escaparHtml(c.descricao)}"
+              aria-label="Excluir">
+              <span class="material-icons">delete</span>
             </button>
           </div>
         </td>
