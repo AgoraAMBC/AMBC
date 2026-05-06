@@ -54,14 +54,15 @@ export const AuxiliaresService = {
   },
 
   async carregarTodas() {
+    // ✅ allSettled nunca rejeita — cada resultado tem { status, value, reason }
     const [
-      generos,
-      estadosCivis,
-      profissoes,
-      statusPessoa,
-      situacoesImovel,
-      ufs
-    ] = await Promise.all([
+      rGeneros,
+      rEstadosCivis,
+      rProfissoes,
+      rStatusPessoa,
+      rSituacoesImovel,
+      rUfs
+    ] = await Promise.allSettled([
       this.listarGeneros(),
       this.listarEstadosCivis(),
       this.listarProfissoes(),
@@ -70,13 +71,20 @@ export const AuxiliaresService = {
       this.listarUfs()
     ]);
 
+    // Extrai o valor ou retorna [] se falhou
+    const extrair = (resultado, nome) => {
+      if (resultado.status === 'fulfilled') return resultado.value ?? [];
+      console.warn(`[AuxiliaresService] Falha ao carregar "${nome}":`, resultado.reason?.message);
+      return [];
+    };
+
     return {
-      generos,
-      estadosCivis,
-      profissoes,
-      statusPessoa,
-      situacoesImovel,
-      ufs
+      generos:        extrair(rGeneros,        'generos'),
+      estadosCivis:   extrair(rEstadosCivis,   'estadosCivis'),
+      profissoes:     extrair(rProfissoes,      'profissoes'),
+      statusPessoa:   extrair(rStatusPessoa,    'statusPessoa'),
+      situacoesImovel: extrair(rSituacoesImovel, 'situacoesImovel'),
+      ufs:            extrair(rUfs,             'ufs')
     };
   }
 };
