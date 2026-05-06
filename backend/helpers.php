@@ -4,7 +4,7 @@ declare(strict_types=1);
 function configurarCors(): void {
     header('Content-Type: application/json; charset=UTF-8');
 
-    // Whitelist de origens permitidas
+    // 🌐 Whitelist de origens permitidas
     $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
     $origensPermitidas = [
         'http://ambc-v2.test',

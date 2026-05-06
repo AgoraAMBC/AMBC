@@ -6,7 +6,8 @@
               As chamadas HTTP estão em services/usuarios-service.js
 ========================================================= */
 
-import { UsuariosService } from '../services/usuarios-service.js';
+import { UsuariosService } from '../services/usuarios-service.js?v=2';
+
 
 /* ---------------------------------------------------------
    Estado local da página
@@ -401,3 +402,4 @@ function esc(str) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+
