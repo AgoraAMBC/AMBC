@@ -73,7 +73,7 @@ const Modal = {
         </div>
       </div>
       <div class="modal__rodape">
-        <button type="button" class="btn btn-secundario" data-acao="cancelar">${textoCancelar}</button>
+        ${textoCancelar ? `<button type="button" class="btn btn-secundario" data-acao="cancelar">${textoCancelar}</button>` : ''}
         <button type="button" class="btn btn-${estiloConfirmar}" data-acao="confirmar">${textoConfirmar}</button>
       </div>
     `;

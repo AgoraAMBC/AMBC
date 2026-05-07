@@ -306,6 +306,34 @@
   }
 }
 
+/* Formulários de cadastro (regente e subordinada) */
+#form-conta-regente,
+#form-conta-subordinada {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-md);
+}
+
+#form-conta-regente .campo,
+#form-conta-subordinada .campo {
+  gap: 2px;
+}
+
+#form-conta-regente .campo .form-label,
+#form-conta-subordinada .campo .form-label {
+  margin-bottom: 2px;
+}
+
+#form-conta-regente button[type="submit"],
+#form-conta-subordinada button[type="submit"] {
+  margin-top: var(--esp-xs);
+}
+
+/* Cabeçalho do painel de lista — respira antes da tabela */
+.financeiro__painel-cabecalho {
+  margin-bottom: var(--esp-md);
+}
+
 @media (max-width: 640px) {
   .financeiro {
     padding: var(--esp-md);

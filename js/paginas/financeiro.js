@@ -5,6 +5,7 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
+import Modal from '../componentes/modal.js';
 import { api } from '../services/api.js';
 
 const lancamentos = [
@@ -257,6 +258,44 @@ async function iniciarContasRegentes() {
           Toast.erro(err.message);
         }
       }
+      if (btn.dataset.acao === 'ver-regente') {
+        abrirDetalheRegente(id, btn.dataset.nome, btn.dataset.tipo, btn.dataset.obs || '', btn.dataset.ativo === 'true');
+      }
+      if (btn.dataset.acao === 'deletar-regente') {
+        const nome = btn.dataset.nome;
+        const idRegente = id;
+        Modal.confirmar({
+          titulo: 'Excluir conta regente?',
+          mensagem: `A conta <strong>${nome}</strong> será excluída permanentemente. Esta ação não pode ser desfeita.`,
+          icone: 'delete_forever',
+          variante: 'erro',
+          textoConfirmar: 'Sim, excluir',
+          textoCancelar: 'Cancelar',
+          estiloConfirmar: 'perigo',
+          aoConfirmar: () => {
+            api.delete('/financeiro/contas-regentes/deletar.php', { id_conta_regente: idRegente })
+              .then(resp => {
+                Toast.sucesso(resp.mensagem || 'Conta excluída com sucesso.');
+                renderizarContasRegentes();
+              })
+              .catch(err => {
+                if (err.status === 409) {
+                  Modal.confirmar({
+                    titulo: 'Exclusão não permitida',
+                    mensagem: err.message,
+                    icone: 'warning',
+                    variante: 'alerta',
+                    textoConfirmar: 'Entendi',
+                    textoCancelar: 'Fechar',
+                    estiloConfirmar: 'secundario',
+                  });
+                } else {
+                  Toast.erro(err.message || 'Não foi possível excluir a conta.');
+                }
+              });
+          },
+        });
+      }
     };
     tbody.addEventListener('click', handler);
     cleanup.push(() => tbody.removeEventListener('click', handler));
@@ -281,7 +320,10 @@ async function renderizarContasRegentes() {
     }
 
     tbody.innerHTML = dados.map((c) => `
-      <tr>
+      <tr data-acao="ver-regente" data-id="${c.id_conta_regente}"
+          data-nome="${escaparHtml(c.descricao)}" data-tipo="${c.tipo}"
+          data-obs="${escaparHtml(c.observacao || '')}" data-ativo="${c.ativo}"
+          style="cursor:pointer" title="Clique para ver detalhes">
         <td>${escaparHtml(c.descricao)}</td>
         <td>${badgeTipo(c.tipo)}</td>
         <td>${c.total_subcontas}</td>
@@ -297,6 +339,11 @@ async function renderizarContasRegentes() {
               aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
               <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
             </button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="deletar-regente"
+              data-id="${c.id_conta_regente}" data-nome="${escaparHtml(c.descricao)}"
+              aria-label="Excluir">
+              <span class="material-icons">delete</span>
+            </button>
           </div>
         </td>
       </tr>
@@ -304,6 +351,139 @@ async function renderizarContasRegentes() {
   } catch (err) {
     tbody.innerHTML = linhaEstadoTabela(err.message, true);
   }
+}
+
+async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'modal modal-lg';
+
+  dialog.innerHTML = `
+    <div class="modal__cabecalho">
+      <div style="flex:1;min-width:0">
+        <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:var(--esp-sm)">
+          ${badgeTipo(tipo)}
+          ${badgeStatus(ativo ? 'ativo' : 'inativo')}
+        </div>
+      </div>
+      <button type="button" class="modal__fechar" data-acao="fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
+      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Descrição</p>
+        ${obs
+          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+        }
+      </div>
+      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Subcontas vinculadas</p>
+        <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
+      </div>
+    </div>
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  dialog.querySelectorAll('[data-acao="fechar"]').forEach((btn) =>
+    btn.addEventListener('click', () => dialog.close())
+  );
+  dialog.addEventListener('close', () => setTimeout(() => dialog.remove(), 200));
+
+  dialog.showModal();
+  Modal._configurarFechamentoBackdrop(dialog);
+
+  const lista = dialog.querySelector('#detalhe-subcontas-lista');
+  try {
+    const { dados } = await api.get(`/financeiro/contas-subordinadas/listar.php?fk_conta_regente=${id}`);
+
+    if (!dados.length) {
+      lista.innerHTML = '<p style="text-align:center;color:var(--texto-secundario)">Nenhuma subconta cadastrada.</p>';
+      return;
+    }
+
+    lista.innerHTML = `
+      <div class="tabela-responsiva" style="border-color:var(--cor-cinza-300)">
+        <table class="tabela tabela-compacta">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Movimentos</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dados.map((s) => `
+              <tr>
+                <td>
+                  ${escaparHtml(s.descricao)}
+                  ${s.observacao ? `<span class="tabela__sub">${escaparHtml(s.observacao)}</span>` : ''}
+                </td>
+                <td>${s.total_movimentos}</td>
+                <td>${badgeStatus(s.ativo ? 'ativo' : 'inativo')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (err) {
+    lista.innerHTML = `<p style="color:var(--cor-erro-escura)">Erro ao carregar: ${escaparHtml(err.message)}</p>`;
+  }
+}
+
+function abrirDetalheSubordinada(nome, regenteNome, obs, ativo, movimentos) {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'modal modal-lg';
+
+  dialog.innerHTML = `
+    <div class="modal__cabecalho">
+      <div style="flex:1;min-width:0">
+        <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.25rem">
+          ${badgeStatus(ativo ? 'ativo' : 'inativo')}
+        </div>
+      </div>
+      <button type="button" class="modal__fechar" data-acao="fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Conta regente</p>
+        <p style="color:var(--texto-principal);margin:0">${escaparHtml(regenteNome)}</p>
+      </div>
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Descrição</p>
+        ${obs
+          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+        }
+      </div>
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Movimentos financeiros</p>
+        <p style="color:var(--texto-principal);margin:0">${movimentos} movimento${movimentos !== 1 ? 's' : ''} vinculado${movimentos !== 1 ? 's' : ''}</p>
+      </div>
+    </div>
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  dialog.querySelectorAll('[data-acao="fechar"]').forEach((btn) =>
+    btn.addEventListener('click', () => dialog.close())
+  );
+  dialog.addEventListener('close', () => setTimeout(() => dialog.remove(), 200));
+
+  dialog.showModal();
+  Modal._configurarFechamentoBackdrop(dialog);
 }
 
 let modoEdicaoSubordinada = null;
@@ -369,6 +549,44 @@ async function iniciarContasSubordinadas() {
           Toast.erro(err.message);
         }
       }
+      if (btn.dataset.acao === 'ver-subordinada') {
+        abrirDetalheSubordinada(btn.dataset.nome, btn.dataset.regenteNome, btn.dataset.obs || '', btn.dataset.ativo === 'true', parseInt(btn.dataset.movimentos));
+      }
+      if (btn.dataset.acao === 'deletar-subordinada') {
+        const nome = btn.dataset.nome;
+        const idSubordinada = id;
+        Modal.confirmar({
+          titulo: 'Excluir subconta?',
+          mensagem: `A subconta <strong>${nome}</strong> será excluída permanentemente. Esta ação não pode ser desfeita.`,
+          icone: 'delete_forever',
+          variante: 'erro',
+          textoConfirmar: 'Sim, excluir',
+          textoCancelar: 'Cancelar',
+          estiloConfirmar: 'perigo',
+          aoConfirmar: () => {
+            api.delete('/financeiro/contas-subordinadas/deletar.php', { id_conta_subordinada: idSubordinada })
+              .then(resp => {
+                Toast.sucesso(resp.mensagem || 'Subconta excluída com sucesso.');
+                renderizarContasSubordinadas();
+              })
+              .catch(err => {
+                if (err.status === 409) {
+                  Modal.confirmar({
+                    titulo: 'Exclusão não permitida',
+                    mensagem: err.message,
+                    icone: 'warning',
+                    variante: 'alerta',
+                    textoConfirmar: 'Entendi',
+                    textoCancelar: 'Fechar',
+                    estiloConfirmar: 'secundario',
+                  });
+                } else {
+                  Toast.erro(err.message || 'Não foi possível excluir a subconta.');
+                }
+              });
+          },
+        });
+      }
     };
     tbody.addEventListener('click', handler);
     cleanup.push(() => tbody.removeEventListener('click', handler));
@@ -404,7 +622,11 @@ async function renderizarContasSubordinadas() {
     }
 
     tbody.innerHTML = dados.map((c) => `
-      <tr>
+      <tr data-acao="ver-subordinada" data-id="${c.id_conta_subordinada}"
+          data-nome="${escaparHtml(c.descricao)}" data-regente-nome="${escaparHtml(c.regente)}"
+          data-obs="${escaparHtml(c.observacao || '')}" data-ativo="${c.ativo}"
+          data-movimentos="${c.total_movimentos}"
+          style="cursor:pointer" title="Clique para ver detalhes">
         <td>${escaparHtml(c.descricao)}</td>
         <td>${escaparHtml(c.regente)}</td>
         <td>${c.total_movimentos}</td>
@@ -419,6 +641,11 @@ async function renderizarContasSubordinadas() {
               data-id="${c.id_conta_subordinada}"
               aria-label="${c.ativo ? 'Inativar' : 'Ativar'}">
               <span class="material-icons">${c.ativo ? 'block' : 'check_circle'}</span>
+            </button>
+            <button class="btn-icone btn-icone-perigo" type="button" data-acao="deletar-subordinada"
+              data-id="${c.id_conta_subordinada}" data-nome="${escaparHtml(c.descricao)}"
+              aria-label="Excluir">
+              <span class="material-icons">delete</span>
             </button>
           </div>
         </td>

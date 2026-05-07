@@ -18,6 +18,7 @@
   width: calc(100% - var(--esp-lg) * 2);
   max-height: calc(100vh - var(--esp-lg) * 2);
   overflow: hidden;
+  margin: auto;
 
   /* Estado inicial — invisível */
   opacity: 0;

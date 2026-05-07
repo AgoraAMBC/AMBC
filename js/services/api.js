@@ -42,7 +42,7 @@ async function request(endpoint, options = {}) {
         const data = await response.json().catch(() => null);
 
         if (!response.ok) {
-            const erro = new Error(data?.error || data?.mensagem || `Erro HTTP ${response.status}`);
+            const erro = new Error(data?.erro || data?.error || data?.mensagem || `Erro HTTP ${response.status}`);
             erro.status  = response.status;
             erro.details = data?.details || null;
             throw erro;
