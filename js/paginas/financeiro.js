@@ -370,10 +370,18 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
         <span class="material-icons">close</span>
       </button>
     </div>
-    <div class="modal__corpo">
-      ${obs ? `<p style="color:var(--texto-secundario);margin-bottom:var(--esp-md)">${escaparHtml(obs)}</p>` : ''}
-      <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Subcontas vinculadas</p>
-      <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
+    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Descrição</p>
+        ${obs
+          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+        }
+      </div>
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Subcontas vinculadas</p>
+        <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
+      </div>
     </div>
     <div class="modal__rodape">
       <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
