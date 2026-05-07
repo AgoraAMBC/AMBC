@@ -361,7 +361,7 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
     <div class="modal__cabecalho">
       <div style="flex:1;min-width:0">
         <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
-        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.25rem">
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:var(--esp-sm)">
           ${badgeTipo(tipo)}
           ${badgeStatus(ativo ? 'ativo' : 'inativo')}
         </div>
@@ -371,15 +371,15 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
       </button>
     </div>
     <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
-      <div>
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Descrição</p>
+      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Descrição</p>
         ${obs
           ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
           : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
         }
       </div>
-      <div>
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Subcontas vinculadas</p>
+      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Subcontas vinculadas</p>
         <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
       </div>
     </div>
@@ -408,7 +408,7 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
     }
 
     lista.innerHTML = `
-      <div class="tabela-responsiva">
+      <div class="tabela-responsiva" style="border-color:var(--cor-cinza-300)">
         <table class="tabela tabela-compacta">
           <thead>
             <tr>
@@ -435,6 +435,55 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
   } catch (err) {
     lista.innerHTML = `<p style="color:var(--cor-erro-escura)">Erro ao carregar: ${escaparHtml(err.message)}</p>`;
   }
+}
+
+function abrirDetalheSubordinada(nome, regenteNome, obs, ativo, movimentos) {
+  const dialog = document.createElement('dialog');
+  dialog.className = 'modal modal-lg';
+
+  dialog.innerHTML = `
+    <div class="modal__cabecalho">
+      <div style="flex:1;min-width:0">
+        <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.25rem">
+          ${badgeStatus(ativo ? 'ativo' : 'inativo')}
+        </div>
+      </div>
+      <button type="button" class="modal__fechar" data-acao="fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Conta regente</p>
+        <p style="color:var(--texto-principal);margin:0">${escaparHtml(regenteNome)}</p>
+      </div>
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Descrição</p>
+        ${obs
+          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+        }
+      </div>
+      <div>
+        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Movimentos financeiros</p>
+        <p style="color:var(--texto-principal);margin:0">${movimentos} movimento${movimentos !== 1 ? 's' : ''} vinculado${movimentos !== 1 ? 's' : ''}</p>
+      </div>
+    </div>
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
+    </div>
+  `;
+
+  document.body.appendChild(dialog);
+
+  dialog.querySelectorAll('[data-acao="fechar"]').forEach((btn) =>
+    btn.addEventListener('click', () => dialog.close())
+  );
+  dialog.addEventListener('close', () => setTimeout(() => dialog.remove(), 200));
+
+  dialog.showModal();
+  Modal._configurarFechamentoBackdrop(dialog);
 }
 
 let modoEdicaoSubordinada = null;
@@ -499,6 +548,9 @@ async function iniciarContasSubordinadas() {
         } catch (err) {
           Toast.erro(err.message);
         }
+      }
+      if (btn.dataset.acao === 'ver-subordinada') {
+        abrirDetalheSubordinada(btn.dataset.nome, btn.dataset.regenteNome, btn.dataset.obs || '', btn.dataset.ativo === 'true', parseInt(btn.dataset.movimentos));
       }
       if (btn.dataset.acao === 'deletar-subordinada') {
         const nome = btn.dataset.nome;
@@ -570,7 +622,11 @@ async function renderizarContasSubordinadas() {
     }
 
     tbody.innerHTML = dados.map((c) => `
-      <tr>
+      <tr data-acao="ver-subordinada" data-id="${c.id_conta_subordinada}"
+          data-nome="${escaparHtml(c.descricao)}" data-regente-nome="${escaparHtml(c.regente)}"
+          data-obs="${escaparHtml(c.observacao || '')}" data-ativo="${c.ativo}"
+          data-movimentos="${c.total_movimentos}"
+          style="cursor:pointer" title="Clique para ver detalhes">
         <td>${escaparHtml(c.descricao)}</td>
         <td>${escaparHtml(c.regente)}</td>
         <td>${c.total_movimentos}</td>
