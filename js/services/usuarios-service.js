@@ -38,6 +38,8 @@ export const UsuariosService = {
 
     /**
      * Lista usuários com filtros e paginação.
+     * @param {object} filtros - { pagina, busca, perfil, status }
+     * @returns {Promise<{ dados: Array, pagina: number, paginas: number }>}
      */
     listar(filtros = {}) {
         return api.get(`/usuarios/listar.php${montarQuery(filtros)}`);
@@ -45,6 +47,7 @@ export const UsuariosService = {
 
     /**
      * Obtém dados completos de um usuário (para edição).
+     * @param {number} id
      */
     obter(id) {
         return api.get(`/usuarios/obter.php?id=${id}`);
@@ -52,6 +55,7 @@ export const UsuariosService = {
 
     /**
      * Cria um novo usuário.
+     * @param {object} dados - { nome, email, fk_perfil, senha, permissoes }
      */
     criar(dados) {
         return api.post('/usuarios/cadastrar.php', dados);
@@ -59,6 +63,7 @@ export const UsuariosService = {
 
     /**
      * Atualiza um usuário existente.
+     * @param {object} dados - { id_usuario, nome, fk_perfil, senha?, permissoes }
      */
     atualizar(dados) {
         return api.put('/usuarios/editar.php', dados);
@@ -66,17 +71,10 @@ export const UsuariosService = {
 
     /**
      * Alterna o status (ativo/inativo) de um usuário.
+     * @param {number} id
      */
     alternarStatus(id) {
         return api.patch('/usuarios/alternar-status.php', { id_usuario: id });
-    },
-
-    /**
-     * Exclui permanentemente um usuário do sistema.
-     * Remove também suas permissões associadas (cascata no backend).
-     */
-    deletar(id) {
-        return api.delete('/usuarios/deletar.php', { id_usuario: id });
     },
 
     /**
