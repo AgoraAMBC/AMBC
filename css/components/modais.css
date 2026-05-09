@@ -20,16 +20,23 @@
   overflow: hidden;
   margin: auto;
 
-  /* Estado inicial — invisível */
-  opacity: 0;
-  transform: translateY(-8px) scale(0.98);
-  transition: opacity var(--transicao-padrao), transform var(--transicao-padrao);
+    transition: opacity var(--transicao-padrao), transform var(--transicao-padrao);
 }
 
-/* Modal aberto — anima entrada */
+/* Modal aberto — estado final visível */
 .modal[open] {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+/* Ponto de partida da animação de entrada.
+   Necessário no Chrome 117+ / Firefox 129+: sem @starting-style, elementos
+   que saem de display:none não recebem a transição e ficam em opacity:0. */
+@starting-style {
+  .modal[open] {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
 }
 
 /* Backdrop (fundo escuro atrás do modal) */
