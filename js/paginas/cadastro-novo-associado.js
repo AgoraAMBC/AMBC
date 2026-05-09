@@ -36,7 +36,13 @@ const refs = {
   modalTelefoneFundo: null,
   modalTelefoneFechar: null,
   modalDependente: null,
+  modalDependenteFundo: null,
+  modalDependenteFechar: null,
+  modalDependenteCancelar: null,
   modalLancamento: null,
+  modalLancamentoFundo: null,
+  modalLancamentoFechar: null,
+  modalLancamentoCancelar: null,
 
   btnSalvarTelefoneModal: null,
   btnSalvarDependenteModal: null,
@@ -338,15 +344,13 @@ function fecharTodosModais() {
   [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(fecharModal);
 }
 
-// Fecha dialog ao clicar no backdrop (somente para <dialog>)
-function aoClicarBackdropModal(e) {
-  if (e.target === e.currentTarget) e.currentTarget.close();
-}
 
-function aoFecharModalTelefone()  { fecharModal(refs.modalTelefone);  }
-function aoAbrirModalTelefone()   { abrirModal(refs.modalTelefone);   }
-function aoAbrirModalDependente() { abrirModal(refs.modalDependente); }
-function aoAbrirModalLancamento() { abrirModal(refs.modalLancamento); }
+function aoFecharModalTelefone()   { fecharModal(refs.modalTelefone);   }
+function aoFecharModalDependente() { fecharModal(refs.modalDependente); }
+function aoFecharModalLancamento() { fecharModal(refs.modalLancamento); }
+function aoAbrirModalTelefone()    { abrirModal(refs.modalTelefone);    }
+function aoAbrirModalDependente()  { abrirModal(refs.modalDependente);  }
+function aoAbrirModalLancamento()  { abrirModal(refs.modalLancamento);  }
 
 function selecionarTipoLancamento(botaoSelecionado) {
   refs.botoesTipoLancamento.forEach(botao => {
@@ -414,8 +418,14 @@ function mapearRefs() {
   refs.modalTelefone       = document.getElementById('modal-telefone');
   refs.modalTelefoneFundo  = document.getElementById('modal-telefone-fundo');
   refs.modalTelefoneFechar = document.getElementById('modal-telefone-fechar');
-  refs.modalDependente     = document.getElementById('modal-dependente');
-  refs.modalLancamento     = document.getElementById('modal-lancamento');
+  refs.modalDependente        = document.getElementById('modal-dependente');
+  refs.modalDependenteFundo   = document.getElementById('modal-dependente-fundo');
+  refs.modalDependenteFechar  = document.getElementById('modal-dependente-fechar');
+  refs.modalDependenteCancelar = document.getElementById('modal-dependente-cancelar');
+  refs.modalLancamento        = document.getElementById('modal-lancamento');
+  refs.modalLancamentoFundo   = document.getElementById('modal-lancamento-fundo');
+  refs.modalLancamentoFechar  = document.getElementById('modal-lancamento-fechar');
+  refs.modalLancamentoCancelar = document.getElementById('modal-lancamento-cancelar');
 
   refs.btnSalvarTelefoneModal   = document.getElementById('btn-salvar-telefone-modal');
   refs.btnSalvarDependenteModal = document.getElementById('btn-salvar-dependente-modal');
@@ -447,14 +457,16 @@ function registrarEventos() {
   refs.btnSalvarDependenteModal?.addEventListener('click', aoSalvarDependenteModal);
   refs.btnSalvarLancamentoModal?.addEventListener('click', aoSalvarLancamentoModal);
 
-  // Telefone: div-modal — fecha pelo fundo e pelo botão fechar
   refs.modalTelefoneFundo?.addEventListener('click', aoFecharModalTelefone);
   refs.modalTelefoneFechar?.addEventListener('click', aoFecharModalTelefone);
 
-  // Dependente e lançamento: <dialog> — fecha ao clicar no backdrop nativo
-  [refs.modalDependente, refs.modalLancamento].forEach(modal => {
-    modal?.addEventListener('click', aoClicarBackdropModal);
-  });
+  refs.modalDependenteFundo?.addEventListener('click', aoFecharModalDependente);
+  refs.modalDependenteFechar?.addEventListener('click', aoFecharModalDependente);
+  refs.modalDependenteCancelar?.addEventListener('click', aoFecharModalDependente);
+
+  refs.modalLancamentoFundo?.addEventListener('click', aoFecharModalLancamento);
+  refs.modalLancamentoFechar?.addEventListener('click', aoFecharModalLancamento);
+  refs.modalLancamentoCancelar?.addEventListener('click', aoFecharModalLancamento);
 
   refs.botoesTipoLancamento.forEach(botao => {
     botao.addEventListener('click', () => selecionarTipoLancamento(botao));
@@ -481,9 +493,13 @@ function removerEventos() {
   refs.modalTelefoneFundo?.removeEventListener('click', aoFecharModalTelefone);
   refs.modalTelefoneFechar?.removeEventListener('click', aoFecharModalTelefone);
 
-  [refs.modalDependente, refs.modalLancamento].forEach(modal => {
-    modal?.removeEventListener('click', aoClicarBackdropModal);
-  });
+  refs.modalDependenteFundo?.removeEventListener('click', aoFecharModalDependente);
+  refs.modalDependenteFechar?.removeEventListener('click', aoFecharModalDependente);
+  refs.modalDependenteCancelar?.removeEventListener('click', aoFecharModalDependente);
+
+  refs.modalLancamentoFundo?.removeEventListener('click', aoFecharModalLancamento);
+  refs.modalLancamentoFechar?.removeEventListener('click', aoFecharModalLancamento);
+  refs.modalLancamentoCancelar?.removeEventListener('click', aoFecharModalLancamento);
 
   document.removeEventListener('keydown', aoPressionarTeclaEscape);
 }

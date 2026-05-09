@@ -315,170 +315,176 @@
   </div>
 
   <!-- MODAL — DEPENDENTE -->
-  <dialog class="modal modal-lg" id="modal-dependente" aria-labelledby="modal-dependente-titulo">
-    <div class="modal__cabecalho">
-      <h3 class="modal__titulo" id="modal-dependente-titulo">
-        <span class="material-icons">groups</span>
-        <span>Adicionar Dependente</span>
-      </h3>
-      <button type="button" class="modal__fechar" data-modal-fechar aria-label="Fechar modal">
-        <span class="material-icons">close</span>
-      </button>
-    </div>
-    <div class="modal__corpo">
-      <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-8">
-          <label for="dependente-nome">Nome Completo *</label>
-          <input type="text" id="dependente-nome" name="dependente_nome"
-            placeholder="Nome do dependente" />
+  <div class="gu-modal" id="modal-dependente" aria-modal="true" role="dialog" hidden>
+    <div class="gu-modal__fundo" id="modal-dependente-fundo"></div>
+    <div class="gu-modal__caixa" style="max-width:720px">
+      <div class="gu-modal__cabecalho">
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">groups</span>
+          <h3 class="gu-modal__titulo">Adicionar Dependente</h3>
         </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="dependente-nascimento">Data Nascimento</label>
-          <input type="date" id="dependente-nascimento" name="dependente_nascimento" />
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="dependente-parentesco">Parentesco</label>
-          <select id="dependente-parentesco" name="dependente_parentesco">
-            <option value="">Selecione</option>
-            <option value="filho">Filho(a)</option>
-            <option value="conjuge">Cônjuge</option>
-            <option value="pai">Pai</option>
-            <option value="mae">Mãe</option>
-            <option value="irmao">Irmão(ã)</option>
-            <option value="outro">Outro</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="dependente-genero">Gênero</label>
-          <select id="dependente-genero" name="dependente_genero">
-            <option value="">Selecione</option>
-            <option value="masculino">Masculino</option>
-            <option value="feminino">Feminino</option>
-            <option value="outro">Outro</option>
-            <option value="nao-informar">Prefiro não informar</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="dependente-cpf">CPF</label>
-          <input type="text" id="dependente-cpf" name="dependente_cpf"
-            placeholder="000.000.000-00" />
-        </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="dependente-email">E-mail</label>
-          <input type="email" id="dependente-email" name="dependente_email"
-            placeholder="email@exemplo.com" />
-        </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="dependente-telefone">Telefone</label>
-          <input type="text" id="dependente-telefone" name="dependente_telefone"
-            placeholder="(00) 00000-0000" />
+        <button type="button" class="gu-modal__fechar" id="modal-dependente-fechar" aria-label="Fechar modal">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="gu-modal__formulario">
+        <div class="cadastro-associado__grid">
+          <div class="cadastro-associado__campo span-8">
+            <label for="dependente-nome">Nome Completo *</label>
+            <input type="text" id="dependente-nome" name="dependente_nome"
+              placeholder="Nome do dependente" />
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="dependente-nascimento">Data Nascimento</label>
+            <input type="date" id="dependente-nascimento" name="dependente_nascimento" />
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="dependente-parentesco">Parentesco</label>
+            <select id="dependente-parentesco" name="dependente_parentesco">
+              <option value="">Selecione</option>
+              <option value="filho">Filho(a)</option>
+              <option value="conjuge">Cônjuge</option>
+              <option value="pai">Pai</option>
+              <option value="mae">Mãe</option>
+              <option value="irmao">Irmão(ã)</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="dependente-genero">Gênero</label>
+            <select id="dependente-genero" name="dependente_genero">
+              <option value="">Selecione</option>
+              <option value="masculino">Masculino</option>
+              <option value="feminino">Feminino</option>
+              <option value="outro">Outro</option>
+              <option value="nao-informar">Prefiro não informar</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="dependente-cpf">CPF</label>
+            <input type="text" id="dependente-cpf" name="dependente_cpf"
+              placeholder="000.000.000-00" />
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="dependente-email">E-mail</label>
+            <input type="email" id="dependente-email" name="dependente_email"
+              placeholder="email@exemplo.com" />
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="dependente-telefone">Telefone</label>
+            <input type="text" id="dependente-telefone" name="dependente_telefone"
+              placeholder="(00) 00000-0000" />
+          </div>
         </div>
       </div>
+      <div class="gu-modal__acoes">
+        <button type="button" class="btn btn-secundario" id="modal-dependente-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-primario" id="btn-salvar-dependente-modal">
+          <span class="material-icons">save</span>
+          <span>Salvar Dependente</span>
+        </button>
+      </div>
     </div>
-    <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario" data-modal-fechar>Cancelar</button>
-      <button type="button" class="btn btn-primario" id="btn-salvar-dependente-modal">
-        <span class="material-icons">save</span>
-        <span>Salvar Dependente</span>
-      </button>
-    </div>
-  </dialog>
+  </div>
 
   <!-- MODAL — LANÇAMENTO -->
-  <dialog class="modal modal-xl" id="modal-lancamento" aria-labelledby="modal-lancamento-titulo">
-    <div class="modal__cabecalho">
-      <h3 class="modal__titulo" id="modal-lancamento-titulo">
-        <span class="material-icons">receipt_long</span>
-        <span>Adicionar Lançamento</span>
-      </h3>
-      <button type="button" class="modal__fechar" data-modal-fechar aria-label="Fechar modal">
-        <span class="material-icons">close</span>
-      </button>
-    </div>
-    <div class="modal__corpo">
-      <div class="modal__tipo-lancamento">
-        <button type="button"
-          class="modal__tipo-btn modal__tipo-btn--receber modal__tipo-btn--ativo"
-          data-tipo-lancamento="receber">
-          <span class="material-icons">trending_up</span>
-          <span>A Receber</span>
-        </button>
-        <button type="button"
-          class="modal__tipo-btn modal__tipo-btn--pagar"
-          data-tipo-lancamento="pagar">
-          <span class="material-icons">trending_down</span>
-          <span>A Pagar</span>
+  <div class="gu-modal" id="modal-lancamento" aria-modal="true" role="dialog" hidden>
+    <div class="gu-modal__fundo" id="modal-lancamento-fundo"></div>
+    <div class="gu-modal__caixa" style="max-width:960px">
+      <div class="gu-modal__cabecalho">
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">receipt_long</span>
+          <h3 class="gu-modal__titulo">Adicionar Lançamento</h3>
+        </div>
+        <button type="button" class="gu-modal__fechar" id="modal-lancamento-fechar" aria-label="Fechar modal">
+          <span class="material-icons">close</span>
         </button>
       </div>
-      <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-12">
-          <label for="lancamento-descricao">Descrição *</label>
-          <input type="text" id="lancamento-descricao" name="lancamento_descricao"
-            placeholder="Ex: Mensalidade Março/2026" />
+      <div class="gu-modal__formulario">
+        <div class="modal__tipo-lancamento">
+          <button type="button"
+            class="modal__tipo-btn modal__tipo-btn--receber modal__tipo-btn--ativo"
+            data-tipo-lancamento="receber">
+            <span class="material-icons">trending_up</span>
+            <span>A Receber</span>
+          </button>
+          <button type="button"
+            class="modal__tipo-btn modal__tipo-btn--pagar"
+            data-tipo-lancamento="pagar">
+            <span class="material-icons">trending_down</span>
+            <span>A Pagar</span>
+          </button>
         </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="lancamento-categoria">Categoria</label>
-          <select id="lancamento-categoria" name="lancamento_categoria">
-            <option value="">Selecione</option>
-            <option value="mensalidade">Mensalidade</option>
-            <option value="taxa">Taxa</option>
-            <option value="contribuicao">Contribuição</option>
-            <option value="doacao">Doação</option>
-            <option value="outros">Outros</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="lancamento-conta-subordinada">Conta Subordinada</label>
-          <select id="lancamento-conta-subordinada" name="lancamento_conta_subordinada">
-            <option value="">— automático —</option>
-            <option value="caixa">Caixa</option>
-            <option value="banco">Banco</option>
-            <option value="convenios">Convênios</option>
-            <option value="mensalidades">Mensalidades</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="lancamento-valor">Valor (R$) *</label>
-          <input type="text" id="lancamento-valor" name="lancamento_valor"
-            placeholder="R$ 0,00" />
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="lancamento-vencimento">Vencimento</label>
-          <input type="date" id="lancamento-vencimento" name="lancamento_vencimento" />
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="lancamento-pagamento">Data Pagamento</label>
-          <input type="date" id="lancamento-pagamento" name="lancamento_pagamento" />
-        </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="lancamento-forma-pagamento">Forma Pagamento</label>
-          <select id="lancamento-forma-pagamento" name="lancamento_forma_pagamento">
-            <option value="">Selecione</option>
-            <option value="dinheiro">Dinheiro</option>
-            <option value="pix">PIX</option>
-            <option value="boleto">Boleto</option>
-            <option value="cartao">Cartão</option>
-            <option value="transferencia">Transferência</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="lancamento-status">Status</label>
-          <select id="lancamento-status" name="lancamento_status">
-            <option value="pendente">Pendente</option>
-            <option value="pago">Pago</option>
-            <option value="cancelado">Cancelado</option>
-            <option value="isento">Isento</option>
-          </select>
+        <div class="cadastro-associado__grid">
+          <div class="cadastro-associado__campo span-12">
+            <label for="lancamento-descricao">Descrição *</label>
+            <input type="text" id="lancamento-descricao" name="lancamento_descricao"
+              placeholder="Ex: Mensalidade Março/2026" />
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="lancamento-categoria">Categoria</label>
+            <select id="lancamento-categoria" name="lancamento_categoria">
+              <option value="">Selecione</option>
+              <option value="mensalidade">Mensalidade</option>
+              <option value="taxa">Taxa</option>
+              <option value="contribuicao">Contribuição</option>
+              <option value="doacao">Doação</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="lancamento-conta-subordinada">Conta Subordinada</label>
+            <select id="lancamento-conta-subordinada" name="lancamento_conta_subordinada">
+              <option value="">— automático —</option>
+              <option value="caixa">Caixa</option>
+              <option value="banco">Banco</option>
+              <option value="convenios">Convênios</option>
+              <option value="mensalidades">Mensalidades</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="lancamento-valor">Valor (R$) *</label>
+            <input type="text" id="lancamento-valor" name="lancamento_valor"
+              placeholder="R$ 0,00" />
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="lancamento-vencimento">Vencimento</label>
+            <input type="date" id="lancamento-vencimento" name="lancamento_vencimento" />
+          </div>
+          <div class="cadastro-associado__campo span-4">
+            <label for="lancamento-pagamento">Data Pagamento</label>
+            <input type="date" id="lancamento-pagamento" name="lancamento_pagamento" />
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="lancamento-forma-pagamento">Forma Pagamento</label>
+            <select id="lancamento-forma-pagamento" name="lancamento_forma_pagamento">
+              <option value="">Selecione</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="pix">PIX</option>
+              <option value="boleto">Boleto</option>
+              <option value="cartao">Cartão</option>
+              <option value="transferencia">Transferência</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="lancamento-status">Status</label>
+            <select id="lancamento-status" name="lancamento_status">
+              <option value="pendente">Pendente</option>
+              <option value="pago">Pago</option>
+              <option value="cancelado">Cancelado</option>
+              <option value="isento">Isento</option>
+            </select>
+          </div>
         </div>
       </div>
+      <div class="gu-modal__acoes">
+        <button type="button" class="btn btn-secundario" id="modal-lancamento-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-primario" id="btn-salvar-lancamento-modal">
+          <span class="material-icons">task_alt</span>
+          <span>Salvar Lançamento</span>
+        </button>
+      </div>
     </div>
-    <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario" data-modal-fechar>Cancelar</button>
-      <button type="button" class="btn btn-primario" id="btn-salvar-lancamento-modal">
-        <span class="material-icons">task_alt</span>
-        <span>Salvar Lançamento</span>
-      </button>
-    </div>
-  </dialog>
+  </div>
 
 </section>
