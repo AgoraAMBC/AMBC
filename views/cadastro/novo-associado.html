@@ -268,48 +268,51 @@
   <!-- ✅ FORM ENCERRADO — modais fora do form a partir daqui -->
 
   <!-- MODAL — TELEFONE -->
-  <dialog class="modal modal-md" id="modal-telefone" aria-labelledby="modal-telefone-titulo">
-    <div class="modal__cabecalho">
-      <h3 class="modal__titulo" id="modal-telefone-titulo">
-        <span class="material-icons">call</span>
-        <span>Adicionar Contato</span>
-      </h3>
-      <button type="button" class="modal__fechar" data-modal-fechar aria-label="Fechar modal">
-        <span class="material-icons">close</span>
-      </button>
-    </div>
-    <div class="modal__corpo">
-      <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-6">
-          <label for="telefone-tipo">Tipo</label>
-          <select id="telefone-tipo" name="telefone_tipo">
-            <option value="celular">Celular</option>
-            <option value="residencial">Residencial</option>
-            <option value="comercial">Comercial</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="recado">Recado</option>
-          </select>
+  <div class="gu-modal" id="modal-telefone" aria-modal="true" role="dialog" hidden>
+    <div class="gu-modal__fundo" id="modal-telefone-fundo"></div>
+    <div class="gu-modal__caixa" style="max-width:480px">
+      <div class="gu-modal__cabecalho">
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">call</span>
+          <h3 class="gu-modal__titulo">Adicionar Contato</h3>
         </div>
-        <div class="cadastro-associado__campo span-6">
-          <label for="telefone-numero">Número *</label>
-          <input type="text" id="telefone-numero" name="telefone_numero"
-            placeholder="(00) 00000-0000" />
-        </div>
-        <div class="cadastro-associado__campo span-12">
-          <label for="telefone-observacao">Observações</label>
-          <input type="text" id="telefone-observacao" name="telefone_observacao"
-            placeholder="Ex: Principal, WhatsApp..." />
+        <button type="button" class="gu-modal__fechar" id="modal-telefone-fechar" aria-label="Fechar modal">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="gu-modal__formulario">
+        <div class="cadastro-associado__grid">
+          <div class="cadastro-associado__campo span-6">
+            <label for="telefone-tipo">Tipo</label>
+            <select id="telefone-tipo" name="telefone_tipo">
+              <option value="celular">Celular</option>
+              <option value="residencial">Residencial</option>
+              <option value="comercial">Comercial</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="recado">Recado</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="telefone-numero">Número *</label>
+            <input type="text" id="telefone-numero" name="telefone_numero"
+              placeholder="(00) 00000-0000" />
+          </div>
+          <div class="cadastro-associado__campo span-12">
+            <label for="telefone-observacao">Observações</label>
+            <input type="text" id="telefone-observacao" name="telefone_observacao"
+              placeholder="Ex: Principal, WhatsApp..." />
+          </div>
         </div>
       </div>
+      <div class="gu-modal__acoes">
+        <button type="button" class="btn btn-secundario" id="modal-telefone-cancelar">Cancelar</button>
+        <button type="button" class="btn btn-primario" id="btn-salvar-telefone-modal">
+          <span class="material-icons">save</span>
+          <span>Salvar Contato</span>
+        </button>
+      </div>
     </div>
-    <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario" data-modal-fechar>Cancelar</button>
-      <button type="button" class="btn btn-primario" id="btn-salvar-telefone-modal">
-        <span class="material-icons">save</span>
-        <span>Salvar Contato</span>
-      </button>
-    </div>
-  </dialog>
+  </div>
 
   <!-- MODAL — DEPENDENTE -->
   <dialog class="modal modal-lg" id="modal-dependente" aria-labelledby="modal-dependente-titulo">
