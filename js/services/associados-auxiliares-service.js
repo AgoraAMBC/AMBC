@@ -17,61 +17,40 @@ export const AuxiliaresService = {
     return api.get('/status-pessoa/listar.php');
   },
 
-  listarSituacoesImovel() {
-    return api.get('/situacoes-imovel/listar.php');
-  },
-
   listarUfs() {
     return Promise.resolve([
-      { sigla: 'AC', descricao: 'Acre' },
-      { sigla: 'AL', descricao: 'Alagoas' },
-      { sigla: 'AP', descricao: 'Amapá' },
-      { sigla: 'AM', descricao: 'Amazonas' },
-      { sigla: 'BA', descricao: 'Bahia' },
-      { sigla: 'CE', descricao: 'Ceará' },
-      { sigla: 'DF', descricao: 'Distrito Federal' },
-      { sigla: 'ES', descricao: 'Espírito Santo' },
-      { sigla: 'GO', descricao: 'Goiás' },
-      { sigla: 'MA', descricao: 'Maranhão' },
-      { sigla: 'MT', descricao: 'Mato Grosso' },
-      { sigla: 'MS', descricao: 'Mato Grosso do Sul' },
-      { sigla: 'MG', descricao: 'Minas Gerais' },
-      { sigla: 'PA', descricao: 'Pará' },
-      { sigla: 'PB', descricao: 'Paraíba' },
-      { sigla: 'PR', descricao: 'Paraná' },
-      { sigla: 'PE', descricao: 'Pernambuco' },
-      { sigla: 'PI', descricao: 'Piauí' },
-      { sigla: 'RJ', descricao: 'Rio de Janeiro' },
-      { sigla: 'RN', descricao: 'Rio Grande do Norte' },
-      { sigla: 'RS', descricao: 'Rio Grande do Sul' },
-      { sigla: 'RO', descricao: 'Rondônia' },
-      { sigla: 'RR', descricao: 'Roraima' },
-      { sigla: 'SC', descricao: 'Santa Catarina' },
-      { sigla: 'SP', descricao: 'São Paulo' },
-      { sigla: 'SE', descricao: 'Sergipe' },
-      { sigla: 'TO', descricao: 'Tocantins' }
+      { id: 'AC', descricao: 'AC' }, { id: 'AL', descricao: 'AL' },
+      { id: 'AP', descricao: 'AP' }, { id: 'AM', descricao: 'AM' },
+      { id: 'BA', descricao: 'BA' }, { id: 'CE', descricao: 'CE' },
+      { id: 'DF', descricao: 'DF' }, { id: 'ES', descricao: 'ES' },
+      { id: 'GO', descricao: 'GO' }, { id: 'MA', descricao: 'MA' },
+      { id: 'MT', descricao: 'MT' }, { id: 'MS', descricao: 'MS' },
+      { id: 'MG', descricao: 'MG' }, { id: 'PA', descricao: 'PA' },
+      { id: 'PB', descricao: 'PB' }, { id: 'PR', descricao: 'PR' },
+      { id: 'PE', descricao: 'PE' }, { id: 'PI', descricao: 'PI' },
+      { id: 'RJ', descricao: 'RJ' }, { id: 'RN', descricao: 'RN' },
+      { id: 'RS', descricao: 'RS' }, { id: 'RO', descricao: 'RO' },
+      { id: 'RR', descricao: 'RR' }, { id: 'SC', descricao: 'SC' },
+      { id: 'SP', descricao: 'SP' }, { id: 'SE', descricao: 'SE' },
+      { id: 'TO', descricao: 'TO' }
     ]);
   },
 
   async carregarTodas() {
-    // ✅ allSettled nunca rejeita — cada resultado tem { status, value, reason }
     const [
       rGeneros,
       rEstadosCivis,
       rProfissoes,
       rStatusPessoa,
-      rSituacoesImovel,
       rUfs
     ] = await Promise.allSettled([
       this.listarGeneros(),
       this.listarEstadosCivis(),
       this.listarProfissoes(),
       this.listarStatusPessoa(),
-      this.listarSituacoesImovel(),
       this.listarUfs()
     ]);
 
-    // Extrai o valor ou retorna [] se falhou
     const extrair = (resultado, nome) => {
       if (resultado.status === 'fulfilled') return resultado.value ?? [];
       console.warn(`[AuxiliaresService] Falha ao carregar "${nome}":`, resultado.reason?.message);
@@ -79,12 +58,11 @@ export const AuxiliaresService = {
     };
 
     return {
-      generos:        extrair(rGeneros,        'generos'),
-      estadosCivis:   extrair(rEstadosCivis,   'estadosCivis'),
-      profissoes:     extrair(rProfissoes,      'profissoes'),
-      statusPessoa:   extrair(rStatusPessoa,    'statusPessoa'),
-      situacoesImovel: extrair(rSituacoesImovel, 'situacoesImovel'),
-      ufs:            extrair(rUfs,             'ufs')
+      generos:      extrair(rGeneros,      'generos'),
+      estadosCivis: extrair(rEstadosCivis, 'estadosCivis'),
+      profissoes:   extrair(rProfissoes,   'profissoes'),
+      statusPessoa: extrair(rStatusPessoa, 'statusPessoa'),
+      ufs:          extrair(rUfs,          'ufs')
     };
   }
 };
