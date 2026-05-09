@@ -315,42 +315,24 @@ function aoCancelar() {
 // ── Modais ─────────────────────────────────────────────────
 
 function abrirModal(modal) {
-  if (!modal) return;
-  if (modal.open) modal.close(); // ← fecha se já estiver aberto
-
-  modal.removeEventListener('click', aoClicarBackdrop);
+  if (!modal || modal.open) return;
   modal.showModal();
-
-  modal.querySelectorAll('[data-modal-fechar]').forEach(btn => {
-    btn.addEventListener('click', () => fecharModal(modal), { once: true });
-  });
-
-  requestAnimationFrame(() => {
-    modal.addEventListener('click', aoClicarBackdrop);
-  });
-}
-
-function aoClicarBackdrop(event) {
-  const modal = event.currentTarget;
-
-  // O <dialog> renderiza o backdrop FORA da sua área interna.
-  // Clique no backdrop dispara o evento no próprio <dialog>,
-  // mas o target é o próprio dialog (não um filho).
-  // Se o target === dialog, clicou no backdrop.
-  if (event.target === modal) {
-    fecharModal(modal);
-  }
 }
 
 function fecharModal(modal) {
   if (!modal || !modal.open) return;
-  modal.removeEventListener('click', aoClicarBackdrop);
   modal.close();
 }
+
 function fecharTodosModais() {
   [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(modal => {
-    if (modal && modal.open) fecharModal(modal);
+    if (modal?.open) modal.close();
   });
+}
+
+// Fecha ao clicar no backdrop (fora do conteúdo do dialog)
+function aoClicarBackdropModal(e) {
+  if (e.target === e.currentTarget) e.currentTarget.close();
 }
 
 function aoAbrirModalTelefone()   { abrirModal(refs.modalTelefone);   }
@@ -454,6 +436,10 @@ function registrarEventos() {
   refs.btnSalvarDependenteModal?.addEventListener('click', aoSalvarDependenteModal);
   refs.btnSalvarLancamentoModal?.addEventListener('click', aoSalvarLancamentoModal);
 
+  [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(modal => {
+    modal?.addEventListener('click', aoClicarBackdropModal);
+  });
+
   refs.botoesTipoLancamento.forEach(botao => {
     botao.addEventListener('click', () => selecionarTipoLancamento(botao));
   });
@@ -475,6 +461,10 @@ function removerEventos() {
   refs.btnSalvarTelefoneModal?.removeEventListener('click', aoSalvarTelefoneModal);
   refs.btnSalvarDependenteModal?.removeEventListener('click', aoSalvarDependenteModal);
   refs.btnSalvarLancamentoModal?.removeEventListener('click', aoSalvarLancamentoModal);
+
+  [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(modal => {
+    modal?.removeEventListener('click', aoClicarBackdropModal);
+  });
 
   document.removeEventListener('keydown', aoPressionarTeclaEscape);
 }
