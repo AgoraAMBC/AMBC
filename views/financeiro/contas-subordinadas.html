@@ -1,9 +1,9 @@
 <section class="view financeiro" data-financeiro-view="contas-subordinadas">
   <header class="financeiro__cabecalho">
-    <div>
+    <div class="financeiro__cabecalho-texto">
       <p class="financeiro__eyebrow">Plano de contas</p>
       <h1 class="financeiro__titulo">Contas subordinadas</h1>
-      <p class="financeiro__subtitulo">Detalhe as contas regentes para melhorar filtros, relatorios e prestacao de contas.</p>
+      <p class="financeiro__subtitulo">Detalhe as contas regentes para melhorar filtros, relat&oacute;rios e presta&ccedil;&atilde;o de contas.</p>
     </div>
   </header>
 
@@ -19,12 +19,12 @@
         <input class="form-input" id="subordinada-nome" type="text" placeholder="Ex.: Mensalidades" required />
       </div>
       <div class="campo">
-        <label class="form-label" for="subordinada-descricao">Descricao</label>
+        <label class="form-label" for="subordinada-descricao">Descri&ccedil;&atilde;o</label>
         <textarea class="form-input" id="subordinada-descricao" rows="3" placeholder="Uso esperado desta subconta"></textarea>
       </div>
       <button class="btn btn-primario btn-bloco" type="submit">
         <span class="material-icons">add</span>
-        Adicionar subconta
+        <span class="financeiro__botao-texto">Adicionar subconta</span>
       </button>
     </form>
 
@@ -39,9 +39,13 @@
             <tr>
               <th>Subconta</th>
               <th>Conta regente</th>
-              <th>Movimentacoes</th>
+              <th>Movimenta&ccedil;&otilde;es</th>
               <th>Status</th>
+<<<<<<< HEAD
+              <th class="tabela__th-acoes">A&ccedil;&otilde;es</th>
+=======
               <th class="tabela__th-acoes">Ações</th>
+>>>>>>> ae6e39d890ee865553578c1baed9691494a1c21b
             </tr>
           </thead>
           <tbody id="contas-subordinadas-tbody"></tbody>

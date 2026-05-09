@@ -1,6 +1,6 @@
 <section class="view financeiro" data-financeiro-view="contas-regentes">
   <header class="financeiro__cabecalho">
-    <div>
+    <div class="financeiro__cabecalho-texto">
       <p class="financeiro__eyebrow">Plano de contas</p>
       <h1 class="financeiro__titulo">Contas regentes</h1>
       <p class="financeiro__subtitulo">Categorias principais usadas para organizar receitas e despesas.</p>
@@ -15,19 +15,19 @@
         <input class="form-input" id="regente-nome" type="text" placeholder="Ex.: Receitas associativas" required />
       </div>
       <div class="campo">
-        <label class="form-label form-label-obrigatorio" for="regente-tipo">Tipo padrao</label>
+        <label class="form-label form-label-obrigatorio" for="regente-tipo">Tipo padr&atilde;o</label>
         <select class="form-input" id="regente-tipo" required>
           <option value="receita">Receita</option>
           <option value="despesa">Despesa</option>
         </select>
       </div>
       <div class="campo">
-        <label class="form-label" for="regente-descricao">Descricao</label>
+        <label class="form-label" for="regente-descricao">Descri&ccedil;&atilde;o</label>
         <textarea class="form-input" id="regente-descricao" rows="3" placeholder="Quando esta conta deve ser utilizada"></textarea>
       </div>
       <button class="btn btn-primario btn-bloco" type="submit">
         <span class="material-icons">add</span>
-        Adicionar conta
+        <span class="financeiro__botao-texto">Adicionar conta</span>
       </button>
     </form>
 

@@ -1,7 +1,7 @@
 /* =========================================================
-   Pagina: Financeiro
+   Página: Financeiro
    Projeto: AMBC-V2
-   Descricao: Logica das telas financeiras.
+   Descrição: Lógica das telas financeiras.
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
@@ -10,27 +10,27 @@ import { api } from '../services/api.js';
 
 const lancamentos = [
   { id: 1, descricao: 'Mensalidade - Maria Oliveira', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'pago', vencimento: '2026-04-05', valor: 85.00, pessoa: 'Maria Oliveira' },
-  { id: 2, descricao: 'Reserva do salao comunitario', conta: 'Eventos e reservas', subconta: 'Reserva de espaco', tipo: 'receita', status: 'pendente', vencimento: '2026-04-18', valor: 260.00, pessoa: 'Carlos Mendes' },
+  { id: 2, descricao: 'Reserva do salão comunitário', conta: 'Eventos e reservas', subconta: 'Reserva de espaço', tipo: 'receita', status: 'pendente', vencimento: '2026-04-18', valor: 260.00, pessoa: 'Carlos Mendes' },
   { id: 3, descricao: 'Conta de energia da sede', conta: 'Despesas administrativas', subconta: 'Contas de consumo', tipo: 'despesa', status: 'pago', vencimento: '2026-04-12', valor: 418.72, pessoa: 'Companhia de energia' },
-  { id: 4, descricao: 'Compra de material de limpeza', conta: 'Manutencao e obras', subconta: 'Material de consumo', tipo: 'despesa', status: 'pago', vencimento: '2026-04-14', valor: 173.35, pessoa: 'Mercado Central' },
-  { id: 5, descricao: 'Mensalidade - Joao Souza', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'atrasado', vencimento: '2026-04-10', valor: 85.00, pessoa: 'Joao Souza' },
-  { id: 6, descricao: 'Servico de pintura da quadra', conta: 'Manutencao e obras', subconta: 'Servicos contratados', tipo: 'despesa', status: 'pendente', vencimento: '2026-04-25', valor: 980.00, pessoa: 'Pinturas Alfa' },
+  { id: 4, descricao: 'Compra de material de limpeza', conta: 'Manutenção e obras', subconta: 'Material de consumo', tipo: 'despesa', status: 'pago', vencimento: '2026-04-14', valor: 173.35, pessoa: 'Mercado Central' },
+  { id: 5, descricao: 'Mensalidade - João Souza', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'atrasado', vencimento: '2026-04-10', valor: 85.00, pessoa: 'João Souza' },
+  { id: 6, descricao: 'Serviço de pintura da quadra', conta: 'Manutenção e obras', subconta: 'Serviços contratados', tipo: 'despesa', status: 'pendente', vencimento: '2026-04-25', valor: 980.00, pessoa: 'Pinturas Alfa' },
 ];
 
 const contasRegentes = [
   { id: 1, nome: 'Receitas associativas', tipo: 'receita', subcontas: 2, status: 'ativo' },
   { id: 2, nome: 'Eventos e reservas', tipo: 'receita', subcontas: 2, status: 'ativo' },
   { id: 3, nome: 'Despesas administrativas', tipo: 'despesa', subcontas: 3, status: 'ativo' },
-  { id: 4, nome: 'Manutencao e obras', tipo: 'despesa', subcontas: 4, status: 'ativo' },
+  { id: 4, nome: 'Manutenção e obras', tipo: 'despesa', subcontas: 4, status: 'ativo' },
 ];
 
 const contasSubordinadas = [
   { id: 1, nome: 'Mensalidades', regente: 'Receitas associativas', movimentos: 38, status: 'ativo' },
-  { id: 2, nome: 'Taxas extraordinarias', regente: 'Receitas associativas', movimentos: 7, status: 'ativo' },
-  { id: 3, nome: 'Reserva de espaco', regente: 'Eventos e reservas', movimentos: 12, status: 'ativo' },
+  { id: 2, nome: 'Taxas extraordinárias', regente: 'Receitas associativas', movimentos: 7, status: 'ativo' },
+  { id: 3, nome: 'Reserva de espaço', regente: 'Eventos e reservas', movimentos: 12, status: 'ativo' },
   { id: 4, nome: 'Contas de consumo', regente: 'Despesas administrativas', movimentos: 9, status: 'ativo' },
-  { id: 5, nome: 'Material de consumo', regente: 'Manutencao e obras', movimentos: 16, status: 'ativo' },
-  { id: 6, nome: 'Servicos contratados', regente: 'Manutencao e obras', movimentos: 5, status: 'ativo' },
+  { id: 5, nome: 'Material de consumo', regente: 'Manutenção e obras', movimentos: 16, status: 'ativo' },
+  { id: 6, nome: 'Serviços contratados', regente: 'Manutenção e obras', movimentos: 5, status: 'ativo' },
 ];
 
 let cleanup = [];
@@ -133,7 +133,7 @@ function iniciarNovoLancamento() {
       form.reportValidity();
       return;
     }
-    Toast.sucesso('Lancamento financeiro salvo em memoria.');
+    Toast.sucesso('Lançamento financeiro salvo em memória.');
     form.reset();
     atualizar();
   };
@@ -150,7 +150,7 @@ function iniciarRelatorios() {
 
   const btn = document.getElementById('btn-exportar-relatorio');
   if (btn) {
-    const handler = () => Toast.info('Exportacao preparada para integracao com backend.');
+    const handler = () => Toast.info('Exportação preparada para integração com o backend.');
     btn.addEventListener('click', handler);
     cleanup.push(() => btn.removeEventListener('click', handler));
   }
@@ -220,7 +220,7 @@ async function iniciarContasRegentes() {
           await api.put('/financeiro/contas-regentes/editar.php', { id_conta_regente: modoEdicaoRegente, descricao, tipo, observacao });
           Toast.sucesso('Conta regente atualizada com sucesso!');
           modoEdicaoRegente = null;
-          document.querySelector('#form-conta-regente button[type=submit]').textContent = 'Adicionar conta';
+          atualizarTextoBotao('#form-conta-regente button[type=submit]', 'Adicionar conta');
         } else {
           await api.post('/financeiro/contas-regentes/cadastrar.php', { descricao, tipo, observacao });
           Toast.sucesso('Conta regente cadastrada com sucesso!');
@@ -246,7 +246,7 @@ async function iniciarContasRegentes() {
         document.getElementById('regente-tipo').value       = btn.dataset.tipo;
         document.getElementById('regente-descricao').value  = btn.dataset.obs || '';
         modoEdicaoRegente = id;
-        document.querySelector('#form-conta-regente button[type=submit]').textContent = 'Salvar alterações';
+        atualizarTextoBotao('#form-conta-regente button[type=submit]', 'Salvar alterações');
         document.getElementById('regente-nome').focus();
       }
       if (btn.dataset.acao === 'alternar-regente') {
@@ -307,7 +307,7 @@ async function renderizarContasRegentes() {
   if (!tbody) return;
 
   const busca = document.getElementById('busca-conta-regente')?.value.trim() || '';
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Carregando…</td></tr>';
+  tbody.innerHTML = linhaEstadoTabela('Carregando...');
 
   try {
     const params = new URLSearchParams();
@@ -315,7 +315,7 @@ async function renderizarContasRegentes() {
     const { dados } = await api.get(`/financeiro/contas-regentes/listar.php?${params}`);
 
     if (!dados.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Nenhuma conta encontrada.</td></tr>';
+      tbody.innerHTML = linhaEstadoTabela('Nenhuma conta encontrada.');
       return;
     }
 
@@ -349,7 +349,7 @@ async function renderizarContasRegentes() {
       </tr>
     `).join('');
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1rem;color:red">${escaparHtml(err.message)}</td></tr>`;
+    tbody.innerHTML = linhaEstadoTabela(err.message, true);
   }
 }
 
@@ -511,7 +511,7 @@ async function iniciarContasSubordinadas() {
           await api.put('/financeiro/contas-subordinadas/editar.php', { id_conta_subordinada: modoEdicaoSubordinada, fk_conta_regente: fkRegente, descricao, observacao });
           Toast.sucesso('Conta subordinada atualizada com sucesso!');
           modoEdicaoSubordinada = null;
-          document.querySelector('#form-conta-subordinada button[type=submit]').textContent = 'Adicionar subconta';
+          atualizarTextoBotao('#form-conta-subordinada button[type=submit]', 'Adicionar subconta');
         } else {
           await api.post('/financeiro/contas-subordinadas/cadastrar.php', { fk_conta_regente: fkRegente, descricao, observacao });
           Toast.sucesso('Conta subordinada cadastrada com sucesso!');
@@ -537,7 +537,7 @@ async function iniciarContasSubordinadas() {
         document.getElementById('subordinada-nome').value       = btn.dataset.nome;
         document.getElementById('subordinada-descricao').value  = btn.dataset.obs || '';
         modoEdicaoSubordinada = id;
-        document.querySelector('#form-conta-subordinada button[type=submit]').textContent = 'Salvar alterações';
+        atualizarTextoBotao('#form-conta-subordinada button[type=submit]', 'Salvar alterações');
         document.getElementById('subordinada-nome').focus();
       }
       if (btn.dataset.acao === 'alternar-subordinada') {
@@ -600,7 +600,7 @@ async function preencherSelectsRegentes() {
     const cadastro = document.getElementById('subordinada-regente');
     const filtro   = document.getElementById('filtro-subordinada-regente');
     if (cadastro) cadastro.innerHTML = opcoes;
-    if (filtro)   filtro.innerHTML   = `<option value="0">Todas as regentes</option>${opcoes}`;
+    if (filtro)   filtro.innerHTML   = `<option value="0">Todas as contas regentes</option>${opcoes}`;
   } catch (_) {}
 }
 
@@ -609,7 +609,7 @@ async function renderizarContasSubordinadas() {
   if (!tbody) return;
 
   const regente = parseInt(document.getElementById('filtro-subordinada-regente')?.value || '0');
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Carregando…</td></tr>';
+  tbody.innerHTML = linhaEstadoTabela('Carregando...');
 
   try {
     const params = new URLSearchParams();
@@ -617,7 +617,7 @@ async function renderizarContasSubordinadas() {
     const { dados } = await api.get(`/financeiro/contas-subordinadas/listar.php?${params}`);
 
     if (!dados.length) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem">Nenhuma subconta encontrada.</td></tr>';
+      tbody.innerHTML = linhaEstadoTabela('Nenhuma subconta encontrada.');
       return;
     }
 
@@ -652,7 +652,7 @@ async function renderizarContasSubordinadas() {
       </tr>
     `).join('');
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1rem;color:red">${escaparHtml(err.message)}</td></tr>`;
+    tbody.innerHTML = linhaEstadoTabela(err.message, true);
   }
 }
 
@@ -702,6 +702,26 @@ function badgeStatus(status) {
 
 function badgeTipo(tipo) {
   return `<span class="badge badge-pilula ${tipo === 'receita' ? 'badge-verde' : 'badge-vermelho'}">${capitalizar(tipo)}</span>`;
+}
+
+function atualizarTextoBotao(seletor, texto) {
+  const botao = document.querySelector(seletor);
+  const alvo = botao?.querySelector('.financeiro__botao-texto');
+  if (alvo) {
+    alvo.textContent = texto;
+  } else if (botao) {
+    botao.textContent = texto;
+  }
+}
+
+function linhaEstadoTabela(mensagem, erro = false) {
+  return `
+    <tr>
+      <td colspan="5" class="financeiro__estado-tabela ${erro ? 'financeiro__estado-tabela--erro' : ''}">
+        ${escaparHtml(mensagem)}
+      </td>
+    </tr>
+  `;
 }
 
 function formatarMoeda(valor) {
