@@ -1,15 +1,352 @@
-﻿<!-- =========================================================
-  View: Painel
-  Descricao: Visao geral da AMBC
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Painel">
-  <header class="view__header">
-    <h1 class="view__title">Painel</h1>
-    <p class="view__subtitle">Visao geral da AMBC</p>
+<section class="view painel" data-view="painel">
+
+  <!-- CABEÇALHO -->
+  <header class="painel__cabecalho">
+    <div class="painel__cabecalho-texto">
+      <p class="painel__eyebrow">Visão Geral</p>
+      <h1 class="painel__titulo">Olá, Administrador</h1>
+      <p class="painel__subtitulo">Bem-vindo ao sistema AMBC. Resumo atualizado de maio de 2026.</p>
+    </div>
+    <div class="painel__acoes">
+      <a href="#/financeiro/novo-lancamento" class="btn btn-primario">
+        <span class="material-icons">add</span>
+        Novo Lançamento
+      </a>
+      <a href="#/cadastro/novo-associado" class="btn btn-secundario">
+        <span class="material-icons">person_add</span>
+        Novo Associado
+      </a>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Painel</strong> sera implementado em breve.</p>
+  <!-- KPI CARDS -->
+  <div class="painel__metricas">
+
+    <div class="card-stat">
+      <div class="card-stat__topo">
+        <span class="card-stat__label">Associados Ativos</span>
+        <span class="card-stat__icone">
+          <span class="material-icons">groups</span>
+        </span>
+      </div>
+      <p class="card-stat__valor">1.240</p>
+      <div class="card-stat__rodape">
+        <span class="card-stat__variacao card-stat__variacao-positiva">
+          <span class="material-icons">arrow_upward</span>
+          5,2%
+        </span>
+        <span>vs. mês anterior</span>
+      </div>
+    </div>
+
+    <div class="card-stat">
+      <div class="card-stat__topo">
+        <span class="card-stat__label">Dependentes</span>
+        <span class="card-stat__icone card-stat__icone-roxo">
+          <span class="material-icons">family_restroom</span>
+        </span>
+      </div>
+      <p class="card-stat__valor">850</p>
+      <div class="card-stat__rodape">
+        <span class="card-stat__variacao card-stat__variacao-positiva">
+          <span class="material-icons">arrow_upward</span>
+          2,1%
+        </span>
+        <span>vs. mês anterior</span>
+      </div>
+    </div>
+
+    <div class="card-stat">
+      <div class="card-stat__topo">
+        <span class="card-stat__label">Parceiros</span>
+        <span class="card-stat__icone card-stat__icone-alerta">
+          <span class="material-icons">handshake</span>
+        </span>
+      </div>
+      <p class="card-stat__valor">42</p>
+      <div class="card-stat__rodape">
+        <span class="card-stat__variacao card-stat__variacao-neutra">
+          <span class="material-icons">remove</span>
+          0%
+        </span>
+        <span>sem variação</span>
+      </div>
+    </div>
+
+    <div class="card-stat">
+      <div class="card-stat__topo">
+        <span class="card-stat__label">Resultado do Mês</span>
+        <span class="card-stat__icone card-stat__icone-sucesso">
+          <span class="material-icons">account_balance_wallet</span>
+        </span>
+      </div>
+      <p class="card-stat__valor" style="font-size:var(--fs-xl)">R$&nbsp;12.450</p>
+      <div class="card-stat__rodape">
+        <span class="card-stat__variacao card-stat__variacao-positiva">
+          <span class="material-icons">arrow_upward</span>
+          8,4%
+        </span>
+        <span>vs. mês anterior</span>
+      </div>
+    </div>
+
   </div>
+
+  <!-- GRÁFICOS -->
+  <div class="painel__graficos">
+
+    <!-- Receita vs Despesa -->
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo">
+          <span class="material-icons">bar_chart</span>
+          Receita vs Despesa — Últimos 6 Meses
+        </h3>
+      </div>
+      <div class="card__corpo">
+        <div class="painel__barras-wrap">
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:62%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:36%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Dez</span>
+          </div>
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:80%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:30%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Jan</span>
+          </div>
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:55%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:48%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Fev</span>
+          </div>
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:88%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:52%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Mar</span>
+          </div>
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:100%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:28%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Abr</span>
+          </div>
+          <div class="painel__barra-grupo">
+            <div class="painel__barras">
+              <div class="painel__barra painel__barra--receita" style="--h:92%"></div>
+              <div class="painel__barra painel__barra--despesa" style="--h:40%"></div>
+            </div>
+            <span class="painel__barra-rotulo">Mai</span>
+          </div>
+        </div>
+        <div class="painel__grafico-legenda">
+          <div class="painel__legenda-item">
+            <span class="painel__legenda-cor" style="background:var(--cor-sucesso)"></span>
+            Receita
+          </div>
+          <div class="painel__legenda-item">
+            <span class="painel__legenda-cor" style="background:var(--cor-erro)"></span>
+            Despesa
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Distribuição por Tipo -->
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo">
+          <span class="material-icons">donut_large</span>
+          Distribuição por Tipo
+        </h3>
+      </div>
+      <div class="card__corpo">
+        <div class="painel__donut-wrap">
+          <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;">
+            <svg width="120" height="120" style="transform:rotate(-90deg);">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--cor-cinza-200)" stroke-width="12"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--cor-primaria)" stroke-width="12"
+                stroke-dasharray="301" stroke-dashoffset="126"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--cor-roxo)" stroke-width="12"
+                stroke-dasharray="301" stroke-dashoffset="226"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="var(--cor-alerta)" stroke-width="12"
+                stroke-dasharray="301" stroke-dashoffset="295"/>
+            </svg>
+            <div style="position:absolute;text-align:center;">
+              <div style="font-size:var(--fs-xl);font-weight:var(--fw-bold);color:var(--texto-principal);">2.132</div>
+              <div style="font-size:var(--fs-xs);font-weight:var(--fw-bold);color:var(--texto-suave);text-transform:uppercase;letter-spacing:.04em;">Total</div>
+            </div>
+          </div>
+        </div>
+        <div class="painel__donut-legenda">
+          <div class="painel__donut-linha">
+            <span class="painel__donut-label">
+              <span class="painel__legenda-cor" style="background:var(--cor-primaria)"></span>
+              Associados
+            </span>
+            <span class="painel__donut-valor">1.240</span>
+          </div>
+          <div class="painel__donut-linha">
+            <span class="painel__donut-label">
+              <span class="painel__legenda-cor" style="background:var(--cor-roxo)"></span>
+              Dependentes
+            </span>
+            <span class="painel__donut-valor">850</span>
+          </div>
+          <div class="painel__donut-linha">
+            <span class="painel__donut-label">
+              <span class="painel__legenda-cor" style="background:var(--cor-alerta)"></span>
+              Parceiros
+            </span>
+            <span class="painel__donut-valor">42</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LINHA INFERIOR -->
+  <div class="painel__linha">
+
+    <!-- Últimas Transações -->
+    <div class="card">
+      <div class="card__cabecalho">
+        <div>
+          <h3 class="card__titulo">
+            <span class="material-icons">receipt_long</span>
+            Últimas Transações
+          </h3>
+          <p class="card__subtitulo">Movimentações recentes do mês atual</p>
+        </div>
+        <div class="card__acoes">
+          <a href="#/financeiro" class="btn btn-secundario btn-sm">Ver todas</a>
+        </div>
+      </div>
+      <div class="tabela-responsiva">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th class="tabela__num">Valor</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--texto-suave);white-space:nowrap">15/05/2026</td>
+              <td style="font-weight:var(--fw-semibold)">Taxa Condominial — Apto 102</td>
+              <td><span class="badge badge-cinza">Mensalidade</span></td>
+              <td class="tabela__num" style="color:var(--cor-sucesso);font-weight:var(--fw-semibold)">R$ 350,00</td>
+              <td><span class="badge badge-verde badge-ponto">Pago</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--texto-suave);white-space:nowrap">12/05/2026</td>
+              <td style="font-weight:var(--fw-semibold)">Manutenção Jardim Central</td>
+              <td><span class="badge badge-cinza">Manutenção</span></td>
+              <td class="tabela__num" style="color:var(--cor-erro);font-weight:var(--fw-semibold)">R$ 1.200,00</td>
+              <td><span class="badge badge-amarelo badge-ponto">Pendente</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--texto-suave);white-space:nowrap">08/05/2026</td>
+              <td style="font-weight:var(--fw-semibold)">Conta de Energia — Maio</td>
+              <td><span class="badge badge-cinza">Utilidades</span></td>
+              <td class="tabela__num" style="color:var(--cor-erro);font-weight:var(--fw-semibold)">R$ 4.580,20</td>
+              <td><span class="badge badge-vermelho badge-ponto">Atrasado</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--texto-suave);white-space:nowrap">05/05/2026</td>
+              <td style="font-weight:var(--fw-semibold)">Mensalidade — Ricardo Soares</td>
+              <td><span class="badge badge-cinza">Mensalidade</span></td>
+              <td class="tabela__num" style="color:var(--cor-sucesso);font-weight:var(--fw-semibold)">R$ 120,00</td>
+              <td><span class="badge badge-verde badge-ponto">Pago</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--texto-suave);white-space:nowrap">02/05/2026</td>
+              <td style="font-weight:var(--fw-semibold)">Internet — Provedor Central</td>
+              <td><span class="badge badge-cinza">Utilidades</span></td>
+              <td class="tabela__num" style="color:var(--cor-erro);font-weight:var(--fw-semibold)">R$ 299,90</td>
+              <td><span class="badge badge-verde badge-ponto">Pago</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Inadimplentes -->
+    <div class="card">
+      <div class="card__cabecalho">
+        <div>
+          <h3 class="card__titulo">
+            <span class="material-icons" style="color:var(--cor-erro)">warning</span>
+            Inadimplentes
+          </h3>
+          <p class="card__subtitulo">Associados com pagamento em aberto</p>
+        </div>
+        <div class="card__acoes">
+          <span class="badge badge-vermelho">8</span>
+        </div>
+      </div>
+      <div class="card-lista">
+        <div class="card-lista__item">
+          <div class="card-lista__avatar">RM</div>
+          <div class="card-lista__conteudo">
+            <p class="card-lista__titulo">Ricardo Mendonça</p>
+            <p class="card-lista__descricao">Em atraso há 32 dias</p>
+          </div>
+          <div class="card-lista__acao">
+            <span class="badge badge-vermelho">R$ 240</span>
+          </div>
+        </div>
+        <div class="card-lista__item">
+          <div class="card-lista__avatar">JP</div>
+          <div class="card-lista__conteudo">
+            <p class="card-lista__titulo">Julio Pereira</p>
+            <p class="card-lista__descricao">Em atraso há 18 dias</p>
+          </div>
+          <div class="card-lista__acao">
+            <span class="badge badge-amarelo">R$ 120</span>
+          </div>
+        </div>
+        <div class="card-lista__item">
+          <div class="card-lista__avatar">CS</div>
+          <div class="card-lista__conteudo">
+            <p class="card-lista__titulo">Carla Sampaio</p>
+            <p class="card-lista__descricao">Em atraso há 15 dias</p>
+          </div>
+          <div class="card-lista__acao">
+            <span class="badge badge-amarelo">R$ 120</span>
+          </div>
+        </div>
+        <div class="card-lista__item">
+          <div class="card-lista__avatar">FB</div>
+          <div class="card-lista__conteudo">
+            <p class="card-lista__titulo">Fernando Braga</p>
+            <p class="card-lista__descricao">Em atraso há 5 dias</p>
+          </div>
+          <div class="card-lista__acao">
+            <span class="badge badge-amarelo">R$ 120</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:var(--esp-md) var(--esp-lg);border-top:var(--borda-padrao);background:var(--fundo-secao);">
+        <a href="#/cadastro/listar" class="btn btn-secundario btn-sm" style="width:100%;justify-content:center;">
+          Ver todos os inadimplentes
+        </a>
+      </div>
+    </div>
+
+  </div>
+
 </section>

@@ -1,0 +1,256 @@
+/* =========================================================
+   painel.css
+   Estilos específicos da tela Painel (dashboard).
+========================================================= */
+
+.painel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Cabeçalho ── */
+.painel__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+  padding: var(--esp-lg);
+  background: linear-gradient(135deg, var(--fundo-card) 0%, var(--fundo-secao) 100%);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+}
+
+.painel__cabecalho-texto {
+  max-width: 640px;
+}
+
+.painel__eyebrow {
+  margin: 0 0 4px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--cor-primaria);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.painel__titulo {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+  line-height: var(--lh-tight);
+}
+
+.painel__subtitulo {
+  margin: 6px 0 0;
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+.painel__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* ── Grid de KPIs ── */
+.painel__metricas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--esp-md);
+}
+
+/* ── Linha de gráficos ── */
+.painel__graficos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-md);
+}
+
+/* ── Linha inferior (tabela + lista) ── */
+.painel__linha {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--esp-md);
+  align-items: start;
+}
+
+/* ── Cabeçalho de seção interno ── */
+.painel__secao-titulo {
+  margin: 0 0 2px;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+}
+
+.painel__secao-texto {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+}
+
+/* ── Gráfico de barras ── */
+.painel__barras-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--esp-sm);
+  height: 130px;
+  padding: 0 var(--esp-xs);
+}
+
+.painel__barra-grupo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-xs);
+  height: 100%;
+}
+
+.painel__barras {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.painel__barra {
+  width: 16px;
+  border-radius: 3px 3px 0 0;
+  height: var(--h, 50%);
+}
+
+.painel__barra--receita {
+  background: var(--cor-sucesso);
+  opacity: 0.85;
+}
+
+.painel__barra--despesa {
+  background: var(--cor-erro);
+  opacity: 0.75;
+}
+
+.painel__barra-rotulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.painel__grafico-legenda {
+  display: flex;
+  justify-content: center;
+  gap: var(--esp-lg);
+  margin-top: var(--esp-md);
+}
+
+.painel__legenda-item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+}
+
+.painel__legenda-cor {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--raio-full);
+  flex-shrink: 0;
+}
+
+/* ── Gráfico donut ── */
+.painel__donut-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--esp-md);
+}
+
+.painel__donut-legenda {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-sm);
+}
+
+.painel__donut-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-sm);
+}
+
+.painel__donut-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+}
+
+.painel__donut-valor {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+}
+
+/* ── Card stat — override de alinhamento da label ── */
+.painel__metricas .card-stat__label {
+  font-size: var(--fs-xs);
+}
+
+/* ── Tabela de transações ── */
+.painel__transacoes-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+}
+
+/* ── Responsividade ── */
+@media (max-width: 1100px) {
+  .painel__graficos {
+    grid-template-columns: 1fr;
+  }
+
+  .painel__linha {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .painel__metricas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .painel {
+    padding: var(--esp-md);
+  }
+
+  .painel__metricas {
+    grid-template-columns: 1fr;
+  }
+
+  .painel__cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .painel__titulo {
+    font-size: var(--fs-xl);
+  }
+}
