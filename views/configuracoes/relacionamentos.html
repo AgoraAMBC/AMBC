@@ -1,15 +1,247 @@
-﻿<!-- =========================================================
-  View: Relacionamentos
-  Descricao: Configuracoes de relacionamentos
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Relacionamentos">
-  <header class="view__header">
-    <h1 class="view__title">Relacionamentos</h1>
-    <p class="view__subtitle">Configuracoes de relacionamentos</p>
+<section class="view cfg-rel">
+
+  <!-- BANNER INFORMATIVO -->
+  <div class="cfg-rel__banner">
+    <span class="material-icons cfg-rel__banner-icone">info</span>
+    <p class="cfg-rel__banner-texto">
+      Cada regra vincula uma <strong>categoria de lançamento</strong> a uma <strong>conta subordinada</strong>.
+      Ao registrar um lançamento, o sistema preenche ou sugere a conta automaticamente.
+    </p>
+  </div>
+
+  <!-- CABEÇALHO -->
+  <header class="cfg-associacao__cabecalho">
+    <div>
+      <p class="cfg-associacao__eyebrow">Configurações</p>
+      <h1 class="cfg-associacao__titulo">Regras de Relacionamento</h1>
+      <p class="cfg-associacao__subtitulo">Defina como as categorias de lançamentos se vinculam às contas subordinadas.</p>
+    </div>
+    <button type="button" class="btn btn-primario" id="btn-nova-regra" data-modal-abrir="modal-regra">
+      <span class="material-icons">add</span>
+      Nova Regra
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Relacionamentos</strong> sera implementado em breve.</p>
+  <!-- REGRAS CADASTRADAS -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">account_tree</span>
+        Regras Cadastradas
+      </h3>
+      <div class="card__acoes">
+        <span class="badge badge-verde">5 regras ativas</span>
+      </div>
+    </div>
+    <div class="card__corpo">
+
+      <!-- Regra 1 -->
+      <div class="cfg-rel__regra">
+        <div class="cfg-rel__regra-icone" style="background:var(--cor-sucesso-clara)">
+          <span class="material-icons" style="color:var(--cor-sucesso)">category</span>
+        </div>
+        <span class="material-icons cfg-rel__regra-seta">arrow_forward</span>
+        <div class="cfg-rel__regra-info">
+          <div class="cfg-rel__regra-titulo">Anuidade → 001.01 — Anuidades</div>
+          <div class="cfg-rel__regra-descricao">
+            Ao criar lançamento do tipo <strong>Anuidade</strong>, preencher conta subordinada com
+            <strong>001.01</strong> (Administração Central)
+          </div>
+        </div>
+        <div class="cfg-rel__regra-acoes">
+          <span class="badge badge-verde">A Receber</span>
+          <span class="badge badge-azul">Preencher (fixo)</span>
+          <button type="button" class="btn btn-secundario btn-sm" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Regra 2 -->
+      <div class="cfg-rel__regra">
+        <div class="cfg-rel__regra-icone" style="background:var(--cor-primaria-clara)">
+          <span class="material-icons" style="color:var(--cor-primaria)">payments</span>
+        </div>
+        <span class="material-icons cfg-rel__regra-seta">arrow_forward</span>
+        <div class="cfg-rel__regra-info">
+          <div class="cfg-rel__regra-titulo">Mensalidade → 001.02 — Mensalidades</div>
+          <div class="cfg-rel__regra-descricao">
+            Ao criar lançamento do tipo <strong>Mensalidade</strong>, sugerir conta subordinada
+            <strong>001.02</strong> (Administração Central)
+          </div>
+        </div>
+        <div class="cfg-rel__regra-acoes">
+          <span class="badge badge-verde">A Receber</span>
+          <span class="badge badge-cinza">Sugerir (editável)</span>
+          <button type="button" class="btn btn-secundario btn-sm" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Regra 3 -->
+      <div class="cfg-rel__regra">
+        <div class="cfg-rel__regra-icone" style="background:var(--cor-roxo-clara)">
+          <span class="material-icons" style="color:var(--cor-roxo)">volunteer_activism</span>
+        </div>
+        <span class="material-icons cfg-rel__regra-seta">arrow_forward</span>
+        <div class="cfg-rel__regra-info">
+          <div class="cfg-rel__regra-titulo">Doação → 001.03 — Doações</div>
+          <div class="cfg-rel__regra-descricao">
+            Ao criar lançamento do tipo <strong>Doação</strong>, preencher conta subordinada com
+            <strong>001.03</strong> (Projetos Sociais)
+          </div>
+        </div>
+        <div class="cfg-rel__regra-acoes">
+          <span class="badge badge-verde">A Receber</span>
+          <span class="badge badge-azul">Preencher (fixo)</span>
+          <button type="button" class="btn btn-secundario btn-sm" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Regra 4 -->
+      <div class="cfg-rel__regra">
+        <div class="cfg-rel__regra-icone" style="background:var(--cor-erro-clara)">
+          <span class="material-icons" style="color:var(--cor-erro)">gavel</span>
+        </div>
+        <span class="material-icons cfg-rel__regra-seta">arrow_forward</span>
+        <div class="cfg-rel__regra-info">
+          <div class="cfg-rel__regra-titulo">Multa por Atraso → 001.04 — Multas</div>
+          <div class="cfg-rel__regra-descricao">
+            Ao criar lançamento do tipo <strong>Multa</strong>, preencher conta subordinada com
+            <strong>001.04</strong> (Administração Central)
+          </div>
+        </div>
+        <div class="cfg-rel__regra-acoes">
+          <span class="badge badge-verde">A Receber</span>
+          <span class="badge badge-azul">Preencher (fixo)</span>
+          <button type="button" class="btn btn-secundario btn-sm" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Regra 5 -->
+      <div class="cfg-rel__regra">
+        <div class="cfg-rel__regra-icone" style="background:#fff7ed">
+          <span class="material-icons" style="color:#ea580c">build</span>
+        </div>
+        <span class="material-icons cfg-rel__regra-seta">arrow_forward</span>
+        <div class="cfg-rel__regra-info">
+          <div class="cfg-rel__regra-titulo">Manutenção → 002.01 — Manutenção Geral</div>
+          <div class="cfg-rel__regra-descricao">
+            Ao criar lançamento do tipo <strong>Manutenção</strong>, sugerir conta subordinada
+            <strong>002.01</strong> (Manutenção Predial)
+          </div>
+        </div>
+        <div class="cfg-rel__regra-acoes">
+          <span class="badge badge-vermelho">A Pagar</span>
+          <span class="badge badge-cinza">Sugerir (editável)</span>
+          <button type="button" class="btn btn-secundario btn-sm" title="Editar">
+            <span class="material-icons">edit</span>
+          </button>
+          <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
   </div>
+
 </section>
+
+<!-- ── MODAL: Nova Regra ─────────────────────────────────────────── -->
+<div class="gu-modal" id="modal-regra" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-regra-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">rule</span>
+        <h3 class="gu-modal__titulo">Nova Regra de Relacionamento</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-regra-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form class="gu-modal__formulario" id="form-regra" novalidate>
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regra-categoria">Categoria do Lançamento *</label>
+          <select class="gu-campo__input" id="regra-categoria" required>
+            <option value="">Selecione…</option>
+            <option value="anuidade">Anuidade</option>
+            <option value="mensalidade">Mensalidade</option>
+            <option value="doacao">Doação</option>
+            <option value="multa">Multa por Atraso</option>
+            <option value="manutencao">Manutenção</option>
+            <option value="evento">Evento</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regra-conta">Conta Subordinada *</label>
+          <select class="gu-campo__input" id="regra-conta" required>
+            <option value="">Selecione…</option>
+            <option value="001.01">001.01 — Anuidades</option>
+            <option value="001.02">001.02 — Mensalidades</option>
+            <option value="001.03">001.03 — Doações</option>
+            <option value="001.04">001.04 — Multas</option>
+            <option value="002.01">002.01 — Manutenção Geral</option>
+            <option value="002.02">002.02 — Eventos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regra-tipo">Tipo de Lançamento *</label>
+          <select class="gu-campo__input" id="regra-tipo" required>
+            <option value="">Selecione…</option>
+            <option value="a-receber">A Receber</option>
+            <option value="a-pagar">A Pagar</option>
+            <option value="ambos">Ambos</option>
+          </select>
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regra-acao">Ação *</label>
+          <select class="gu-campo__input" id="regra-acao" required>
+            <option value="">Selecione…</option>
+            <option value="sugerir">Sugerir (editável)</option>
+            <option value="preencher">Preencher (fixo)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="regra-descricao">Descrição</label>
+        <input type="text" class="gu-campo__input" id="regra-descricao"
+          placeholder="Descrição opcional da regra" />
+      </div>
+
+      <div class="gu-modal__acoes">
+        <button type="button" class="gu-btn gu-btn--secundario" id="modal-regra-cancelar">Cancelar</button>
+        <button type="submit" class="gu-btn gu-btn--primario">
+          <span class="material-icons">save</span>
+          Salvar Regra
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

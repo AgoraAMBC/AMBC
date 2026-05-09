@@ -1,23 +1,56 @@
-﻿/* =========================================================
-   Pagina: Configuracoes
+/* =========================================================
+   Pagina: Configurações (associação, relacionamentos, etc.)
    Projeto: AMBC-V2
-   Descricao: Logica especifica da pagina Configuracoes
+   Descricao: Lógica compartilhada das sub-páginas de configurações.
 ========================================================= */
 
+/* ---------------------------------------------------------
+   Modal de Relacionamentos — Nova Regra
+--------------------------------------------------------- */
+function abrirModalRegra() {
+  const modal = document.getElementById('modal-regra');
+  if (modal) modal.hidden = false;
+}
+
+function fecharModalRegra() {
+  const modal = document.getElementById('modal-regra');
+  if (modal) modal.hidden = true;
+}
+
+function registrarEventosRelacionamentos() {
+  document.getElementById('btn-nova-regra')
+    ?.addEventListener('click', abrirModalRegra);
+
+  document.getElementById('modal-regra-fechar')
+    ?.addEventListener('click', fecharModalRegra);
+
+  document.getElementById('modal-regra-cancelar')
+    ?.addEventListener('click', fecharModalRegra);
+
+  document.getElementById('modal-regra-fundo')
+    ?.addEventListener('click', fecharModalRegra);
+}
+
+/* ---------------------------------------------------------
+   Init / Destroy
+--------------------------------------------------------- */
 const ConfiguracoesPage = {
-  /**
-   * Inicializa a pagina.
-   * Chamada automaticamente pelo router apos carregar a view.
-   */
   init() {
-    console.log('[ConfiguracoesPage] Inicializada');
+    registrarEventosRelacionamentos();
   },
 
-  /**
-   * Limpa listeners e recursos ao sair da pagina.
-   */
   destroy() {
-    console.log('[ConfiguracoesPage] Destruida');
+    document.getElementById('btn-nova-regra')
+      ?.removeEventListener('click', abrirModalRegra);
+
+    document.getElementById('modal-regra-fechar')
+      ?.removeEventListener('click', fecharModalRegra);
+
+    document.getElementById('modal-regra-cancelar')
+      ?.removeEventListener('click', fecharModalRegra);
+
+    document.getElementById('modal-regra-fundo')
+      ?.removeEventListener('click', fecharModalRegra);
   }
 };
 

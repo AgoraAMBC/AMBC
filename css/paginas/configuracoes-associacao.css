@@ -1,0 +1,280 @@
+/* =========================================================
+   configuracoes-associacao.css
+   Estilos da tela Configurações > Associação.
+========================================================= */
+
+.cfg-associacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+  width: 100%;
+}
+
+/* ── Cabeçalho ── */
+.cfg-associacao__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+  padding: var(--esp-lg);
+  background: linear-gradient(135deg, var(--fundo-card) 0%, var(--fundo-secao) 100%);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-md);
+  box-shadow: var(--sombra-sm);
+}
+
+.cfg-associacao__eyebrow {
+  margin: 0 0 4px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--cor-primaria);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cfg-associacao__titulo {
+  margin: 0;
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+  line-height: var(--lh-tight);
+}
+
+.cfg-associacao__subtitulo {
+  margin: 6px 0 0;
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+/* ── Grid de campos reutilizável ── */
+.cfg-associacao__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--esp-md);
+}
+
+.cfg-associacao__grid .gc-1  { grid-column: span 1;  }
+.cfg-associacao__grid .gc-2  { grid-column: span 2;  }
+.cfg-associacao__grid .gc-3  { grid-column: span 3;  }
+.cfg-associacao__grid .gc-4  { grid-column: span 4;  }
+.cfg-associacao__grid .gc-5  { grid-column: span 5;  }
+.cfg-associacao__grid .gc-6  { grid-column: span 6;  }
+.cfg-associacao__grid .gc-12 { grid-column: span 12; }
+
+/* ── Seção Identidade Visual ── */
+.cfg-associacao__identidade {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--esp-lg);
+}
+
+/* Área de upload (logo / favicon) */
+.cfg-associacao__upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-xs);
+  padding: var(--esp-lg) var(--esp-md);
+  border: 2px dashed var(--cor-cinza-300);
+  border-radius: var(--raio-md);
+  background: var(--fundo-secao);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transicao-rapida), background var(--transicao-rapida);
+  min-height: 120px;
+}
+
+.cfg-associacao__upload-area:hover {
+  border-color: var(--cor-primaria);
+  background: var(--cor-primaria-palida);
+}
+
+.cfg-associacao__upload-icone {
+  font-size: 32px;
+  color: var(--texto-suave);
+}
+
+.cfg-associacao__upload-label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+.cfg-associacao__upload-hint {
+  font-size: var(--fs-xs);
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+.cfg-associacao__upload-acoes {
+  display: flex;
+  gap: var(--esp-sm);
+  margin-top: var(--esp-sm);
+}
+
+/* Grupo de cor (color picker + input texto) */
+.cfg-associacao__cor-grupo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+}
+
+.cfg-associacao__color-picker {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  padding: 2px;
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
+  flex-shrink: 0;
+}
+
+/* ── Planos ── */
+.cfg-associacao__planos {
+  display: flex;
+  gap: var(--esp-md);
+}
+
+.cfg-associacao__plano {
+  flex: 1;
+  background: var(--fundo-card);
+  border: 2px solid var(--cor-cinza-200);
+  border-radius: var(--raio-md);
+  padding: var(--esp-lg);
+  transition: border-color var(--transicao-padrao), box-shadow var(--transicao-padrao);
+}
+
+.cfg-associacao__plano:hover,
+.cfg-associacao__plano--ativo {
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.10);
+}
+
+.cfg-associacao__plano-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--esp-sm);
+}
+
+.cfg-associacao__plano-nome {
+  margin: 0 0 var(--esp-xs);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+}
+
+.cfg-associacao__plano-preco {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--texto-principal);
+  margin: 0 0 var(--esp-md);
+}
+
+.cfg-associacao__plano-preco span {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-regular);
+  color: var(--texto-suave);
+}
+
+.cfg-associacao__plano-divisor {
+  border: none;
+  border-top: var(--borda-padrao);
+  margin: var(--esp-md) 0;
+}
+
+.cfg-associacao__plano-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  font-size: var(--fs-sm);
+  color: var(--texto-secundario);
+  padding: 3px 0;
+}
+
+.cfg-associacao__plano-feature .material-icons {
+  font-size: 18px;
+}
+
+.cfg-associacao__plano-feature--sim .material-icons { color: var(--cor-sucesso); }
+.cfg-associacao__plano-feature--nao .material-icons { color: var(--texto-suave); }
+.cfg-associacao__plano-feature--nao { color: var(--texto-suave); }
+
+/* Plano placeholder (vazio, aguardando configuração) */
+.cfg-associacao__plano--placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-sm);
+  border-style: dashed;
+  color: var(--texto-suave);
+  min-height: 200px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.cfg-associacao__plano--placeholder:hover {
+  border-color: var(--cor-primaria);
+  background: var(--cor-primaria-palida);
+  color: var(--cor-primaria);
+  box-shadow: none;
+}
+
+.cfg-associacao__plano--placeholder .material-icons {
+  font-size: 36px;
+  opacity: 0.5;
+}
+
+.cfg-associacao__plano-placeholder-titulo {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  margin: 0;
+}
+
+.cfg-associacao__plano-placeholder-hint {
+  font-size: var(--fs-xs);
+  margin: 0;
+}
+
+/* ── Tabela de documentos ── */
+.cfg-associacao__tabela-wrapper {
+  overflow-x: auto;
+}
+
+/* ── Responsivo ── */
+@media (max-width: 900px) {
+  .cfg-associacao__identidade {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .cfg-associacao {
+    padding: var(--esp-md);
+  }
+
+  .cfg-associacao__identidade {
+    grid-template-columns: 1fr;
+  }
+
+  .cfg-associacao__grid .gc-1,
+  .cfg-associacao__grid .gc-2,
+  .cfg-associacao__grid .gc-3,
+  .cfg-associacao__grid .gc-4,
+  .cfg-associacao__grid .gc-5,
+  .cfg-associacao__grid .gc-6 {
+    grid-column: span 12;
+  }
+
+  .cfg-associacao__cabecalho {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

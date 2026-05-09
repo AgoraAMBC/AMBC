@@ -1,15 +1,335 @@
-﻿<!-- =========================================================
-  View: Associacao
-  Descricao: Configuracoes da associacao
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Associacao">
-  <header class="view__header">
-    <h1 class="view__title">Associacao</h1>
-    <p class="view__subtitle">Configuracoes da associacao</p>
+<section class="view cfg-associacao">
+
+  <!-- CABEÇALHO -->
+  <header class="cfg-associacao__cabecalho">
+    <div>
+      <p class="cfg-associacao__eyebrow">Configurações</p>
+      <h1 class="cfg-associacao__titulo">Associação</h1>
+      <p class="cfg-associacao__subtitulo">Dados institucionais, identidade visual, planos e documentos.</p>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Associacao</strong> sera implementado em breve.</p>
+  <!-- ── DADOS INSTITUCIONAIS ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">account_balance</span>
+        Dados Institucionais
+      </h3>
+    </div>
+    <div class="card__corpo">
+      <div class="cfg-associacao__grid">
+
+        <div class="campo gc-6">
+          <label class="form-label form-label-obrigatorio" for="assoc-nome">Nome da Associação</label>
+          <input class="form-input" type="text" id="assoc-nome"
+            value="Associação de Moradores do Bairro Califórnia" />
+        </div>
+
+        <div class="campo gc-3">
+          <label class="form-label" for="assoc-sigla">Sigla</label>
+          <input class="form-input" type="text" id="assoc-sigla" value="AMBC" />
+        </div>
+
+        <div class="campo gc-3">
+          <label class="form-label" for="assoc-cnpj">CNPJ</label>
+          <input class="form-input" type="text" id="assoc-cnpj"
+            placeholder="00.000.000/0000-00" value="12.345.678/0001-90" />
+        </div>
+
+        <div class="campo gc-4">
+          <label class="form-label" for="assoc-email">E-mail Institucional</label>
+          <input class="form-input" type="email" id="assoc-email"
+            value="contato@ambc.org.br" />
+        </div>
+
+        <div class="campo gc-4">
+          <label class="form-label" for="assoc-telefone">Telefone</label>
+          <input class="form-input" type="tel" id="assoc-telefone"
+            value="(51) 3333-0000" />
+        </div>
+
+        <div class="campo gc-4">
+          <label class="form-label" for="assoc-site">Site</label>
+          <input class="form-input" type="text" id="assoc-site"
+            value="www.ambc.org.br" />
+        </div>
+
+        <div class="campo gc-3">
+          <label class="form-label" for="assoc-cep">CEP</label>
+          <input class="form-input" type="text" id="assoc-cep"
+            placeholder="00000-000" value="90000-000" />
+        </div>
+
+        <div class="campo gc-5">
+          <label class="form-label" for="assoc-endereco">Endereço da Sede</label>
+          <input class="form-input" type="text" id="assoc-endereco"
+            value="Rua das Flores, 100 — Bairro Califórnia" />
+        </div>
+
+        <div class="campo gc-3">
+          <label class="form-label" for="assoc-bairro">Bairro</label>
+          <input class="form-input" type="text" id="assoc-bairro"
+            value="Bairro Califórnia" />
+        </div>
+
+        <div class="campo gc-3">
+          <label class="form-label" for="assoc-cidade">Cidade</label>
+          <input class="form-input" type="text" id="assoc-cidade"
+            value="Porto Alegre" />
+        </div>
+
+        <div class="campo gc-1">
+          <label class="form-label" for="assoc-uf">UF</label>
+          <select class="form-input" id="assoc-uf">
+            <option value="">UF</option>
+            <option value="AC">AC</option><option value="AL">AL</option>
+            <option value="AP">AP</option><option value="AM">AM</option>
+            <option value="BA">BA</option><option value="CE">CE</option>
+            <option value="DF">DF</option><option value="ES">ES</option>
+            <option value="GO">GO</option><option value="MA">MA</option>
+            <option value="MT">MT</option><option value="MS">MS</option>
+            <option value="MG">MG</option><option value="PA">PA</option>
+            <option value="PB">PB</option><option value="PR">PR</option>
+            <option value="PE">PE</option><option value="PI">PI</option>
+            <option value="RJ">RJ</option><option value="RN">RN</option>
+            <option value="RS" selected>RS</option><option value="RO">RO</option>
+            <option value="RR">RR</option><option value="SC">SC</option>
+            <option value="SP">SP</option><option value="SE">SE</option>
+            <option value="TO">TO</option>
+          </select>
+        </div>
+
+        <div class="campo gc-12">
+          <label class="form-label" for="assoc-missao">Missão / Descrição</label>
+          <textarea class="form-input" id="assoc-missao" rows="3"
+            >Associação sem fins lucrativos que promove a melhoria da qualidade de vida dos moradores do Bairro Califórnia por meio de ações sociais, culturais e de infraestrutura.</textarea>
+        </div>
+
+      </div>
+    </div>
+    <div class="card__rodape">
+      <button type="button" class="btn btn-primario" id="btn-salvar-associacao">
+        <span class="material-icons">save</span>
+        Salvar Alterações
+      </button>
+    </div>
   </div>
+
+  <!-- ── IDENTIDADE VISUAL ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">palette</span>
+        Identidade Visual
+      </h3>
+    </div>
+    <div class="card__corpo">
+      <div class="cfg-associacao__identidade">
+
+        <!-- Logo -->
+        <div>
+          <label class="form-label">Logo da Associação</label>
+          <input type="file" id="logo-input" accept="image/*" hidden />
+          <div class="cfg-associacao__upload-area" id="logo-upload-area"
+            onclick="document.getElementById('logo-input').click()">
+            <span class="material-icons cfg-associacao__upload-icone">upload_file</span>
+            <p class="cfg-associacao__upload-label">Clique para enviar logo</p>
+            <p class="cfg-associacao__upload-hint">PNG, JPG — máx. 2 MB</p>
+          </div>
+          <div class="cfg-associacao__upload-acoes">
+            <button type="button" class="btn btn-primario btn-sm"
+              style="flex:1;justify-content:center"
+              onclick="document.getElementById('logo-input').click()">
+              <span class="material-icons">upload</span>
+              Selecionar Imagem
+            </button>
+          </div>
+        </div>
+
+        <!-- Favicon -->
+        <div>
+          <label class="form-label">Favicon / Ícone</label>
+          <input type="file" id="favicon-input" accept="image/png" hidden />
+          <div class="cfg-associacao__upload-area"
+            onclick="document.getElementById('favicon-input').click()">
+            <span class="material-icons cfg-associacao__upload-icone">image</span>
+            <p class="cfg-associacao__upload-label">Clique para enviar ícone</p>
+            <p class="cfg-associacao__upload-hint">PNG — 32×32 ou 64×64 px</p>
+          </div>
+          <div class="cfg-associacao__upload-acoes">
+            <button type="button" class="btn btn-primario btn-sm"
+              style="flex:1;justify-content:center"
+              onclick="document.getElementById('favicon-input').click()">
+              <span class="material-icons">upload</span>
+              Selecionar Ícone
+            </button>
+          </div>
+        </div>
+
+        <!-- Cores -->
+        <div>
+          <label class="form-label">Cor Principal</label>
+          <div class="cfg-associacao__cor-grupo" style="margin-bottom:var(--esp-md)">
+            <input type="color" class="cfg-associacao__color-picker"
+              id="cor-principal" value="#1a73e8" />
+            <input type="text" class="form-input" id="cor-principal-texto"
+              value="#1a73e8" maxlength="7" />
+          </div>
+          <label class="form-label">Cor Secundária</label>
+          <div class="cfg-associacao__cor-grupo">
+            <input type="color" class="cfg-associacao__color-picker"
+              id="cor-secundaria" value="#1557b0" />
+            <input type="text" class="form-input" id="cor-secundaria-texto"
+              value="#1557b0" maxlength="7" />
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PLANOS DE ASSOCIAÇÃO ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">card_membership</span>
+        Planos de Associação
+      </h3>
+      <div class="card__acoes">
+        <button type="button" class="btn btn-primario btn-sm">
+          <span class="material-icons">add</span>
+          Novo Plano
+        </button>
+      </div>
+    </div>
+    <div class="card__corpo">
+      <p style="font-size:var(--fs-xs);color:var(--texto-suave);margin:0 0 var(--esp-md)">
+        <span class="material-icons" style="font-size:14px;vertical-align:middle">info</span>
+        Os planos definem os benefícios e o valor da anuidade de cada categoria de associado.
+        Clique em <strong>Novo Plano</strong> para adicionar novas categorias.
+      </p>
+
+      <div class="cfg-associacao__planos">
+
+        <!-- Plano ativo -->
+        <div class="cfg-associacao__plano cfg-associacao__plano--ativo">
+          <div class="cfg-associacao__plano-topo">
+            <span class="badge badge-verde">Ativo</span>
+            <button type="button" class="btn btn-secundario btn-sm">
+              <span class="material-icons">edit</span>
+            </button>
+          </div>
+          <p class="cfg-associacao__plano-nome">Associado Padrão</p>
+          <p class="cfg-associacao__plano-preco">R$ 60,00 <span>/ anuidade</span></p>
+          <hr class="cfg-associacao__plano-divisor" />
+          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
+            <span class="material-icons">check_circle</span>
+            Acesso à sede social
+          </div>
+          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
+            <span class="material-icons">check_circle</span>
+            Até 3 dependentes
+          </div>
+          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
+            <span class="material-icons">check_circle</span>
+            Participação em eventos
+          </div>
+          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--nao">
+            <span class="material-icons">remove_circle</span>
+            Sala de reuniões
+          </div>
+        </div>
+
+        <!-- Plano placeholder 2 -->
+        <div class="cfg-associacao__plano cfg-associacao__plano--placeholder">
+          <span class="material-icons">add_circle_outline</span>
+          <p class="cfg-associacao__plano-placeholder-titulo">Novo Plano</p>
+          <p class="cfg-associacao__plano-placeholder-hint">Clique para configurar uma nova categoria de associado</p>
+        </div>
+
+        <!-- Plano placeholder 3 -->
+        <div class="cfg-associacao__plano cfg-associacao__plano--placeholder">
+          <span class="material-icons">add_circle_outline</span>
+          <p class="cfg-associacao__plano-placeholder-titulo">Novo Plano</p>
+          <p class="cfg-associacao__plano-placeholder-hint">Clique para configurar uma nova categoria de associado</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DOCUMENTOS E ESTATUTO ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">description</span>
+        Documentos e Estatuto
+      </h3>
+      <div class="card__acoes">
+        <button type="button" class="btn btn-primario btn-sm">
+          <span class="material-icons">upload_file</span>
+          Enviar Documento
+        </button>
+      </div>
+    </div>
+    <div class="cfg-associacao__tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Versão</th>
+            <th>Data de Upload</th>
+            <th class="tabela__num">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:var(--fw-semibold)">Estatuto Social AMBC</td>
+            <td><span class="badge badge-azul">PDF</span></td>
+            <td style="color:var(--texto-suave)">v3.2</td>
+            <td style="color:var(--texto-suave)">01/01/2024</td>
+            <td class="tabela__num">
+              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
+                <span class="material-icons">download</span>
+              </button>
+              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:var(--fw-semibold)">Regimento Interno</td>
+            <td><span class="badge badge-azul">PDF</span></td>
+            <td style="color:var(--texto-suave)">v2.0</td>
+            <td style="color:var(--texto-suave)">15/06/2023</td>
+            <td class="tabela__num">
+              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
+                <span class="material-icons">download</span>
+              </button>
+              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td style="font-weight:var(--fw-semibold)">Ata da Última Assembleia</td>
+            <td><span class="badge badge-cinza">DOCX</span></td>
+            <td style="color:var(--texto-suave)">2025</td>
+            <td style="color:var(--texto-suave)">10/03/2025</td>
+            <td class="tabela__num">
+              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
+                <span class="material-icons">download</span>
+              </button>
+              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
+                <span class="material-icons">delete</span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 </section>
