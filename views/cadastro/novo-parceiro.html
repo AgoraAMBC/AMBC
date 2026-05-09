@@ -1,15 +1,318 @@
-﻿<!-- =========================================================
+<!-- =========================================================
   View: Novo Parceiro
-  Descricao: Cadastro de novo parceiro
+  Descrição: Formulário de cadastro de novo parceiro
   Projeto: AMBC-V2
+  Rota: #/cadastro/novo-parceiro
 ========================================================= -->
-<section class="view view--placeholder" data-view="Novo Parceiro">
-  <header class="view__header">
-    <h1 class="view__title">Novo Parceiro</h1>
-    <p class="view__subtitle">Cadastro de novo parceiro</p>
+
+<section class="view view--cadastro-parceiro">
+
+  <!-- Trilha de navegação -->
+  <nav class="trilha" aria-label="Trilha de navegação">
+    <span class="trilha__item">
+      <a class="trilha__link" href="#/dashboard">
+        <span class="material-icons trilha__icone">home</span>
+        Início
+      </a>
+    </span>
+    <span class="material-icons trilha__separador">chevron_right</span>
+    <span class="trilha__item">
+      <a class="trilha__link" href="#/cadastro/listar">Cadastro</a>
+    </span>
+    <span class="material-icons trilha__separador">chevron_right</span>
+    <span class="trilha__item trilha__atual">Parceiro</span>
+  </nav>
+
+  <!-- Cabeçalho -->
+  <header class="view__cabecalho">
+    <div>
+      <h1 class="view__titulo">Cadastro de Parceiro</h1>
+      <p class="view__subtitulo">Gerencie informações, contatos e histórico financeiro do parceiro.</p>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Novo Parceiro</strong> sera implementado em breve.</p>
-  </div>
+  <form id="form-parceiro" novalidate>
+
+    <!-- ================================================
+         DADOS DO PARCEIRO
+    ================================================ -->
+    <div class="form-card">
+      <div class="form-card__cabecalho">
+        <span class="material-icons form-card__icone">handshake</span>
+        <h2 class="form-card__titulo">Dados do Parceiro</h2>
+      </div>
+
+      <!-- Tipo de pessoa -->
+      <div class="form-grid">
+        <div class="campo form-col-12">
+          <label class="form-label">Tipo de pessoa</label>
+          <div class="botao-grupo">
+            <label class="botao-opcao">
+              <input type="radio" name="tipo_pessoa" id="parceiro-tipo-pessoa" value="PF" checked />
+              <span>Pessoa Física</span>
+            </label>
+            <label class="botao-opcao">
+              <input type="radio" name="tipo_pessoa" value="PJ" />
+              <span>Pessoa Jurídica</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+
+        <!-- Nome / Razão Social -->
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="parceiro-nome">
+            Nome Completo / Razão Social
+          </label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-nome"
+            placeholder="Nome completo ou razão social"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- CPF / CNPJ -->
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="parceiro-cpf-cnpj">
+            CPF / CNPJ
+          </label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-cpf-cnpj"
+            placeholder="Somente números"
+            maxlength="14"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- E-mail -->
+        <div class="campo form-col-3">
+          <label class="form-label" for="parceiro-email">E-mail</label>
+          <input
+            class="form-input"
+            type="email"
+            id="parceiro-email"
+            placeholder="email@exemplo.com"
+            autocomplete="off"
+          />
+        </div>
+
+        <!-- Tipo de Serviço/Produto -->
+        <div class="campo form-col-6">
+          <label class="form-label" for="parceiro-tipo-servico">
+            Tipo de Serviço / Produto
+          </label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-tipo-servico"
+            placeholder="Ex: Alimentação, Consultoria, Brinquedos"
+            autocomplete="off"
+          />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================
+         ENDEREÇO
+    ================================================ -->
+    <div class="form-card">
+      <div class="form-card__cabecalho">
+        <span class="material-icons form-card__icone">home</span>
+        <h2 class="form-card__titulo">Endereço</h2>
+      </div>
+
+      <div class="form-grid">
+
+        <div class="campo form-col-2">
+          <label class="form-label" for="parceiro-cep">CEP</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-cep"
+            placeholder="00000-000"
+            maxlength="9"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-5">
+          <label class="form-label" for="parceiro-logradouro">Logradouro</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-logradouro"
+            placeholder="Rua, Avenida..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-2">
+          <label class="form-label" for="parceiro-numero">Número</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-numero"
+            placeholder="123"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-3">
+          <label class="form-label" for="parceiro-complemento">Complemento</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-complemento"
+            placeholder="Apto, Bloco..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-3">
+          <label class="form-label" for="parceiro-bairro">Bairro</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-bairro"
+            placeholder="Bairro"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-3">
+          <label class="form-label" for="parceiro-cidade">Cidade</label>
+          <input
+            class="form-input"
+            type="text"
+            id="parceiro-cidade"
+            placeholder="Cidade"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-2">
+          <label class="form-label" for="parceiro-uf">Estado (UF)</label>
+          <select class="form-input" id="parceiro-uf">
+            <option value="">UF</option>
+            <option value="AC">AC</option><option value="AL">AL</option>
+            <option value="AP">AP</option><option value="AM">AM</option>
+            <option value="BA">BA</option><option value="CE">CE</option>
+            <option value="DF">DF</option><option value="ES">ES</option>
+            <option value="GO">GO</option><option value="MA">MA</option>
+            <option value="MT">MT</option><option value="MS">MS</option>
+            <option value="MG">MG</option><option value="PA">PA</option>
+            <option value="PB">PB</option><option value="PR">PR</option>
+            <option value="PE">PE</option><option value="PI">PI</option>
+            <option value="RJ">RJ</option><option value="RN">RN</option>
+            <option value="RS">RS</option><option value="RO">RO</option>
+            <option value="RR">RR</option><option value="SC">SC</option>
+            <option value="SP">SP</option><option value="SE">SE</option>
+            <option value="TO">TO</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ================================================
+         LISTA TELEFÔNICA
+    ================================================ -->
+    <div class="form-card">
+      <div class="form-card__cabecalho">
+        <span class="material-icons form-card__icone">call</span>
+        <h2 class="form-card__titulo">Lista Telefônica</h2>
+      </div>
+
+      <!-- Adicionar telefone -->
+      <div class="form-grid form-grid--telefone">
+
+        <div class="campo form-col-1">
+          <label class="form-label" for="tel-ddd">DDD</label>
+          <input
+            class="form-input"
+            type="text"
+            id="tel-ddd"
+            placeholder="51"
+            maxlength="2"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-3">
+          <label class="form-label" for="tel-numero">Número</label>
+          <input
+            class="form-input"
+            type="text"
+            id="tel-numero"
+            placeholder="999999999"
+            maxlength="9"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-2">
+          <label class="form-label" for="tel-tipo">Tipo</label>
+          <select class="form-input" id="tel-tipo">
+            <option value="">Selecione</option>
+            <option value="1">Celular</option>
+            <option value="2">Residencial</option>
+            <option value="3">Comercial</option>
+            <option value="4">WhatsApp</option>
+            <option value="5">Recado</option>
+            <option value="6">Outro</option>
+          </select>
+        </div>
+
+        <div class="campo form-col-4">
+          <label class="form-label" for="tel-obs">Observação</label>
+          <input
+            class="form-input"
+            type="text"
+            id="tel-obs"
+            placeholder="Ex: Principal - WhatsApp"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="campo form-col-2 campo--acao">
+          <button type="button" class="botao botao--secundario" id="btn-add-telefone">
+            <span class="material-icons">add_circle</span>
+            Adicionar
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Lista de telefones adicionados -->
+      <div id="lista-telefones">
+        <p class="form-vazio">Nenhum telefone adicionado.</p>
+      </div>
+
+    </div>
+
+    <!-- ================================================
+         AÇÕES
+    ================================================ -->
+    <div class="form-acoes">
+      <button type="button" class="botao botao--secundario" id="btn-cancelar">
+        <span class="material-icons">close</span>
+        Cancelar
+      </button>
+      <button type="submit" class="botao botao--primario" id="btn-salvar">
+        <span class="material-icons">save</span>
+        Salvar Cadastro
+      </button>
+    </div>
+
+  </form>
+
 </section>
