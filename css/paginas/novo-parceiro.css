@@ -1,0 +1,49 @@
+/* =========================================================
+   novo-parceiro.css
+   Ajustes específicos da tela de cadastro de parceiro.
+========================================================= */
+
+/* Radio inputs — reset do min-height herdado do campo */
+.view--cadastro-parceiro .cadastro-associado__campo input[type="radio"] {
+  min-height: auto;
+  width: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  accent-color: var(--cor-primaria);
+  cursor: pointer;
+}
+
+/* Grupo de opções de tipo de pessoa — estilo compacto de pill */
+.parceiro__tipo-grupo {
+  display: flex;
+  gap: var(--esp-sm);
+}
+
+.parceiro__tipo-opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  padding: var(--esp-xs) var(--esp-md);
+  border: 1px solid var(--cor-cinza-300);
+  border-radius: var(--raio-sm);
+  background: var(--fundo-card);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: all var(--transicao-rapida);
+}
+
+.parceiro__tipo-opcao:has(input:checked) {
+  border-color: var(--cor-primaria);
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+  font-weight: var(--fw-semibold);
+}
+
+/* Espaçamento entre a linha de adição de telefone e a tabela */
+.view--cadastro-parceiro .cadastro-associado__tabela-wrapper {
+  margin-top: var(--esp-md);
+}

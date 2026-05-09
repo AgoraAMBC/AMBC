@@ -130,25 +130,31 @@ function _removerTelefone(index) {
     _renderizarTelefones();
 }
 
+const TIPOS_TELEFONE = { '1': 'Celular', '2': 'Residencial', '3': 'Comercial', '4': 'WhatsApp', '5': 'Recado', '6': 'Outro' };
+
 function _renderizarTelefones() {
-    const lista = document.getElementById('lista-telefones');
-    if (!lista) return;
+    const tbody = document.getElementById('lista-telefones');
+    if (!tbody) return;
 
     if (telefones.length === 0) {
-        lista.innerHTML = '<p class="form-vazio">Nenhum telefone adicionado.</p>';
+        tbody.innerHTML = '<tr><td colspan="4" class="cadastro-associado__estado-vazio">Nenhum telefone adicionado.</td></tr>';
         return;
     }
 
-    lista.innerHTML = telefones.map((tel, i) => `
-        <div class="telefone-item">
-            <span>(${tel.ddd}) ${tel.numero}</span>
-            <button type="button" class="botao botao--perigo botao--pequeno" onclick="window._removerTelefone(${i})">
-                <span class="material-icons">delete</span>
-            </button>
-        </div>
+    tbody.innerHTML = telefones.map((tel, i) => `
+        <tr>
+            <td>${TIPOS_TELEFONE[tel.fk_tipo_telefone] ?? '—'}</td>
+            <td>(${tel.ddd}) ${tel.numero}</td>
+            <td>${tel.observacao ?? '—'}</td>
+            <td class="col-acoes">
+                <button type="button" class="btn btn-secundario btn-sm"
+                    onclick="window._removerTelefone(${i})" title="Remover">
+                    <span class="material-icons">delete</span>
+                </button>
+            </td>
+        </tr>
     `).join('');
 
-    // Expõe globalmente para o onclick inline
     window._removerTelefone = _removerTelefone;
 }
 
