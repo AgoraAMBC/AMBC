@@ -81,6 +81,12 @@ select:focus-visible {
   padding: var(--esp-lg);
 }
 
+/* Seções de página injetadas pelo router — zeram o padding-top para não
+   somar com o padding do app-shell__conteudo */
+.view {
+  padding-top: 0 !important;
+}
+
 /* --------------------------------------------------------------------------
    5. Utilitários de DISPLAY
    -------------------------------------------------------------------------- */

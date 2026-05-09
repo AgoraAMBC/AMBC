@@ -27,7 +27,7 @@
   overflow-x: hidden;
 
   /* Espaçamento interno padrão (desktop) */
-  padding: var(--esp-xl);
+  padding: 25px;
 
   /* Fundo da área de trabalho */
   background-color: var(--cor-fundo);

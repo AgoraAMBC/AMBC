@@ -63,8 +63,8 @@
    ============================================ */
 .app-shell__conteudo {
   grid-area: conteudo;
-  margin-top: var(--altura-header);
-  padding: var(--esp-lg);
+  margin-top: 15px;
+  padding: 0px var(--esp-lg) var(--esp-lg);
   width: 100%;
   min-height: calc(100vh - var(--altura-header));
 }

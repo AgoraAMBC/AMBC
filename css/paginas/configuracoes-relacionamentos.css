@@ -6,8 +6,8 @@
 .cfg-rel {
   display: flex;
   flex-direction: column;
-  gap: var(--esp-md);
-  padding: var(--esp-lg);
+  gap: 15px;
+  padding: 0 var(--esp-lg) var(--esp-lg);
   width: 100%;
 }
 
