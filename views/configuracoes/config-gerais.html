@@ -1,15 +1,218 @@
-﻿<!-- =========================================================
-  View: Configuracoes Gerais
-  Descricao: Configuracoes gerais do sistema
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Configuracoes Gerais">
-  <header class="view__header">
-    <h1 class="view__title">Configuracoes Gerais</h1>
-    <p class="view__subtitle">Configuracoes gerais do sistema</p>
+<section class="view cfg-gerais">
+
+  <!-- CABEÇALHO -->
+  <header class="cfg-associacao__cabecalho">
+    <div>
+      <p class="cfg-associacao__eyebrow">Configurações</p>
+      <h1 class="cfg-associacao__titulo">Configurações Gerais</h1>
+      <p class="cfg-associacao__subtitulo">Preferências do sistema, notificações e segurança.</p>
+    </div>
+    <button type="button" class="btn btn-primario" id="btn-salvar-gerais">
+      <span class="material-icons">save</span>
+      Salvar Preferências
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Configuracoes Gerais</strong> sera implementado em breve.</p>
+  <!-- ── PREFERÊNCIAS DO SISTEMA ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">tune</span>
+        Preferências do Sistema
+      </h3>
+    </div>
+    <div class="card__corpo">
+
+      <!-- Regional -->
+      <div class="cfg-gerais__secao">
+        <div class="cfg-gerais__secao-titulo">Regional</div>
+        <div class="cfg-associacao__grid">
+
+          <div class="campo gc-3">
+            <label class="form-label" for="ger-idioma">Idioma</label>
+            <select class="form-input" id="ger-idioma">
+              <option value="pt-BR" selected>Português (BR)</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
+
+          <div class="campo gc-3">
+            <label class="form-label" for="ger-fuso">Fuso Horário</label>
+            <select class="form-input" id="ger-fuso">
+              <option value="America/Sao_Paulo" selected>América/São_Paulo (UTC-3)</option>
+              <option value="America/Manaus">América/Manaus (UTC-4)</option>
+              <option value="America/Belem">América/Belém (UTC-3)</option>
+              <option value="America/Fortaleza">América/Fortaleza (UTC-3)</option>
+            </select>
+          </div>
+
+          <div class="campo gc-3">
+            <label class="form-label" for="ger-data">Formato de Data</label>
+            <select class="form-input" id="ger-data">
+              <option value="DD/MM/YYYY" selected>DD/MM/AAAA</option>
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="YYYY-MM-DD">AAAA-MM-DD</option>
+            </select>
+          </div>
+
+          <div class="campo gc-3">
+            <label class="form-label" for="ger-moeda">Moeda</label>
+            <select class="form-input" id="ger-moeda">
+              <option value="BRL" selected>Real (R$)</option>
+              <option value="USD">Dólar ($)</option>
+              <option value="EUR">Euro (€)</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Notificações -->
+      <div class="cfg-gerais__secao">
+        <div class="cfg-gerais__secao-titulo">Notificações</div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">E-mail de vencimentos</div>
+            <div class="cfg-gerais__linha-desc">Avisar quando lançamentos estiverem próximos do vencimento</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle cfg-gerais__toggle--ativo" id="tog-vencimentos" aria-pressed="true"></button>
+        </div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">Alertas de inadimplência</div>
+            <div class="cfg-gerais__linha-desc">Notificar associados com mensalidades atrasadas</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle cfg-gerais__toggle--ativo" id="tog-inadimplencia" aria-pressed="true"></button>
+        </div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">Resumo financeiro semanal</div>
+            <div class="cfg-gerais__linha-desc">Receber relatório por e-mail toda segunda-feira</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle" id="tog-resumo" aria-pressed="false"></button>
+        </div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">Novos cadastros</div>
+            <div class="cfg-gerais__linha-desc">Notificar quando um novo associado for registrado</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle cfg-gerais__toggle--ativo" id="tog-cadastros" aria-pressed="true"></button>
+        </div>
+
+      </div>
+
+      <!-- Segurança -->
+      <div class="cfg-gerais__secao">
+        <div class="cfg-gerais__secao-titulo">Segurança</div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">Autenticação em 2 etapas</div>
+            <div class="cfg-gerais__linha-desc">Exigir verificação extra ao fazer login</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle" id="tog-2fa" aria-pressed="false"></button>
+        </div>
+
+        <div class="cfg-gerais__linha">
+          <div class="cfg-gerais__linha-texto">
+            <div class="cfg-gerais__linha-label">Expirar sessão após inatividade</div>
+            <div class="cfg-gerais__linha-desc">Encerrar sessão após 30 minutos sem uso</div>
+          </div>
+          <button type="button" class="cfg-gerais__toggle cfg-gerais__toggle--ativo" id="tog-sessao" aria-pressed="true"></button>
+        </div>
+
+      </div>
+
+      <!-- Alerta de vencimento -->
+      <div class="cfg-gerais__secao cfg-gerais__secao--sem-divisor">
+        <div class="cfg-gerais__secao-titulo">Alertas</div>
+        <div class="cfg-associacao__grid">
+          <div class="campo gc-2">
+            <label class="form-label" for="ger-dias-alerta">Dias para alerta de vencimento</label>
+            <input type="number" class="form-input" id="ger-dias-alerta" value="5" min="1" max="30" />
+          </div>
+          <div class="campo gc-10" style="display:flex;align-items:flex-end;padding-bottom:2px;">
+            <p style="font-size:var(--fs-xs);color:var(--texto-suave);margin:0;">
+              Notificar X dias antes do vencimento de um lançamento.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="card__rodape">
+      <button type="button" class="btn btn-primario" id="btn-salvar-gerais-rodape">
+        <span class="material-icons">save</span>
+        Salvar Preferências
+      </button>
+    </div>
   </div>
+
+  <!-- ── PERMISSÕES POR PERFIL ── -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">shield</span>
+        Permissões por Perfil
+      </h3>
+    </div>
+    <div class="card__corpo" style="padding:0">
+      <div class="cfg-gerais__tabela-wrapper">
+        <table class="tabela cfg-gerais__tabela-permissoes">
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th class="cfg-gerais__th-perfil">Administrador</th>
+              <th class="cfg-gerais__th-perfil">Financeiro</th>
+              <th class="cfg-gerais__th-perfil">Operacional</th>
+              <th class="cfg-gerais__th-perfil">Somente Leitura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="cfg-gerais__modulo">Painel</td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+            </tr>
+            <tr>
+              <td class="cfg-gerais__modulo">Cadastros</td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+            </tr>
+            <tr>
+              <td class="cfg-gerais__modulo">Financeiro</td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+            </tr>
+            <tr>
+              <td class="cfg-gerais__modulo">Relatórios</td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+            </tr>
+            <tr>
+              <td class="cfg-gerais__modulo">Configurações</td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--sim" aria-pressed="true"><span class="material-icons">check_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+              <td class="cfg-gerais__td-perm"><button type="button" class="cfg-gerais__perm cfg-gerais__perm--nao" aria-pressed="false"><span class="material-icons">remove_circle</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </section>

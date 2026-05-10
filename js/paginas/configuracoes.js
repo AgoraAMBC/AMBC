@@ -32,11 +32,37 @@ function registrarEventosRelacionamentos() {
 }
 
 /* ---------------------------------------------------------
+   Toggles — Configurações Gerais
+--------------------------------------------------------- */
+function inicializarToggles() {
+  document.querySelectorAll('.cfg-gerais__toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ativo = btn.classList.toggle('cfg-gerais__toggle--ativo');
+      btn.setAttribute('aria-pressed', ativo);
+    });
+  });
+}
+
+function inicializarPermissoes() {
+  document.querySelectorAll('.cfg-gerais__perm').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const eSim = btn.classList.contains('cfg-gerais__perm--sim');
+      btn.classList.toggle('cfg-gerais__perm--sim', !eSim);
+      btn.classList.toggle('cfg-gerais__perm--nao', eSim);
+      btn.setAttribute('aria-pressed', !eSim);
+      btn.querySelector('.material-icons').textContent = eSim ? 'remove_circle' : 'check_circle';
+    });
+  });
+}
+
+/* ---------------------------------------------------------
    Init / Destroy
 --------------------------------------------------------- */
 const ConfiguracoesPage = {
   init() {
     registrarEventosRelacionamentos();
+    inicializarToggles();
+    inicializarPermissoes();
   },
 
   destroy() {

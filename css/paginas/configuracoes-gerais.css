@@ -1,0 +1,156 @@
+/* =========================================================
+   configuracoes-gerais.css
+   Estilos da tela Configurações > Configurações Gerais.
+========================================================= */
+
+.cfg-gerais {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+  width: 100%;
+}
+
+/* ── Seção interna do card ── */
+.cfg-gerais__secao {
+  padding-bottom: var(--esp-lg);
+  margin-bottom: var(--esp-lg);
+  border-bottom: var(--borda-padrao);
+}
+
+.cfg-gerais__secao--sem-divisor {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.cfg-gerais__secao-titulo {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--esp-md);
+}
+
+/* ── Linha de toggle ── */
+.cfg-gerais__linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  padding: var(--esp-sm) 0;
+  border-bottom: var(--borda-padrao);
+}
+
+.cfg-gerais__linha:last-child {
+  border-bottom: none;
+}
+
+.cfg-gerais__linha-label {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--texto-principal);
+}
+
+.cfg-gerais__linha-desc {
+  font-size: var(--fs-xs);
+  color: var(--texto-suave);
+  margin-top: 2px;
+}
+
+/* ── Toggle switch ── */
+.cfg-gerais__toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: var(--cor-cinza-300);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background var(--transicao-rapida);
+  padding: 0;
+}
+
+.cfg-gerais__toggle::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  transition: left var(--transicao-rapida);
+}
+
+.cfg-gerais__toggle--ativo {
+  background: var(--cor-primaria);
+}
+
+.cfg-gerais__toggle--ativo::after {
+  left: 23px;
+}
+
+/* ── Tabela de permissões ── */
+.cfg-gerais__tabela-wrapper {
+  overflow-x: auto;
+}
+
+.cfg-gerais__tabela-permissoes .cfg-gerais__th-perfil {
+  text-align: center;
+  width: 130px;
+}
+
+.cfg-gerais__modulo {
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+}
+
+.cfg-gerais__td-perm {
+  text-align: center;
+}
+
+.cfg-gerais__perm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  transition: background var(--transicao-rapida), transform var(--transicao-rapida);
+}
+
+.cfg-gerais__perm:hover {
+  background: var(--fundo-secao);
+  transform: scale(1.15);
+}
+
+.cfg-gerais__perm .material-icons {
+  font-size: 22px;
+}
+
+.cfg-gerais__perm--sim .material-icons {
+  color: var(--cor-sucesso);
+}
+
+.cfg-gerais__perm--nao .material-icons {
+  color: var(--texto-suave);
+}
+
+/* ── Responsivo ── */
+@media (max-width: 600px) {
+  .cfg-gerais {
+    padding: var(--esp-md);
+  }
+
+  .cfg-gerais__linha {
+    gap: var(--esp-sm);
+  }
+}

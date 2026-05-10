@@ -1,7 +1,6 @@
 import Toast from '../componentes/toast.js';
 import { AssociadosService } from '../services/associados-service.js?v=4';
 import { AuxiliaresService } from '../services/associados-auxiliares-service.js?v=5';
-console.log('[AMBC] cadastro-novo-associado.js carregado');
 
 const refs = {
   form: null,
@@ -33,16 +32,8 @@ const refs = {
   btnAddLancamento: null,
 
   modalTelefone: null,
-  modalTelefoneFundo: null,
-  modalTelefoneFechar: null,
   modalDependente: null,
-  modalDependenteFundo: null,
-  modalDependenteFechar: null,
-  modalDependenteCancelar: null,
   modalLancamento: null,
-  modalLancamentoFundo: null,
-  modalLancamentoFechar: null,
-  modalLancamentoCancelar: null,
 
   btnSalvarTelefoneModal: null,
   btnSalvarDependenteModal: null,
@@ -67,9 +58,9 @@ function parsearHashParams() {
 
 function formatarDataHoje() {
   const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-  const dia = String(hoje.getDate()).padStart(2, '0');
+  const ano  = hoje.getFullYear();
+  const mes  = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia  = String(hoje.getDate()).padStart(2, '0');
   return `${ano}-${mes}-${dia}`;
 }
 
@@ -87,15 +78,15 @@ function aplicarMascaraCpf(event) {
   const input = event.target;
   const valor = input.value.replace(/\D/g, '').slice(0, 11);
   if (valor.length <= 3) { input.value = valor; return; }
-  if (valor.length <= 6) { input.value = `${valor.slice(0, 3)}.${valor.slice(3)}`; return; }
-  if (valor.length <= 9) { input.value = `${valor.slice(0, 3)}.${valor.slice(3, 6)}.${valor.slice(6)}`; return; }
-  input.value = `${valor.slice(0, 3)}.${valor.slice(3, 6)}.${valor.slice(6, 9)}-${valor.slice(9, 11)}`;
+  if (valor.length <= 6) { input.value = `${valor.slice(0,3)}.${valor.slice(3)}`; return; }
+  if (valor.length <= 9) { input.value = `${valor.slice(0,3)}.${valor.slice(3,6)}.${valor.slice(6)}`; return; }
+  input.value = `${valor.slice(0,3)}.${valor.slice(3,6)}.${valor.slice(6,9)}-${valor.slice(9,11)}`;
 }
 
 function aplicarMascaraCep(event) {
   const input = event.target;
   const valor = input.value.replace(/\D/g, '').slice(0, 8);
-  input.value = valor.length > 5 ? `${valor.slice(0, 5)}-${valor.slice(5)}` : valor;
+  input.value = valor.length > 5 ? `${valor.slice(0,5)}-${valor.slice(5)}` : valor;
 }
 
 async function buscarCep(cep) {
@@ -106,9 +97,9 @@ async function buscarCep(cep) {
   if (dados.erro) return null;
   return {
     logradouro: dados.logradouro || '',
-    bairro: dados.bairro || '',
-    cidade: dados.localidade || '',
-    uf: dados.uf || ''
+    bairro:     dados.bairro     || '',
+    cidade:     dados.localidade || '',
+    uf:         dados.uf         || ''
   };
 }
 
@@ -119,9 +110,9 @@ async function aoBuscarCep() {
     const dados = await buscarCep(cep);
     if (!dados) { Toast.erro('CEP não encontrado.'); return; }
     if (refs.logradouro) refs.logradouro.value = dados.logradouro;
-    if (refs.bairro) refs.bairro.value = dados.bairro;
-    if (refs.cidade) refs.cidade.value = dados.cidade;
-    if (refs.uf) refs.uf.value = dados.uf;
+    if (refs.bairro)     refs.bairro.value     = dados.bairro;
+    if (refs.cidade)     refs.cidade.value     = dados.cidade;
+    if (refs.uf)         refs.uf.value         = dados.uf;
     Toast.sucesso('Endereço preenchido com sucesso.');
   } catch (erro) {
     Toast.erro(erro.message || 'Erro ao consultar CEP.');
@@ -130,36 +121,28 @@ async function aoBuscarCep() {
 
 function coletarDadosFormulario() {
   return {
-    // ── Dados pessoais ──────────────────────────────────────
     nome:            refs.nome?.value.trim()            || null,
-    cpf_cnpj:        refs.cpf?.value.replace(/\D/g, '') || null, // ✅ apenas números
-    data_nascimento: refs.dataNascimento?.value         || null,
-    email:           refs.email?.value.trim()           || null,
+    cpf_cnpj:        refs.cpf?.value.replace(/\D/g,'')  || null,
+    data_nascimento: refs.dataNascimento?.value          || null,
+    email:           refs.email?.value.trim()            || null,
     observacao:      refs.observacao?.value.trim()       || null,
-    ativo:           refs.fkStatus?.value
-                       ? Number(refs.fkStatus.value) === 1
-                       : true,
-    data_entrada:    refs.dataEntrada?.value            || null,
-
-    // ── FKs com nomes que o backend espera ─────────────────
-    genero:         parseInt(refs.fkGenero?.value,      10) || null,
-    id_estadocivil: parseInt(refs.fkEstadoCivil?.value, 10) || null,
-    id_profissao:   parseInt(refs.fkProfissao?.value,   10) || null,
-    id_status:      parseInt(refs.fkStatus?.value,      10) || null,
-
-    // ── Endereço aninhado ───────────────────────────────────
+    ativo:           refs.fkStatus?.value ? Number(refs.fkStatus.value) === 1 : true,
+    data_entrada:    refs.dataEntrada?.value             || null,
+    genero:          parseInt(refs.fkGenero?.value,      10) || null,
+    id_estadocivil:  parseInt(refs.fkEstadoCivil?.value, 10) || null,
+    id_profissao:    parseInt(refs.fkProfissao?.value,   10) || null,
+    id_status:       parseInt(refs.fkStatus?.value,      10) || null,
     endereco: {
-      logradouro:  refs.logradouro?.value.trim()               || null,
-      numero:      refs.numero?.value.trim()                    || null,
-      complemento: refs.complemento?.value.trim()               || null,
-      bairro:      refs.bairro?.value.trim()                    || null,
-      cidade:      refs.cidade?.value.trim()                    || null,
-      uf:          refs.uf?.value.trim()                        || null,
-      cep:         refs.cep?.value.replace(/\D/g, '')           || null, // ✅ apenas números
+      logradouro:  refs.logradouro?.value.trim()     || null,
+      numero:      refs.numero?.value.trim()         || null,
+      complemento: refs.complemento?.value.trim()    || null,
+      bairro:      refs.bairro?.value.trim()         || null,
+      cidade:      refs.cidade?.value.trim()         || null,
+      uf:          refs.uf?.value.trim()             || null,
+      cep:         refs.cep?.value.replace(/\D/g,'') || null,
     }
   };
 }
-
 
 // ── Selects ────────────────────────────────────────────────
 
@@ -168,60 +151,53 @@ function _preencherSelectsMock() {
 
   preencherSelect(refs.fkGenero, [
     { id_genero: 1, descricao: 'Masculino' },
-    { id_genero: 2, descricao: 'Feminino' },
-    { id_genero: 3, descricao: 'Outro' }
+    { id_genero: 2, descricao: 'Feminino'  },
+    { id_genero: 3, descricao: 'Outro'     }
   ], 'id_genero', 'descricao', 'Selecione...');
 
   preencherSelect(refs.fkEstadoCivil, [
-    { id_estadocivil: 1, descricao: 'Solteiro(a)' },
-    { id_estadocivil: 2, descricao: 'Casado(a)' },
+    { id_estadocivil: 1, descricao: 'Solteiro(a)'   },
+    { id_estadocivil: 2, descricao: 'Casado(a)'     },
     { id_estadocivil: 3, descricao: 'Divorciado(a)' },
-    { id_estadocivil: 4, descricao: 'Viúvo(a)' },
-    { id_estadocivil: 5, descricao: 'União Estável' }
+    { id_estadocivil: 4, descricao: 'Viúvo(a)'      },
+    { id_estadocivil: 5, descricao: 'União Estável'  }
   ], 'id_estadocivil', 'descricao', 'Selecione...');
 
   preencherSelect(refs.fkProfissao, [
-    { id_profissao: 1, descricao: 'Autônomo' },
-    { id_profissao: 2, descricao: 'Comerciante' },
+    { id_profissao: 1, descricao: 'Autônomo'            },
+    { id_profissao: 2, descricao: 'Comerciante'         },
     { id_profissao: 3, descricao: 'Funcionário Público' },
-    { id_profissao: 4, descricao: 'Aposentado' },
-    { id_profissao: 5, descricao: 'Outros' }
+    { id_profissao: 4, descricao: 'Aposentado'          },
+    { id_profissao: 5, descricao: 'Outros'              }
   ], 'id_profissao', 'descricao', 'Selecione...');
 
   preencherSelect(refs.fkStatus, [
-    { id_status: 1, descricao: 'Ativo' },
-    { id_status: 2, descricao: 'Inativo' },
+    { id_status: 1, descricao: 'Ativo'    },
+    { id_status: 2, descricao: 'Inativo'  },
     { id_status: 3, descricao: 'Suspenso' }
   ], 'id_status', 'descricao', 'Selecione...');
 
   preencherSelect(refs.fkCategoria, [
-    { id_categoria: 1, descricao: 'Titular' },
+    { id_categoria: 1, descricao: 'Titular'    },
     { id_categoria: 2, descricao: 'Dependente' },
-    { id_categoria: 3, descricao: 'Honorário' }
+    { id_categoria: 3, descricao: 'Honorário'  }
   ], 'id_categoria', 'descricao', 'Selecione...');
 
   preencherSelect(refs.uf, [
-    { sigla: 'AC' }, { sigla: 'AL' }, { sigla: 'AP' }, { sigla: 'AM' },
-    { sigla: 'BA' }, { sigla: 'CE' }, { sigla: 'DF' }, { sigla: 'ES' },
-    { sigla: 'GO' }, { sigla: 'MA' }, { sigla: 'MT' }, { sigla: 'MS' },
-    { sigla: 'MG' }, { sigla: 'PA' }, { sigla: 'PB' }, { sigla: 'PR' },
-    { sigla: 'PE' }, { sigla: 'PI' }, { sigla: 'RJ' }, { sigla: 'RN' },
-    { sigla: 'RS' }, { sigla: 'RO' }, { sigla: 'RR' }, { sigla: 'SC' },
-    { sigla: 'SP' }, { sigla: 'SE' }, { sigla: 'TO' }
-  ], 'sigla', 'sigla', 'UF');
+    'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS',
+    'MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC',
+    'SP','SE','TO'
+  ].map(s => ({ sigla: s })), 'sigla', 'sigla', 'UF');
 }
 
 async function carregarSelects() {
   try {
     const dados = await AuxiliaresService.carregarTodas();
-
-    // Backend retorna { id, descricao } — usamos 'id' como value
     preencherSelect(refs.fkGenero,      dados.generos,      'id', 'descricao', 'Selecione...');
     preencherSelect(refs.fkEstadoCivil, dados.estadosCivis, 'id', 'descricao', 'Selecione...');
     preencherSelect(refs.fkProfissao,   dados.profissoes,   'id', 'descricao', 'Selecione...');
     preencherSelect(refs.fkStatus,      dados.statusPessoa, 'id', 'descricao', 'Selecione...');
     preencherSelect(refs.uf,            dados.ufs,          'id', 'descricao', 'UF');
-
   } catch (erro) {
     console.warn('[NovoAssociado] Falha ao carregar selects da API:', erro.message);
     _preencherSelectsMock();
@@ -230,7 +206,7 @@ async function carregarSelects() {
 
 async function gerarMatricula() {
   try {
-    const resposta = await AssociadosService.proximaMatricula();
+    const resposta  = await AssociadosService.proximaMatricula();
     const matricula = resposta?.matricula ?? resposta?.data?.matricula ?? '';
     if (refs.matricula && matricula) refs.matricula.value = matricula;
   } catch {
@@ -240,28 +216,28 @@ async function gerarMatricula() {
 
 async function carregarAssociado(id) {
   try {
-    const resposta = await AssociadosService.obter(id);
+    const resposta  = await AssociadosService.obter(id);
     const associado = resposta?.data ?? resposta;
     if (!associado) return;
-    if (refs.matricula)     refs.matricula.value     = associado.matricula      || '';
-    if (refs.nome)          refs.nome.value          = associado.nome           || '';
-    if (refs.cpf)           refs.cpf.value           = associado.cpf_cnpj       || '';
-    if (refs.dataNascimento) refs.dataNascimento.value = associado.data_nascimento || '';
-    if (refs.fkGenero)      refs.fkGenero.value      = associado.fk_genero      || '';
-    if (refs.fkEstadoCivil) refs.fkEstadoCivil.value = associado.fk_estadocivil || '';
-    if (refs.fkProfissao)   refs.fkProfissao.value   = associado.fk_profissao   || '';
-    if (refs.fkCategoria)   refs.fkCategoria.value   = associado.fk_categoria   || '';
-    if (refs.fkStatus)      refs.fkStatus.value      = associado.fk_status      || '';
-    if (refs.dataEntrada)   refs.dataEntrada.value   = associado.data_entrada   || '';
-    if (refs.email)         refs.email.value         = associado.email          || '';
-    if (refs.observacao)    refs.observacao.value    = associado.observacao     || '';
-    if (refs.cep)           refs.cep.value           = associado.cep            || '';
-    if (refs.logradouro)    refs.logradouro.value    = associado.logradouro     || '';
-    if (refs.numero)        refs.numero.value        = associado.numero         || '';
-    if (refs.complemento)   refs.complemento.value   = associado.complemento    || '';
-    if (refs.bairro)        refs.bairro.value        = associado.bairro         || '';
-    if (refs.cidade)        refs.cidade.value        = associado.cidade         || '';
-    if (refs.uf)            refs.uf.value            = associado.uf             || '';
+    if (refs.matricula)      refs.matricula.value      = associado.matricula       || '';
+    if (refs.nome)           refs.nome.value           = associado.nome            || '';
+    if (refs.cpf)            refs.cpf.value            = associado.cpf_cnpj        || '';
+    if (refs.dataNascimento) refs.dataNascimento.value  = associado.data_nascimento || '';
+    if (refs.fkGenero)       refs.fkGenero.value       = associado.fk_genero       || '';
+    if (refs.fkEstadoCivil)  refs.fkEstadoCivil.value  = associado.fk_estadocivil  || '';
+    if (refs.fkProfissao)    refs.fkProfissao.value    = associado.fk_profissao    || '';
+    if (refs.fkCategoria)    refs.fkCategoria.value    = associado.fk_categoria    || '';
+    if (refs.fkStatus)       refs.fkStatus.value       = associado.fk_status       || '';
+    if (refs.dataEntrada)    refs.dataEntrada.value    = associado.data_entrada    || '';
+    if (refs.email)          refs.email.value          = associado.email           || '';
+    if (refs.observacao)     refs.observacao.value     = associado.observacao      || '';
+    if (refs.cep)            refs.cep.value            = associado.cep             || '';
+    if (refs.logradouro)     refs.logradouro.value     = associado.logradouro      || '';
+    if (refs.numero)         refs.numero.value         = associado.numero          || '';
+    if (refs.complemento)    refs.complemento.value    = associado.complemento     || '';
+    if (refs.bairro)         refs.bairro.value         = associado.bairro          || '';
+    if (refs.cidade)         refs.cidade.value         = associado.cidade          || '';
+    if (refs.uf)             refs.uf.value             = associado.uf              || '';
   } catch (erro) {
     console.error('[NovoAssociado] Erro ao carregar associado:', erro);
     Toast.erro('Não foi possível carregar os dados do associado.');
@@ -272,33 +248,10 @@ async function aoEnviarFormulario(event) {
   event.preventDefault();
   const dados = coletarDadosFormulario();
 
-  // ── Validações obrigatórias ─────────────────────────────
-  if (!dados.nome) {
-    Toast.erro('Nome é obrigatório.');
-    refs.nome?.focus();
-    return;
-  }
-
-  if (!dados.cpf_cnpj) {
-    Toast.erro('CPF/CNPJ é obrigatório.');
-    refs.cpf?.focus();
-    return;
-  }
-
-  if (!dados.data_nascimento) {
-    Toast.erro('Data de nascimento é obrigatória.');
-    refs.dataNascimento?.focus();
-    return;
-  }
-
-  if (!dados.id_status) {
-    Toast.erro('Status é obrigatório.');
-    refs.fkStatus?.focus();
-    return;
-  }
-  // ───────────────────────────────────────────────────────
-
-  console.log('[NovoAssociado] Payload para salvar:', dados);
+  if (!dados.nome)            { Toast.erro('Nome é obrigatório.');               refs.nome?.focus();           return; }
+  if (!dados.cpf_cnpj)        { Toast.erro('CPF/CNPJ é obrigatório.');           refs.cpf?.focus();            return; }
+  if (!dados.data_nascimento) { Toast.erro('Data de nascimento é obrigatória.'); refs.dataNascimento?.focus(); return; }
+  if (!dados.id_status)       { Toast.erro('Status é obrigatório.');             refs.fkStatus?.focus();       return; }
 
   try {
     if (estado.modo === 'editar' && Number.isInteger(estado.idAssociado)) {
@@ -319,38 +272,27 @@ function aoCancelar() {
   window.location.hash = '#/cadastro/listar';
 }
 
-
-// ── Modais ─────────────────────────────────────────────────
+// ── Modais (gu-modal: atributo hidden) ─────────────────────
 
 function abrirModal(modal) {
   if (!modal) return;
-  if (modal instanceof HTMLDialogElement) {
-    if (!modal.open) modal.showModal();
-  } else {
-    modal.hidden = false;
-  }
+  modal.hidden = false;
 }
 
 function fecharModal(modal) {
   if (!modal) return;
-  if (modal instanceof HTMLDialogElement) {
-    if (modal.open) modal.close();
-  } else {
-    modal.hidden = true;
-  }
+  modal.hidden = true;
 }
 
 function fecharTodosModais() {
-  [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(fecharModal);
+  [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(modal => {
+    if (modal && !modal.hidden) fecharModal(modal);
+  });
 }
 
-
-function aoFecharModalTelefone()   { fecharModal(refs.modalTelefone);   }
-function aoFecharModalDependente() { fecharModal(refs.modalDependente); }
-function aoFecharModalLancamento() { fecharModal(refs.modalLancamento); }
-function aoAbrirModalTelefone()    { abrirModal(refs.modalTelefone);    }
-function aoAbrirModalDependente()  { abrirModal(refs.modalDependente);  }
-function aoAbrirModalLancamento()  { abrirModal(refs.modalLancamento);  }
+function aoAbrirModalTelefone()   { abrirModal(refs.modalTelefone);   }
+function aoAbrirModalDependente() { abrirModal(refs.modalDependente); }
+function aoAbrirModalLancamento() { abrirModal(refs.modalLancamento); }
 
 function selecionarTipoLancamento(botaoSelecionado) {
   refs.botoesTipoLancamento.forEach(botao => {
@@ -415,17 +357,9 @@ function mapearRefs() {
   refs.btnAddDependente = document.getElementById('btn-add-dependente');
   refs.btnAddLancamento = document.getElementById('btn-add-lancamento');
 
-  refs.modalTelefone       = document.getElementById('modal-telefone');
-  refs.modalTelefoneFundo  = document.getElementById('modal-telefone-fundo');
-  refs.modalTelefoneFechar = document.getElementById('modal-telefone-fechar');
-  refs.modalDependente        = document.getElementById('modal-dependente');
-  refs.modalDependenteFundo   = document.getElementById('modal-dependente-fundo');
-  refs.modalDependenteFechar  = document.getElementById('modal-dependente-fechar');
-  refs.modalDependenteCancelar = document.getElementById('modal-dependente-cancelar');
-  refs.modalLancamento        = document.getElementById('modal-lancamento');
-  refs.modalLancamentoFundo   = document.getElementById('modal-lancamento-fundo');
-  refs.modalLancamentoFechar  = document.getElementById('modal-lancamento-fechar');
-  refs.modalLancamentoCancelar = document.getElementById('modal-lancamento-cancelar');
+  refs.modalTelefone    = document.getElementById('modal-telefone');
+  refs.modalDependente  = document.getElementById('modal-dependente');
+  refs.modalLancamento  = document.getElementById('modal-lancamento');
 
   refs.btnSalvarTelefoneModal   = document.getElementById('btn-salvar-telefone-modal');
   refs.btnSalvarDependenteModal = document.getElementById('btn-salvar-dependente-modal');
@@ -434,12 +368,6 @@ function mapearRefs() {
   refs.botoesTipoLancamento = Array.from(
     document.querySelectorAll('[data-tipo-lancamento]')
   );
-
-  // ── Diagnóstico (remover após confirmar funcionamento) ──
-  console.log('[NovoAssociado] Refs mapeados:');
-  console.log('  modal-telefone:',  refs.modalTelefone);
-  console.log('  modal-dependente:', refs.modalDependente);
-  console.log('  modal-lancamento:', refs.modalLancamento);
 }
 
 function registrarEventos() {
@@ -453,20 +381,22 @@ function registrarEventos() {
   refs.btnAddDependente?.addEventListener('click', aoAbrirModalDependente);
   refs.btnAddLancamento?.addEventListener('click', aoAbrirModalLancamento);
 
+  // Fechar — botões X e Cancelar
+  document.getElementById('modal-telefone-fechar')?.addEventListener('click',    () => fecharModal(refs.modalTelefone));
+  document.getElementById('modal-telefone-cancelar')?.addEventListener('click',  () => fecharModal(refs.modalTelefone));
+  document.getElementById('modal-dependente-fechar')?.addEventListener('click',  () => fecharModal(refs.modalDependente));
+  document.getElementById('modal-dependente-cancelar')?.addEventListener('click',() => fecharModal(refs.modalDependente));
+  document.getElementById('modal-lancamento-fechar')?.addEventListener('click',  () => fecharModal(refs.modalLancamento));
+  document.getElementById('modal-lancamento-cancelar')?.addEventListener('click',() => fecharModal(refs.modalLancamento));
+
+  // Fechar — clique no fundo
+  document.getElementById('modal-telefone-fundo')?.addEventListener('click',   () => fecharModal(refs.modalTelefone));
+  document.getElementById('modal-dependente-fundo')?.addEventListener('click', () => fecharModal(refs.modalDependente));
+  document.getElementById('modal-lancamento-fundo')?.addEventListener('click', () => fecharModal(refs.modalLancamento));
+
   refs.btnSalvarTelefoneModal?.addEventListener('click', aoSalvarTelefoneModal);
   refs.btnSalvarDependenteModal?.addEventListener('click', aoSalvarDependenteModal);
   refs.btnSalvarLancamentoModal?.addEventListener('click', aoSalvarLancamentoModal);
-
-  refs.modalTelefoneFundo?.addEventListener('click', aoFecharModalTelefone);
-  refs.modalTelefoneFechar?.addEventListener('click', aoFecharModalTelefone);
-
-  refs.modalDependenteFundo?.addEventListener('click', aoFecharModalDependente);
-  refs.modalDependenteFechar?.addEventListener('click', aoFecharModalDependente);
-  refs.modalDependenteCancelar?.addEventListener('click', aoFecharModalDependente);
-
-  refs.modalLancamentoFundo?.addEventListener('click', aoFecharModalLancamento);
-  refs.modalLancamentoFechar?.addEventListener('click', aoFecharModalLancamento);
-  refs.modalLancamentoCancelar?.addEventListener('click', aoFecharModalLancamento);
 
   refs.botoesTipoLancamento.forEach(botao => {
     botao.addEventListener('click', () => selecionarTipoLancamento(botao));
@@ -481,26 +411,12 @@ function removerEventos() {
   refs.btnBuscarCep?.removeEventListener('click', aoBuscarCep);
   refs.cpf?.removeEventListener('input', aplicarMascaraCpf);
   refs.cep?.removeEventListener('input', aplicarMascaraCep);
-
   refs.btnAddTelefone?.removeEventListener('click', aoAbrirModalTelefone);
   refs.btnAddDependente?.removeEventListener('click', aoAbrirModalDependente);
   refs.btnAddLancamento?.removeEventListener('click', aoAbrirModalLancamento);
-
   refs.btnSalvarTelefoneModal?.removeEventListener('click', aoSalvarTelefoneModal);
   refs.btnSalvarDependenteModal?.removeEventListener('click', aoSalvarDependenteModal);
   refs.btnSalvarLancamentoModal?.removeEventListener('click', aoSalvarLancamentoModal);
-
-  refs.modalTelefoneFundo?.removeEventListener('click', aoFecharModalTelefone);
-  refs.modalTelefoneFechar?.removeEventListener('click', aoFecharModalTelefone);
-
-  refs.modalDependenteFundo?.removeEventListener('click', aoFecharModalDependente);
-  refs.modalDependenteFechar?.removeEventListener('click', aoFecharModalDependente);
-  refs.modalDependenteCancelar?.removeEventListener('click', aoFecharModalDependente);
-
-  refs.modalLancamentoFundo?.removeEventListener('click', aoFecharModalLancamento);
-  refs.modalLancamentoFechar?.removeEventListener('click', aoFecharModalLancamento);
-  refs.modalLancamentoCancelar?.removeEventListener('click', aoFecharModalLancamento);
-
   document.removeEventListener('keydown', aoPressionarTeclaEscape);
 }
 
@@ -511,14 +427,7 @@ function aoPressionarTeclaEscape(event) {
 // ── Init / Destroy ─────────────────────────────────────────
 
 async function init() {
-  console.log('[NovoAssociado] Inicializando página...');
-
   mapearRefs();
-
-  // ✅ Garante que nenhum modal está aberto ao iniciar
-  [refs.modalTelefone, refs.modalDependente, refs.modalLancamento].forEach(modal => {
-    if (modal && modal.open) modal.close();
-  });
   registrarEventos();
 
   const params = parsearHashParams();
@@ -529,7 +438,6 @@ async function init() {
     estado.idAssociado = Number(id);
   }
 
-  // ✅ carregarSelects tem try/catch interno — nunca vai travar
   await carregarSelects();
 
   if (estado.modo === 'editar' && Number.isInteger(estado.idAssociado)) {
@@ -545,10 +453,7 @@ async function init() {
       refs.dataEntrada.value = formatarDataHoje();
     }
   }
-
-  console.log('[NovoAssociado] Página pronta');
 }
-
 
 function destroy() {
   removerEventos();
@@ -558,11 +463,7 @@ function destroy() {
     refs[key] = Array.isArray(refs[key]) ? [] : null;
   });
 
-  estado = {
-    modo: 'novo',
-    idAssociado: null,
-    tipoLancamento: 'receber'
-  };
+  estado = { modo: 'novo', idAssociado: null, tipoLancamento: 'receber' };
 }
 
 export default { init, destroy };

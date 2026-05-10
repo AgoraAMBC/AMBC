@@ -1,4 +1,4 @@
-﻿<section class="view view--cadastro-novo-associado">
+<section class="view view--cadastro-novo-associado">
   <header class="cadastro-associado__cabecalho">
     <div class="cadastro-associado__cabecalho-textos">
       <h2 class="cadastro-associado__titulo" data-titulo-modo>Novo Associado</h2>
@@ -243,8 +243,7 @@
         <div class="cadastro-associado__campo span-12">
           <label for="observacao">Observações</label>
           <textarea id="observacao" name="observacao"
-            placeholder="Digite informações adicionais sobre o associado">
-          </textarea>
+            placeholder="Digite informações adicionais sobre o associado"></textarea>
         </div>
       </div>
     </section>
@@ -265,12 +264,11 @@
     </div>
 
   </form>
-  <!-- ✅ FORM ENCERRADO — modais fora do form a partir daqui -->
 
-  <!-- MODAL — TELEFONE -->
+  <!-- ── MODAL: Telefone ──────────────────────────────────────── -->
   <div class="gu-modal" id="modal-telefone" aria-modal="true" role="dialog" hidden>
     <div class="gu-modal__fundo" id="modal-telefone-fundo"></div>
-    <div class="gu-modal__caixa" style="max-width:480px">
+    <div class="gu-modal__caixa">
       <div class="gu-modal__cabecalho">
         <div class="gu-modal__titulo-grupo">
           <span class="material-icons gu-modal__icone">call</span>
@@ -303,21 +301,21 @@
               placeholder="Ex: Principal, WhatsApp..." />
           </div>
         </div>
-      </div>
-      <div class="gu-modal__acoes">
-        <button type="button" class="btn btn-secundario" id="modal-telefone-cancelar">Cancelar</button>
-        <button type="button" class="btn btn-primario" id="btn-salvar-telefone-modal">
-          <span class="material-icons">save</span>
-          <span>Salvar Contato</span>
-        </button>
+        <div class="gu-modal__acoes">
+          <button type="button" class="btn btn-secundario" id="modal-telefone-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-primario" id="btn-salvar-telefone-modal">
+            <span class="material-icons">save</span>
+            <span>Salvar Contato</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL — DEPENDENTE -->
+  <!-- ── MODAL: Dependente ──────────────────────────────────────── -->
   <div class="gu-modal" id="modal-dependente" aria-modal="true" role="dialog" hidden>
     <div class="gu-modal__fundo" id="modal-dependente-fundo"></div>
-    <div class="gu-modal__caixa" style="max-width:720px">
+    <div class="gu-modal__caixa">
       <div class="gu-modal__cabecalho">
         <div class="gu-modal__titulo-grupo">
           <span class="material-icons gu-modal__icone">groups</span>
@@ -376,21 +374,21 @@
               placeholder="(00) 00000-0000" />
           </div>
         </div>
-      </div>
-      <div class="gu-modal__acoes">
-        <button type="button" class="btn btn-secundario" id="modal-dependente-cancelar">Cancelar</button>
-        <button type="button" class="btn btn-primario" id="btn-salvar-dependente-modal">
-          <span class="material-icons">save</span>
-          <span>Salvar Dependente</span>
-        </button>
+        <div class="gu-modal__acoes">
+          <button type="button" class="btn btn-secundario" id="modal-dependente-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-primario" id="btn-salvar-dependente-modal">
+            <span class="material-icons">save</span>
+            <span>Salvar Dependente</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL — LANÇAMENTO -->
+  <!-- ── MODAL: Lançamento ──────────────────────────────────────── -->
   <div class="gu-modal" id="modal-lancamento" aria-modal="true" role="dialog" hidden>
     <div class="gu-modal__fundo" id="modal-lancamento-fundo"></div>
-    <div class="gu-modal__caixa" style="max-width:960px">
+    <div class="gu-modal__caixa gu-modal__caixa--larga">
       <div class="gu-modal__cabecalho">
         <div class="gu-modal__titulo-grupo">
           <span class="material-icons gu-modal__icone">receipt_long</span>
@@ -438,7 +436,6 @@
               <option value="">— automático —</option>
               <option value="caixa">Caixa</option>
               <option value="banco">Banco</option>
-              <option value="convenios">Convênios</option>
               <option value="mensalidades">Mensalidades</option>
             </select>
           </div>
@@ -476,13 +473,13 @@
             </select>
           </div>
         </div>
-      </div>
-      <div class="gu-modal__acoes">
-        <button type="button" class="btn btn-secundario" id="modal-lancamento-cancelar">Cancelar</button>
-        <button type="button" class="btn btn-primario" id="btn-salvar-lancamento-modal">
-          <span class="material-icons">task_alt</span>
-          <span>Salvar Lançamento</span>
-        </button>
+        <div class="gu-modal__acoes">
+          <button type="button" class="btn btn-secundario" id="modal-lancamento-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-primario" id="btn-salvar-lancamento-modal">
+            <span class="material-icons">task_alt</span>
+            <span>Salvar Lançamento</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
