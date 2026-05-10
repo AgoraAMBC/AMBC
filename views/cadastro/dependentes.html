@@ -1,15 +1,204 @@
 ﻿<!-- =========================================================
-  View: Dependentes
-  Descricao: Gestao de dependentes
-  Projeto: AMBC-V2
-========================================================= -->
-<section class="view view--placeholder" data-view="Dependentes">
-  <header class="view__header">
-    <h1 class="view__title">Dependentes</h1>
-    <p class="view__subtitle">Gestao de dependentes</p>
+     dependentes.html
+     View: Listagem de Dependentes
+     ========================================================= -->
+<section class="view view--dependentes">
+
+  <!-- Cabeçalho da página -->
+  <header class="dependentes__cabecalho">
+    <div class="dependentes__cabecalho-textos">
+      <div class="dependentes__titulo-bloco">
+        <span class="material-icons dependentes__icone-titulo">people</span>
+        <div>
+          <h2 class="dependentes__titulo">Listagem de Dependentes</h2>
+          <p class="dependentes__subtitulo">Visualize e gerencie todos os dependentes vinculados aos associados.</p>
+        </div>
+      </div>
+      <div class="dependentes__contador" id="contador-total">
+        Total: 0 dependentes
+      </div>
+    </div>
+    <button type="button" class="btn btn-primario" id="btn-gerar-relatorio">
+      <span class="material-icons">download</span>
+      <span>Gerar Relatório</span>
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Dependentes</strong> sera implementado em breve.</p>
+  <!-- Barra de filtros -->
+  <div class="dependentes__filtros">
+    <div class="dependentes__filtro-busca">
+      <div class="dependentes__busca">
+        <span class="material-icons dependentes__busca-icone">search</span>
+        <input
+          type="text"
+          id="input-busca"
+          class="dependentes__busca-input"
+          placeholder="Buscar por nome..."
+          autocomplete="off"
+        />
+      </div>
+
+      <select id="filtro-parentesco" class="dependentes__select" aria-label="Filtrar por parentesco">
+        <option value="">Parentesco: Todos</option>
+        <option value="filho">Filho</option>
+        <option value="filha">Filha</option>
+        <option value="conjuge">Cônjuge</option>
+        <option value="genro">Genro</option>
+        <option value="nora">Nora</option>
+        <option value="outro">Outro</option>
+      </select>
+
+      <select id="filtro-genero" class="dependentes__select" aria-label="Filtrar por gênero">
+        <option value="">Gênero: Todos</option>
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+        <option value="O">Outro</option>
+      </select>
+
+      <input
+        type="number"
+        id="filtro-idade-min"
+        class="dependentes__input-idade"
+        placeholder="Idade mín."
+        min="0"
+        max="150"
+      />
+
+      <input
+        type="number"
+        id="filtro-idade-max"
+        class="dependentes__input-idade"
+        placeholder="Idade máx."
+        min="0"
+        max="150"
+      />
+
+      <select id="filtro-rua" class="dependentes__select" aria-label="Filtrar por rua">
+        <option value="">Rua: Todas</option>
+      </select>
+
+      <select id="filtro-status" class="dependentes__select" aria-label="Filtrar por status">
+        <option value="">Status: Todos</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
+    </div>
+
+    <div class="dependentes__filtro-acoes">
+      <button type="button" class="btn btn-primario" id="btn-buscar">
+        <span class="material-icons">search</span>
+        <span>Buscar</span>
+      </button>
+      <button type="button" class="btn btn-perigo" id="btn-limpar-filtros">
+        <span class="material-icons">clear</span>
+        <span>Limpar</span>
+      </button>
+    </div>
   </div>
+
+  <!-- Tabela de dependentes -->
+  <div class="dependentes__tabela-wrapper">
+    <table class="dependentes__tabela">
+      <thead>
+        <tr>
+          <th scope="col">#ID</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Associado</th>
+          <th scope="col">Parentesco</th>
+          <th scope="col">Idade</th>
+          <th scope="col">Nascimento</th>
+          <th scope="col">Rua</th>
+          <th scope="col">Gênero</th>
+          <th scope="col" class="dependentes__col-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-dependentes">
+        <!-- Linhas inseridas dinamicamente pelo JS -->
+      </tbody>
+    </table>
+
+    <!-- Estado vazio -->
+    <div class="dependentes__vazio" id="estado-vazio" hidden>
+      <span class="material-icons">person_search</span>
+      <p>Nenhum dependente encontrado com os filtros aplicados.</p>
+    </div>
+  </div>
+
+  <!-- Rodapé: contador + paginação -->
+  <footer class="dependentes__rodape">
+    <span class="dependentes__contador-rodape" id="contador-registros">
+      Exibindo 0 de 0 dependentes
+    </span>
+    <nav class="dependentes__paginacao" id="paginacao" aria-label="Paginação">
+      <!-- Botões de paginação inseridos dinamicamente pelo JS -->
+    </nav>
+  </footer>
+
 </section>
+
+<!-- Modal: Gerar Relatório -->
+<div class="modal modal--relatorio" id="modal-relatorio" hidden>
+  <div class="modal__overlay" data-close-modal></div>
+  <div class="modal__conteudo">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">Gerar Relatório</h3>
+      <button type="button" class="modal__fecha" data-close-modal aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal__corpo">
+      <p class="modal__descricao">Escolha o tipo de relatório desejado:</p>
+
+      <div class="dependentes__opcoes-relatorio">
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="completo" checked />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">list</span>
+            <span>Lista Completa</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Todos os registros filtrados em lista</p>
+        </label>
+
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="criancas-rua" />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">location_city</span>
+            <span>Crianças por Rua</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Agrupado por rua para distribuição (ex: Natal)</p>
+        </label>
+
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="estatisticas" />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">bar_chart</span>
+            <span>Estatísticas</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Total por faixa etária, parentesco e gênero</p>
+        </label>
+      </div>
+
+      <div class="dependentes__opcoes-formato">
+        <label class="dependentes__checkbox">
+          <input type="checkbox" name="formato" value="pdf" checked />
+          <span>PDF</span>
+        </label>
+        <label class="dependentes__checkbox">
+          <input type="checkbox" name="formato" value="excel" />
+          <span>Excel</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario" data-close-modal>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primario" id="btn-confirmar-relatorio">
+        <span class="material-icons">download</span>
+        <span>Gerar</span>
+      </button>
+    </div>
+  </div>
+</div>
