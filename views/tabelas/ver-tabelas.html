@@ -1,15 +1,274 @@
-﻿<!-- =========================================================
-  View: Ver Tabelas
-  Descricao: Tabelas auxiliares do sistema
-  Projeto: AMBC-V2
+<!-- =========================================================
+  View: Tabelas Auxiliares
+  Descricao: Gerencie os valores padrão utilizados nos formulários
 ========================================================= -->
-<section class="view view--placeholder" data-view="Ver Tabelas">
-  <header class="view__header">
-    <h1 class="view__title">Ver Tabelas</h1>
-    <p class="view__subtitle">Tabelas auxiliares do sistema</p>
+<section class="view tabaux">
+
+  <!-- CABEÇALHO -->
+  <header class="cfg-associacao__cabecalho">
+    <div>
+      <p class="cfg-associacao__eyebrow">Cadastros</p>
+      <h1 class="cfg-associacao__titulo">Tabelas Auxiliares</h1>
+      <p class="cfg-associacao__subtitulo">Gerencie os valores padrão utilizados nos formulários do sistema.</p>
+    </div>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Ver Tabelas</strong> sera implementado em breve.</p>
+  <!-- ABAS -->
+  <div class="tabaux__abas" role="tablist" id="tabaux-abas">
+    <button class="tabaux__aba tabaux__aba--ativa" role="tab" aria-selected="true"  data-tabaux-aba="genero"      aria-controls="tabaux-genero">
+      <span class="material-icons">wc</span> Gênero
+    </button>
+    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="parentesco"  aria-controls="tabaux-parentesco">
+      <span class="material-icons">account_tree</span> Parentesco
+    </button>
+    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="profissao"   aria-controls="tabaux-profissao">
+      <span class="material-icons">work</span> Profissão
+    </button>
+    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="estadocivil" aria-controls="tabaux-estadocivil">
+      <span class="material-icons">favorite</span> Estado Civil
+    </button>
+    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="status"      aria-controls="tabaux-status">
+      <span class="material-icons">toggle_on</span> Status
+    </button>
   </div>
+
+  <!-- ── GÊNERO ── -->
+  <div class="tabaux__painel tabaux__painel--ativo" id="tabaux-genero" role="tabpanel">
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo"><span class="material-icons">wc</span> Gênero</h3>
+        <span class="badge badge-pilula badge-azul" id="badge-genero">3 registros</span>
+      </div>
+      <div class="tabaux__formulario-inline">
+        <label class="tabaux__formulario-label">Nome do Gênero</label>
+        <div class="tabaux__formulario-linha">
+          <input type="text" class="campo" id="genero-novo" placeholder="Ex: Não-binário" />
+          <button type="button" class="btn btn-primario btn-sm" id="btn-add-genero">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Nome do Gênero</th>
+              <th class="tabela__acoes">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-genero">
+            <tr>
+              <td class="tabaux__id">#001</td>
+              <td><strong>Masculino</strong></td>
+              <td class="tabela__acoes">
+                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tabaux__id">#002</td>
+              <td><strong>Feminino</strong></td>
+              <td class="tabela__acoes">
+                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+              </td>
+            </tr>
+            <tr>
+              <td class="tabaux__id">#003</td>
+              <td><strong>Outro</strong></td>
+              <td class="tabela__acoes">
+                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__rodape">
+        <span class="tabaux__contador" id="count-genero">Exibindo 3 de 3 registros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PARENTESCO ── -->
+  <div class="tabaux__painel" id="tabaux-parentesco" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo"><span class="material-icons">account_tree</span> Parentesco</h3>
+        <span class="badge badge-pilula badge-azul" id="badge-parentesco">5 registros</span>
+      </div>
+      <div class="tabaux__formulario-inline">
+        <label class="tabaux__formulario-label">Tipo de Parentesco</label>
+        <div class="tabaux__formulario-linha">
+          <input type="text" class="campo" id="parentesco-novo" placeholder="Ex: Sobrinho(a)" />
+          <button type="button" class="btn btn-primario btn-sm" id="btn-add-parentesco">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Parentesco</th>
+              <th class="tabela__acoes">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-parentesco">
+            <tr><td class="tabaux__id">#001</td><td><strong>Cônjuge</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#002</td><td><strong>Filho(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#003</td><td><strong>Pai / Mãe</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#004</td><td><strong>Irmão / Irmã</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#005</td><td><strong>Outro</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__rodape">
+        <span class="tabaux__contador" id="count-parentesco">Exibindo 5 de 5 registros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROFISSÃO ── -->
+  <div class="tabaux__painel" id="tabaux-profissao" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo"><span class="material-icons">work</span> Profissão</h3>
+        <span class="badge badge-pilula badge-azul" id="badge-profissao">6 registros</span>
+      </div>
+      <div class="tabaux__formulario-inline">
+        <label class="tabaux__formulario-label">Nome da Profissão</label>
+        <div class="tabaux__formulario-linha">
+          <input type="text" class="campo" id="profissao-novo" placeholder="Ex: Engenheiro(a)" />
+          <button type="button" class="btn btn-primario btn-sm" id="btn-add-profissao">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Profissão</th>
+              <th class="tabela__acoes">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-profissao">
+            <tr><td class="tabaux__id">#001</td><td><strong>Analista de Sistemas</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#002</td><td><strong>Médico(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#003</td><td><strong>Professor(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#004</td><td><strong>Comerciante</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#005</td><td><strong>Aposentado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#006</td><td><strong>Autônomo(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__rodape">
+        <span class="tabaux__contador" id="count-profissao">Exibindo 6 de 6 registros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ESTADO CIVIL ── -->
+  <div class="tabaux__painel" id="tabaux-estadocivil" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo"><span class="material-icons">favorite</span> Estado Civil</h3>
+        <span class="badge badge-pilula badge-azul" id="badge-estadocivil">4 registros</span>
+      </div>
+      <div class="tabaux__formulario-inline">
+        <label class="tabaux__formulario-label">Nome do Estado Civil</label>
+        <div class="tabaux__formulario-linha">
+          <input type="text" class="campo" id="estadocivil-novo" placeholder="Ex: União Estável" />
+          <button type="button" class="btn btn-primario btn-sm" id="btn-add-estadocivil">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Nome do Estado Civil</th>
+              <th class="tabela__acoes">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-estadocivil">
+            <tr><td class="tabaux__id">#001</td><td><strong>Solteiro(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#002</td><td><strong>Casado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#003</td><td><strong>Divorciado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td class="tabaux__id">#004</td><td><strong>Viúvo(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__rodape">
+        <span class="tabaux__contador" id="count-estadocivil">Exibindo 4 de 4 registros</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STATUS ── -->
+  <div class="tabaux__painel" id="tabaux-status" role="tabpanel" hidden>
+    <div class="card">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo"><span class="material-icons">toggle_on</span> Status</h3>
+        <span class="badge badge-pilula badge-azul" id="badge-status">3 registros</span>
+      </div>
+      <div class="tabaux__formulario-inline">
+        <label class="tabaux__formulario-label">Configuração do Status</label>
+        <div class="tabaux__formulario-linha">
+          <input type="text" class="campo" id="status-novo" placeholder="Ex: Em Análise" style="flex:2" />
+          <select class="campo" id="status-cor" style="flex:1">
+            <option value="verde">Verde (Ativo)</option>
+            <option value="vermelho">Vermelho (Inativo)</option>
+            <option value="amarelo">Amarelo (Pendente)</option>
+            <option value="cinza">Cinza (Neutro)</option>
+          </select>
+          <button type="button" class="btn btn-primario btn-sm" id="btn-add-status">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+      </div>
+      <div class="tabela-wrapper">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th style="width:60px">ID</th>
+              <th>Status</th>
+              <th>Badge</th>
+              <th class="tabela__acoes">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-status">
+            <tr>
+              <td class="tabaux__id">#001</td>
+              <td><strong>Ativo</strong></td>
+              <td><span class="badge badge-pilula badge-verde">● Ativo</span></td>
+              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
+            </tr>
+            <tr>
+              <td class="tabaux__id">#002</td>
+              <td><strong>Inativo</strong></td>
+              <td><span class="badge badge-pilula badge-cinza">● Inativo</span></td>
+              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
+            </tr>
+            <tr>
+              <td class="tabaux__id">#003</td>
+              <td><strong>Pendente</strong></td>
+              <td><span class="badge badge-pilula badge-amarelo">● Pendente</span></td>
+              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card__rodape">
+        <span class="tabaux__contador" id="count-status">Exibindo 3 de 3 registros</span>
+      </div>
+    </div>
+  </div>
+
 </section>

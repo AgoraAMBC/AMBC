@@ -1,0 +1,218 @@
+/* ══════════════════════════════════════════════════════════════════
+   TABELAS AUXILIARES — Estilos da página
+   ══════════════════════════════════════════════════════════════════ */
+
+.tabaux {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: 0 var(--esp-lg) var(--esp-lg);
+}
+
+/* ── Sistema de abas ──────────────────────────────────────────────── */
+.tabaux__abas {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid var(--cor-borda);
+  flex-wrap: wrap;
+}
+
+.tabaux__aba {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+  padding: var(--esp-sm) var(--esp-lg);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--texto-suave);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  border-radius: var(--raio-sm) var(--raio-sm) 0 0;
+  transition: color .12s, background .12s, border-color .12s;
+  font-family: inherit;
+}
+
+.tabaux__aba:hover {
+  color: var(--cor-primaria);
+  background: var(--cor-primaria-clara);
+}
+
+.tabaux__aba--ativa {
+  color: var(--cor-primaria);
+  border-bottom-color: var(--cor-primaria);
+  background: var(--cor-primaria-clara);
+}
+
+/* ── Painéis de conteúdo ──────────────────────────────────────────── */
+.tabaux__painel {
+  display: none;
+}
+
+.tabaux__painel--ativo {
+  display: block;
+}
+
+/* ── Formulário inline de adição ─────────────────────────────────── */
+.tabaux__formulario-inline {
+  padding: var(--esp-md) var(--esp-lg);
+  background: var(--cor-primaria-clara);
+  border-bottom: var(--borda-padrao);
+}
+
+.tabaux__formulario-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--cor-primaria);
+  margin-bottom: var(--esp-xs);
+}
+
+.tabaux__formulario-linha {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+}
+
+.tabaux__formulario-linha .campo {
+  flex: 1;
+}
+
+/* ── Coluna ID ────────────────────────────────────────────────────── */
+.tabaux__id {
+  color: var(--cor-primaria);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+/* ── Contador rodapé ──────────────────────────────────────────────── */
+.tabaux__contador {
+  font-size: var(--fs-sm);
+  color: var(--texto-suave);
+}
+
+.card__rodape {
+  padding: var(--esp-md) var(--esp-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: var(--borda-padrao);
+  background: var(--cor-fundo-suave, #fafbfc);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DEPENDENTES — Estilos da página
+   ══════════════════════════════════════════════════════════════════ */
+
+.dep-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: 0 var(--esp-lg) var(--esp-lg);
+}
+
+/* ── Barra de filtros ────────────────────────────────────────────── */
+.dep-filtros {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+  padding: var(--esp-md) var(--esp-lg);
+  background: var(--cor-fundo-suave, #fafbfc);
+  border-bottom: var(--borda-padrao);
+}
+
+.dep-filtros__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 140px;
+}
+
+.dep-filtros__campo--idade {
+  min-width: 220px;
+}
+
+.dep-filtros__faixa {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-xs);
+}
+
+.dep-filtros__faixa .campo {
+  width: 72px;
+  text-align: center;
+}
+
+.dep-filtros__ate {
+  font-size: var(--fs-sm);
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.dep-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── Campo busca ────────────────────────────────────────────────── */
+.campo-busca {
+  position: relative;
+  flex: 2;
+  min-width: 180px;
+}
+
+.campo-busca__icone {
+  position: absolute;
+  left: var(--esp-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--texto-suave);
+  pointer-events: none;
+}
+
+.campo-busca__input {
+  padding-left: 34px;
+  width: 100%;
+}
+
+/* ── Paginação ───────────────────────────────────────────────────── */
+.paginacao {
+  display: flex;
+  gap: var(--esp-xs);
+}
+
+.paginacao__btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--esp-sm);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-sm);
+  background: var(--cor-branco);
+  color: var(--texto-principal);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+}
+
+.paginacao__btn:hover {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.paginacao__btn--ativo {
+  background: var(--cor-primaria);
+  color: var(--cor-branco);
+  border-color: var(--cor-primaria);
+}
+
+/* ── Helpers de tabela ───────────────────────────────────────────── */
+.tabela__texto-suave {
+  color: var(--texto-suave);
+  font-size: var(--fs-sm);
+}

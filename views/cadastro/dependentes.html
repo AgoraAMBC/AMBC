@@ -1,15 +1,225 @@
-﻿<!-- =========================================================
+<!-- =========================================================
   View: Dependentes
-  Descricao: Gestao de dependentes
-  Projeto: AMBC-V2
+  Descricao: Listagem e gestão de dependentes dos associados
 ========================================================= -->
-<section class="view view--placeholder" data-view="Dependentes">
-  <header class="view__header">
-    <h1 class="view__title">Dependentes</h1>
-    <p class="view__subtitle">Gestao de dependentes</p>
+<section class="view dep-pagina">
+
+  <!-- CABEÇALHO -->
+  <header class="cfg-associacao__cabecalho">
+    <div>
+      <p class="cfg-associacao__eyebrow">Cadastros</p>
+      <h1 class="cfg-associacao__titulo">Dependentes</h1>
+      <p class="cfg-associacao__subtitulo">Gerencie os dependentes vinculados aos associados.</p>
+    </div>
+    <button type="button" class="btn btn-primario" id="btn-novo-dependente">
+      <span class="material-icons">person_add</span>
+      Novo Dependente
+    </button>
   </header>
 
-  <div class="view__content">
-    <p>Conteudo do modulo <strong>Dependentes</strong> sera implementado em breve.</p>
+  <!-- CARD PRINCIPAL -->
+  <div class="card">
+    <div class="card__cabecalho">
+      <h3 class="card__titulo">
+        <span class="material-icons">family_restroom</span>
+        Listagem de Dependentes
+      </h3>
+      <div style="display:flex;align-items:center;gap:var(--esp-md)">
+        <span class="badge badge-pilula badge-azul" id="dep-badge-total">4 registros</span>
+        <button type="button" class="btn btn-secundario btn-sm" id="btn-relatorio-dep">
+          <span class="material-icons">picture_as_pdf</span>
+          Gerar Relatório
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="dep-filtros">
+      <div class="campo-busca">
+        <span class="material-icons campo-busca__icone">search</span>
+        <input type="text" class="campo campo-busca__input" id="dep-busca" placeholder="Buscar por nome..." />
+      </div>
+
+      <div class="dep-filtros__campo">
+        <label class="campo-label">Parentesco</label>
+        <select class="campo" id="dep-filtro-parentesco">
+          <option value="">Todos</option>
+          <option>Cônjuge</option>
+          <option>Filho(a)</option>
+          <option>Pai / Mãe</option>
+          <option>Irmão / Irmã</option>
+          <option>Outro</option>
+        </select>
+      </div>
+
+      <div class="dep-filtros__campo dep-filtros__campo--idade">
+        <label class="campo-label">Idade de</label>
+        <div class="dep-filtros__faixa">
+          <input type="number" class="campo" id="dep-idade-min" placeholder="0"   min="0" max="120" />
+          <span class="dep-filtros__ate">até</span>
+          <input type="number" class="campo" id="dep-idade-max" placeholder="120" min="0" max="120" />
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-secundario btn-sm" id="btn-limpar-filtros-dep">
+        <span class="material-icons">filter_alt_off</span>
+        Limpar
+      </button>
+    </div>
+
+    <!-- TABELA -->
+    <div class="tabela-wrapper">
+      <table class="tabela" data-tabela="dependentes">
+        <thead>
+          <tr>
+            <th style="width:60px">ID</th>
+            <th>Nome</th>
+            <th>Associado</th>
+            <th>Parentesco</th>
+            <th>Idade</th>
+            <th>Nascimento</th>
+            <th class="tabela__acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="dep-tbody">
+          <tr>
+            <td class="tabaux__id">#001</td>
+            <td><strong>Mariana Alcantara</strong></td>
+            <td class="tabela__texto-suave">Ricardo Alcantara</td>
+            <td><span class="badge badge-pilula badge-roxo">Cônjuge</span></td>
+            <td class="tabela__texto-suave">36 anos</td>
+            <td class="tabela__texto-suave">22/08/1988</td>
+            <td class="tabela__acoes">
+              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="tabaux__id">#002</td>
+            <td><strong>Pedro Alcantara</strong></td>
+            <td class="tabela__texto-suave">Ricardo Alcantara</td>
+            <td><span class="badge badge-pilula badge-azul">Filho(a)</span></td>
+            <td class="tabela__texto-suave">10 anos</td>
+            <td class="tabela__texto-suave">10/01/2015</td>
+            <td class="tabela__acoes">
+              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="tabaux__id">#003</td>
+            <td><strong>Alice Mendonça</strong></td>
+            <td class="tabela__texto-suave">Ricardo Mendonça</td>
+            <td><span class="badge badge-pilula badge-azul">Filho(a)</span></td>
+            <td class="tabela__texto-suave">15 anos</td>
+            <td class="tabela__texto-suave">05/03/2010</td>
+            <td class="tabela__acoes">
+              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+            </td>
+          </tr>
+          <tr>
+            <td class="tabaux__id">#004</td>
+            <td><strong>Carlos Mendonça</strong></td>
+            <td class="tabela__texto-suave">Ricardo Mendonça</td>
+            <td><span class="badge badge-pilula badge-roxo">Cônjuge</span></td>
+            <td class="tabela__texto-suave">42 anos</td>
+            <td class="tabela__texto-suave">14/11/1982</td>
+            <td class="tabela__acoes">
+              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
+              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RODAPÉ PAGINAÇÃO -->
+    <div class="card__rodape dep-rodape">
+      <span class="tabaux__contador" id="dep-contador">Exibindo 4 de 4 dependentes</span>
+      <div class="paginacao">
+        <button type="button" class="paginacao__btn" aria-label="Anterior">‹</button>
+        <button type="button" class="paginacao__btn paginacao__btn--ativo">1</button>
+        <button type="button" class="paginacao__btn" aria-label="Próxima">›</button>
+      </div>
+    </div>
   </div>
+
+  <!-- MODAL NOVO/EDITAR DEPENDENTE -->
+  <div class="gu-modal" id="modal-dependente" aria-modal="true" role="dialog" hidden>
+    <div class="gu-modal__fundo" id="modal-dependente-fundo"></div>
+    <div class="gu-modal__caixa">
+      <div class="gu-modal__cabecalho">
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">family_restroom</span>
+          <h2 class="gu-modal__titulo" id="modal-dependente-titulo">Novo Dependente</h2>
+        </div>
+        <button type="button" class="gu-modal__fechar" id="modal-dependente-fechar" aria-label="Fechar">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <form class="gu-modal__formulario" id="form-dependente" novalidate>
+        <div class="gu-campo-grupo">
+
+          <div class="gu-campo gc-8">
+            <label class="campo-label" for="dep-nome">Nome Completo <span class="campo-label__obrigatorio">*</span></label>
+            <input type="text" class="campo" id="dep-nome" name="nome" placeholder="Nome do dependente" required />
+          </div>
+
+          <div class="gu-campo gc-4">
+            <label class="campo-label" for="dep-nascimento">Data de Nascimento</label>
+            <input type="date" class="campo" id="dep-nascimento" name="data_nascimento" />
+          </div>
+
+          <div class="gu-campo gc-4">
+            <label class="campo-label" for="dep-parentesco">Parentesco</label>
+            <select class="campo" id="dep-parentesco" name="fk_parentesco">
+              <option value="">Selecione</option>
+              <option>Cônjuge</option>
+              <option>Filho(a)</option>
+              <option>Pai / Mãe</option>
+              <option>Irmão / Irmã</option>
+              <option>Outro</option>
+            </select>
+          </div>
+
+          <div class="gu-campo gc-4">
+            <label class="campo-label" for="dep-genero">Gênero</label>
+            <select class="campo" id="dep-genero" name="fk_genero">
+              <option value="">Selecione</option>
+              <option>Masculino</option>
+              <option>Feminino</option>
+              <option>Outro</option>
+            </select>
+          </div>
+
+          <div class="gu-campo gc-4">
+            <label class="campo-label" for="dep-cpf">CPF</label>
+            <input type="text" class="campo" id="dep-cpf" name="cpf" placeholder="000.000.000-00" />
+          </div>
+
+          <div class="gu-campo gc-6">
+            <label class="campo-label" for="dep-email">E-mail</label>
+            <input type="email" class="campo" id="dep-email" name="email" placeholder="email@exemplo.com" />
+          </div>
+
+          <div class="gu-campo gc-6">
+            <label class="campo-label" for="dep-telefone">Telefone</label>
+            <input type="tel" class="campo" id="dep-telefone" name="telefone" placeholder="(00) 00000-0000" />
+          </div>
+
+        </div>
+
+        <div class="gu-modal__acoes">
+          <button type="button" class="gu-btn gu-btn--secundario" id="modal-dependente-cancelar">Cancelar</button>
+          <button type="submit" class="gu-btn gu-btn--primario">
+            <span class="material-icons">save</span>
+            Salvar Dependente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </section>
