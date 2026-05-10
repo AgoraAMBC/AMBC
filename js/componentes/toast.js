@@ -135,7 +135,17 @@ const Toast = {
   _remover(toast) {
     if (!toast || toast.classList.contains('toast--saindo')) return;
     toast.classList.add('toast--saindo');
-    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+
+    const onAnimationEnd = () => {
+      toast.remove();
+      toast.removeEventListener('animationend', onAnimationEnd);
+    };
+
+    toast.addEventListener('animationend', onAnimationEnd);
+
+    setTimeout(() => {
+      if (toast.parentNode) toast.remove();
+    }, 400);
   },
 
   /**
