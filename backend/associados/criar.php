@@ -79,7 +79,7 @@ try {
         ':data_nascimento' => $data_nascimento ?: null,
         ':email'           => $email,
         ':observacao'      => $observacao,
-        ':ativo'           => $ativo,
+        ':ativo'           => $ativo ? 'true' : 'false',
         ':criado_em'       => $data_entrada ?: date('Y-m-d'),
         ':fk_genero'       => $fk_genero,
         ':fk_estadocivil'  => $fk_estadocivil,
