@@ -1,51 +1,22 @@
 import { AuxiliaresService } from '../services/associados-auxiliares-service.js';
 import Toast from '../componentes/toast.js';
-import Modal from '../componentes/modal.js';
 
-/* Configuração de cada tabela: endpoints, labels e campos */
 const CONFIGS = {
-  genero: {
-    label: 'Gênero',
-    listar:  ()        => AuxiliaresService.listarGeneros(),
-    criar:   (desc)    => AuxiliaresService.criarGenero(desc),
-    editar:  (id, desc)=> AuxiliaresService.editarGenero(id, desc),
-    excluir: (id)      => AuxiliaresService.excluirGenero(id),
-  },
-  parentesco: {
-    label: 'Parentesco',
-    listar:  ()        => AuxiliaresService.listarParentescos(),
-    criar:   (desc)    => AuxiliaresService.criarParentesco(desc),
-    editar:  (id, desc)=> AuxiliaresService.editarParentesco(id, desc),
-    excluir: (id)      => AuxiliaresService.excluirParentesco(id),
-  },
-  profissao: {
-    label: 'Profissão',
-    listar:  ()        => AuxiliaresService.listarProfissoes(),
-    criar:   (desc)    => AuxiliaresService.criarProfissao(desc),
-    editar:  (id, desc)=> AuxiliaresService.editarProfissao(id, desc),
-    excluir: (id)      => AuxiliaresService.excluirProfissao(id),
-  },
-  estadocivil: {
-    label: 'Estado Civil',
-    listar:  ()        => AuxiliaresService.listarEstadosCivis(),
-    criar:   (desc)    => AuxiliaresService.criarEstadoCivil(desc),
-    editar:  (id, desc)=> AuxiliaresService.editarEstadoCivil(id, desc),
-    excluir: (id)      => AuxiliaresService.excluirEstadoCivil(id),
-  },
-  status: {
-    label: 'Status',
-    listar:  ()        => AuxiliaresService.listarStatusPessoa(),
-    criar:   (desc)    => AuxiliaresService.criarStatus(desc),
-    editar:  (id, desc)=> AuxiliaresService.editarStatus(id, desc),
-    excluir: (id)      => AuxiliaresService.excluirStatus(id),
-  },
+  genero:      { label: 'Gênero',       listar: () => AuxiliaresService.listarGeneros(),      criar: (d) => AuxiliaresService.criarGenero(d),      editar: (id, d) => AuxiliaresService.editarGenero(id, d),      excluir: (id) => AuxiliaresService.excluirGenero(id) },
+  parentesco:  { label: 'Parentesco',   listar: () => AuxiliaresService.listarParentescos(),  criar: (d) => AuxiliaresService.criarParentesco(d),  editar: (id, d) => AuxiliaresService.editarParentesco(id, d),  excluir: (id) => AuxiliaresService.excluirParentesco(id) },
+  profissao:   { label: 'Profissão',    listar: () => AuxiliaresService.listarProfissoes(),   criar: (d) => AuxiliaresService.criarProfissao(d),   editar: (id, d) => AuxiliaresService.editarProfissao(id, d),   excluir: (id) => AuxiliaresService.excluirProfissao(id) },
+  estadocivil: { label: 'Estado Civil', listar: () => AuxiliaresService.listarEstadosCivis(), criar: (d) => AuxiliaresService.criarEstadoCivil(d), editar: (id, d) => AuxiliaresService.editarEstadoCivil(id, d), excluir: (id) => AuxiliaresService.excluirEstadoCivil(id) },
+  status:      { label: 'Status',       listar: () => AuxiliaresService.listarStatusPessoa(), criar: (d) => AuxiliaresService.criarStatus(d),      editar: (id, d) => AuxiliaresService.editarStatus(id, d),      excluir: (id) => AuxiliaresService.excluirStatus(id) },
 };
 
 const TabelasPage = {
   _dados: {},
   _abaAtual: 'genero',
+  _modalModo: 'adicionar',
   _editandoChave: null,
   _editandoId: null,
+  _excluindoChave: null,
+  _excluindoId: null,
 
   async init() {
     this._inicializarAbas();
@@ -58,7 +29,6 @@ const TabelasPage = {
     document.querySelectorAll('[data-tabaux-aba]').forEach(aba => {
       aba.addEventListener('click', async () => {
         const chave = aba.dataset.tabauxAba;
-
         document.querySelectorAll('[data-tabaux-aba]').forEach(a => {
           a.classList.remove('tabaux__aba--ativa');
           a.setAttribute('aria-selected', 'false');
@@ -67,19 +37,17 @@ const TabelasPage = {
           p.classList.remove('tabaux__painel--ativo');
           p.hidden = true;
         });
-
         aba.classList.add('tabaux__aba--ativa');
         aba.setAttribute('aria-selected', 'true');
         const painel = document.getElementById(`tabaux-${chave}`);
         if (painel) { painel.classList.add('tabaux__painel--ativo'); painel.hidden = false; }
-
         this._abaAtual = chave;
         if (!this._dados[chave]) await this._carregarAba(chave);
       });
     });
   },
 
-  /* ── Carregar dados do backend ── */
+  /* ── Carregar aba ── */
   async _carregarAba(chave) {
     try {
       const dados = await CONFIGS[chave].listar();
@@ -93,128 +61,133 @@ const TabelasPage = {
   /* ── Renderizar tabela ── */
   _renderTabela(chave, dados) {
     const tbody = document.getElementById(`tbody-${chave}`);
+    const sub   = document.getElementById(`sub-${chave}`);
     if (!tbody) return;
 
+    if (sub) sub.textContent = `${dados.length} ${dados.length === 1 ? 'registro' : 'registros'} cadastrados`;
+
     if (!dados.length) {
-      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:var(--texto-suave);padding:var(--esp-lg)">Nenhum registro cadastrado.</td></tr>`;
-    } else {
-      tbody.innerHTML = dados.map(item => `
-        <tr>
-          <td class="tabaux__id">#${String(item.id).padStart(3, '0')}</td>
-          <td><strong>${this._esc(item.descricao)}</strong></td>
-          <td class="tabela__acoes">
-            <button type="button" class="btn-icone" title="Editar"
+      tbody.innerHTML = `<tr><td colspan="3" class="gu-tabela__estado">Nenhum registro cadastrado.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = dados.map(item => `
+      <tr>
+        <td class="tabaux__id">#${String(item.id).padStart(3, '0')}</td>
+        <td>${this._esc(item.descricao)}</td>
+        <td>
+          <div class="gu-tabela__acoes">
+            <button type="button" class="gu-btn gu-btn--icone" title="Editar"
               data-acao="editar" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
               <span class="material-icons">edit</span>
             </button>
-            <button type="button" class="btn-icone btn-icone-perigo" title="Excluir"
+            <button type="button" class="gu-btn gu-btn--icone gu-btn--icone-perigo" title="Excluir"
               data-acao="excluir" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
               <span class="material-icons">delete</span>
             </button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    const badge = document.getElementById(`badge-${chave}`);
-    const count = document.getElementById(`count-${chave}`);
-    if (badge) badge.textContent = `${dados.length} registros`;
-    if (count) count.textContent = `Exibindo ${dados.length} de ${dados.length} registros`;
+          </div>
+        </td>
+      </tr>
+    `).join('');
   },
 
   /* ── Eventos ── */
   _registrarEventos() {
-    /* Botões Adicionar */
-    Object.keys(CONFIGS).forEach(chave => {
-      const btn   = document.getElementById(`btn-add-${chave}`);
-      const input = document.getElementById(`${chave}-novo`);
-      if (btn)   btn.addEventListener('click', () => this._adicionar(chave));
-      if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') this._adicionar(chave); });
-    });
-
-    /* Delegação: editar / excluir */
+    /* Botões Adicionar (um por painel) */
     document.addEventListener('click', e => {
+      const btnAdd = e.target.closest('[data-tabaux-adicionar]');
+      if (btnAdd) { this._abrirModal(btnAdd.dataset.tabauxAdicionar); return; }
+
       const btn = e.target.closest('[data-acao]');
       if (!btn) return;
       const { acao, chave, id, desc } = btn.dataset;
-      if (acao === 'editar')  this._abrirEdicao(chave, Number(id), desc);
-      if (acao === 'excluir') this._confirmarExclusao(chave, Number(id), desc);
+      if (acao === 'editar')  this._abrirModal(chave, Number(id), desc);
+      if (acao === 'excluir') this._abrirConfirmar(chave, Number(id), desc);
     });
 
-    /* Modal edição: salvar */
-    document.getElementById('btn-salvar-edicao')?.addEventListener('click', () => this._salvarEdicao());
-    document.getElementById('campo-edicao')?.addEventListener('keydown', e => {
-      if (e.key === 'Enter') this._salvarEdicao();
+    /* Modal adicionar/editar */
+    document.getElementById('modal-tabaux-fechar')?.addEventListener('click',  () => this._fecharModal());
+    document.getElementById('modal-tabaux-cancelar')?.addEventListener('click', () => this._fecharModal());
+    document.getElementById('modal-tabaux-fundo')?.addEventListener('click',    () => this._fecharModal());
+    document.getElementById('form-tabaux')?.addEventListener('submit', e => this._salvarModal(e));
+    document.getElementById('tabaux-descricao')?.addEventListener('keydown', e => {
+      if (e.key === 'Escape') this._fecharModal();
     });
+
+    /* Modal confirmação exclusão */
+    document.getElementById('modal-confirmar-cancelar')?.addEventListener('click', () => this._fecharConfirmar());
+    document.getElementById('modal-confirmar-fundo')?.addEventListener('click',    () => this._fecharConfirmar());
+    document.getElementById('modal-confirmar-ok')?.addEventListener('click',       () => this._executarExclusao());
   },
 
-  /* ── Adicionar ── */
-  async _adicionar(chave) {
-    const input = document.getElementById(`${chave}-novo`);
-    if (!input) return;
-    const desc = input.value.trim();
-    if (!desc) { Toast.alerta('Informe uma descrição antes de adicionar.'); input.focus(); return; }
-
-    try {
-      await CONFIGS[chave].criar(desc);
-      input.value = '';
-      Toast.sucesso(`${CONFIGS[chave].label} adicionado com sucesso.`);
-      delete this._dados[chave];
-      await this._carregarAba(chave);
-    } catch (e) {
-      Toast.erro(e.message || `Erro ao adicionar ${CONFIGS[chave].label}.`);
-    }
-  },
-
-  /* ── Editar: abrir modal ── */
-  _abrirEdicao(chave, id, desc) {
+  /* ── Modal adicionar / editar ── */
+  _abrirModal(chave, id = null, desc = '') {
     this._editandoChave = chave;
     this._editandoId    = id;
-    const titulo = document.getElementById('edicao-titulo');
-    const campo  = document.getElementById('campo-edicao');
-    if (titulo) titulo.textContent = `Editar ${CONFIGS[chave].label}`;
-    if (campo)  { campo.value = desc; }
-    Modal.abrir('modal-edicao');
-    setTimeout(() => campo?.focus(), 100);
+    this._modalModo     = id ? 'editar' : 'adicionar';
+
+    const cfg    = CONFIGS[chave];
+    const titulo = document.getElementById('modal-tabaux-titulo');
+    const icone  = document.getElementById('modal-tabaux-icone');
+    const campo  = document.getElementById('tabaux-descricao');
+
+    if (titulo) titulo.textContent = id ? `Editar ${cfg.label}` : `Adicionar ${cfg.label}`;
+    if (icone)  icone.textContent  = id ? 'edit' : 'add_circle';
+    if (campo)  campo.value = desc;
+
+    document.getElementById('modal-tabaux').hidden = false;
+    setTimeout(() => campo?.focus(), 50);
   },
 
-  /* ── Editar: salvar ── */
-  async _salvarEdicao() {
-    const campo = document.getElementById('campo-edicao');
+  _fecharModal() {
+    document.getElementById('modal-tabaux').hidden = true;
+  },
+
+  async _salvarModal(e) {
+    e.preventDefault();
+    const campo = document.getElementById('tabaux-descricao');
     const desc  = campo?.value.trim() ?? '';
     if (!desc) { Toast.alerta('Informe uma descrição.'); campo?.focus(); return; }
 
     try {
-      await CONFIGS[this._editandoChave].editar(this._editandoId, desc);
-      Modal.fechar('modal-edicao');
-      Toast.sucesso('Registro atualizado com sucesso.');
+      if (this._modalModo === 'editar') {
+        await CONFIGS[this._editandoChave].editar(this._editandoId, desc);
+        Toast.sucesso('Registro atualizado com sucesso.');
+      } else {
+        await CONFIGS[this._editandoChave].criar(desc);
+        Toast.sucesso(`${CONFIGS[this._editandoChave].label} adicionado com sucesso.`);
+      }
+      this._fecharModal();
       delete this._dados[this._editandoChave];
       await this._carregarAba(this._editandoChave);
-    } catch (e) {
-      Toast.erro(e.message || 'Erro ao atualizar registro.');
+    } catch (err) {
+      Toast.erro(err.message || 'Erro ao salvar registro.');
     }
   },
 
-  /* ── Excluir: confirmação ── */
-  _confirmarExclusao(chave, id, desc) {
-    Modal.confirmar({
-      titulo: `Excluir ${CONFIGS[chave].label}`,
-      mensagem: `Deseja excluir <strong>${this._esc(desc)}</strong>? Esta ação não pode ser desfeita.`,
-      variante: 'erro',
-      icone: 'delete_forever',
-      textoConfirmar: 'Excluir',
-      estiloConfirmar: 'perigo',
-      aoConfirmar: async () => {
-        try {
-          await CONFIGS[chave].excluir(id);
-          Toast.sucesso('Registro excluído com sucesso.');
-          delete this._dados[chave];
-          await this._carregarAba(chave);
-        } catch (e) {
-          Toast.erro(e.message || 'Erro ao excluir registro.');
-        }
-      },
-    });
+  /* ── Modal confirmação exclusão ── */
+  _abrirConfirmar(chave, id, desc) {
+    this._excluindoChave = chave;
+    this._excluindoId    = id;
+    const msg = document.getElementById('modal-confirmar-msg');
+    if (msg) msg.innerHTML = `Deseja excluir <strong>${this._esc(desc)}</strong>? Esta ação não pode ser desfeita.`;
+    document.getElementById('modal-tabaux-confirmar').hidden = false;
+  },
+
+  _fecharConfirmar() {
+    document.getElementById('modal-tabaux-confirmar').hidden = true;
+  },
+
+  async _executarExclusao() {
+    this._fecharConfirmar();
+    try {
+      await CONFIGS[this._excluindoChave].excluir(this._excluindoId);
+      Toast.sucesso('Registro excluído com sucesso.');
+      delete this._dados[this._excluindoChave];
+      await this._carregarAba(this._excluindoChave);
+    } catch (err) {
+      Toast.erro(err.message || 'Erro ao excluir registro.');
+    }
   },
 
   _esc(texto) {
@@ -224,9 +197,11 @@ const TabelasPage = {
   },
 
   destroy() {
-    this._dados         = {};
-    this._editandoChave = null;
-    this._editandoId    = null;
+    this._dados          = {};
+    this._editandoChave  = null;
+    this._editandoId     = null;
+    this._excluindoChave = null;
+    this._excluindoId    = null;
   },
 };
 
