@@ -7,6 +7,7 @@
 ========================================================= */
 
 import { UsuariosService } from '../services/usuarios-service.js';
+import { formatarDataHora } from '../core/formatadores.js';
 
 /* ---------------------------------------------------------
    Estado local da página
@@ -393,7 +394,7 @@ export default UsuariosPage;
    Utilitários
 --------------------------------------------------------- */
 function formatarData(iso) {
-  return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' });
+  return formatarDataHora(iso);
 }
 
 function esc(str) {

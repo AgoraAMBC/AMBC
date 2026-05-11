@@ -5,6 +5,7 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
+import { formatarData } from '../core/formatadores.js';
 
 /* ---------------------------------------------------------
    DADOS MOCK (temporário até integração com API)
@@ -679,10 +680,6 @@ function calcularEstatisticas(dados) {
 /* ---------------------------------------------------------
    HELPERS
 --------------------------------------------------------- */
-function formatarData(valor) {
-  if (!valor) return '—';
-  return new Date(valor).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-}
 
 function capitalize(str) {
   if (!str) return '';

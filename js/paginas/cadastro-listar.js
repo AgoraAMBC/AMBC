@@ -7,6 +7,7 @@
 import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
 import { AssociadosService } from '../services/associados-service.js';
+import { formatarData } from '../core/formatadores.js';
 
 /* ---------------------------------------------------------
    ESTADO INTERNO
@@ -327,10 +328,6 @@ function classeCorAvatar(nome) {
   return `cadastro-listar__avatar--cor-${hash + 1}`;
 }
 
-function formatarData(valor) {
-  if (!valor) return '—';
-  return new Date(valor).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-}
 
 function formatarCpfCnpj(valor) {
   if (!valor) return '—';

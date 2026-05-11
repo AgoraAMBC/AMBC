@@ -267,7 +267,7 @@
         Documentos e Estatuto
       </h3>
       <div class="card__acoes">
-        <button type="button" class="btn btn-primario btn-sm">
+        <button type="button" class="btn btn-primario btn-sm" id="btn-enviar-documento">
           <span class="material-icons">upload_file</span>
           Enviar Documento
         </button>
@@ -284,52 +284,75 @@
             <th class="tabela__num">Ações</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:var(--fw-semibold)">Estatuto Social AMBC</td>
-            <td><span class="badge badge-azul">PDF</span></td>
-            <td style="color:var(--texto-suave)">v3.2</td>
-            <td style="color:var(--texto-suave)">01/01/2024</td>
-            <td class="tabela__num">
-              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
-                <span class="material-icons">download</span>
-              </button>
-              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
-                <span class="material-icons">delete</span>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td style="font-weight:var(--fw-semibold)">Regimento Interno</td>
-            <td><span class="badge badge-azul">PDF</span></td>
-            <td style="color:var(--texto-suave)">v2.0</td>
-            <td style="color:var(--texto-suave)">15/06/2023</td>
-            <td class="tabela__num">
-              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
-                <span class="material-icons">download</span>
-              </button>
-              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
-                <span class="material-icons">delete</span>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td style="font-weight:var(--fw-semibold)">Ata da Última Assembleia</td>
-            <td><span class="badge badge-cinza">DOCX</span></td>
-            <td style="color:var(--texto-suave)">2025</td>
-            <td style="color:var(--texto-suave)">10/03/2025</td>
-            <td class="tabela__num">
-              <button type="button" class="btn btn-secundario btn-sm" title="Baixar">
-                <span class="material-icons">download</span>
-              </button>
-              <button type="button" class="btn btn-secundario btn-sm" title="Excluir">
-                <span class="material-icons">delete</span>
-              </button>
-            </td>
-          </tr>
+        <tbody id="tbody-documentos">
+          <tr><td colspan="5" class="gu-tabela__estado">Carregando…</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
 </section>
+
+<!-- ── Modal: Enviar Documento ── -->
+<div class="gu-modal" id="modal-documento" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-documento-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">upload_file</span>
+        <h3 class="gu-modal__titulo">Enviar Documento</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-documento-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <form class="gu-modal__formulario" id="form-documento" novalidate>
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="doc-assunto">Nome do documento *</label>
+        <input type="text" class="gu-campo__input" id="doc-assunto" placeholder="Ex: Estatuto Social AMBC" autocomplete="off" />
+      </div>
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="doc-tipo">Tipo *</label>
+        <select class="gu-campo__input" id="doc-tipo">
+          <option value="">Carregando…</option>
+        </select>
+      </div>
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="doc-versao">Versão</label>
+        <input type="text" class="gu-campo__input" id="doc-versao" placeholder="Ex: v3.2 ou 2025" autocomplete="off" />
+      </div>
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="doc-arquivo">Arquivo * <span style="color:var(--texto-suave);font-weight:normal">(PDF, DOC, DOCX — máx. 10 MB)</span></label>
+        <input type="file" class="gu-campo__input" id="doc-arquivo" accept=".pdf,.doc,.docx" />
+      </div>
+      <div class="gu-modal__acoes">
+        <button type="button" class="gu-btn gu-btn--secundario" id="modal-documento-cancelar">Cancelar</button>
+        <button type="submit" class="gu-btn gu-btn--primario" id="btn-doc-salvar">
+          <span class="material-icons">upload</span> Enviar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmar exclusão de documento ── -->
+<div class="gu-modal" id="modal-doc-confirmar" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-doc-confirmar-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone" style="color:var(--cor-erro)">delete_forever</span>
+        <h3 class="gu-modal__titulo">Confirmar exclusão</h3>
+      </div>
+    </div>
+    <div class="gu-modal__corpo">
+      <p class="gu-modal__mensagem" id="modal-doc-confirmar-msg"></p>
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="gu-btn gu-btn--secundario" id="modal-doc-confirmar-cancelar">Cancelar</button>
+      <button type="button" class="gu-btn gu-btn--perigo" id="modal-doc-confirmar-ok">
+        <span class="material-icons">delete</span> Excluir
+      </button>
+    </div>
+  </div>
+</div>

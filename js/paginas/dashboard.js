@@ -5,6 +5,7 @@
 
 import { DashboardService } from '../services/dashboard-service.js';
 import Toast from '../componentes/toast.js';
+import { formatarData } from '../core/formatadores.js';
 
 const DashboardPage = {
   _resizeHandler: null,
@@ -164,7 +165,7 @@ const DashboardPage = {
 
     tbody.innerHTML = transacoes.map(item => `
       <tr>
-        <td>${this._formatarData(item.data_lancamento)}</td>
+        <td>${formatarData(item.data_lancamento)}</td>
         <td>
           <span class="dashboard-tabela__principal">${this._escapar(item.descricao || '-')}</span>
           ${item.associado ? `<span class="dashboard-tabela__secundario">${this._escapar(item.associado)}</span>` : ''}
@@ -213,12 +214,6 @@ const DashboardPage = {
     const numero = Number(valor || 0);
     if (Math.abs(numero) >= 1000) return `R$ ${(numero / 1000).toFixed(1)}k`;
     return `R$ ${numero.toFixed(0)}`;
-  },
-
-  _formatarData(data) {
-    if (!data) return '-';
-    const [ano, mes, dia] = String(data).split('-');
-    return dia && mes && ano ? `${dia}/${mes}/${ano}` : data;
   },
 
   _statusClasse(status) {
