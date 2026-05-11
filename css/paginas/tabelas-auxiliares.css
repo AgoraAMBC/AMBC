@@ -76,7 +76,7 @@
   gap: var(--esp-md);
 }
 
-.tabaux__formulario-linha .campo {
+.tabaux__formulario-linha .form-input {
   flex: 1;
 }
 
