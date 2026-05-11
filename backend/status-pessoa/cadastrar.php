@@ -13,11 +13,16 @@ $dados = corpoJson();
 $descricao = trim($dados['descricao'] ?? '');
 if ($descricao === '') jsonErro('Descrição é obrigatória');
 
-$stmt = $pdo->prepare('SELECT id_status FROM status_pessoa WHERE descricao = :descricao');
-$stmt->execute([':descricao' => $descricao]);
-if ($stmt->fetch()) jsonErro('Já existe um status com esta descrição');
+try {
+    $stmt = $pdo->prepare('SELECT id_status FROM status_pessoa WHERE descricao = :descricao');
+    $stmt->execute([':descricao' => $descricao]);
+    if ($stmt->fetch()) jsonErro('Já existe um status com esta descrição');
 
-$stmt = $pdo->prepare('INSERT INTO status_pessoa (descricao) VALUES (:descricao) RETURNING id_status AS id, descricao');
-$stmt->execute([':descricao' => $descricao]);
+    $stmt = $pdo->prepare('INSERT INTO status_pessoa (descricao) VALUES (:descricao) RETURNING id_status AS id, descricao');
+    $stmt->execute([':descricao' => $descricao]);
+    $row = $stmt->fetch();
 
-jsonResposta($stmt->fetch(), 201);
+    jsonResposta($row ?: ['mensagem' => 'Status cadastrado com sucesso'], 201);
+} catch (PDOException $e) {
+    jsonErro('Erro no banco: ' . $e->getMessage(), 500);
+}
