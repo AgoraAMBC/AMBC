@@ -1,225 +1,204 @@
-<!-- =========================================================
-  View: Dependentes
-  Descricao: Listagem e gestão de dependentes dos associados
-========================================================= -->
-<section class="view dep-pagina">
+﻿<!-- =========================================================
+     dependentes.html
+     View: Listagem de Dependentes
+     ========================================================= -->
+<section class="view view--dependentes">
 
-  <!-- CABEÇALHO -->
-  <header class="cfg-associacao__cabecalho">
-    <div>
-      <p class="cfg-associacao__eyebrow">Cadastros</p>
-      <h1 class="cfg-associacao__titulo">Dependentes</h1>
-      <p class="cfg-associacao__subtitulo">Gerencie os dependentes vinculados aos associados.</p>
+  <!-- Cabeçalho da página -->
+  <header class="dependentes__cabecalho">
+    <div class="dependentes__cabecalho-textos">
+      <div class="dependentes__titulo-bloco">
+        <span class="material-icons dependentes__icone-titulo">people</span>
+        <div>
+          <h2 class="dependentes__titulo">Listagem de Dependentes</h2>
+          <p class="dependentes__subtitulo">Visualize e gerencie todos os dependentes vinculados aos associados.</p>
+        </div>
+      </div>
+      <div class="dependentes__contador" id="contador-total">
+        Total: 0 dependentes
+      </div>
     </div>
-    <button type="button" class="btn btn-primario" id="btn-novo-dependente">
-      <span class="material-icons">person_add</span>
-      Novo Dependente
+    <button type="button" class="btn btn-primario" id="btn-gerar-relatorio">
+      <span class="material-icons">download</span>
+      <span>Gerar Relatório</span>
     </button>
   </header>
 
-  <!-- CARD PRINCIPAL -->
-  <div class="card">
-    <div class="card__cabecalho">
-      <h3 class="card__titulo">
-        <span class="material-icons">family_restroom</span>
-        Listagem de Dependentes
-      </h3>
-      <div style="display:flex;align-items:center;gap:var(--esp-md)">
-        <span class="badge badge-pilula badge-azul" id="dep-badge-total">4 registros</span>
-        <button type="button" class="btn btn-secundario btn-sm" id="btn-relatorio-dep">
-          <span class="material-icons">picture_as_pdf</span>
-          Gerar Relatório
-        </button>
+  <!-- Barra de filtros -->
+  <div class="dependentes__filtros">
+    <div class="dependentes__filtro-busca">
+      <div class="dependentes__busca">
+        <span class="material-icons dependentes__busca-icone">search</span>
+        <input
+          type="text"
+          id="input-busca"
+          class="dependentes__busca-input"
+          placeholder="Buscar por nome..."
+          autocomplete="off"
+        />
       </div>
+
+      <select id="filtro-parentesco" class="dependentes__select" aria-label="Filtrar por parentesco">
+        <option value="">Parentesco: Todos</option>
+        <option value="filho">Filho</option>
+        <option value="filha">Filha</option>
+        <option value="conjuge">Cônjuge</option>
+        <option value="genro">Genro</option>
+        <option value="nora">Nora</option>
+        <option value="outro">Outro</option>
+      </select>
+
+      <select id="filtro-genero" class="dependentes__select" aria-label="Filtrar por gênero">
+        <option value="">Gênero: Todos</option>
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+        <option value="O">Outro</option>
+      </select>
+
+      <input
+        type="number"
+        id="filtro-idade-min"
+        class="dependentes__input-idade"
+        placeholder="Idade mín."
+        min="0"
+        max="150"
+      />
+
+      <input
+        type="number"
+        id="filtro-idade-max"
+        class="dependentes__input-idade"
+        placeholder="Idade máx."
+        min="0"
+        max="150"
+      />
+
+      <select id="filtro-rua" class="dependentes__select" aria-label="Filtrar por rua">
+        <option value="">Rua: Todas</option>
+      </select>
+
+      <select id="filtro-status" class="dependentes__select" aria-label="Filtrar por status">
+        <option value="">Status: Todos</option>
+        <option value="ativo">Ativo</option>
+        <option value="inativo">Inativo</option>
+      </select>
     </div>
 
-    <!-- FILTROS -->
-    <div class="dep-filtros">
-      <div class="campo-busca">
-        <span class="material-icons campo-busca__icone">search</span>
-        <input type="text" class="campo campo-busca__input" id="dep-busca" placeholder="Buscar por nome..." />
-      </div>
+    <div class="dependentes__filtro-acoes">
+      <button type="button" class="btn btn-primario" id="btn-buscar">
+        <span class="material-icons">search</span>
+        <span>Buscar</span>
+      </button>
+      <button type="button" class="btn btn-perigo" id="btn-limpar-filtros">
+        <span class="material-icons">clear</span>
+        <span>Limpar</span>
+      </button>
+    </div>
+  </div>
 
-      <div class="dep-filtros__campo">
-        <label class="campo-label">Parentesco</label>
-        <select class="campo" id="dep-filtro-parentesco">
-          <option value="">Todos</option>
-          <option>Cônjuge</option>
-          <option>Filho(a)</option>
-          <option>Pai / Mãe</option>
-          <option>Irmão / Irmã</option>
-          <option>Outro</option>
-        </select>
-      </div>
+  <!-- Tabela de dependentes -->
+  <div class="dependentes__tabela-wrapper">
+    <table class="dependentes__tabela">
+      <thead>
+        <tr>
+          <th scope="col">#ID</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Associado</th>
+          <th scope="col">Parentesco</th>
+          <th scope="col">Idade</th>
+          <th scope="col">Nascimento</th>
+          <th scope="col">Rua</th>
+          <th scope="col">Gênero</th>
+          <th scope="col" class="dependentes__col-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-dependentes">
+        <!-- Linhas inseridas dinamicamente pelo JS -->
+      </tbody>
+    </table>
 
-      <div class="dep-filtros__campo dep-filtros__campo--idade">
-        <label class="campo-label">Idade de</label>
-        <div class="dep-filtros__faixa">
-          <input type="number" class="campo" id="dep-idade-min" placeholder="0"   min="0" max="120" />
-          <span class="dep-filtros__ate">até</span>
-          <input type="number" class="campo" id="dep-idade-max" placeholder="120" min="0" max="120" />
-        </div>
-      </div>
+    <!-- Estado vazio -->
+    <div class="dependentes__vazio" id="estado-vazio" hidden>
+      <span class="material-icons">person_search</span>
+      <p>Nenhum dependente encontrado com os filtros aplicados.</p>
+    </div>
+  </div>
 
-      <button type="button" class="btn btn-secundario btn-sm" id="btn-limpar-filtros-dep">
-        <span class="material-icons">filter_alt_off</span>
-        Limpar
+  <!-- Rodapé: contador + paginação -->
+  <footer class="dependentes__rodape">
+    <span class="dependentes__contador-rodape" id="contador-registros">
+      Exibindo 0 de 0 dependentes
+    </span>
+    <nav class="dependentes__paginacao" id="paginacao" aria-label="Paginação">
+      <!-- Botões de paginação inseridos dinamicamente pelo JS -->
+    </nav>
+  </footer>
+
+</section>
+
+<!-- Modal: Gerar Relatório -->
+<div class="modal modal--relatorio" id="modal-relatorio" hidden>
+  <div class="modal__overlay" data-close-modal></div>
+  <div class="modal__conteudo">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo">Gerar Relatório</h3>
+      <button type="button" class="modal__fecha" data-close-modal aria-label="Fechar">
+        <span class="material-icons">close</span>
       </button>
     </div>
 
-    <!-- TABELA -->
-    <div class="tabela-wrapper">
-      <table class="tabela" data-tabela="dependentes">
-        <thead>
-          <tr>
-            <th style="width:60px">ID</th>
-            <th>Nome</th>
-            <th>Associado</th>
-            <th>Parentesco</th>
-            <th>Idade</th>
-            <th>Nascimento</th>
-            <th class="tabela__acoes">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="dep-tbody">
-          <tr>
-            <td class="tabaux__id">#001</td>
-            <td><strong>Mariana Alcantara</strong></td>
-            <td class="tabela__texto-suave">Ricardo Alcantara</td>
-            <td><span class="badge badge-pilula badge-roxo">Cônjuge</span></td>
-            <td class="tabela__texto-suave">36 anos</td>
-            <td class="tabela__texto-suave">22/08/1988</td>
-            <td class="tabela__acoes">
-              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-            </td>
-          </tr>
-          <tr>
-            <td class="tabaux__id">#002</td>
-            <td><strong>Pedro Alcantara</strong></td>
-            <td class="tabela__texto-suave">Ricardo Alcantara</td>
-            <td><span class="badge badge-pilula badge-azul">Filho(a)</span></td>
-            <td class="tabela__texto-suave">10 anos</td>
-            <td class="tabela__texto-suave">10/01/2015</td>
-            <td class="tabela__acoes">
-              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-            </td>
-          </tr>
-          <tr>
-            <td class="tabaux__id">#003</td>
-            <td><strong>Alice Mendonça</strong></td>
-            <td class="tabela__texto-suave">Ricardo Mendonça</td>
-            <td><span class="badge badge-pilula badge-azul">Filho(a)</span></td>
-            <td class="tabela__texto-suave">15 anos</td>
-            <td class="tabela__texto-suave">05/03/2010</td>
-            <td class="tabela__acoes">
-              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-            </td>
-          </tr>
-          <tr>
-            <td class="tabaux__id">#004</td>
-            <td><strong>Carlos Mendonça</strong></td>
-            <td class="tabela__texto-suave">Ricardo Mendonça</td>
-            <td><span class="badge badge-pilula badge-roxo">Cônjuge</span></td>
-            <td class="tabela__texto-suave">42 anos</td>
-            <td class="tabela__texto-suave">14/11/1982</td>
-            <td class="tabela__acoes">
-              <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-              <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="modal__corpo">
+      <p class="modal__descricao">Escolha o tipo de relatório desejado:</p>
 
-    <!-- RODAPÉ PAGINAÇÃO -->
-    <div class="card__rodape dep-rodape">
-      <span class="tabaux__contador" id="dep-contador">Exibindo 4 de 4 dependentes</span>
-      <div class="paginacao">
-        <button type="button" class="paginacao__btn" aria-label="Anterior">‹</button>
-        <button type="button" class="paginacao__btn paginacao__btn--ativo">1</button>
-        <button type="button" class="paginacao__btn" aria-label="Próxima">›</button>
-      </div>
-    </div>
-  </div>
+      <div class="dependentes__opcoes-relatorio">
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="completo" checked />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">list</span>
+            <span>Lista Completa</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Todos os registros filtrados em lista</p>
+        </label>
 
-  <!-- MODAL NOVO/EDITAR DEPENDENTE -->
-  <div class="gu-modal" id="modal-dependente" aria-modal="true" role="dialog" hidden>
-    <div class="gu-modal__fundo" id="modal-dependente-fundo"></div>
-    <div class="gu-modal__caixa">
-      <div class="gu-modal__cabecalho">
-        <div class="gu-modal__titulo-grupo">
-          <span class="material-icons gu-modal__icone">family_restroom</span>
-          <h2 class="gu-modal__titulo" id="modal-dependente-titulo">Novo Dependente</h2>
-        </div>
-        <button type="button" class="gu-modal__fechar" id="modal-dependente-fechar" aria-label="Fechar">
-          <span class="material-icons">close</span>
-        </button>
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="criancas-rua" />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">location_city</span>
+            <span>Crianças por Rua</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Agrupado por rua para distribuição (ex: Natal)</p>
+        </label>
+
+        <label class="dependentes__opcao-relatorio">
+          <input type="radio" name="tipo-relatorio" value="estatisticas" />
+          <div class="dependentes__opcao-titulo">
+            <span class="material-icons">bar_chart</span>
+            <span>Estatísticas</span>
+          </div>
+          <p class="dependentes__opcao-descricao">Total por faixa etária, parentesco e gênero</p>
+        </label>
       </div>
 
-      <form class="gu-modal__formulario" id="form-dependente" novalidate>
-        <div class="gu-campo-grupo">
+      <div class="dependentes__opcoes-formato">
+        <label class="dependentes__checkbox">
+          <input type="checkbox" name="formato" value="pdf" checked />
+          <span>PDF</span>
+        </label>
+        <label class="dependentes__checkbox">
+          <input type="checkbox" name="formato" value="excel" />
+          <span>Excel</span>
+        </label>
+      </div>
+    </div>
 
-          <div class="gu-campo gc-8">
-            <label class="campo-label" for="dep-nome">Nome Completo <span class="campo-label__obrigatorio">*</span></label>
-            <input type="text" class="campo" id="dep-nome" name="nome" placeholder="Nome do dependente" required />
-          </div>
-
-          <div class="gu-campo gc-4">
-            <label class="campo-label" for="dep-nascimento">Data de Nascimento</label>
-            <input type="date" class="campo" id="dep-nascimento" name="data_nascimento" />
-          </div>
-
-          <div class="gu-campo gc-4">
-            <label class="campo-label" for="dep-parentesco">Parentesco</label>
-            <select class="campo" id="dep-parentesco" name="fk_parentesco">
-              <option value="">Selecione</option>
-              <option>Cônjuge</option>
-              <option>Filho(a)</option>
-              <option>Pai / Mãe</option>
-              <option>Irmão / Irmã</option>
-              <option>Outro</option>
-            </select>
-          </div>
-
-          <div class="gu-campo gc-4">
-            <label class="campo-label" for="dep-genero">Gênero</label>
-            <select class="campo" id="dep-genero" name="fk_genero">
-              <option value="">Selecione</option>
-              <option>Masculino</option>
-              <option>Feminino</option>
-              <option>Outro</option>
-            </select>
-          </div>
-
-          <div class="gu-campo gc-4">
-            <label class="campo-label" for="dep-cpf">CPF</label>
-            <input type="text" class="campo" id="dep-cpf" name="cpf" placeholder="000.000.000-00" />
-          </div>
-
-          <div class="gu-campo gc-6">
-            <label class="campo-label" for="dep-email">E-mail</label>
-            <input type="email" class="campo" id="dep-email" name="email" placeholder="email@exemplo.com" />
-          </div>
-
-          <div class="gu-campo gc-6">
-            <label class="campo-label" for="dep-telefone">Telefone</label>
-            <input type="tel" class="campo" id="dep-telefone" name="telefone" placeholder="(00) 00000-0000" />
-          </div>
-
-        </div>
-
-        <div class="gu-modal__acoes">
-          <button type="button" class="gu-btn gu-btn--secundario" id="modal-dependente-cancelar">Cancelar</button>
-          <button type="submit" class="gu-btn gu-btn--primario">
-            <span class="material-icons">save</span>
-            Salvar Dependente
-          </button>
-        </div>
-      </form>
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario" data-close-modal>
+        Cancelar
+      </button>
+      <button type="button" class="btn btn-primario" id="btn-confirmar-relatorio">
+        <span class="material-icons">download</span>
+        <span>Gerar</span>
+      </button>
     </div>
   </div>
-
-</section>
+</div>
