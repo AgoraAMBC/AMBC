@@ -2,11 +2,11 @@ import { AuxiliaresService } from '../services/associados-auxiliares-service.js'
 import Toast from '../componentes/toast.js';
 
 const CONFIGS = {
-  genero:      { label: 'Gênero',       listar: () => AuxiliaresService.listarGeneros(),      criar: (d) => AuxiliaresService.criarGenero(d),      editar: (id, d) => AuxiliaresService.editarGenero(id, d),      excluir: (id) => AuxiliaresService.excluirGenero(id) },
-  parentesco:  { label: 'Parentesco',   listar: () => AuxiliaresService.listarParentescos(),  criar: (d) => AuxiliaresService.criarParentesco(d),  editar: (id, d) => AuxiliaresService.editarParentesco(id, d),  excluir: (id) => AuxiliaresService.excluirParentesco(id) },
-  profissao:   { label: 'Profissão',    listar: () => AuxiliaresService.listarProfissoes(),   criar: (d) => AuxiliaresService.criarProfissao(d),   editar: (id, d) => AuxiliaresService.editarProfissao(id, d),   excluir: (id) => AuxiliaresService.excluirProfissao(id) },
-  estadocivil: { label: 'Estado Civil', listar: () => AuxiliaresService.listarEstadosCivis(), criar: (d) => AuxiliaresService.criarEstadoCivil(d), editar: (id, d) => AuxiliaresService.editarEstadoCivil(id, d), excluir: (id) => AuxiliaresService.excluirEstadoCivil(id) },
-  status:      { label: 'Status',       listar: () => AuxiliaresService.listarStatusPessoa(), criar: (d) => AuxiliaresService.criarStatus(d),      editar: (id, d) => AuxiliaresService.editarStatus(id, d),      excluir: (id) => AuxiliaresService.excluirStatus(id) },
+  genero:      { label: 'Gênero',       fieldLabel: 'Nome do Gênero',       placeholder: 'Ex: Não-binário',     listar: () => AuxiliaresService.listarGeneros(),      criar: (d) => AuxiliaresService.criarGenero(d),      editar: (id, d) => AuxiliaresService.editarGenero(id, d),      excluir: (id) => AuxiliaresService.excluirGenero(id) },
+  parentesco:  { label: 'Parentesco',   fieldLabel: 'Tipo de Parentesco',   placeholder: 'Ex: Sobrinho(a)',     listar: () => AuxiliaresService.listarParentescos(),  criar: (d) => AuxiliaresService.criarParentesco(d),  editar: (id, d) => AuxiliaresService.editarParentesco(id, d),  excluir: (id) => AuxiliaresService.excluirParentesco(id) },
+  profissao:   { label: 'Profissão',    fieldLabel: 'Nome da Profissão',    placeholder: 'Ex: Engenheiro(a)',   listar: () => AuxiliaresService.listarProfissoes(),   criar: (d) => AuxiliaresService.criarProfissao(d),   editar: (id, d) => AuxiliaresService.editarProfissao(id, d),   excluir: (id) => AuxiliaresService.excluirProfissao(id) },
+  estadocivil: { label: 'Estado Civil', fieldLabel: 'Nome do Estado Civil', placeholder: 'Ex: União Estável',   listar: () => AuxiliaresService.listarEstadosCivis(), criar: (d) => AuxiliaresService.criarEstadoCivil(d), editar: (id, d) => AuxiliaresService.editarEstadoCivil(id, d), excluir: (id) => AuxiliaresService.excluirEstadoCivil(id) },
+  status:      { label: 'Status',       fieldLabel: 'Nome do Status',       placeholder: 'Ex: Em Análise',      listar: () => AuxiliaresService.listarStatusPessoa(), criar: (d) => AuxiliaresService.criarStatus(d),      editar: (id, d) => AuxiliaresService.editarStatus(id, d),      excluir: (id) => AuxiliaresService.excluirStatus(id) },
 };
 
 const TabelasPage = {
@@ -71,24 +71,29 @@ const TabelasPage = {
       return;
     }
 
-    tbody.innerHTML = dados.map(item => `
-      <tr>
+    tbody.innerHTML = dados.map(item => {
+      const descEsc = this._esc(item.descricao);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
         <td class="tabaux__id">#${String(item.id).padStart(3, '0')}</td>
-        <td>${this._esc(item.descricao)}</td>
+        <td>${descEsc}</td>
         <td>
           <div class="gu-tabela__acoes">
             <button type="button" class="gu-btn gu-btn--icone" title="Editar"
-              data-acao="editar" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
+              data-acao="editar" data-chave="${chave}" data-id="${item.id}">
               <span class="material-icons">edit</span>
             </button>
             <button type="button" class="gu-btn gu-btn--icone gu-btn--icone-perigo" title="Excluir"
-              data-acao="excluir" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
+              data-acao="excluir" data-chave="${chave}" data-id="${item.id}">
               <span class="material-icons">delete</span>
             </button>
           </div>
         </td>
-      </tr>
-    `).join('');
+      `;
+      tr.querySelector('[data-acao="editar"]').dataset.desc  = item.descricao;
+      tr.querySelector('[data-acao="excluir"]').dataset.desc = item.descricao;
+      return tr.outerHTML;
+    }).join('');
   },
 
   /* ── Eventos ── */
@@ -126,17 +131,20 @@ const TabelasPage = {
     this._editandoId    = id;
     this._modalModo     = id ? 'editar' : 'adicionar';
 
-    const cfg    = CONFIGS[chave];
-    const titulo = document.getElementById('modal-tabaux-titulo');
-    const icone  = document.getElementById('modal-tabaux-icone');
-    const campo  = document.getElementById('tabaux-descricao');
+    const cfg         = CONFIGS[chave];
+    const elTitulo    = document.getElementById('modal-tabaux-titulo');
+    const elIcone     = document.getElementById('modal-tabaux-icone');
+    const elLabel     = document.getElementById('tabaux-label');
+    const elCampo     = document.getElementById('tabaux-descricao');
 
-    if (titulo) titulo.textContent = id ? `Editar ${cfg.label}` : `Adicionar ${cfg.label}`;
-    if (icone)  icone.textContent  = id ? 'edit' : 'add_circle';
-    if (campo)  campo.value = desc;
+    if (elTitulo) elTitulo.textContent     = id ? `Editar ${cfg.label}` : `Adicionar ${cfg.label}`;
+    if (elIcone)  elIcone.textContent      = id ? 'edit' : 'add_circle';
+    if (elLabel)  elLabel.textContent      = `${cfg.fieldLabel} *`;
+    if (elCampo)  elCampo.placeholder      = cfg.placeholder;
+    if (elCampo)  elCampo.value            = desc;
 
     document.getElementById('modal-tabaux').hidden = false;
-    setTimeout(() => campo?.focus(), 50);
+    setTimeout(() => elCampo?.focus(), 50);
   },
 
   _fecharModal() {
