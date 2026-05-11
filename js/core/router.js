@@ -20,7 +20,7 @@ const rotas = {
     titulo: 'Painel'
   },
 
-  // ----- CADASTRO -----
+    // ----- CADASTRO -----
   '#/cadastro/listar': {
     view: 'views/cadastro/listar.html',
     page: 'cadastro-listar',
@@ -41,6 +41,8 @@ const rotas = {
     page: 'cadastro-dependentes',
     titulo: 'Dependentes'
   },
+
+
 
   // ----- FINANCEIRO -----
   '#/financeiro/visao-geral': {
@@ -97,21 +99,21 @@ const rotas = {
     page: 'configuracoes',
     titulo: 'Configurações Gerais'
   },
-
-  // ----- SHOWCASE (vitrine de componentes) -----
+    // ----- SHOWCASE (vitrine de componentes) -----
   '#/showcase': {
     view: 'views/showcase.html',
     page: 'showcase',
     titulo: 'Showcase de Componentes'
   },
+
 };
 
 /* ---------------------------------------------------------
    2. CONSTANTES INTERNAS
 --------------------------------------------------------- */
-const ROTA_PADRAO  = '#/dashboard';
+const ROTA_PADRAO = '#/dashboard';
 const CONTAINER_ID = 'conteudo-principal';
-const TITULO_BASE  = 'AMBC - Associação de Moradores do Bairro Califórnia';
+const TITULO_BASE = 'AMBC - Associação de Moradores do Bairro Califórnia';
 
 // Guarda referencia da pagina atual para chamar destroy() ao sair
 let paginaAtual = null;
@@ -154,32 +156,12 @@ async function carregarView(caminho) {
 }
 
 /* ---------------------------------------------------------
-   6. FUNCAO: injeta o HTML da view no container
-   ---------------------------------------------------------
-   Usa template element para garantir que elementos como
-   <dialog> sejam preservados corretamente no DOM.
---------------------------------------------------------- */
-function injetarHtml(container, html) {
-  // Limpa o container
-  container.innerHTML = '';
-
-  // Usa <template> para parsear o HTML — preserva TODOS os elementos
-  // incluindo <dialog>, <details>, <summary>, etc.
-  const template = document.createElement('template');
-  template.innerHTML = html;
-
-  // Clona o conteúdo do template e injeta no container
-  container.appendChild(template.content.cloneNode(true));
-}
-
-
-/* ---------------------------------------------------------
-   7. FUNCAO: carrega o modulo JS da pagina dinamicamente
+   6. FUNCAO: carrega o modulo JS da pagina dinamicamente
 --------------------------------------------------------- */
 async function carregarModuloPagina(nomePagina) {
   try {
-    // ✅ Usa nomePagina dinamicamente + cache-busting via versão fixa
-    const modulo = await import(`../paginas/${nomePagina}.js?v=5`);
+    // Import dinamico - caminho relativo a partir de js/core/
+    const modulo = await import(`../paginas/${nomePagina}.js`);
     return modulo.default;
   } catch (erro) {
     console.warn(`[Router] Modulo js/paginas/${nomePagina}.js nao pode ser carregado:`, erro);
@@ -187,12 +169,11 @@ async function carregarModuloPagina(nomePagina) {
   }
 }
 
-
 /* ---------------------------------------------------------
-   8. FUNCAO PRINCIPAL: trata mudanca de rota
+   7. FUNCAO PRINCIPAL: trata mudanca de rota
 --------------------------------------------------------- */
 async function tratarRota() {
-  const hash      = window.location.hash || ROTA_PADRAO;
+  const hash = window.location.hash || ROTA_PADRAO;
   const container = document.getElementById(CONTAINER_ID);
 
   // Valida se o container existe
@@ -210,7 +191,7 @@ async function tratarRota() {
   // Permite query strings no hash, ex: #/cadastro/novo-associado?id=123
   const [rotaHash] = hash.split('?');
 
-  // Busca a rota no mapa
+  // Busca a rota no mapa; se nao existir, usa a view 404
   const rota = rotas[rotaHash];
 
   // Chama destroy() da pagina anterior (se existir)
@@ -230,7 +211,7 @@ async function tratarRota() {
     // --- ROTA NAO ENCONTRADA (404) ---
     if (!rota) {
       const html404 = await carregarView('views/404.html');
-      injetarHtml(container, html404);
+      container.innerHTML = html404;
       document.title = `404 - Não encontrado | ${TITULO_BASE}`;
       console.warn(`[Router] Rota nao encontrada: ${hash}`);
       return;
@@ -238,16 +219,13 @@ async function tratarRota() {
 
     // --- ROTA VALIDA ---
     const html = await carregarView(rota.view);
-
-    // ✅ Usa DOMParser para preservar elementos como <dialog>
-    injetarHtml(container, html);
-
+    container.innerHTML = html;
     document.title = `${rota.titulo} | ${TITULO_BASE}`;
 
     // Carrega e inicializa o modulo JS da pagina
     const modulo = await carregarModuloPagina(rota.page);
     if (modulo && typeof modulo.init === 'function') {
-      await modulo.init();
+      modulo.init();
       paginaAtual = modulo;
     }
 
@@ -260,7 +238,7 @@ async function tratarRota() {
 }
 
 /* ---------------------------------------------------------
-   9. FUNCAO PUBLICA: inicializa o router
+   8. FUNCAO PUBLICA: inicializa o router
 --------------------------------------------------------- */
 function iniciar() {
   // Escuta mudancas de hash
@@ -273,7 +251,7 @@ function iniciar() {
 }
 
 /* ---------------------------------------------------------
-   10. EXPORT
+   9. EXPORT
 --------------------------------------------------------- */
 export default {
   iniciar,
