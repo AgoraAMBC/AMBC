@@ -43,7 +43,7 @@ const refs = {
 };
 
 let estado = {
-  modo: 'novo',
+  modo: 'novo', // 'novo' | 'editar' | 'visualizar'
   idAssociado: null,
   tipoLancamento: 'receber'
 };
@@ -244,8 +244,17 @@ async function carregarAssociado(id) {
   }
 }
 
+function bloquearFormulario() {
+  document.querySelectorAll('#form-associado input, #form-associado select, #form-associado textarea')
+    .forEach(el => { el.disabled = true; });
+  const btnSalvar = document.getElementById('btn-salvar');
+  if (btnSalvar) btnSalvar.hidden = true;
+  if (refs.btnCancelar) refs.btnCancelar.textContent = 'Fechar';
+}
+
 async function aoEnviarFormulario(event) {
   event.preventDefault();
+  if (estado.modo === 'visualizar') { aoCancelar(); return; }
   const dados = coletarDadosFormulario();
 
   if (!dados.nome)            { Toast.erro('Nome é obrigatório.');               refs.nome?.focus();           return; }
@@ -432,15 +441,23 @@ async function init() {
 
   const params = parsearHashParams();
   const id = params.get('id');
+  const visualizar = params.get('visualizar') === '1';
 
   if (id) {
-    estado.modo = 'editar';
+    estado.modo = visualizar ? 'visualizar' : 'editar';
     estado.idAssociado = Number(id);
   }
 
   await carregarSelects();
 
-  if (estado.modo === 'editar' && Number.isInteger(estado.idAssociado)) {
+  if (estado.modo === 'visualizar' && Number.isInteger(estado.idAssociado)) {
+    refs.tituloModo?.forEach(el => { el.textContent = 'Visualizar Associado'; });
+    await carregarAssociado(estado.idAssociado).catch(erro => {
+      console.error('[NovoAssociado] Erro ao carregar associado:', erro);
+      Toast.erro('Não foi possível carregar os dados do associado.');
+    });
+    bloquearFormulario();
+  } else if (estado.modo === 'editar' && Number.isInteger(estado.idAssociado)) {
     refs.tituloModo?.forEach(el => { el.textContent = 'Editar Associado'; });
     await carregarAssociado(estado.idAssociado).catch(erro => {
       console.error('[NovoAssociado] Erro ao carregar associado:', erro);
