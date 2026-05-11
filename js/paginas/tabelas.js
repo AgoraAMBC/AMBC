@@ -107,7 +107,7 @@ const TabelasPage = {
               data-acao="editar" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
               <span class="material-icons">edit</span>
             </button>
-            <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"
+            <button type="button" class="btn-icone btn-icone-perigo" title="Excluir"
               data-acao="excluir" data-chave="${chave}" data-id="${item.id}" data-desc="${this._esc(item.descricao)}">
               <span class="material-icons">delete</span>
             </button>
