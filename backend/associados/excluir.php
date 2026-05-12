@@ -17,15 +17,11 @@ $stmtCheck->execute([':id' => $id]);
 if (!$stmtCheck->fetch()) jsonErro('Associado não encontrado', 404);
 
 try {
-    $pdo->beginTransaction();
+    // Remove associado (os dependentes são removidos automaticamente por CASCADE)
+    $stmt = $pdo->prepare("DELETE FROM associado WHERE id_associado = :id");
+    $stmt->execute([':id' => $id]);
 
-    // Remove endereço vinculado
-    $pdo->prepare("DELETE FROM endereco WHERE id_associado = :id")->execute([':id' => $id]);
-
-    // Remove associado
-    $pdo->prepare("DELETE FROM associado WHERE id_associado = :id")->execute([':id' => $id]);
-
-    $pdo->commit();
+    if ($stmt->rowCount() === 0) jsonErro('Associado não encontrado', 404);
 
     jsonResposta(['mensagem' => 'Associado removido com sucesso']);
 

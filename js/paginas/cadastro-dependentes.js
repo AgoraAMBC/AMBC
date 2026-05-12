@@ -5,24 +5,7 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
-
-/* ---------------------------------------------------------
-   DADOS MOCK (temporário até integração com API)
---------------------------------------------------------- */
-const dependentesMock = [
-  { id_dependente: 1, nome: 'João Silva Jr.', id_associado: 1, associado: 'João Silva', parentesco: 'filho', data_nascimento: '2010-05-15', genero: 'M', rua: 'Rua A', id_associado_ativo: true },
-  { id_dependente: 2, nome: 'Maria Silva', id_associado: 1, associado: 'João Silva', parentesco: 'filha', data_nascimento: '2012-08-22', genero: 'F', rua: 'Rua A', id_associado_ativo: true },
-  { id_dependente: 3, nome: 'Ana Silva', id_associado: 1, associado: 'João Silva', parentesco: 'conjuge', data_nascimento: '1975-03-10', genero: 'F', rua: 'Rua A', id_associado_ativo: true },
-  { id_dependente: 4, nome: 'Carlos Santos', id_associado: 2, associado: 'Pedro Santos', parentesco: 'filho', data_nascimento: '2008-12-01', genero: 'M', rua: 'Rua B', id_associado_ativo: true },
-  { id_dependente: 5, nome: 'Juliana Santos', id_associado: 2, associado: 'Pedro Santos', parentesco: 'filha', data_nascimento: '2015-06-18', genero: 'F', rua: 'Rua B', id_associado_ativo: true },
-  { id_dependente: 6, nome: 'Roberto Oliveira', id_associado: 3, associado: 'Marina Oliveira', parentesco: 'conjuge', data_nascimento: '1972-11-25', genero: 'M', rua: 'Rua C', id_associado_ativo: true },
-  { id_dependente: 7, nome: 'Lucas Oliveira', id_associado: 3, associado: 'Marina Oliveira', parentesco: 'filho', data_nascimento: '2006-09-03', genero: 'M', rua: 'Rua C', id_associado_ativo: true },
-  { id_dependente: 8, nome: 'Sofia Costa', id_associado: 4, associado: 'Felipe Costa', parentesco: 'filha', data_nascimento: '2016-02-14', genero: 'F', rua: 'Rua D', id_associado_ativo: true },
-  { id_dependente: 9, nome: 'Gustavo Pereira', id_associado: 5, associado: 'Camila Pereira', parentesco: 'filho', data_nascimento: '2011-07-29', genero: 'M', rua: 'Rua E', id_associado_ativo: true },
-  { id_dependente: 10, nome: 'Fernanda Alves', id_associado: 5, associado: 'Camila Pereira', parentesco: 'filha', data_nascimento: '2013-04-17', genero: 'F', rua: 'Rua E', id_associado_ativo: true },
-  { id_dependente: 11, nome: 'Thiago Martins', id_associado: 6, associado: 'Rafael Martins', parentesco: 'genro', data_nascimento: '1985-10-05', genero: 'M', rua: 'Rua A', id_associado_ativo: true },
-  { id_dependente: 12, nome: 'Isabela Martins', id_associado: 6, associado: 'Rafael Martins', parentesco: 'filha', data_nascimento: '2017-01-22', genero: 'F', rua: 'Rua A', id_associado_ativo: true },
-];
+import { DependentesService } from '../services/dependentes-service.js';
 
 /* ---------------------------------------------------------
    ESTADO INTERNO
@@ -97,7 +80,6 @@ function init() {
   estado.filtroStatus = '';
   estado.paginaAtual = 1;
 
-  preencherSelectRuas();
   ativarFiltros();
   ativarBotaoBuscar();
   ativarBotaoLimpar();
@@ -121,18 +103,23 @@ async function buscarEAtualizar() {
   }
 
   try {
-    const dependentesFiltrados = aplicarFiltros(dependentesMock);
-    estado.total = dependentesFiltrados.length;
-    estado.totalPaginas = Math.ceil(estado.total / estado.itensPorPagina) || 1;
+    const filtros = {
+      pagina: estado.paginaAtual,
+    };
+    const resp = await DependentesService.listar(filtros);
 
-    const inicio = (estado.paginaAtual - 1) * estado.itensPorPagina;
-    const fim = inicio + estado.itensPorPagina;
-    estado.dependentesAtual = dependentesFiltrados.slice(inicio, fim);
+    const dependentes = resp.dados || [];
+    const dependentesFiltrados = aplicarFiltros(dependentes);
+
+    estado.total = resp.total || 0;
+    estado.totalPaginas = resp.paginas || 1;
+    estado.dependentesAtual = dependentesFiltrados;
 
     renderizarLinhas(estado.dependentesAtual);
     renderizarContador();
     renderizarPaginacao();
     alternarEstadoVazio(estado.dependentesAtual.length === 0);
+    preencherSelectRuas();
   } catch (erro) {
     console.error('[DependentesListar] Erro ao buscar dependentes:', erro);
     Toast.erro('Não foi possível carregar os dependentes.');
@@ -148,7 +135,22 @@ async function buscarEAtualizar() {
    FILTROS
 --------------------------------------------------------- */
 function aplicarFiltros(dados) {
-  return dados.filter(d => {
+  const normalizar = (d) => ({
+    ...d,
+    // Normalizar nomes de campos do banco para nomes esperados pelo frontend
+    id_associado: d.fk_associado,
+    associado: d.nome_associado,
+    rua: d.rua_associado,
+    id_associado_ativo: d.associado_ativo,
+    // Normalizar genero: "Masculino" -> "M", "Feminino" -> "F"
+    genero: d.genero === 'Masculino' ? 'M' : d.genero === 'Feminino' ? 'F' : d.fk_genero === 1 ? 'M' : d.fk_genero === 2 ? 'F' : '',
+    // Normalizar parentesco para minúsculo
+    parentesco: d.parentesco ? d.parentesco.toLowerCase() : '',
+  });
+
+  const dadosNormalizados = dados.map(normalizar);
+
+  return dadosNormalizados.filter(d => {
     const nome = (d.nome ?? '').toLowerCase();
     const termoBusca = estado.termoBusca.toLowerCase();
     if (termoBusca && !nome.includes(termoBusca)) return false;
@@ -183,7 +185,10 @@ function calcularIdade(dataNascimento) {
 function preencherSelectRuas() {
   if (!refs.filtroRua) return;
 
-  const ruas = [...new Set(dependentesMock.map(d => d.rua))].sort();
+  // Após buscar dados, preencher as ruas disponíveis
+  if (estado.dependentesAtual.length === 0) return;
+
+  const ruas = [...new Set(estado.dependentesAtual.map(d => d.rua || '').filter(r => r))].sort();
   const options = ruas.map(rua => `<option value="${rua}">${rua}</option>`).join('');
 
   refs.filtroRua.innerHTML = '<option value="">Rua: Todas</option>' + options;
@@ -441,7 +446,9 @@ function ativarRelatorio() {
 }
 
 function gerarRelatorio(tipo, formatos) {
-  const dados = aplicarFiltros(dependentesMock);
+  // Usar os dados já carregados no estado (após aplicar filtros atuais)
+  const todosDados = estado.dependentesAtual;
+  const dados = aplicarFiltros(todosDados);
 
   if (dados.length === 0) {
     Toast.aviso('Nenhum dependente para gerar relatório com os filtros aplicados.');
