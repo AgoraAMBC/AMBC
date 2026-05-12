@@ -281,7 +281,7 @@ function tratarCliqueAcao(e) {
    AÇÕES DE LINHA
 --------------------------------------------------------- */
 function aoVisualizar(id) {
-  Toast.info('Visualização detalhada em construção.');
+  window.location.hash = `#/cadastro/novo-associado?id=${id}&visualizar=1`;
 }
 
 function aoEditar(id) {

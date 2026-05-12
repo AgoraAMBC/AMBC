@@ -4,17 +4,8 @@
 ========================================================= -->
 <section class="view tabaux">
 
-  <!-- CABEÇALHO -->
-  <header class="cfg-associacao__cabecalho">
-    <div>
-      <p class="cfg-associacao__eyebrow">Cadastros</p>
-      <h1 class="cfg-associacao__titulo">Tabelas Auxiliares</h1>
-      <p class="cfg-associacao__subtitulo">Gerencie os valores padrão utilizados nos formulários do sistema.</p>
-    </div>
-  </header>
-
   <!-- ABAS -->
-  <div class="tabaux__abas" role="tablist" id="tabaux-abas">
+  <div class="tabaux__abas" role="tablist">
     <button class="tabaux__aba tabaux__aba--ativa" role="tab" aria-selected="true"  data-tabaux-aba="genero"      aria-controls="tabaux-genero">
       <span class="material-icons">wc</span> Gênero
     </button>
@@ -34,241 +25,212 @@
 
   <!-- ── GÊNERO ── -->
   <div class="tabaux__painel tabaux__painel--ativo" id="tabaux-genero" role="tabpanel">
-    <div class="card">
-      <div class="card__cabecalho">
-        <h3 class="card__titulo"><span class="material-icons">wc</span> Gênero</h3>
-        <span class="badge badge-pilula badge-azul" id="badge-genero">3 registros</span>
-      </div>
-      <div class="tabaux__formulario-inline">
-        <label class="tabaux__formulario-label">Nome do Gênero</label>
-        <div class="tabaux__formulario-linha">
-          <input type="text" class="campo" id="genero-novo" placeholder="Ex: Não-binário" />
-          <button type="button" class="btn btn-primario btn-sm" id="btn-add-genero">
-            <span class="material-icons">add</span> Adicionar
-          </button>
+    <div class="gu-card">
+      <div class="gu-card__topo">
+        <div class="gu-card__titulo-grupo">
+          <span class="material-icons gu-card__icone">wc</span>
+          <div>
+            <h2 class="gu-card__titulo">Gênero</h2>
+            <p class="gu-card__subtitulo" id="sub-genero">Carregando…</p>
+          </div>
         </div>
+        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="genero">
+          <span class="material-icons">add</span> Adicionar Gênero
+        </button>
       </div>
-      <div class="tabela-wrapper">
-        <table class="tabela">
+      <div class="gu-tabela-wrapper">
+        <table class="gu-tabela">
           <thead>
             <tr>
-              <th style="width:60px">ID</th>
+              <th style="width:70px">ID</th>
               <th>Nome do Gênero</th>
-              <th class="tabela__acoes">Ações</th>
+              <th class="gu-tabela__th--acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tbody-genero">
-            <tr>
-              <td class="tabaux__id">#001</td>
-              <td><strong>Masculino</strong></td>
-              <td class="tabela__acoes">
-                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-              </td>
-            </tr>
-            <tr>
-              <td class="tabaux__id">#002</td>
-              <td><strong>Feminino</strong></td>
-              <td class="tabela__acoes">
-                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-              </td>
-            </tr>
-            <tr>
-              <td class="tabaux__id">#003</td>
-              <td><strong>Outro</strong></td>
-              <td class="tabela__acoes">
-                <button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button>
-                <button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button>
-              </td>
-            </tr>
+            <tr><td colspan="3" class="gu-tabela__estado">Carregando…</td></tr>
           </tbody>
         </table>
-      </div>
-      <div class="card__rodape">
-        <span class="tabaux__contador" id="count-genero">Exibindo 3 de 3 registros</span>
       </div>
     </div>
   </div>
 
   <!-- ── PARENTESCO ── -->
   <div class="tabaux__painel" id="tabaux-parentesco" role="tabpanel" hidden>
-    <div class="card">
-      <div class="card__cabecalho">
-        <h3 class="card__titulo"><span class="material-icons">account_tree</span> Parentesco</h3>
-        <span class="badge badge-pilula badge-azul" id="badge-parentesco">5 registros</span>
-      </div>
-      <div class="tabaux__formulario-inline">
-        <label class="tabaux__formulario-label">Tipo de Parentesco</label>
-        <div class="tabaux__formulario-linha">
-          <input type="text" class="campo" id="parentesco-novo" placeholder="Ex: Sobrinho(a)" />
-          <button type="button" class="btn btn-primario btn-sm" id="btn-add-parentesco">
-            <span class="material-icons">add</span> Adicionar
-          </button>
+    <div class="gu-card">
+      <div class="gu-card__topo">
+        <div class="gu-card__titulo-grupo">
+          <span class="material-icons gu-card__icone">account_tree</span>
+          <div>
+            <h2 class="gu-card__titulo">Parentesco</h2>
+            <p class="gu-card__subtitulo" id="sub-parentesco">Carregando…</p>
+          </div>
         </div>
+        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="parentesco">
+          <span class="material-icons">add</span> Adicionar Parentesco
+        </button>
       </div>
-      <div class="tabela-wrapper">
-        <table class="tabela">
+      <div class="gu-tabela-wrapper">
+        <table class="gu-tabela">
           <thead>
             <tr>
-              <th style="width:60px">ID</th>
+              <th style="width:70px">ID</th>
               <th>Parentesco</th>
-              <th class="tabela__acoes">Ações</th>
+              <th class="gu-tabela__th--acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tbody-parentesco">
-            <tr><td class="tabaux__id">#001</td><td><strong>Cônjuge</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#002</td><td><strong>Filho(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#003</td><td><strong>Pai / Mãe</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#004</td><td><strong>Irmão / Irmã</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#005</td><td><strong>Outro</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td colspan="3" class="gu-tabela__estado">Carregando…</td></tr>
           </tbody>
         </table>
-      </div>
-      <div class="card__rodape">
-        <span class="tabaux__contador" id="count-parentesco">Exibindo 5 de 5 registros</span>
       </div>
     </div>
   </div>
 
   <!-- ── PROFISSÃO ── -->
   <div class="tabaux__painel" id="tabaux-profissao" role="tabpanel" hidden>
-    <div class="card">
-      <div class="card__cabecalho">
-        <h3 class="card__titulo"><span class="material-icons">work</span> Profissão</h3>
-        <span class="badge badge-pilula badge-azul" id="badge-profissao">6 registros</span>
-      </div>
-      <div class="tabaux__formulario-inline">
-        <label class="tabaux__formulario-label">Nome da Profissão</label>
-        <div class="tabaux__formulario-linha">
-          <input type="text" class="campo" id="profissao-novo" placeholder="Ex: Engenheiro(a)" />
-          <button type="button" class="btn btn-primario btn-sm" id="btn-add-profissao">
-            <span class="material-icons">add</span> Adicionar
-          </button>
+    <div class="gu-card">
+      <div class="gu-card__topo">
+        <div class="gu-card__titulo-grupo">
+          <span class="material-icons gu-card__icone">work</span>
+          <div>
+            <h2 class="gu-card__titulo">Profissão</h2>
+            <p class="gu-card__subtitulo" id="sub-profissao">Carregando…</p>
+          </div>
         </div>
+        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="profissao">
+          <span class="material-icons">add</span> Adicionar Profissão
+        </button>
       </div>
-      <div class="tabela-wrapper">
-        <table class="tabela">
+      <div class="gu-tabela-wrapper">
+        <table class="gu-tabela">
           <thead>
             <tr>
-              <th style="width:60px">ID</th>
+              <th style="width:70px">ID</th>
               <th>Profissão</th>
-              <th class="tabela__acoes">Ações</th>
+              <th class="gu-tabela__th--acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tbody-profissao">
-            <tr><td class="tabaux__id">#001</td><td><strong>Analista de Sistemas</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#002</td><td><strong>Médico(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#003</td><td><strong>Professor(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#004</td><td><strong>Comerciante</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#005</td><td><strong>Aposentado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#006</td><td><strong>Autônomo(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td colspan="3" class="gu-tabela__estado">Carregando…</td></tr>
           </tbody>
         </table>
-      </div>
-      <div class="card__rodape">
-        <span class="tabaux__contador" id="count-profissao">Exibindo 6 de 6 registros</span>
       </div>
     </div>
   </div>
 
   <!-- ── ESTADO CIVIL ── -->
   <div class="tabaux__painel" id="tabaux-estadocivil" role="tabpanel" hidden>
-    <div class="card">
-      <div class="card__cabecalho">
-        <h3 class="card__titulo"><span class="material-icons">favorite</span> Estado Civil</h3>
-        <span class="badge badge-pilula badge-azul" id="badge-estadocivil">4 registros</span>
-      </div>
-      <div class="tabaux__formulario-inline">
-        <label class="tabaux__formulario-label">Nome do Estado Civil</label>
-        <div class="tabaux__formulario-linha">
-          <input type="text" class="campo" id="estadocivil-novo" placeholder="Ex: União Estável" />
-          <button type="button" class="btn btn-primario btn-sm" id="btn-add-estadocivil">
-            <span class="material-icons">add</span> Adicionar
-          </button>
+    <div class="gu-card">
+      <div class="gu-card__topo">
+        <div class="gu-card__titulo-grupo">
+          <span class="material-icons gu-card__icone">favorite</span>
+          <div>
+            <h2 class="gu-card__titulo">Estado Civil</h2>
+            <p class="gu-card__subtitulo" id="sub-estadocivil">Carregando…</p>
+          </div>
         </div>
+        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="estadocivil">
+          <span class="material-icons">add</span> Adicionar Estado Civil
+        </button>
       </div>
-      <div class="tabela-wrapper">
-        <table class="tabela">
+      <div class="gu-tabela-wrapper">
+        <table class="gu-tabela">
           <thead>
             <tr>
-              <th style="width:60px">ID</th>
-              <th>Nome do Estado Civil</th>
-              <th class="tabela__acoes">Ações</th>
+              <th style="width:70px">ID</th>
+              <th>Estado Civil</th>
+              <th class="gu-tabela__th--acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tbody-estadocivil">
-            <tr><td class="tabaux__id">#001</td><td><strong>Solteiro(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#002</td><td><strong>Casado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#003</td><td><strong>Divorciado(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
-            <tr><td class="tabaux__id">#004</td><td><strong>Viúvo(a)</strong></td><td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td></tr>
+            <tr><td colspan="3" class="gu-tabela__estado">Carregando…</td></tr>
           </tbody>
         </table>
-      </div>
-      <div class="card__rodape">
-        <span class="tabaux__contador" id="count-estadocivil">Exibindo 4 de 4 registros</span>
       </div>
     </div>
   </div>
 
   <!-- ── STATUS ── -->
   <div class="tabaux__painel" id="tabaux-status" role="tabpanel" hidden>
-    <div class="card">
-      <div class="card__cabecalho">
-        <h3 class="card__titulo"><span class="material-icons">toggle_on</span> Status</h3>
-        <span class="badge badge-pilula badge-azul" id="badge-status">3 registros</span>
-      </div>
-      <div class="tabaux__formulario-inline">
-        <label class="tabaux__formulario-label">Configuração do Status</label>
-        <div class="tabaux__formulario-linha">
-          <input type="text" class="campo" id="status-novo" placeholder="Ex: Em Análise" style="flex:2" />
-          <select class="campo" id="status-cor" style="flex:1">
-            <option value="verde">Verde (Ativo)</option>
-            <option value="vermelho">Vermelho (Inativo)</option>
-            <option value="amarelo">Amarelo (Pendente)</option>
-            <option value="cinza">Cinza (Neutro)</option>
-          </select>
-          <button type="button" class="btn btn-primario btn-sm" id="btn-add-status">
-            <span class="material-icons">add</span> Adicionar
-          </button>
+    <div class="gu-card">
+      <div class="gu-card__topo">
+        <div class="gu-card__titulo-grupo">
+          <span class="material-icons gu-card__icone">toggle_on</span>
+          <div>
+            <h2 class="gu-card__titulo">Status</h2>
+            <p class="gu-card__subtitulo" id="sub-status">Carregando…</p>
+          </div>
         </div>
+        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="status">
+          <span class="material-icons">add</span> Adicionar Status
+        </button>
       </div>
-      <div class="tabela-wrapper">
-        <table class="tabela">
+      <div class="gu-tabela-wrapper">
+        <table class="gu-tabela">
           <thead>
             <tr>
-              <th style="width:60px">ID</th>
+              <th style="width:70px">ID</th>
               <th>Status</th>
-              <th>Badge</th>
-              <th class="tabela__acoes">Ações</th>
+              <th class="gu-tabela__th--acoes">Ações</th>
             </tr>
           </thead>
           <tbody id="tbody-status">
-            <tr>
-              <td class="tabaux__id">#001</td>
-              <td><strong>Ativo</strong></td>
-              <td><span class="badge badge-pilula badge-verde">● Ativo</span></td>
-              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
-            </tr>
-            <tr>
-              <td class="tabaux__id">#002</td>
-              <td><strong>Inativo</strong></td>
-              <td><span class="badge badge-pilula badge-cinza">● Inativo</span></td>
-              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
-            </tr>
-            <tr>
-              <td class="tabaux__id">#003</td>
-              <td><strong>Pendente</strong></td>
-              <td><span class="badge badge-pilula badge-amarelo">● Pendente</span></td>
-              <td class="tabela__acoes"><button type="button" class="btn-icone" title="Editar"><span class="material-icons">edit</span></button><button type="button" class="btn-icone btn-icone--perigo" title="Excluir"><span class="material-icons">delete</span></button></td>
-            </tr>
+            <tr><td colspan="3" class="gu-tabela__estado">Carregando…</td></tr>
           </tbody>
         </table>
-      </div>
-      <div class="card__rodape">
-        <span class="tabaux__contador" id="count-status">Exibindo 3 de 3 registros</span>
       </div>
     </div>
   </div>
 
 </section>
+
+<!-- ── Modal: Adicionar / Editar ── -->
+<div class="gu-modal" id="modal-tabaux" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-tabaux-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone" id="modal-tabaux-icone">add_circle</span>
+        <h3 class="gu-modal__titulo" id="modal-tabaux-titulo">Adicionar</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-tabaux-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <form class="gu-modal__formulario" id="form-tabaux" novalidate>
+      <div class="gu-campo">
+        <label class="gu-campo__label" id="tabaux-label" for="tabaux-descricao">Descrição *</label>
+        <input type="text" class="gu-campo__input" id="tabaux-descricao" placeholder="Digite a descrição" autocomplete="off" />
+      </div>
+      <div class="gu-modal__acoes">
+        <button type="button" class="gu-btn gu-btn--secundario" id="modal-tabaux-cancelar">Cancelar</button>
+        <button type="submit" class="gu-btn gu-btn--primario">
+          <span class="material-icons">save</span> Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmação de Exclusão ── -->
+<div class="gu-modal" id="modal-tabaux-confirmar" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-confirmar-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone" style="color:var(--cor-erro)">delete_forever</span>
+        <h3 class="gu-modal__titulo">Confirmar exclusão</h3>
+      </div>
+    </div>
+    <div class="gu-modal__corpo">
+      <p class="gu-modal__mensagem" id="modal-confirmar-msg"></p>
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="gu-btn gu-btn--secundario" id="modal-confirmar-cancelar">Cancelar</button>
+      <button type="button" class="gu-btn gu-btn--perigo" id="modal-confirmar-ok">
+        <span class="material-icons">delete</span> Excluir
+      </button>
+    </div>
+  </div>
+</div>

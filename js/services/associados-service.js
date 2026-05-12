@@ -25,7 +25,7 @@ export const AssociadosService = {
   },
 
   atualizar(dados) {
-    return api.put('/associados/atualizar.php', dados);
+    return api.put(`/associados/atualizar.php?id=${dados.id_associado}`, dados);
   },
 
   alternarStatus(id) {
@@ -35,9 +35,7 @@ export const AssociadosService = {
   },
 
   deletar(id) {
-    return api.delete('/associados/excluir.php', {
-      id_associado: id
-    });
+    return api.delete(`/associados/excluir.php?id=${id}`);
   },
 
   verificarCpf(cpf_cnpj, idIgnorar = null) {

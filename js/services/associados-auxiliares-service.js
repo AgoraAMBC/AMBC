@@ -1,21 +1,34 @@
 import { api } from './api.js';
 
 export const AuxiliaresService = {
-  listarGeneros() {
-    return api.get('/generos/listar.php');
-  },
 
-  listarEstadosCivis() {
-    return api.get('/estados-civis/listar.php');
-  },
+  /* ── LISTAR ── */
+  listarGeneros()      { return api.get('/generos/listar.php'); },
+  listarParentescos()  { return api.get('/parentesco/listar.php'); },
+  listarProfissoes()   { return api.get('/profissoes/listar.php'); },
+  listarEstadosCivis() { return api.get('/estados-civis/listar.php'); },
+  listarStatusPessoa() { return api.get('/status-pessoa/listar.php'); },
 
-  listarProfissoes() {
-    return api.get('/profissoes/listar.php');
-  },
+  /* ── CRIAR ── */
+  criarGenero(descricao)      { return api.post('/generos/cadastrar.php',       { descricao }); },
+  criarParentesco(descricao)  { return api.post('/parentesco/cadastrar.php',    { descricao }); },
+  criarProfissao(descricao)   { return api.post('/profissoes/cadastrar.php',    { descricao }); },
+  criarEstadoCivil(descricao) { return api.post('/estados-civis/cadastrar.php', { descricao }); },
+  criarStatus(descricao)      { return api.post('/status-pessoa/cadastrar.php', { descricao }); },
 
-  listarStatusPessoa() {
-    return api.get('/status-pessoa/listar.php');
-  },
+  /* ── EDITAR ── */
+  editarGenero(id, descricao)      { return api.put('/generos/editar.php',       { id, descricao }); },
+  editarParentesco(id, descricao)  { return api.put('/parentesco/editar.php',    { id, descricao }); },
+  editarProfissao(id, descricao)   { return api.put('/profissoes/editar.php',    { id, descricao }); },
+  editarEstadoCivil(id, descricao) { return api.put('/estados-civis/editar.php', { id, descricao }); },
+  editarStatus(id, descricao)      { return api.put('/status-pessoa/editar.php', { id, descricao }); },
+
+  /* ── EXCLUIR ── */
+  excluirGenero(id)      { return api.delete('/generos/deletar.php',       { id }); },
+  excluirParentesco(id)  { return api.delete('/parentesco/deletar.php',    { id }); },
+  excluirProfissao(id)   { return api.delete('/profissoes/deletar.php',    { id }); },
+  excluirEstadoCivil(id) { return api.delete('/estados-civis/deletar.php', { id }); },
+  excluirStatus(id)      { return api.delete('/status-pessoa/deletar.php', { id }); },
 
   listarUfs() {
     return Promise.resolve([
@@ -37,23 +50,20 @@ export const AuxiliaresService = {
   },
 
   async carregarTodas() {
-    const [
-      rGeneros,
-      rEstadosCivis,
-      rProfissoes,
-      rStatusPessoa,
-      rUfs
-    ] = await Promise.allSettled([
-      this.listarGeneros(),
-      this.listarEstadosCivis(),
-      this.listarProfissoes(),
-      this.listarStatusPessoa(),
-      this.listarUfs()
-    ]);
+    const [rGeneros, rEstadosCivis, rProfissoes, rStatusPessoa, rUfs, rParentescos, rCategorias] =
+      await Promise.allSettled([
+        this.listarGeneros(),
+        this.listarEstadosCivis(),
+        this.listarProfissoes(),
+        this.listarStatusPessoa(),
+        this.listarUfs(),
+        this.listarParentescos(),
+        api.get('/categorias/listar.php'),
+      ]);
 
-    const extrair = (resultado, nome) => {
-      if (resultado.status === 'fulfilled') return resultado.value ?? [];
-      console.warn(`[AuxiliaresService] Falha ao carregar "${nome}":`, resultado.reason?.message);
+    const extrair = (r, nome) => {
+      if (r.status === 'fulfilled') return r.value ?? [];
+      console.warn(`[AuxiliaresService] Falha ao carregar "${nome}":`, r.reason?.message);
       return [];
     };
 
@@ -62,7 +72,9 @@ export const AuxiliaresService = {
       estadosCivis: extrair(rEstadosCivis, 'estadosCivis'),
       profissoes:   extrair(rProfissoes,   'profissoes'),
       statusPessoa: extrair(rStatusPessoa, 'statusPessoa'),
-      ufs:          extrair(rUfs,          'ufs')
+      ufs:          extrair(rUfs,          'ufs'),
+      parentescos:  extrair(rParentescos,  'parentescos'),
+      categorias:   extrair(rCategorias,   'categorias'),
     };
-  }
+  },
 };
