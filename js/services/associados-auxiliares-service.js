@@ -50,13 +50,15 @@ export const AuxiliaresService = {
   },
 
   async carregarTodas() {
-    const [rGeneros, rEstadosCivis, rProfissoes, rStatusPessoa, rUfs] =
+    const [rGeneros, rEstadosCivis, rProfissoes, rStatusPessoa, rUfs, rParentescos, rCategorias] =
       await Promise.allSettled([
         this.listarGeneros(),
         this.listarEstadosCivis(),
         this.listarProfissoes(),
         this.listarStatusPessoa(),
         this.listarUfs(),
+        this.listarParentescos(),
+        api.get('/categorias/listar.php'),
       ]);
 
     const extrair = (r, nome) => {
@@ -71,6 +73,8 @@ export const AuxiliaresService = {
       profissoes:   extrair(rProfissoes,   'profissoes'),
       statusPessoa: extrair(rStatusPessoa, 'statusPessoa'),
       ufs:          extrair(rUfs,          'ufs'),
+      parentescos:  extrair(rParentescos,  'parentescos'),
+      categorias:   extrair(rCategorias,   'categorias'),
     };
   },
 };
