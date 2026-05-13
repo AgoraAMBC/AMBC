@@ -1,0 +1,339 @@
+/* =========================================================
+   dashboard.css
+   Estilos especificos da pagina inicial / painel.
+========================================================= */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+}
+
+.dashboard__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+}
+
+.dashboard__titulo {
+  margin: 0;
+  color: var(--texto-principal);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.dashboard__subtitulo {
+  margin: 6px 0 0;
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+.dashboard__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  flex-wrap: wrap;
+}
+
+.dashboard__mes {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 var(--esp-md);
+  border: var(--borda-padrao);
+  border-radius: var(--raio-sm);
+  background: var(--fundo-card);
+  color: var(--texto-principal);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  text-transform: capitalize;
+}
+
+.dashboard__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: var(--esp-md);
+}
+
+.dashboard-card {
+  padding: var(--esp-lg);
+  gap: var(--esp-sm);
+}
+
+.dashboard-card__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-sm);
+}
+
+.dashboard-card__icone {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--raio-sm);
+}
+
+.dashboard-card__icone .material-icons {
+  font-size: 24px;
+}
+
+.dashboard-card__icone--associados {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.dashboard-card__icone--dependentes {
+  background: var(--cor-roxo-clara);
+  color: var(--cor-roxo);
+}
+
+.dashboard-card__icone--parceiros {
+  background: var(--cor-alerta-clara);
+  color: var(--cor-alerta-escura);
+}
+
+.dashboard-card__icone--financeiro {
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso-escura);
+}
+
+.dashboard-card__variacao {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border-radius: var(--raio-full);
+  background: var(--cor-cinza-100);
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+}
+
+.dashboard-card__variacao[data-estado="alta"] {
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso-escura);
+}
+
+.dashboard-card__variacao[data-estado="baixa"] {
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro-escura);
+}
+
+.dashboard-card__label {
+  margin: var(--esp-sm) 0 0;
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.dashboard-card__valor {
+  margin: 0;
+  color: var(--texto-principal);
+  font-size: var(--fs-2xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.dashboard-card__valor--carregando {
+  color: var(--texto-secundario);
+}
+
+.dashboard__graficos {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+  gap: var(--esp-md);
+}
+
+.dashboard-panel__corpo {
+  padding: var(--esp-lg);
+}
+
+.dashboard-panel--grafico .dashboard-panel__corpo {
+  min-height: 340px;
+}
+
+.dashboard-chart {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
+
+.dashboard__legenda-inline {
+  display: flex;
+  justify-content: center;
+  gap: var(--esp-lg);
+  margin-top: var(--esp-sm);
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+.dashboard__legenda-inline span,
+.dashboard-lista li span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-sm);
+}
+
+.dashboard-panel__corpo--distribuicao {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--esp-lg);
+  align-items: center;
+}
+
+.dashboard-donut {
+  position: relative;
+  width: 160px;
+  aspect-ratio: 1;
+  border-radius: var(--raio-full);
+  background: conic-gradient(#e2e8f0 0 360deg);
+}
+
+.dashboard-donut::after {
+  content: "";
+  position: absolute;
+  inset: 22px;
+  border-radius: inherit;
+  background: var(--fundo-card);
+}
+
+.dashboard-donut__centro {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dashboard-donut__centro strong {
+  color: var(--texto-principal);
+  font-size: var(--fs-xl);
+  line-height: 1;
+}
+
+.dashboard-donut__centro span {
+  margin-top: 4px;
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+}
+
+.dashboard-lista {
+  display: grid;
+  gap: var(--esp-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dashboard-lista li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+.dashboard-lista strong {
+  color: var(--texto-principal);
+}
+
+.dashboard-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--raio-full);
+  flex: 0 0 auto;
+}
+
+.dashboard-dot--receita,
+.dashboard-dot--associados {
+  background: var(--cor-primaria);
+}
+
+.dashboard-dot--despesa {
+  background: var(--cor-erro);
+}
+
+.dashboard-dot--dependentes {
+  background: var(--cor-roxo);
+}
+
+.dashboard-dot--parceiros {
+  background: var(--cor-alerta);
+}
+
+.dashboard-tabela td {
+  vertical-align: middle;
+}
+
+.dashboard-tabela__principal,
+.dashboard-tabela__secundario {
+  display: block;
+}
+
+.dashboard-tabela__principal {
+  color: var(--texto-principal);
+  font-weight: var(--fw-semibold);
+}
+
+.dashboard-tabela__secundario {
+  margin-top: 2px;
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
+}
+
+.dashboard-tabela__valor--receita {
+  color: var(--cor-sucesso);
+  font-weight: var(--fw-semibold);
+}
+
+.dashboard-tabela__valor--despesa {
+  color: var(--cor-erro);
+  font-weight: var(--fw-semibold);
+}
+
+@media (max-width: 1100px) {
+  .dashboard__cards {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .dashboard__graficos {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard {
+    padding: var(--esp-md);
+  }
+
+  .dashboard__cards,
+  .dashboard-panel__corpo--distribuicao {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard__acoes,
+  .dashboard__acoes .btn,
+  .dashboard__mes {
+    width: 100%;
+  }
+
+  .dashboard-donut {
+    margin: 0 auto;
+  }
+}
