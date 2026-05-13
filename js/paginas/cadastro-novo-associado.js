@@ -2,6 +2,7 @@ import Toast from '../componentes/toast.js';
 import { api } from '../services/api.js';
 import { AssociadosService } from '../services/associados-service.js?v=4';
 import { AuxiliaresService } from '../services/associados-auxiliares-service.js?v=4';
+import { ContasService } from '../services/contas-service.js';
 
 const refs = {
   form: null,
@@ -569,11 +570,48 @@ function formatarBRL(valor) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 }
 
-function aoAbrirModalLancamento() {
+async function aoAbrirModalLancamento() {
   if (!estado.idAssociado) {
     Toast.alerta('Salve o associado primeiro para registrar lançamentos.');
     return;
   }
+
+  // Limpar selects
+  const selectCategoria = document.getElementById('lancamento-categoria');
+  const selectSubordinada = document.getElementById('lancamento-conta-subordinada');
+
+  // Carregar contas regentes
+  try {
+    const resp = await ContasService.listarRegentes({ ativos: '1' });
+    const regentes = resp?.dados || [];
+    selectCategoria.innerHTML = '<option value="">Selecione</option>' +
+      regentes.map(r => `<option value="${r.id_conta_regente}">${r.descricao}</option>`).join('');
+  } catch (e) {
+    console.error('[Lançamento] Erro ao carregar regentes:', e);
+    selectCategoria.innerHTML = '<option value="">Erro ao carregar</option>';
+  }
+
+  // Limpar subordinadas
+  selectSubordinada.innerHTML = '<option value="">— automático —</option>';
+
+  // Listener para carregar subordinadas ao selecionar regente
+  selectCategoria.onchange = async () => {
+    const fk_regente = selectCategoria.value;
+    if (!fk_regente) {
+      selectSubordinada.innerHTML = '<option value="">— automático —</option>';
+      return;
+    }
+    try {
+      const resp = await ContasService.listarSubordinadas(fk_regente);
+      const subordinadas = resp?.dados || [];
+      selectSubordinada.innerHTML = '<option value="">Selecione</option>' +
+        subordinadas.map(s => `<option value="${s.id_conta_subordinada}">${s.descricao}</option>`).join('');
+    } catch (e) {
+      console.error('[Lançamento] Erro ao carregar subordinadas:', e);
+      selectSubordinada.innerHTML = '<option value="">Erro ao carregar</option>';
+    }
+  };
+
   refs.modalLancamento.hidden = false;
 }
 
@@ -588,11 +626,13 @@ async function aoSalvarLancamento() {
   }
 
   const descricao = document.getElementById('lancamento-descricao')?.value.trim();
+  const categoria = document.getElementById('lancamento-categoria')?.value;
+  const contaSubordinada = document.getElementById('lancamento-conta-subordinada')?.value;
   const valor = document.getElementById('lancamento-valor')?.value;
   const vencimento = document.getElementById('lancamento-vencimento')?.value;
   const pagamento = document.getElementById('lancamento-pagamento')?.value;
   const forma = document.getElementById('lancamento-forma-pagamento')?.value;
-  const status = document.getElementById('lancamento-status')?.value || 'pendente';
+  const status = document.getElementById('lancamento-status')?.value || 'aberto';
 
   if (!descricao || !valor) {
     Toast.alerta('Descrição e valor são obrigatórios.');
@@ -604,6 +644,8 @@ async function aoSalvarLancamento() {
       fk_associado: estado.idAssociado,
       tipo: estado.tipoLancamento,
       descricao,
+      fk_conta_regente: categoria || null,
+      fk_conta_subordinada: contaSubordinada || null,
       valor,
       vencimento: vencimento || null,
       data_pagamento: pagamento || null,
