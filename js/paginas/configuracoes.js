@@ -5,25 +5,18 @@
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
-
-/* ---------------------------------------------------------
-   Constantes para localStorage
---------------------------------------------------------- */
-const CHAVE_CONFIG = 'ambc_configuracoes';
+import { ConfiguracoesService } from '../services/configuracoes-service.js';
 
 /* ---------------------------------------------------------
    Funções de Logo da Associação
 --------------------------------------------------------- */
-function carregarLogoSalvo() {
-  const config = JSON.parse(localStorage.getItem(CHAVE_CONFIG) || '{}');
-  return config.logo || null;
-}
-
-function salvarLogo(base64) {
-  const config = JSON.parse(localStorage.getItem(CHAVE_CONFIG) || '{}');
-  config.logo = base64;
-  localStorage.setItem(CHAVE_CONFIG, JSON.stringify(config));
-  atualizarLogoSidebar(base64);
+async function carregarConfiguracoes() {
+  try {
+    return await ConfiguracoesService.obter();
+  } catch (erro) {
+    console.error('[Configuracoes] Erro ao carregar configurações:', erro);
+    return {};
+  }
 }
 
 function atualizarLogoSidebar(logoBase64) {
@@ -35,6 +28,21 @@ function atualizarLogoSidebar(logoBase64) {
   } else {
     logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
   }
+}
+
+async function salvarLogo(base64) {
+  const config = await carregarConfiguracoes();
+  config.logo = base64;
+
+  try {
+    await ConfiguracoesService.salvar(config);
+    Toast.success('Logo atualizado com sucesso!');
+  } catch (erro) {
+    console.error('[Configuracoes] Erro ao salvar logo:', erro);
+    Toast.error('Erro ao salvar. Tente novamente.');
+  }
+
+  atualizarLogoSidebar(base64);
 }
 
 function processarUploadLogo(event) {
@@ -49,19 +57,18 @@ function processarUploadLogo(event) {
   const reader = new FileReader();
   reader.onload = function(e) {
     salvarLogo(e.target.result);
-    Toast.success('Logo atualizado com sucesso!');
   };
   reader.readAsDataURL(file);
 }
 
-function inicializarUploadLogo() {
+async function inicializarUploadLogo() {
   const input = document.getElementById('logo-input');
   if (input) {
     input.addEventListener('change', processarUploadLogo);
   }
-  // Carregar logo salvo ao iniciar
-  const logoSalvo = carregarLogoSalvo();
-  atualizarLogoSidebar(logoSalvo);
+
+  const config = await carregarConfiguracoes();
+  atualizarLogoSidebar(config.logo || null);
 }
 
 /* ---------------------------------------------------------

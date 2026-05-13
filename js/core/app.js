@@ -9,6 +9,7 @@ import Sessao  from './sessao.js';
 import Router  from './router.js';
 import Sidebar from '../layout/sidebar.js';
 import Topbar  from '../layout/topbar.js';
+import { ConfiguracoesService } from '../services/configuracoes-service.js';
 
 /* ---------------------------------------------------------
    1. Guarda de autenticacao
@@ -20,16 +21,19 @@ Sessao.exigirAutenticacao();
 /* ---------------------------------------------------------
    2. Carregar logo da associacao ao iniciar
 --------------------------------------------------------- */
-function inicializarLogoSidebar() {
+async function inicializarLogoSidebar() {
   const logoContainer = document.getElementById('sidebar-logo-container');
   if (!logoContainer) return;
 
-  const config = JSON.parse(localStorage.getItem('ambc_configuracoes') || '{}');
-  const logo = config.logo;
-
-  if (logo) {
-    logoContainer.innerHTML = `<img src="${logo}" alt="Logo" class="sidebar__logo-img" />`;
-  } else {
+  try {
+    const config = await ConfiguracoesService.obter();
+    if (config.logo) {
+      logoContainer.innerHTML = `<img src="${config.logo}" alt="Logo" class="sidebar__logo-img" />`;
+    } else {
+      logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
+    }
+  } catch (erro) {
+    console.warn('[App] Erro ao carregar logo:', erro);
     logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
   }
 }
@@ -37,12 +41,12 @@ function inicializarLogoSidebar() {
 /* ---------------------------------------------------------
    3. Inicializacao da aplicacao
 --------------------------------------------------------- */
-function iniciarApp() {
+async function iniciarApp() {
   console.log('[AMBC-V2] Iniciando aplicacao...');
   console.log('[AMBC-V2] Usuario logado:', Sessao.obter()?.nome);
 
-  // Carregar logo da associação
-  inicializarLogoSidebar();
+  // Carregar logo da associação (assíncrono)
+  await inicializarLogoSidebar();
 
   // Modulos de layout (antes do router, pois escutam hashchange)
   Sidebar.iniciar();
@@ -55,7 +59,7 @@ function iniciarApp() {
 }
 
 /* ---------------------------------------------------------
-   3. Aguarda o DOM estar completamente carregado
+   4. Aguarda o DOM estar completamente carregado
 --------------------------------------------------------- */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', iniciarApp);
