@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../helpers.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../helpers.php';
+require_once __DIR__ . '/lancamentos/utils.php';
 
 configurarCors();
 
@@ -98,6 +99,12 @@ try {
                 ':fk_tipo_telefone' => $tel['fk_tipo_telefone'] ?? null,
                 ':observacao'       => trim($tel['observacao'] ?? '') ?: null,
             ]);
+        }
+    }
+
+    if (!empty($dados['lancamentos']) && is_array($dados['lancamentos'])) {
+        foreach ($dados['lancamentos'] as $lancamento) {
+            salvarLancamentoParceiro($pdo, $idParceiro, $lancamento);
         }
     }
 

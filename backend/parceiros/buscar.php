@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../helpers.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../helpers.php';
 
 configurarCors();
 
@@ -42,5 +42,37 @@ $stmtTel = $pdo->prepare("
 ");
 $stmtTel->execute([':id' => $id]);
 $parceiro['telefones'] = $stmtTel->fetchAll();
+
+$stmtLanc = $pdo->prepare("
+    SELECT
+        l.id_lancamento,
+        l.fk_tipo_lancamento,
+        tl.descricao AS tipo_lancamento,
+        l.descricao AS referencia,
+        l.valor,
+        l.valor_pago,
+        l.data_lancamento,
+        l.data_vencimento,
+        l.data_pagamento,
+        l.fk_status_conta,
+        sc.descricao AS status,
+        l.fk_forma_pagamento,
+        fp.descricao AS forma_pagamento,
+        l.fk_conta_regente,
+        cr.descricao AS conta_regente,
+        l.fk_conta_subordinada,
+        cs.descricao AS conta_subordinada,
+        l.observacao
+    FROM lancamento l
+    LEFT JOIN tipo_lancamento tl ON tl.id_tipo_lancamento = l.fk_tipo_lancamento
+    LEFT JOIN status_conta sc ON sc.id_status_conta = l.fk_status_conta
+    LEFT JOIN forma_pagamento fp ON fp.id_forma_pagamento = l.fk_forma_pagamento
+    LEFT JOIN conta_regente cr ON cr.id_conta_regente = l.fk_conta_regente
+    LEFT JOIN conta_subordinada cs ON cs.id_conta_subordinada = l.fk_conta_subordinada
+    WHERE l.fk_parceiro = :id
+    ORDER BY l.data_lancamento DESC, l.id_lancamento DESC
+");
+$stmtLanc->execute([':id' => $id]);
+$parceiro['lancamentos'] = $stmtLanc->fetchAll();
 
 jsonResposta($parceiro);

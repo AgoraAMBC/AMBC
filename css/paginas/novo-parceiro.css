@@ -47,3 +47,63 @@
 .view--cadastro-parceiro .cadastro-associado__tabela-wrapper {
   margin-top: var(--esp-md);
 }
+
+.parceiro-financeiro__form {
+  align-items: end;
+}
+
+.parceiro-financeiro__tabela .cadastro-associado__tabela {
+  min-width: 860px;
+}
+
+.parceiro-financeiro__tipo,
+.parceiro-financeiro__status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 var(--esp-sm);
+  border-radius: var(--raio-sm);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+}
+
+.parceiro-financeiro__tipo {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.parceiro-financeiro__status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 999px;
+}
+
+.parceiro-financeiro__status--pago {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.parceiro-financeiro__status--pago::before {
+  background: #16a34a;
+}
+
+.parceiro-financeiro__status--pendente {
+  background: #fef9c3;
+  color: #a16207;
+}
+
+.parceiro-financeiro__status--pendente::before {
+  background: #ca8a04;
+}
+
+.parceiro-financeiro__status--cancelado {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.parceiro-financeiro__status--cancelado::before {
+  background: #dc2626;
+}

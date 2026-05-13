@@ -1,29 +1,23 @@
 /* =========================================================
    cadastro-listar.js
-   Projeto: AMBC-V2
    Pagina: Listar Todos os Cadastros
 ========================================================= */
 
 import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
-import { CadastrosService } from '../services/cadastros-service.js';
+import { AssociadosService } from '../services/associados-service.js';
+import { ParceirosService } from '../services/parceiros-service.js';
 
-/* ---------------------------------------------------------
-   ESTADO INTERNO
---------------------------------------------------------- */
 const estado = {
   termoBusca: '',
-  filtroStatus: 'todos',
   filtroTipo: 'todos',
+  filtroStatus: 'todos',
   paginaAtual: 1,
   totalPaginas: 1,
   total: 0,
   carregando: false,
 };
 
-/* ---------------------------------------------------------
-   REFERENCIAS DOM
---------------------------------------------------------- */
 const refs = {
   inputBusca: null,
   filtroTipo: null,
@@ -35,23 +29,20 @@ const refs = {
   btnNovoCadastro: null,
 };
 
-/* ---------------------------------------------------------
-   INIT / DESTROY
---------------------------------------------------------- */
 function init() {
-  refs.inputBusca      = document.getElementById('input-busca');
-  refs.filtroTipo      = document.getElementById('filtro-tipo');
-  refs.filtroStatus    = document.getElementById('filtro-status');
-  refs.tbody           = document.getElementById('tbody-cadastros');
-  refs.contador        = document.getElementById('contador-registros');
-  refs.paginacao       = document.getElementById('paginacao');
-  refs.estadoVazio     = document.getElementById('estado-vazio');
+  refs.inputBusca = document.getElementById('input-busca');
+  refs.filtroTipo = document.getElementById('filtro-tipo');
+  refs.filtroStatus = document.getElementById('filtro-status');
+  refs.tbody = document.getElementById('tbody-cadastros');
+  refs.contador = document.getElementById('contador-registros');
+  refs.paginacao = document.getElementById('paginacao');
+  refs.estadoVazio = document.getElementById('estado-vazio');
   refs.btnNovoCadastro = document.getElementById('btn-novo-cadastro');
 
-  estado.termoBusca   = '';
+  estado.termoBusca = '';
+  estado.filtroTipo = 'todos';
   estado.filtroStatus = 'todos';
-  estado.filtroTipo   = 'todos';
-  estado.paginaAtual  = 1;
+  estado.paginaAtual = 1;
 
   ativarFiltros();
   ativarBotaoNovoCadastro();
@@ -62,28 +53,24 @@ function destroy() {
   Object.keys(refs).forEach(k => refs[k] = null);
 }
 
-/* ---------------------------------------------------------
-   BUSCA E RENDERIZAÇÃO
---------------------------------------------------------- */
 async function buscarEAtualizar() {
   if (estado.carregando) return;
   estado.carregando = true;
 
   if (refs.tbody) {
-    refs.tbody.innerHTML = `<tr><td colspan="5" class="cadastro-listar__estado-carregando">Carregando…</td></tr>`;
+    refs.tbody.innerHTML = '<tr><td colspan="5" class="cadastro-listar__estado-carregando">Carregando...</td></tr>';
   }
 
   try {
     const filtros = {
       pagina: estado.paginaAtual,
-      busca:  estado.termoBusca  || undefined,
+      busca: estado.termoBusca || undefined,
       status: estado.filtroStatus !== 'todos' ? estado.filtroStatus : undefined,
-      tipo:   estado.filtroTipo !== 'todos' ? estado.filtroTipo : undefined,
     };
 
-    const resp = await CadastrosService.listar(filtros);
+    const resp = await buscarCadastros(filtros);
 
-    estado.total       = resp.total ?? 0;
+    estado.total = resp.total ?? 0;
     estado.totalPaginas = resp.paginas ?? 1;
 
     renderizarLinhas(resp.dados ?? []);
@@ -91,19 +78,68 @@ async function buscarEAtualizar() {
     renderizarPaginacao(estado.totalPaginas);
     alternarEstadoVazio((resp.dados ?? []).length === 0);
   } catch (erro) {
-    console.error('[CadastroListar] Erro ao buscar associados:', erro);
-    Toast.erro('Não foi possível carregar os cadastros.');
+    console.error('[CadastroListar] Erro ao buscar cadastros:', erro);
+    Toast.erro('Nao foi possivel carregar os cadastros.');
     if (refs.tbody) {
-      refs.tbody.innerHTML = `<tr><td colspan="5" class="cadastro-listar__estado-carregando">Erro ao carregar dados.</td></tr>`;
+      refs.tbody.innerHTML = '<tr><td colspan="5" class="cadastro-listar__estado-carregando">Erro ao carregar dados.</td></tr>';
     }
   } finally {
     estado.carregando = false;
   }
 }
 
-/* ---------------------------------------------------------
-   RENDERIZAÇÃO
---------------------------------------------------------- */
+async function buscarCadastros(filtros) {
+  if (estado.filtroTipo === 'associado') {
+    const resp = await AssociadosService.listar(filtros);
+    return { ...resp, dados: (resp.dados ?? []).map(normalizarAssociado) };
+  }
+
+  if (estado.filtroTipo === 'parceiro') {
+    const resp = await ParceirosService.listar(filtros);
+    return { ...resp, dados: (resp.dados ?? []).map(normalizarParceiro) };
+  }
+
+  const [associados, parceiros] = await Promise.all([
+    AssociadosService.listar(filtros),
+    ParceirosService.listar(filtros),
+  ]);
+
+  const dados = [
+    ...(associados.dados ?? []).map(normalizarAssociado),
+    ...(parceiros.dados ?? []).map(normalizarParceiro),
+  ].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+
+  return {
+    dados,
+    total: (associados.total ?? 0) + (parceiros.total ?? 0),
+    paginas: Math.max(associados.paginas ?? 1, parceiros.paginas ?? 1),
+  };
+}
+
+function normalizarAssociado(a) {
+  return {
+    id: a.id_associado,
+    tipo: 'associado',
+    nome: a.nome,
+    email: a.email,
+    cpf_cnpj: a.cpf_cnpj,
+    ativo: a.ativo,
+    criado_em: a.criado_em,
+  };
+}
+
+function normalizarParceiro(p) {
+  return {
+    id: p.id_parceiro,
+    tipo: 'parceiro',
+    nome: p.nome_razao_social,
+    email: p.email,
+    cpf_cnpj: p.cpf_cnpj,
+    ativo: p.ativo,
+    criado_em: p.criado_em,
+  };
+}
+
 function renderizarLinhas(cadastros) {
   if (!refs.tbody) return;
 
@@ -112,24 +148,14 @@ function renderizarLinhas(cadastros) {
     return;
   }
 
-  const labelTipo = (tipo) => {
-    switch (tipo) {
-      case 'associado': return 'Associado';
-      case 'dependente': return 'Dependente';
-      case 'parceiro': return 'Parceiro';
-      default: return tipo;
-    }
-  };
-
   refs.tbody.innerHTML = cadastros.map(c => {
     const status = c.ativo ? 'ativo' : 'inativo';
-    const cpf    = c.cpf_cnpj ? formatarCpfCnpj(c.cpf_cnpj) : '—';
-    const data   = c.criado_em ? formatarData(c.criado_em) : '—';
-    const tipo   = c.tipo || 'associado';
-    const nomeSecundario = c.email || cpf || '';
+    const cpf = c.cpf_cnpj ? formatarCpfCnpj(c.cpf_cnpj) : '-';
+    const data = c.criado_em ? formatarData(c.criado_em) : '-';
+    const rotuloTipo = c.tipo === 'parceiro' ? 'Parceiro' : 'Associado';
 
     return `
-      <tr data-id="${c.id}" data-tipo="${tipo}">
+      <tr data-id="${c.id}" data-tipo="${c.tipo}">
         <td>
           <div class="cadastro-listar__pessoa">
             <div class="cadastro-listar__avatar ${classeCorAvatar(c.nome)}">
@@ -137,12 +163,12 @@ function renderizarLinhas(cadastros) {
             </div>
             <div class="cadastro-listar__pessoa-textos">
               <span class="cadastro-listar__pessoa-nome">${escaparHtml(c.nome)}</span>
-              <span class="cadastro-listar__pessoa-email">${escaparHtml(nomeSecundario)}</span>
+              <span class="cadastro-listar__pessoa-email">${escaparHtml(c.email ?? cpf)}</span>
             </div>
           </div>
         </td>
         <td>
-          <span class="cadastro-listar__badge cadastro-listar__badge--${tipo}">${labelTipo(tipo)}</span>
+          <span class="cadastro-listar__badge cadastro-listar__badge--${c.tipo}">${rotuloTipo}</span>
         </td>
         <td>
           <span class="cadastro-listar__badge cadastro-listar__badge--${status}">
@@ -152,14 +178,14 @@ function renderizarLinhas(cadastros) {
         <td>${data}</td>
         <td class="cadastro-listar__col-acoes">
           <div class="cadastro-listar__acoes">
-            <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-id="${c.id}" data-tipo="${tipo}" aria-label="Visualizar">
+            <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-id="${c.id}" data-tipo="${c.tipo}" aria-label="Visualizar">
               <span class="material-icons">visibility</span>
             </button>
-            <button type="button" class="cadastro-listar__acao" data-acao="editar" data-id="${c.id}" data-tipo="${tipo}" aria-label="Editar">
+            <button type="button" class="cadastro-listar__acao" data-acao="editar" data-id="${c.id}" data-tipo="${c.tipo}" aria-label="Editar">
               <span class="material-icons">edit</span>
             </button>
-            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${tipo}" data-nome="${escaparHtml(c.nome)}" aria-label="Excluir">
-              <span class="material-icons">delete</span>
+            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="${c.tipo === 'parceiro' ? 'Alterar status' : 'Excluir'}">
+              <span class="material-icons">${c.tipo === 'parceiro' ? 'block' : 'delete'}</span>
             </button>
           </div>
         </td>
@@ -179,33 +205,28 @@ function renderizarPaginacao(totalPaginas) {
   if (!refs.paginacao) return;
 
   const atual = estado.paginaAtual;
-  let html = '';
-
-  html += `
+  let html = `
     <button type="button" class="cadastro-listar__pagina-btn"
-            data-pagina="${atual - 1}" ${atual === 1 ? 'disabled' : ''} aria-label="Página anterior">
+            data-pagina="${atual - 1}" ${atual === 1 ? 'disabled' : ''} aria-label="Pagina anterior">
       <span class="material-icons">chevron_left</span>
     </button>
   `;
 
-  const paginas = calcularPaginasVisiveis(atual, totalPaginas);
-  for (const p of paginas) {
-    if (p === '...') {
-      html += `<button type="button" class="cadastro-listar__pagina-btn" disabled>…</button>`;
-    } else {
-      html += `
+  for (const p of calcularPaginasVisiveis(atual, totalPaginas)) {
+    html += p === '...'
+      ? '<button type="button" class="cadastro-listar__pagina-btn" disabled>...</button>'
+      : `
         <button type="button"
                 class="cadastro-listar__pagina-btn ${p === atual ? 'cadastro-listar__pagina-btn--ativo' : ''}"
                 data-pagina="${p}">
           ${p}
         </button>
       `;
-    }
   }
 
   html += `
     <button type="button" class="cadastro-listar__pagina-btn"
-            data-pagina="${atual + 1}" ${atual === totalPaginas ? 'disabled' : ''} aria-label="Próxima página">
+            data-pagina="${atual + 1}" ${atual === totalPaginas ? 'disabled' : ''} aria-label="Proxima pagina">
       <span class="material-icons">chevron_right</span>
     </button>
   `;
@@ -221,7 +242,7 @@ function calcularPaginasVisiveis(atual, total) {
   if (atual > 3) paginas.push('...');
 
   const inicio = Math.max(2, atual - 1);
-  const fim    = Math.min(total - 1, atual + 1);
+  const fim = Math.min(total - 1, atual + 1);
   for (let i = inicio; i <= fim; i++) paginas.push(i);
 
   if (atual < total - 2) paginas.push('...');
@@ -235,40 +256,37 @@ function alternarEstadoVazio(vazio) {
   refs.estadoVazio.hidden = !vazio;
 }
 
-/* ---------------------------------------------------------
-   EVENTOS
---------------------------------------------------------- */
 function ativarFiltros() {
-  if (!refs.inputBusca || !refs.filtroStatus) return;
+  if (!refs.inputBusca || !refs.filtroStatus || !refs.filtroTipo) return;
 
   let timeoutBusca;
   refs.inputBusca.addEventListener('input', e => {
     clearTimeout(timeoutBusca);
     timeoutBusca = setTimeout(() => {
-      estado.termoBusca  = e.target.value.trim();
+      estado.termoBusca = e.target.value.trim();
       estado.paginaAtual = 1;
       buscarEAtualizar();
     }, 200);
   });
 
-  refs.filtroStatus.addEventListener('change', e => {
-    estado.filtroStatus = e.target.value;
-    estado.paginaAtual  = 1;
+  refs.filtroTipo.addEventListener('change', e => {
+    estado.filtroTipo = e.target.value;
+    estado.paginaAtual = 1;
     buscarEAtualizar();
   });
 
-  if (refs.filtroTipo) {
-    refs.filtroTipo.addEventListener('change', e => {
-      estado.filtroTipo = e.target.value;
-      estado.paginaAtual = 1;
-      buscarEAtualizar();
-    });
-  }
+  refs.filtroStatus.addEventListener('change', e => {
+    estado.filtroStatus = e.target.value;
+    estado.paginaAtual = 1;
+    buscarEAtualizar();
+  });
 }
 
 function ativarBotaoNovoCadastro() {
   refs.btnNovoCadastro?.addEventListener('click', () => {
-    window.location.hash = '#/cadastro/novo-associado';
+    window.location.hash = estado.filtroTipo === 'parceiro'
+      ? '#/cadastro/novo-parceiro'
+      : '#/cadastro/novo-associado';
   });
 }
 
@@ -289,63 +307,37 @@ function tratarCliqueAcao(e) {
   if (!btn) return;
 
   const acao = btn.dataset.acao;
-  const id   = parseInt(btn.dataset.id, 10);
-  const tipo = btn.dataset.tipo || 'associado';
+  const id = parseInt(btn.dataset.id, 10);
+  const tipo = btn.dataset.tipo ?? 'associado';
   const nome = btn.dataset.nome ?? '';
+  const ativo = btn.dataset.ativo === '1';
 
   switch (acao) {
-    case 'visualizar': aoVisualizar(id, tipo);   break;
-    case 'editar':     aoEditar(id, tipo);       break;
-    case 'excluir':    aoExcluir(id, nome, tipo); break;
+    case 'visualizar': aoVisualizar(id, tipo); break;
+    case 'editar': aoEditar(id, tipo); break;
+    case 'excluir': aoExcluir(id, nome, tipo, ativo); break;
   }
 }
 
-/* ---------------------------------------------------------
-   AÇÕES DE LINHA
---------------------------------------------------------- */
 function aoVisualizar(id, tipo) {
-  switch (tipo) {
-    case 'associado':
-      window.location.hash = `#/cadastro/novo-associado?id=${id}&visualizar=1`;
-      break;
-    case 'dependente':
-      window.location.hash = `#/cadastro/dependentes?visualizar=1&id=${id}`;
-      break;
-    case 'parceiro':
-      window.location.hash = `#/cadastro/novo-parceiro?id=${id}&visualizar=1`;
-      break;
-    default:
-      window.location.hash = `#/cadastro/novo-associado?id=${id}&visualizar=1`;
-  }
+  Toast.info('Visualizacao detalhada em construcao.');
 }
 
 function aoEditar(id, tipo) {
-  switch (tipo) {
-    case 'associado':
-      window.location.hash = `#/cadastro/novo-associado?id=${id}`;
-      break;
-    case 'dependente':
-      window.location.hash = `#/cadastro/dependentes?id=${id}`;
-      break;
-    case 'parceiro':
-      window.location.hash = `#/cadastro/novo-parceiro?id=${id}`;
-      break;
-    default:
-      window.location.hash = `#/cadastro/novo-associado?id=${id}`;
-  }
+  window.location.hash = tipo === 'parceiro'
+    ? `#/cadastro/novo-parceiro?id=${id}`
+    : `#/cadastro/novo-associado?id=${id}`;
 }
 
-function aoExcluir(id, nome, tipo) {
-  const labels = {
-    associado: 'associado',
-    dependente: 'dependente',
-    parceiro: 'parceiro',
-  };
-  const label = labels[tipo] || 'cadastro';
+function aoExcluir(id, nome, tipo, ativo) {
+  if (tipo === 'parceiro') {
+    aoAlternarStatusParceiro(id, nome, ativo);
+    return;
+  }
 
   Modal.confirmar({
-    titulo: `Excluir ${label}?`,
-    mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta ação não pode ser desfeita.`,
+    titulo: 'Excluir associado?',
+    mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta acao nao pode ser desfeita.`,
     icone: 'delete_forever',
     variante: 'erro',
     textoConfirmar: 'Sim, excluir',
@@ -353,20 +345,39 @@ function aoExcluir(id, nome, tipo) {
     estiloConfirmar: 'perigo',
     aoConfirmar: async () => {
       try {
-        await CadastrosService.excluir(id, tipo);
-        Toast.sucesso(`${nome} foi excluído com sucesso.`);
+        await AssociadosService.deletar(id);
+        Toast.sucesso(`${nome} foi excluido com sucesso.`);
         buscarEAtualizar();
       } catch (erro) {
         console.error('[CadastroListar] Erro ao excluir:', erro);
-        Toast.erro(`Não foi possível excluir o ${label}.`);
+        Toast.erro('Nao foi possivel excluir o associado.');
       }
     },
   });
 }
 
-/* ---------------------------------------------------------
-   HELPERS
---------------------------------------------------------- */
+function aoAlternarStatusParceiro(id, nome, ativo) {
+  Modal.confirmar({
+    titulo: ativo ? 'Inativar parceiro?' : 'Ativar parceiro?',
+    mensagem: `Deseja ${ativo ? 'inativar' : 'ativar'} <strong>${escaparHtml(nome)}</strong>?`,
+    icone: ativo ? 'block' : 'check_circle',
+    variante: 'alerta',
+    textoConfirmar: ativo ? 'Sim, inativar' : 'Sim, ativar',
+    textoCancelar: 'Cancelar',
+    estiloConfirmar: ativo ? 'perigo' : 'primario',
+    aoConfirmar: async () => {
+      try {
+        await ParceirosService.alternarStatus(id);
+        Toast.sucesso(`Status de ${nome} atualizado com sucesso.`);
+        buscarEAtualizar();
+      } catch (erro) {
+        console.error('[CadastroListar] Erro ao alterar parceiro:', erro);
+        Toast.erro('Nao foi possivel alterar o status do parceiro.');
+      }
+    },
+  });
+}
+
 function obterIniciais(nome) {
   const partes = (nome ?? '').trim().split(/\s+/);
   if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
@@ -382,12 +393,12 @@ function classeCorAvatar(nome) {
 }
 
 function formatarData(valor) {
-  if (!valor) return '—';
+  if (!valor) return '-';
   return new Date(valor).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
 }
 
 function formatarCpfCnpj(valor) {
-  if (!valor) return '—';
+  if (!valor) return '-';
   const v = valor.replace(/\D/g, '');
   if (v.length === 11) return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   if (v.length === 14) return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
@@ -404,7 +415,4 @@ function escaparHtml(texto) {
     .replace(/'/g, '&#039;');
 }
 
-/* ---------------------------------------------------------
-   EXPORT
---------------------------------------------------------- */
 export default { init, destroy };
