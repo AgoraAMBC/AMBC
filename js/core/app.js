@@ -18,11 +18,31 @@ import Topbar  from '../layout/topbar.js';
 Sessao.exigirAutenticacao();
 
 /* ---------------------------------------------------------
-   2. Inicializacao da aplicacao
+   2. Carregar logo da associacao ao iniciar
+--------------------------------------------------------- */
+function inicializarLogoSidebar() {
+  const logoContainer = document.getElementById('sidebar-logo-container');
+  if (!logoContainer) return;
+
+  const config = JSON.parse(localStorage.getItem('ambc_configuracoes') || '{}');
+  const logo = config.logo;
+
+  if (logo) {
+    logoContainer.innerHTML = `<img src="${logo}" alt="Logo" class="sidebar__logo-img" />`;
+  } else {
+    logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
+  }
+}
+
+/* ---------------------------------------------------------
+   3. Inicializacao da aplicacao
 --------------------------------------------------------- */
 function iniciarApp() {
   console.log('[AMBC-V2] Iniciando aplicacao...');
   console.log('[AMBC-V2] Usuario logado:', Sessao.obter()?.nome);
+
+  // Carregar logo da associação
+  inicializarLogoSidebar();
 
   // Modulos de layout (antes do router, pois escutam hashchange)
   Sidebar.iniciar();

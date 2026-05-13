@@ -30,6 +30,19 @@
   font-weight: var(--fw-bold);
   font-size: var(--fs-md);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sidebar__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sidebar__logo-texto {
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  color: var(--cor-primaria);
 }
 
 .sidebar__titulo {

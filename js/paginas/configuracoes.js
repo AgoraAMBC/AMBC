@@ -4,6 +4,66 @@
    Descricao: Lógica compartilhada das sub-páginas de configurações.
 ========================================================= */
 
+import Toast from '../componentes/toast.js';
+
+/* ---------------------------------------------------------
+   Constantes para localStorage
+--------------------------------------------------------- */
+const CHAVE_CONFIG = 'ambc_configuracoes';
+
+/* ---------------------------------------------------------
+   Funções de Logo da Associação
+--------------------------------------------------------- */
+function carregarLogoSalvo() {
+  const config = JSON.parse(localStorage.getItem(CHAVE_CONFIG) || '{}');
+  return config.logo || null;
+}
+
+function salvarLogo(base64) {
+  const config = JSON.parse(localStorage.getItem(CHAVE_CONFIG) || '{}');
+  config.logo = base64;
+  localStorage.setItem(CHAVE_CONFIG, JSON.stringify(config));
+  atualizarLogoSidebar(base64);
+}
+
+function atualizarLogoSidebar(logoBase64) {
+  const logoContainer = document.getElementById('sidebar-logo-container');
+  if (!logoContainer) return;
+
+  if (logoBase64) {
+    logoContainer.innerHTML = `<img src="${logoBase64}" alt="Logo" class="sidebar__logo-img" />`;
+  } else {
+    logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
+  }
+}
+
+function processarUploadLogo(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert('O arquivo excede o limite de 2 MB.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    salvarLogo(e.target.result);
+    Toast.success('Logo atualizado com sucesso!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function inicializarUploadLogo() {
+  const input = document.getElementById('logo-input');
+  if (input) {
+    input.addEventListener('change', processarUploadLogo);
+  }
+  // Carregar logo salvo ao iniciar
+  const logoSalvo = carregarLogoSalvo();
+  atualizarLogoSidebar(logoSalvo);
+}
+
 /* ---------------------------------------------------------
    Modal de Relacionamentos — Nova Regra
 --------------------------------------------------------- */
@@ -63,6 +123,7 @@ const ConfiguracoesPage = {
     registrarEventosRelacionamentos();
     inicializarToggles();
     inicializarPermissoes();
+    inicializarUploadLogo();
   },
 
   destroy() {
