@@ -10,20 +10,22 @@ import { api } from './api.js';
 export const ConfiguracoesService = {
   async obter() {
     try {
-      return await api.get('/configuracoes/obter.php');
+      console.log('[ConfigService] Buscando configuracoes do banco...');
+      const result = await api.get('/configuracoes/obter.php');
+      console.log('[ConfigService] Recebido do banco:', result);
+      return result;
     } catch (erro) {
       console.error('[ConfiguracoesService] Erro ao obter configurações:', erro);
-      // Fallback para localStorage se API falhar
       return this.obterLocal();
     }
   },
 
   async salvar(config) {
     try {
+      console.log('[ConfigService] Salvando no banco:', config);
       return await api.post('/configuracoes/salvar.php', config);
     } catch (erro) {
       console.error('[ConfiguracoesService] Erro ao salvar configurações:', erro);
-      // Fallback para localStorage se API falhar
       this.salvarLocal(config);
       throw erro;
     }

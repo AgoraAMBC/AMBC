@@ -31,11 +31,15 @@ function atualizarLogoSidebar(logoBase64) {
 }
 
 async function salvarLogo(base64) {
+  console.log('[Config] Iniciando salvamento do logo...');
   const config = await carregarConfiguracoes();
+  console.log('[Config] Config carregada:', config);
   config.logo = base64;
 
   try {
+    console.log('[Config] Salvando no banco...');
     await ConfiguracoesService.salvar(config);
+    console.log('[Config] Salvo com sucesso!');
     Toast.success('Logo atualizado com sucesso!');
   } catch (erro) {
     console.error('[Configuracoes] Erro ao salvar logo:', erro);
