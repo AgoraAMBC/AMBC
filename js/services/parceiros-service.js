@@ -57,4 +57,33 @@ export const ParceirosService = {
     alternarStatus(id) {
         return api.patch('/parceiros/alternar-status.php', { id_parceiro: id });
     },
+
+    listarLancamentos(idParceiro) {
+        return api.get(`/parceiros/lancamentos/listar.php?id_parceiro=${idParceiro}`);
+    },
+
+    salvarLancamento(idParceiro, dados) {
+        return api.post('/parceiros/lancamentos/salvar.php', {
+            ...dados,
+            id_parceiro: idParceiro,
+        });
+    },
+
+    editarLancamento(idParceiro, dados) {
+        return api.put('/parceiros/lancamentos/salvar.php', {
+            ...dados,
+            id_parceiro: idParceiro,
+        });
+    },
+
+    excluirLancamento(idParceiro, idLancamento) {
+        return api.delete('/parceiros/lancamentos/excluir.php', {
+            id_parceiro: idParceiro,
+            id_lancamento: idLancamento,
+        });
+    },
+
+    dominiosLancamentos() {
+        return api.get('/parceiros/lancamentos/dominios.php');
+    },
 };
