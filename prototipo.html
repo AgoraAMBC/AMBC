@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AMBC - Sistema de Gestão</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+:root {
+  --brand: #1a73e8;
+  --brand-dark: #1557b0;
+  --brand-light: #e8f0fe;
+  --brand-pale: #f0f6ff;
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --warn: #ca8a04;
+  --warn-bg: #fef9c3;
+  --purple: #7c3aed;
+  --purple-bg: #f3e8ff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --sidebar-w: 248px;
+  --header-h: 56px;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.1);
+}
+
+* { font-family: 'Plus Jakarta Sans', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-page); overflow: hidden; height: 100vh; }
+
+/* ── MATERIAL ICONS ── */
+.mi { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+.mi-fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.mi-sm { font-size: 16px; }
+.mi-lg { font-size: 24px; }
+
+/* ── SCREENS ── */
+.screen { display: none; width: 100vw; height: 100vh; }
+.screen.active { display: flex; animation: fadeIn .18s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+.logo-area {
+  padding: 18px 16px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: var(--brand);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(26,115,232,.35);
+}
+.logo-text h1 { font-size: 16px; font-weight: 800; color: var(--brand); }
+.logo-text p { font-size: 9px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; margin-top: 1px; }
+
+nav { padding: 0 8px; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.nav-section { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .1em; padding: 10px 8px 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all .12s;
+  user-select: none;
+  background: none; border: none; width: 100%; text-align: left;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--bg-page); color: var(--brand); }
+.nav-item.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
+.nav-item.active .mi { color: var(--brand); }
+.nav-item .chevron { margin-left: auto; font-size: 14px; transition: transform .15s; }
+.nav-item.open .chevron { transform: rotate(180deg); }
+.nav-sub { padding-left: 12px; display: flex; flex-direction: column; gap: 1px; overflow: hidden; max-height: 0; transition: max-height .2s ease; }
+.nav-sub.open { max-height: 300px; }
+.nav-sub .nav-item { font-size: 12.5px; padding: 7px 10px; }
+.nav-divider { height: 1px; background: var(--border); margin: 6px 8px; }
+.nav-item.danger { color: #dc2626; }
+.nav-item.danger:hover { background: #fee2e2; color: #dc2626; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height: var(--header-h);
+  min-height: var(--header-h);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-icon-btn {
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
+  border: none; background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary); transition: background .12s;
+}
+.topbar-icon-btn:hover { background: var(--bg-page); }
+.topbar-user { display: flex; align-items: center; gap: 8px; }
+.topbar-user-name { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.topbar-user-role { font-size: 9px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--brand-light); color: var(--brand);
+  font-weight: 800; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--brand);
+}
+
+/* ── MAIN CONTENT ── */
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.page-body { flex: 1; overflow-y: auto; background: var(--bg-page); padding: 24px 28px; }
+.page-body::-webkit-scrollbar { width: 4px; }
+.page-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ── PAGE HEADER ── */
+.page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; }
+.page-header-left h1 { font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 3px; }
+.page-header-left p { font-size: 13px; color: var(--text-muted); }
+.breadcrumb { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+.breadcrumb a { color: var(--text-muted); cursor: pointer; }
+.breadcrumb a:hover { color: var(--brand); }
+.breadcrumb .current { color: var(--text-primary); font-weight: 600; }
+
+/* ── CARDS ── */
+.card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.card-header {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  background: #fafbfc;
+  border-radius: var(--radius) var(--radius) 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-header h3 { font-size: 12px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: .04em; }
+.card-header h3 .mi { color: var(--brand); font-size: 17px; }
+.card-body { padding: 18px; }
+
+/* ── KPI CARDS ── */
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.kpi-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.kpi-trend { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+.kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; margin: 10px 0 2px; text-transform: uppercase; letter-spacing: .04em; }
+.kpi-value { font-size: 22px; font-weight: 800; color: var(--text-primary); }
+
+/* ── TABLES ── */
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #fafbfc; }
+th { padding: 9px 14px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+td { padding: 11px 14px; font-size: 13px; color: #374151; border-bottom: 1px solid #f1f5f9; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg-page); }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; }
+.badge-green { background: var(--success-bg); color: var(--success); }
+.badge-red { background: var(--danger-bg); color: var(--danger); }
+.badge-yellow { background: var(--warn-bg); color: var(--warn); }
+.badge-blue { background: var(--brand-light); color: var(--brand); }
+.badge-gray { background: #f1f5f9; color: #64748b; }
+.badge-purple { background: var(--purple-bg); color: var(--purple); }
+.badge-teal { background: #ccfbf1; color: #0f766e; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .12s; font-family: inherit; }
+.btn-primary { background: var(--brand); color: #fff; }
+.btn-primary:hover { background: var(--brand-dark); }
+.btn-secondary { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-page); }
+.btn-danger { background: var(--danger-bg); color: var(--danger); }
+.btn-danger:hover { background: #fecaca; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-xs { padding: 4px 9px; font-size: 11px; }
+.icon-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; border-radius: 5px; display: inline-flex; align-items: center; transition: all .12s; }
+.icon-btn:hover { color: var(--brand); background: var(--brand-light); }
+.icon-btn.delete:hover { color: var(--danger); background: var(--danger-bg); }
+
+/* ── FORMS ── */
+.form-label { display: block; font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 5px; }
+.form-input {
+  width: 100%; padding: 8px 11px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; color: var(--text-primary); background: var(--bg-card);
+  outline: none; font-family: inherit; transition: border .12s, box-shadow .12s;
+}
+.form-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
+textarea.form-input { resize: vertical; }
+select.form-input { cursor: pointer; }
+
+/* ── PAGINATION ── */
+.pagination { display: flex; align-items: center; gap: 3px; }
+.page-btn { width: 28px; height: 28px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-card); font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .12s; }
+.page-btn:hover { border-color: var(--brand); color: var(--brand); }
+.page-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+/* ── TABS ── */
+.tabs { display: flex; background: #f1f5f9; padding: 3px; border-radius: var(--radius-sm); gap: 2px; }
+.tab-btn { padding: 5px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: none; color: var(--text-muted); transition: all .12s; font-family: inherit; }
+.tab-btn.active { background: var(--brand); color: #fff; }
+
+/* ── CHART ── */
+.bar-chart { display: flex; align-items: flex-end; gap: 10px; padding: 0 8px; }
+.bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bars { flex: 1; width: 100%; display: flex; justify-content: center; align-items: flex-end; gap: 4px; }
+.bar { border-radius: 3px 3px 0 0; width: 18px; }
+.bar-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+/* ── STATUS INDICATOR ── */
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.status-dot.green { background: var(--success); }
+.status-dot.red { background: var(--danger); }
+.status-dot.yellow { background: #eab308; }
+
+/* ── BLUE FORM SECTION ── */
+.form-section-blue {
+  background: linear-gradient(135deg, #1a73e8, #1557b0);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.form-section-blue .form-label { color: #bfdbfe; }
+.form-section-blue .form-input { background: #fff; }
+.form-section-blue .section-title { font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: .08em; display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+
+/* ── SCREEN: LOGIN ── */
+#screen-login {
+  background: linear-gradient(135deg, #f0f6ff 0%, #e8f0fe 50%, #f0f6ff 100%);
+  align-items: center; justify-content: center; flex-direction: column;
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.login-header {
+  background: linear-gradient(135deg, #1a73e8, #1557b0);
+  padding: 32px;
+  text-align: center;
+}
+.login-body { padding: 28px 32px 32px; }
+.input-icon-wrap { position: relative; }
+.input-icon-wrap .mi { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 17px; pointer-events: none; }
+.input-icon-wrap .form-input { padding-left: 36px; }
+
+/* ── SCREEN INDICATOR ── */
+#screen-indicator {
+  position: fixed; top: 10px; right: 12px; z-index: 9999;
+  background: rgba(26,115,232,.9);
+  color: #fff; border-radius: 999px; padding: 4px 12px;
+  font-size: 10px; font-weight: 700;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(26,115,232,.3);
+  pointer-events: none;
+}
+
+/* ── TOGGLE BUTTONS ── */
+.toggle-btn { flex: 1; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--border); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--bg-card); color: var(--text-muted); transition: all .14s; font-family: inherit; }
+.toggle-btn.active-pay { background: #fee2e2; color: var(--danger); border-color: #fca5a5; }
+.toggle-btn.active-receive { background: var(--success-bg); color: var(--success); border-color: #86efac; }
+
+/* ── SETTINGS ── */
+.settings-section { margin-bottom: 20px; }
+.settings-section-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f8fafc; }
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.settings-row-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.toggle-switch { width: 40px; height: 22px; background: var(--border); border-radius: 99px; position: relative; cursor: pointer; transition: background .15s; border: none; }
+.toggle-switch.on { background: var(--brand); }
+.toggle-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.toggle-switch.on::after { transform: translateX(18px); }
+
+/* ── USER CARD ── */
+.user-card { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-page); border-radius: var(--radius-sm); margin-bottom: 8px; }
+.user-avatar-lg { width: 40px; height: 40px; border-radius: 50%; background: var(--brand-light); color: var(--brand); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; border: 2px solid var(--brand); }
+.user-card-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.user-card-role { font-size: 11px; color: var(--text-muted); }
+
+/* ── RELATIONSHIP RULE CARD ── */
+.rule-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 8px;
+  transition: box-shadow .12s;
+}
+.rule-card:hover { box-shadow: var(--shadow); }
+.rule-arrow { color: var(--brand); font-size: 22px; flex-shrink: 0; }
+.rule-info { flex: 1; }
+.rule-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.rule-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.rule-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+
+/* ── PLAN CARD ── */
+.plan-card {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 2px solid var(--border); padding: 18px; flex: 1;
+  transition: border-color .12s, box-shadow .12s;
+}
+.plan-card:hover, .plan-card.selected { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(26,115,232,.1); }
+.plan-price { font-size: 26px; font-weight: 800; color: var(--text-primary); }
+.plan-price span { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+.plan-feature { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); padding: 4px 0; }
+
+/* GRID HELPERS */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.g12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+.gc2 { grid-column: span 2; }
+.gc3 { grid-column: span 3; }
+.gc4 { grid-column: span 4; }
+.gc6 { grid-column: span 6; }
+.gc8 { grid-column: span 8; }
+.gc9 { grid-column: span 9; }
+.gc12 { grid-column: span 12; }
+
+.mb4 { margin-bottom: 4px; }
+.mb8 { margin-bottom: 8px; }
+.mb14 { margin-bottom: 14px; }
+.mb18 { margin-bottom: 18px; }
+.mb22 { margin-bottom: 22px; }
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap4 { gap: 4px; }
+.gap6 { gap: 6px; }
+.gap8 { gap: 8px; }
+.gap10 { gap: 10px; }
+.gap12 { gap: 12px; }
+.gap14 { gap: 14px; }
+.gap18 { gap: 18px; }
+.action-bar { display: flex; justify-content: flex-end; gap: 9px; padding: 14px 0 4px; border-top: 1px solid var(--border); margin-top: 8px; }
+.search-bar { position: relative; }
+.search-bar .mi { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 17px; pointer-events: none; }
+.search-bar .form-input { padding-left: 34px; }
+.table-footer { padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); background: #fafbfc; }
+.table-footer span { font-size: 12px; color: var(--text-muted); }
+.table-filters { padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(15,23,42,.5);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-width:560px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-box.modal-lg{max-width:700px;}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:#fafbfc;}
+.modal-header h3{font-size:14px;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;border-radius:5px;display:flex;}
+.modal-close:hover{background:var(--danger-bg);color:var(--danger);}
+.modal-body{padding:20px;overflow-y:auto;flex:1;}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:9px;background:#fafbfc;}
+/* ── FORM SECTION CARD ── */
+.form-section-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow-sm);}
+.form-section-card .section-title{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;gap:6px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--brand-light);}
+/* ── AUX TABS ── */
+.aux-tabs{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:20px;flex-wrap:wrap;}
+.aux-tab{padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;font-family:inherit;border-radius:6px 6px 0 0;}
+.aux-tab:hover{color:var(--brand);background:var(--brand-pale);}
+.aux-tab.active{color:var(--brand);border-bottom-color:var(--brand);background:var(--brand-pale);font-weight:700;}
+.aux-panel{display:none;}
+.aux-panel.active{display:block;}
+
+/* ═══════════════════════════════════
+   RESPONSIVIDADE MOBILE / TABLET
+═══════════════════════════════════ */
+
+/* Botão hambúrguer — oculto no desktop */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hamburger-btn:hover { background: var(--bg-page); }
+
+/* Overlay escuro ao abrir sidebar */
+#sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 199;
+  backdrop-filter: blur(2px);
+}
+#sidebar-overlay.open { display: block; }
+
+/* ── TABLET  601px – 900px ── */
+@media (max-width: 900px) {
+
+  /* Body & shell */
+  html { overflow-x: hidden !important; }
+  body { overflow: auto !important; height: auto !important; overflow-x: hidden !important; }
+  #app-shell {
+    flex-direction: column !important;
+    width: 100vw !important;
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+  }
+
+  /* Sidebar desliza da esquerda */
+  #global-sidebar {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important;
+    height: 100vh !important;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform .25s cubic-bezier(.25,.46,.45,.94);
+    box-shadow: 4px 0 32px rgba(0,0,0,.2);
+  }
+  #global-sidebar.open { transform: translateX(0) !important; }
+
+  /* Content area ocupa tela inteira */
+  #content-area {
+    width: 100% !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+  .main-content { overflow: visible !important; }
+
+  /* Page body */
+  .page-body {
+    overflow: visible !important;
+    padding: 14px 16px !important;
+  }
+
+  /* Topbar com hambúrguer */
+  .topbar {
+    padding: 0 12px !important;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 10px;
+  }
+  .topbar-user-name,
+  .topbar-user-role { display: none; }
+  .hamburger-btn { display: flex !important; }
+
+  /* Screens */
+  .screen { width: 100% !important; height: auto !important; overflow: visible !important; }
+  .screen.active { display: block !important; animation: none; }
+
+  /* Page header */
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px;
+    margin-bottom: 14px !important;
+  }
+  .page-header .flex-center { width: 100%; flex-wrap: wrap; gap: 8px; }
+  .page-header .flex-center .btn { flex: 1; justify-content: center; }
+
+  /* Grids — 1 coluna no mobile */
+  .g2, .g3 { grid-template-columns: 1fr !important; }
+  .g4 { grid-template-columns: 1fr 1fr !important; }
+  .g12 { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .gc2,.gc3,.gc4,.gc6,.gc7,.gc8,.gc9,.gc12 { grid-column: span 2 !important; }
+
+  /* Cards */
+  .card { overflow: hidden; }
+  .kpi-card { padding: 14px; }
+  .kpi-value { font-size: 20px; }
+
+  /* Tabelas com scroll horizontal */
+  .table-wrapper { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  table { min-width: 0 !important; }
+  .table-filters { flex-wrap: wrap !important; gap: 8px !important; }
+  .table-filters .search-bar { flex: 1 1 100% !important; }
+  .table-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+  /* Modais */
+  .modal-box {
+    max-width: calc(100vw - 20px) !important;
+    margin: 10px !important;
+    border-radius: 10px;
+    max-height: calc(100vh - 20px);
+  }
+  .modal-body { padding: 14px !important; }
+
+  /* Formulários e seções */
+  .form-section-card { padding: 14px !important; }
+  .form-section-blue { padding: 14px !important; }
+  .action-bar { flex-wrap: wrap; gap: 8px; }
+  .action-bar .btn { flex: 1; justify-content: center; min-width: 120px; }
+
+  /* Planos */
+  .plan-card { min-width: 100%; }
+
+  /* Tabs */
+  .aux-tabs { overflow-x: auto; flex-wrap: nowrap !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .aux-tab { white-space: nowrap; flex-shrink: 0; }
+  .tabs { flex-wrap: wrap; }
+
+  /* Login */
+  .login-card { margin: 16px auto; max-width: calc(100vw - 32px) !important; }
+  .login-body { padding: 20px 18px 24px !important; }
+  .login-header { padding: 22px 20px !important; }
+
+  /* Gráfico de barras */
+  .bar-chart { gap: 4px !important; }
+  .bar { width: 10px !important; }
+
+  /* Misc */
+  .breadcrumb { flex-wrap: wrap; gap: 3px; }
+  .settings-row { flex-wrap: wrap; gap: 8px; }
+  .toggle-btn { flex: none !important; width: 100%; }
+  .rule-card { flex-wrap: wrap; gap: 8px; }
+  .rule-arrow { display: none; }
+  .user-card { flex-wrap: wrap; }
+  .pagination { flex-wrap: wrap; }
+}
+
+/* ── MOBILE EXTRA  ≤ 480px ── */
+@media (max-width: 480px) {
+  html, body { overflow-x: hidden !important; }
+  .page-body { padding: 10px 12px !important; }
+  .topbar { padding: 0 10px !important; }
+  .topbar-title { font-size: 13px; }
+
+  /* KPIs em 1 coluna */
+  .g4 { grid-template-columns: 1fr !important; }
+  .g12 { grid-template-columns: 1fr !important; }
+  .gc2,.gc3,.gc4,.gc6,.gc7,.gc8,.gc9,.gc12 { grid-column: span 1 !important; }
+
+  /* Cabeçalho de página */
+  .page-header-left h1 { font-size: 18px; }
+
+  /* Card body */
+  .card-body { padding: 12px !important; }
+  .card-header { padding: 10px 14px !important; }
+
+  /* Tabelas sem min-width */
+  table { min-width: 0 !important; }
+  td, th { padding: 7px 6px !important; font-size: 11px !important; }
+
+  /* Modais full-width */
+  .modal-box { max-width: 100vw !important; margin: 0 !important; border-radius: 0 !important; max-height: 100vh; }
+  .modal-header h3 { font-size: 13px; }
+
+  /* Botões */
+  .btn { font-size: 12px; padding: 7px 12px; }
+  .btn-sm { font-size: 11px; padding: 5px 9px; }
+
+  /* Formulários */
+  .form-section-card, .form-section-blue { padding: 12px !important; }
+  .login-card { margin: 0; max-width: 100vw !important; border-radius: 0 !important; min-height: 100vh; display: flex; flex-direction: column; }
+  .login-header { padding: 28px 20px !important; flex: 0; }
+  .login-body { flex: 1; padding: 24px 20px !important; }
+
+  /* Tabs scroll */
+  .tabs { overflow-x: auto; flex-wrap: nowrap; }
+  .tab-btn { flex-shrink: 0; }
+  .aux-tabs { gap: 0; }
+  .aux-tab { padding: 8px 12px; font-size: 11px; }
+}
+
+
+/* ══════════════════════════════════════════════
+   TABELAS MOBILE — TRANSFORMA EM CARDS EMPILHADOS
+   Aplica para qualquer tela até 700px
+══════════════════════════════════════════════ */
+@media (max-width: 700px) {
+
+  /* Bloqueia overflow horizontal globalmente */
+  html, body { overflow-x: hidden !important; }
+  #app-shell, .main-content, #content-area,
+  .screen, .page-body, .card { max-width: 100% !important; overflow-x: hidden !important; }
+
+  /* Remove scroll horizontal das tabelas */
+  .table-wrapper { overflow-x: hidden !important; overflow-y: visible !important; }
+
+  /* Esconde o cabeçalho da tabela */
+  table thead { display: none !important; }
+
+  /* Cada linha vira um card */
+  table, table tbody { display: block !important; width: 100% !important; }
+  table tbody tr {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    width: 100% !important;
+  }
+  table tbody tr:hover td { background: none !important; }
+
+  /* Todas as células viram flex inline */
+  table tbody tr td {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 12px !important;
+    background: none !important;
+  }
+
+  /* Célula NOME — ocupa linha inteira */
+  table tbody tr td:nth-child(1) {
+    width: 100% !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Célula TIPO e STATUS — ficam lado a lado */
+  table tbody tr td:nth-child(2),
+  table tbody tr td:nth-child(3) { flex: 0 0 auto !important; }
+
+  /* Célula CADASTRADO EM — oculta no mobile */
+  table tbody tr td:nth-child(4) { display: none !important; }
+
+  /* Célula AÇÕES — empurra para a direita */
+  table tbody tr td:last-child {
+    margin-left: auto !important;
+    flex: 0 0 auto !important;
+    display: flex !important;
+    gap: 2px !important;
+  }
+
+  /* Avatar menor */
+  table td .flex-center > div[style*="width:32px"],
+  table td .flex-center > div[style*="width: 32px"] {
+    width: 28px !important; height: 28px !important; font-size: 10px !important;
+  }
+
+  /* Badges menores */
+  table td .badge { font-size: 10px !important; padding: 2px 6px !important; }
+
+  /* Ícones de ação menores */
+  table .icon-btn { padding: 3px !important; }
+  table .icon-btn .mi { font-size: 16px !important; }
+
+  /* Filtros em coluna */
+  .table-filters {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+  .table-filters .search-bar,
+  .table-filters select,
+  .table-filters .form-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Rodapé */
+  .table-footer { flex-direction: column; gap: 8px; padding: 10px 12px !important; }
+  .pagination { flex-wrap: wrap; }
+
+  /* Filtros com max-width inline */
+  [style*="max-width:140px"],
+  [style*="max-width:130px"] { max-width: 100% !important; }
+
+  /* min-width inline que causa overflow */
+  [style*="min-width:200px"],
+  [style*="min-width:130px"],
+  [style*="min-width:160px"] { min-width: 0 !important; flex: 1 !important; }
+
+  /* Conteúdo com min-width nas tabelas de 6+ colunas — oculta colunas extras */
+  table tbody tr td:nth-child(5):not(:last-child) { display: none !important; }
+  table tbody tr td:nth-child(6):not(:last-child) { display: none !important; }
+}
+
+/* ── MOBILE EXTRA PEQUENO ≤ 400px ── */
+@media (max-width: 400px) {
+  table td .badge { font-size: 9px !important; padding: 1px 5px !important; }
+  table tbody tr { padding: 8px 10px !important; gap: 4px !important; }
+  .page-body { padding: 8px 10px !important; }
+}
+
+/* ── TABLET/DESKTOP INTERMEDIÁRIO  901px – 1200px ── */
+@media (min-width: 901px) and (max-width: 1200px) {
+  :root { --sidebar-w: 210px; }
+  .page-body { padding: 16px 18px !important; }
+  .g4 { grid-template-columns: 1fr 1fr !important; }
+  .g3 { grid-template-columns: 1fr 1fr !important; }
+}
+</style>
+</head>
+<body>
+
+
+<div id="sidebar-overlay" onclick="document.getElementById('global-sidebar').classList.remove('open');this.classList.remove('open');"></div>
+<div id="screen-indicator">Tela: Login</div>
+
+<!-- LOGIN -->
+<div id="screen-login" style="display:flex;align-items:center;justify-content:center;flex-direction:column;width:100vw;height:100vh;background:linear-gradient(135deg,#f0f6ff 0%,#e8f0fe 50%,#f0f6ff 100%);">
+  <div class="login-card">
+    <div class="login-header" style="background:linear-gradient(135deg,#1a73e8,#1557b0);padding:32px;text-align:center;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+        <div style="background:rgba(255,255,255,.2);border-radius:10px;padding:8px;display:flex;"><span class="mi mi-lg" style="color:#fff;">account_balance</span></div>
+        <span style="font-size:22px;font-weight:800;color:#fff;">AMBC</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,.8);font-weight:500;">Associação de Moradores do Bairro Califórnia</p>
+    </div>
+    <div class="login-body" style="padding:28px 32px 32px;">
+      <h2 style="font-size:20px;font-weight:800;color:var(--text-primary);margin-bottom:4px;">Bem-vindo de volta</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Faça login para acessar o sistema</p>
+      <div class="mb14"><label class="form-label">Usuário</label>
+        <div class="input-icon-wrap"><span class="mi">person</span><input type="text" class="form-input" placeholder="Digite seu usuário" value="admin"/></div>
+      </div>
+      <div class="mb14">
+        <div class="flex-between mb4"><label class="form-label" style="margin:0;">Senha</label><a style="font-size:11px;color:var(--brand);font-weight:600;cursor:pointer;">Esqueci minha senha</a></div>
+        <div class="input-icon-wrap"><span class="mi">lock</span><input type="password" class="form-input" placeholder="••••••••" value="123456"/></div>
+      </div>
+      <div class="flex-center gap8 mb18"><input type="checkbox" id="remember" style="width:13px;height:13px;accent-color:var(--brand);"/><label for="remember" style="font-size:12px;color:var(--text-muted);cursor:pointer;">Lembrar de mim</label></div>
+      <button onclick="G('painel')" class="btn btn-primary" style="width:100%;justify-content:center;padding:11px;font-size:14px;border-radius:10px;"><span class="mi mi-sm">login</span> Entrar</button>
+      <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:20px;">© 2024 AMBC — Todos os direitos reservados</p>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL APP SHELL (sidebar + content) -->
+<div id="app-shell" style="display:none;width:100vw;height:100vh;overflow:hidden;">
+  <!-- GLOBAL SIDEBAR -->
+  <div class="sidebar" id="global-sidebar">
+    <div class="logo-area" id="sidebar-logo-area">
+      <div class="logo-icon" id="sidebar-logo-icon" style="overflow:hidden;background:transparent;padding:0;box-shadow:none;">
+        <span class="mi" id="sidebar-logo-default" style="font-size:18px;display:none;">account_balance</span>
+        <img id="sidebar-logo-img" src="data:image/png;base64,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" alt="Logo AMBC" style="display:block;width:34px;height:34px;object-fit:contain;border-radius:6px;"/>
+      </div>
+      <div class="logo-text">
+        <h1 id="sidebar-logo-name">AMBC</h1>
+        <p id="sidebar-logo-sub">Área de Gestão</p>
+      </div>
+    </div>
+    <nav>
+      <span class="nav-section">Principal</span>
+      <button class="nav-item" id="nav-painel" onclick="G('painel')"><span class="mi">dashboard</span>Painel</button>
+
+      <button class="nav-item" id="nav-cad-toggle" onclick="toggleSub('sub-cad','nav-cad-toggle')">
+        <span class="mi">person_search</span><span style="flex:1;text-align:left;">Cadastro</span><span class="mi chevron" id="chev-cad">expand_more</span>
+      </button>
+      <div class="nav-sub" id="sub-cad">
+        <button class="nav-item" id="nav-listar" onclick="G('listar')"><span class="mi mi-sm">format_list_bulleted</span>Listar Todos</button>
+        <button class="nav-item" id="nav-novo-associado" onclick="G('novo-associado')"><span class="mi mi-sm">person_add</span>Novo Associado</button>
+        <button class="nav-item" id="nav-novo-parceiro" onclick="G('novo-parceiro')"><span class="mi mi-sm">handshake</span>Novo Parceiro</button>
+      </div>
+
+      <button class="nav-item" id="nav-fin-toggle" onclick="toggleSub('sub-fin','nav-fin-toggle')">
+        <span class="mi">payments</span><span style="flex:1;text-align:left;">Financeiro</span><span class="mi chevron" id="chev-fin">expand_more</span>
+      </button>
+      <div class="nav-sub" id="sub-fin">
+        <button class="nav-item" id="nav-financeiro" onclick="G('financeiro')"><span class="mi mi-sm">grid_view</span>Visão Geral</button>
+        <button class="nav-item" id="nav-novo-lancamento" onclick="G('novo-lancamento')"><span class="mi mi-sm">add_box</span>Novo Lançamento</button>
+        <button class="nav-item" id="nav-relatorios" onclick="G('relatorios')"><span class="mi mi-sm">bar_chart</span>Relatórios</button>
+        <button class="nav-item" id="nav-contas-regentes" onclick="G('contas-regentes')"><span class="mi mi-sm">format_list_bulleted</span>Contas Regentes</button>
+        <button class="nav-item" id="nav-contas-subordinadas" onclick="G('contas-subordinadas')"><span class="mi mi-sm">account_tree</span>Contas Subordinadas</button>
+      </div>
+
+      <button class="nav-item" id="nav-aux-toggle" onclick="toggleSub('sub-aux','nav-aux-toggle')">
+        <span class="mi">table_chart</span><span style="flex:1;text-align:left;">Tabelas Auxiliares</span><span class="mi chevron" id="chev-aux">expand_more</span>
+      </button>
+      <div class="nav-sub" id="sub-aux">
+        <button class="nav-item" id="nav-tabelas-auxiliares" onclick="G('tabelas-auxiliares')"><span class="mi mi-sm">grid_on</span>Ver Tabelas</button>
+      </div>
+      <div class="nav-divider"></div>
+      <span class="nav-section">Sistema</span>
+
+      <button class="nav-item" id="nav-cfg-toggle" onclick="toggleSub('sub-cfg','nav-cfg-toggle')">
+        <span class="mi">settings</span><span style="flex:1;text-align:left;">Configurações</span><span class="mi chevron" id="chev-cfg">expand_more</span>
+      </button>
+      <div class="nav-sub" id="sub-cfg">
+        <button class="nav-item" id="nav-cfg-associacao" onclick="G('cfg-associacao')"><span class="mi mi-sm">account_balance</span>Associação</button>
+        <button class="nav-item" id="nav-cfg-relacionamentos" onclick="G('cfg-relacionamentos')"><span class="mi mi-sm">account_tree</span>Relacionamentos</button>
+        <button class="nav-item" id="nav-cfg-geral" onclick="G('cfg-geral')"><span class="mi mi-sm">tune</span>Config. Gerais</button>
+      </div>
+
+      <div class="nav-divider"></div>
+      <button class="nav-item danger" onclick="G('login')"><span class="mi">logout</span>Sair</button>
+    </nav>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div id="content-area" style="flex:1;display:flex;flex-direction:column;overflow:hidden;"></div>
+</div>
+
+<!-- ═══ SCREEN TEMPLATES (hidden, cloned into content-area) ═══ -->
+<div id="screen-templates" style="display:none;">
+<div class="screen" id="screen-painel">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Painel Geral</span>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn"><span class="mi">notifications</span></button>
+        <div class="topbar-user">
+          <div>
+            <div class="topbar-user-name">Admin AMBC</div>
+            <div class="topbar-user-role">Administrador</div>
+          </div>
+          <div class="avatar">A</div>
+        </div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Olá, Administrador 👋</h1>
+          <p>Bem-vindo ao sistema de gestão AMBC. Aqui está um resumo do dia.</p>
+        </div>
+        <div class="flex-center gap8">
+          <button class="btn btn-secondary btn-sm"><span class="mi mi-sm">calendar_today</span>Junho 2025</button>
+          <button onclick="G('novo-lancamento')" class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Novo Lançamento</button>
+        </div>
+      </div>
+      <div class="g4 mb18">
+        <div class="kpi-card">
+          <div class="flex-between mb8">
+            <div class="kpi-icon" style="background:#eff6ff;"><span class="mi" style="color:#2563eb;">groups</span></div>
+            <span class="kpi-trend" style="background:var(--success-bg);color:var(--success);">↑ 5.2%</span>
+          </div>
+          <div class="kpi-label">Associados</div>
+          <div class="kpi-value">1.240</div>
+        </div>
+        <div class="kpi-card">
+          <div class="flex-between mb8">
+            <div class="kpi-icon" style="background:var(--purple-bg);"><span class="mi" style="color:var(--purple);">family_restroom</span></div>
+            <span class="kpi-trend" style="background:var(--success-bg);color:var(--success);">↑ 2.1%</span>
+          </div>
+          <div class="kpi-label">Dependentes</div>
+          <div class="kpi-value">850</div>
+        </div>
+        <div class="kpi-card">
+          <div class="flex-between mb8">
+            <div class="kpi-icon" style="background:#fffbeb;"><span class="mi" style="color:#d97706;">handshake</span></div>
+            <span class="kpi-trend" style="background:#f1f5f9;color:var(--text-muted);">→ 0%</span>
+          </div>
+          <div class="kpi-label">Parceiros</div>
+          <div class="kpi-value">42</div>
+        </div>
+        <div class="kpi-card">
+          <div class="flex-between mb8">
+            <div class="kpi-icon" style="background:#f0fdf4;"><span class="mi" style="color:var(--success);">account_balance_wallet</span></div>
+            <span class="kpi-trend" style="background:var(--success-bg);color:var(--success);">↑ 8.4%</span>
+          </div>
+          <div class="kpi-label">Resultado Mês</div>
+          <div class="kpi-value" style="font-size:18px;">R$ 12.450</div>
+        </div>
+      </div>
+      <div class="g2 mb18">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">bar_chart</span>Receita vs Despesa — Últimos 6 Meses</h3></div>
+          <div class="card-body">
+            <div class="bar-chart" style="height:130px;">
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:62%;background:#34d399;"></div><div class="bar" style="height:36%;background:#f87171;"></div></div><span class="bar-label">Jan</span></div>
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:80%;background:#34d399;"></div><div class="bar" style="height:30%;background:#f87171;"></div></div><span class="bar-label">Fev</span></div>
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:55%;background:#34d399;"></div><div class="bar" style="height:48%;background:#f87171;"></div></div><span class="bar-label">Mar</span></div>
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:88%;background:#34d399;"></div><div class="bar" style="height:52%;background:#f87171;"></div></div><span class="bar-label">Abr</span></div>
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:100%;background:#34d399;"></div><div class="bar" style="height:28%;background:#f87171;"></div></div><span class="bar-label">Mai</span></div>
+              <div class="bar-group"><div class="bars"><div class="bar" style="height:92%;background:#34d399;"></div><div class="bar" style="height:40%;background:#f87171;"></div></div><span class="bar-label">Jun</span></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:18px;margin-top:12px;">
+              <div class="flex-center gap4"><span style="width:8px;height:8px;border-radius:50%;background:#34d399;display:inline-block;"></span><span style="font-size:11px;color:var(--text-muted);">Receita</span></div>
+              <div class="flex-center gap4"><span style="width:8px;height:8px;border-radius:50%;background:#f87171;display:inline-block;"></span><span style="font-size:11px;color:var(--text-muted);">Despesa</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">donut_large</span>Distribuição por Tipo</h3></div>
+          <div class="card-body">
+            <div style="display:flex;justify-content:center;margin-bottom:16px;">
+              <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;">
+                <svg width="110" height="110" style="transform:rotate(-90deg);">
+                  <circle cx="55" cy="55" r="44" fill="none" stroke="#e2e8f0" stroke-width="12"/>
+                  <circle cx="55" cy="55" r="44" fill="none" stroke="#1a73e8" stroke-width="12" stroke-dasharray="276" stroke-dashoffset="69"/>
+                  <circle cx="55" cy="55" r="44" fill="none" stroke="#818cf8" stroke-width="12" stroke-dasharray="276" stroke-dashoffset="207"/>
+                  <circle cx="55" cy="55" r="44" fill="none" stroke="#fbbf24" stroke-width="12" stroke-dasharray="276" stroke-dashoffset="268"/>
+                </svg>
+                <div style="position:absolute;text-align:center;"><div style="font-size:18px;font-weight:800;color:var(--text-primary);">2.132</div><div style="font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Total</div></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="flex-between"><div class="flex-center gap6"><span style="width:8px;height:8px;border-radius:50%;background:#1a73e8;display:inline-block;"></span><span style="font-size:12px;color:var(--text-muted);">Associados</span></div><span style="font-size:13px;font-weight:700;">1.240</span></div>
+              <div class="flex-between"><div class="flex-center gap6"><span style="width:8px;height:8px;border-radius:50%;background:#818cf8;display:inline-block;"></span><span style="font-size:12px;color:var(--text-muted);">Dependentes</span></div><span style="font-size:13px;font-weight:700;">850</span></div>
+              <div class="flex-between"><div class="flex-center gap6"><span style="width:8px;height:8px;border-radius:50%;background:#fbbf24;display:inline-block;"></span><span style="font-size:12px;color:var(--text-muted);">Parceiros</span></div><span style="font-size:13px;font-weight:700;">42</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Recent Transactions -->
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">receipt_long</span>Últimas Transações</h3><button onclick="G('financeiro')" class="btn btn-secondary btn-xs">Ver todas</button></div>
+        <table>
+          <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text-muted);">15/06/2025</td><td style="font-weight:600;">Taxa Condominial Apto 102</td><td><span class="badge badge-gray">Receitas Mensais</span></td><td style="font-weight:700;color:var(--success);">R$ 350,00</td><td><span class="badge badge-green">● Pago</span></td></tr>
+            <tr><td style="color:var(--text-muted);">12/06/2025</td><td style="font-weight:600;">Manutenção Jardim Central</td><td><span class="badge badge-gray">Manutenção</span></td><td style="font-weight:700;color:var(--danger);">R$ 1.200,00</td><td><span class="badge badge-yellow">● Pendente</span></td></tr>
+            <tr><td style="color:var(--text-muted);">05/06/2025</td><td style="font-weight:600;">Conta de Energia</td><td><span class="badge badge-gray">Utilidades</span></td><td style="font-weight:700;color:var(--danger);">R$ 4.580,20</td><td><span class="badge badge-red">● Atrasado</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     LISTAR TODOS
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-listar">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Gerenciar Cadastros</span>
+      <div class="topbar-right"><button class="topbar-icon-btn"><span class="mi">notifications</span></button><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Associados e Parceiros</h1><p>Gerencie todos os residentes e parceiros comerciais.</p></div>
+        <button onclick="G('novo-associado')" class="btn btn-primary"><span class="mi mi-sm">person_add</span>Novo Cadastro</button>
+      </div>
+      <div class="card">
+        <div class="table-filters">
+          <div class="search-bar" style="flex:1;"><span class="mi">search</span><input type="text" class="form-input" placeholder="Buscar por nome, CPF ou e-mail..." style="padding-left:34px;"/></div>
+          <select class="form-input" style="max-width:140px;"><option>Tipo: Todos</option><option>Associado</option><option>Dependente</option><option>Parceiro</option></select>
+          <select class="form-input" style="max-width:140px;"><option>Status: Todos</option><option>Ativo</option><option>Inativo</option></select>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>Tipo</th><th>Status</th><th>Cadastrado em</th><th style="text-align:right;">Ações</th></tr></thead>
+          <tbody>
+            <tr><td><div class="flex-center gap10"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-light);color:var(--brand);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">RM</div><div><p style="margin:0;font-weight:600;">Ricardo Mendonça</p><p style="margin:0;font-size:11px;color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="23514a404251474c0d4e63464e424a4f0d404c4e">[email&#160;protected]</a></p></div></div></td><td><span class="badge badge-blue">Associado</span></td><td><span class="badge badge-green">● Ativo</span></td><td style="color:var(--text-muted);">12/01/2024</td><td style="text-align:right;"><button onclick="G('novo-associado')" class="icon-btn"><span class="mi mi-sm">visibility</span></button><button onclick="G('novo-associado')" class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td><div class="flex-center gap10"><div style="width:32px;height:32px;border-radius:50%;background:#f1f5f9;color:#64748b;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">AM</div><div><p style="margin:0;font-weight:600;">Alice Mendonça</p><p style="margin:0;font-size:11px;color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0c6d60656f6922614c69616d6560226f6361">[email&#160;protected]</a></p></div></div></td><td><span class="badge badge-purple">Dependente</span></td><td><span class="badge badge-green">● Ativo</span></td><td style="color:var(--text-muted);">12/01/2024</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td><div class="flex-center gap10"><div style="width:32px;height:32px;border-radius:50%;background:var(--brand-light);color:var(--brand);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">JP</div><div><p style="margin:0;font-weight:600;">Julio Pereira</p><p style="margin:0;font-size:11px;color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751f00191c1a053505071a031c1110075b161a18">[email&#160;protected]</a></p></div></div></td><td><span class="badge badge-blue">Associado</span></td><td><span class="badge badge-gray">● Inativo</span></td><td style="color:var(--text-muted);">03/03/2023</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td><div class="flex-center gap10"><div style="width:32px;height:32px;border-radius:50%;background:#fffbeb;color:#d97706;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">MC</div><div><p style="margin:0;font-weight:600;">Mariana Costa</p><p style="margin:0;font-size:11px;color:var(--text-muted);"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="86ebe7f4efe7e8e7a8e5e9f5f2e7c6e3ebe7efeaa8e5e9eb">[email&#160;protected]</a></p></div></div></td><td><span class="badge badge-teal">Parceiro</span></td><td><span class="badge badge-green">● Ativo</span></td><td style="color:var(--text-muted);">18/09/2023</td><td style="text-align:right;"><button onclick="G('novo-parceiro')" class="icon-btn"><span class="mi mi-sm">visibility</span></button><button onclick="G('novo-parceiro')" class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody>
+        </table>
+        <div class="table-footer"><span>Exibindo 4 de 1.282 cadastros</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     NOVO ASSOCIADO
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-novo-associado">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Cadastro do Associado</span>
+      <div class="topbar-right"><button class="topbar-icon-btn"><span class="mi">notifications</span></button><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><a onclick="G('listar')">Cadastro</a><span class="mi mi-sm">chevron_right</span><span class="current">Associado</span></div>
+      <div class="page-header">
+        <div class="page-header-left"><h1>Cadastro do Associado</h1><p>Gerencie informações pessoais, dependentes, contatos e histórico financeiro.</p></div>
+      </div>
+      <!-- Dados Pessoais -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">person</span>Dados do Associado</h3></div>
+        <div class="card-body g12">
+          <div class="gc4"><label class="form-label">Nome Completo</label><input type="text" class="form-input" value="Ricardo Alcantara Soares"/></div>
+          <div class="gc2"><label class="form-label">CPF</label><input type="text" class="form-input" value="123.456.789-00"/></div>
+          <div class="gc2"><label class="form-label">Data de Nascimento</label><input type="date" class="form-input" value="1985-06-15"/></div>
+          <div class="gc2"><label class="form-label">Gênero</label><select class="form-input"><option>Masculino</option><option>Feminino</option><option>Outro</option></select></div>
+          <div class="gc2"><label class="form-label">Estado Civil</label><select class="form-input"><option>Casado(a)</option><option>Solteiro(a)</option><option>Divorciado(a)</option></select></div>
+          <div class="gc3"><label class="form-label">E-mail</label><input type="email" class="form-input" value="ricardo.alcantara@gmail.com"/></div>
+          <div class="gc3"><label class="form-label">Profissão</label><input type="text" class="form-input" value="Analista de Sistemas"/></div>
+          <div class="gc3"><label class="form-label">Status</label><select class="form-input"><option>Ativo</option><option>Inativo</option></select></div>
+          <div class="gc3"><label class="form-label">Matrícula</label><input type="text" class="form-input" value="ASS-2024-0104"/></div>
+        </div>
+      </div>
+      <!-- Endereço -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">home</span>Endereço</h3></div>
+        <div class="card-body g12">
+          <div class="gc2"><label class="form-label">CEP</label><input type="text" class="form-input" placeholder="00000-000"/></div>
+          <div class="gc7"><label class="form-label">Logradouro</label><input type="text" class="form-input" placeholder="Rua, Avenida..."/></div>
+          <div class="gc3"><label class="form-label">Número</label><input type="text" class="form-input" placeholder="S/N"/></div>
+          <div class="gc3"><label class="form-label">Complemento</label><input type="text" class="form-input" placeholder="Apto, Bloco..."/></div>
+          <div class="gc3"><label class="form-label">Bairro</label><input type="text" class="form-input" placeholder="Bairro"/></div>
+          <div class="gc4"><label class="form-label">Cidade</label><input type="text" class="form-input" placeholder="Cidade"/></div>
+          <div class="gc2"><label class="form-label">Estado (UF)</label><select class="form-input"><option>UF</option><option>RS</option><option>SP</option><option>RJ</option><option>MG</option></select></div>
+        </div>
+      </div>
+      <!-- Dependentes -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">family_restroom</span>Dependentes Registrados</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">person_add</span>Adicionar Dependente</button></div>
+        <table><thead><tr><th>Nome</th><th>Parentesco</th><th>Idade</th><th>Nascimento</th><th style="text-align:right;">Ações</th></tr></thead><tbody id="dep-tbody">
+          <tr><td><div class="flex-center gap8"><div style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#64748b;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">MA</div><span style="font-weight:600;">Mariana Alcantara</span></div></td><td style="color:var(--text-muted);">Cônjuge</td><td style="color:var(--text-muted);">35 anos</td><td style="color:var(--text-muted);">22/08/1988</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td><div class="flex-center gap8"><div style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#64748b;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">PA</div><span style="font-weight:600;">Pedro Alcantara</span></div></td><td style="color:var(--text-muted);">Filho(a)</td><td style="color:var(--text-muted);">9 anos</td><td style="color:var(--text-muted);">10/01/2015</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+      </div>
+      <!-- Telefones -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">call</span>Lista Telefônica</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">add_circle</span>Adicionar Contato</button></div>
+        <table><thead><tr><th>Tipo</th><th>Número</th><th>Observações</th><th style="text-align:right;">Ações</th></tr></thead><tbody id="tel-tbody">
+          <tr><td><span class="badge badge-blue">Celular</span></td><td style="font-weight:600;">(11) 98765-4321</td><td style="color:var(--text-muted);">Principal - WhatsApp</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td><span class="badge badge-gray">Residencial</span></td><td style="font-weight:600;">(11) 4002-8922</td><td style="color:var(--text-muted);">—</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+      </div>
+      <!-- Financeiro -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">account_balance_wallet</span>Gestão Financeira do Associado</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">add_circle</span>Adicionar Lançamento</button></div>
+        <div style="padding:10px 18px;background:#eff6ff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div class="flex-center gap10"><span class="mi" style="color:var(--brand);">verified_user</span><div><p style="margin:0;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Status da Anuidade</p><p style="margin:0;font-size:12px;font-weight:700;">Válida até Fev/2026</p></div></div>
+          <div class="flex-center gap18"><div style="text-align:right;"><p style="margin:0;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Total Pago (2025)</p><p style="margin:0;font-size:13px;font-weight:700;color:var(--success);">R$ 360,00</p></div><div style="text-align:right;border-left:1px solid var(--border);padding-left:18px;"><p style="margin:0;font-size:9px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Status</p><p style="margin:0;font-size:13px;font-weight:700;color:var(--success);">Ativo</p></div></div>
+        </div>
+        <table><thead><tr><th>Tipo</th><th>Referência</th><th>Conta Subordinada</th><th>Valor (R$)</th><th>Data Pagto</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead><tbody id="lanc-tbody">
+          <tr><td><span class="badge badge-blue">Anuidade</span></td><td>Fev/2025 a Fev/2026</td><td style="color:var(--text-muted);font-size:12px;">001 — Anuidades</td><td>R$ 60,00</td><td>15/02/2025</td><td><span class="badge badge-green">● Pago</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button></td></tr>
+          <tr><td><span class="badge badge-green">Doação</span></td><td>Reforma Parquinho</td><td style="color:var(--text-muted);font-size:12px;">003 — Doações</td><td>R$ 300,00</td><td>10/06/2025</td><td><span class="badge badge-green">● Pago</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button></td></tr>
+          <tr><td><span class="badge badge-gray">Mensalidade</span></td><td>Março/2026</td><td style="color:var(--text-muted);font-size:12px;">002 — Mensalidades</td><td>R$ 5,00</td><td>—</td><td><span class="badge badge-yellow">● Pendente</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button></td></tr>
+          <tr><td><span class="badge badge-purple">Multa</span></td><td>Infração Ruidosa</td><td style="color:var(--text-muted);font-size:12px;">004 — Multas</td><td>R$ 250,00</td><td>—</td><td><span class="badge badge-red">● Atrasado</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button></td></tr>
+        </tbody></table>
+      </div>
+      <div class="action-bar"><button onclick="G('listar')" class="btn btn-secondary">Cancelar</button><button onclick="G('listar')" class="btn btn-primary"><span class="mi mi-sm">save</span>Salvar Cadastro</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     NOVO PARCEIRO
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-novo-parceiro">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Cadastro de Parceiro</span>
+      <div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><a onclick="G('listar')">Cadastro</a><span class="mi mi-sm">chevron_right</span><span class="current">Parceiro</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Cadastro de Parceiro</h1><p>Gerencie informações, contatos e histórico financeiro do parceiro.</p></div></div>
+      <div class="card mb18">
+        <div class="card-header">
+          <h3><span class="mi" id="pi">handshake</span><span id="pt">Dados do Parceiro</span></h3>
+          <div class="tabs"><button class="tab-btn active" id="tpf" onclick="SP('pf')">Pessoa Física</button><button class="tab-btn" id="tpj" onclick="SP('pj')">Pessoa Jurídica</button></div>
+        </div>
+        <div id="fpf" class="card-body g12">
+          <div class="gc6"><label class="form-label">Nome Completo</label><input type="text" class="form-input" placeholder="Nome completo"/></div>
+          <div class="gc3"><label class="form-label">CPF</label><input type="text" class="form-input" placeholder="000.000.000-00"/></div>
+          <div class="gc3"><label class="form-label">Data do Cadastro</label><input type="date" class="form-input"/></div>
+          <div class="gc4"><label class="form-label">Tipo de Serviço/Produto</label><input type="text" class="form-input" placeholder="Ex: Alimentação, Consultoria"/></div>
+          <div class="gc4"><label class="form-label">Telefone</label><input type="tel" class="form-input" placeholder="(00) 00000-0000"/></div>
+          <div class="gc4"><label class="form-label">E-mail</label><input type="email" class="form-input" placeholder="email@exemplo.com"/></div>
+          <div class="gc12"><label class="form-label">Observação</label><textarea class="form-input" rows="2" placeholder="Informações adicionais..."></textarea></div>
+        </div>
+        <div id="fpj" class="card-body g12" style="display:none;">
+          <div class="gc6"><label class="form-label">Razão Social</label><input type="text" class="form-input" placeholder="Nome empresarial"/></div>
+          <div class="gc6"><label class="form-label">Nome Fantasia</label><input type="text" class="form-input" placeholder="Nome comercial"/></div>
+          <div class="gc3"><label class="form-label">CNPJ</label><input type="text" class="form-input" placeholder="00.000.000/0000-00"/></div>
+          <div class="gc3"><label class="form-label">Data de Cadastro</label><input type="date" class="form-input"/></div>
+          <div class="gc3"><label class="form-label">Telefone</label><input type="tel" class="form-input" placeholder="(00) 0000-0000"/></div>
+          <div class="gc3"><label class="form-label">E-mail Corporativo</label><input type="email" class="form-input" placeholder="email@empresa.com.br"/></div>
+          <div class="gc6"><label class="form-label">Tipo de Serviço/Produto</label><input type="text" class="form-input" placeholder="Ex: Consultoria, TI"/></div>
+          <div class="gc6"><label class="form-label">Responsável</label><input type="text" class="form-input" placeholder="Nome do responsável"/></div>
+          <div class="gc12"><label class="form-label">Observação</label><textarea class="form-input" rows="2" placeholder="Informações adicionais..."></textarea></div>
+        </div>
+      </div>
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">home</span>Endereço</h3></div>
+        <div class="card-body g12">
+          <div class="gc2"><label class="form-label">CEP</label><input type="text" class="form-input" placeholder="00000-000"/></div>
+          <div class="gc7"><label class="form-label">Logradouro</label><input type="text" class="form-input" placeholder="Rua, Avenida..."/></div>
+          <div class="gc3"><label class="form-label">Número</label><input type="text" class="form-input" placeholder="123"/></div>
+          <div class="gc3"><label class="form-label">Complemento</label><input type="text" class="form-input" placeholder="Apto, Bloco..."/></div>
+          <div class="gc3"><label class="form-label">Bairro</label><input type="text" class="form-input" placeholder="Bairro"/></div>
+          <div class="gc4"><label class="form-label">Cidade</label><input type="text" class="form-input" placeholder="Cidade"/></div>
+          <div class="gc2"><label class="form-label">Estado</label><select class="form-input"><option>UF</option><option>RS</option><option>SP</option><option>RJ</option></select></div>
+        </div>
+      </div>
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">call</span>Lista Telefônica</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">add_circle</span>Adicionar Contato</button></div>
+        <table><thead><tr><th>Tipo</th><th>Número</th><th>Observações</th><th style="text-align:right;">Ações</th></tr></thead><tbody id="tel-tbody">
+          <tr><td><span class="badge badge-blue">Celular</span></td><td style="font-weight:600;">(11) 98888-7777</td><td style="color:var(--text-muted);">Principal</td><td style="text-align:right;"><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+      </div>
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">account_balance_wallet</span>Gestão Financeira do Parceiro</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">add_circle</span>Adicionar Lançamento</button></div>
+        <table><thead><tr><th>Tipo</th><th>Referência</th><th>Valor</th><th>Data Pagto</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+          <tr><td><span class="badge badge-blue">Anuidade</span></td><td>2024</td><td>R$ 450,00</td><td>15/01/2024</td><td><span class="badge badge-green">● Pago</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td><span class="badge badge-gray">Taxa Serv.</span></td><td>Fev/24</td><td>R$ 50,00</td><td>—</td><td><span class="badge badge-yellow">● Pendente</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+      </div>
+      <div class="action-bar"><button onclick="G('listar')" class="btn btn-secondary">Cancelar</button><button onclick="G('listar')" class="btn btn-primary"><span class="mi mi-sm">save</span>Salvar Cadastro</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     FINANCEIRO
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-financeiro">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Painel Financeiro</span>
+      <div class="topbar-right"><button class="topbar-icon-btn"><span class="mi">notifications</span></button><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Financeiro</h1><p>Gerencie o fluxo de caixa e transações da associação.</p></div>
+        <button onclick="G('novo-lancamento')" class="btn btn-primary"><span class="mi mi-sm">add</span>Novo Lançamento</button>
+      </div>
+      <div class="g3 mb18">
+        <div class="kpi-card">
+          <div class="flex-between mb8"><div class="kpi-icon" style="background:#f0fdf4;"><span class="mi" style="color:var(--success);">trending_up</span></div><span class="kpi-trend" style="background:var(--success-bg);color:var(--success);">↑ 12%</span></div>
+          <div class="kpi-label">Total a Receber</div><div class="kpi-value" style="color:var(--success);">R$ 15.200,00</div>
+        </div>
+        <div class="kpi-card">
+          <div class="flex-between mb8"><div class="kpi-icon" style="background:#fef2f2;"><span class="mi" style="color:var(--danger);">trending_down</span></div><span class="kpi-trend" style="background:var(--danger-bg);color:var(--danger);">↓ 5%</span></div>
+          <div class="kpi-label">Total a Pagar</div><div class="kpi-value" style="color:var(--danger);">R$ 8.450,00</div>
+        </div>
+        <div class="kpi-card">
+          <div class="flex-between mb8"><div class="kpi-icon" style="background:var(--brand-pale);"><span class="mi" style="color:var(--brand);">receipt_long</span></div><span class="kpi-trend" style="background:var(--success-bg);color:var(--success);">↑ 7.4%</span></div>
+          <div class="kpi-label">Resultado</div><div class="kpi-value" style="color:var(--brand);">R$ 6.750,00</div>
+        </div>
+      </div>
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">bar_chart</span>Receita vs Despesa — 6 Meses</h3></div>
+        <div class="card-body">
+          <div class="bar-chart" style="height:150px;">
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:55%;background:#34d399;width:22px;"></div><div class="bar" style="height:33%;background:#f87171;width:22px;"></div></div><span class="bar-label">Jan</span></div>
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:70%;background:#34d399;width:22px;"></div><div class="bar" style="height:46%;background:#f87171;width:22px;"></div></div><span class="bar-label">Fev</span></div>
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:58%;background:#34d399;width:22px;"></div><div class="bar" style="height:40%;background:#f87171;width:22px;"></div></div><span class="bar-label">Mar</span></div>
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:84%;background:#34d399;width:22px;"></div><div class="bar" style="height:54%;background:#f87171;width:22px;"></div></div><span class="bar-label">Abr</span></div>
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:100%;background:#34d399;width:22px;"></div><div class="bar" style="height:28%;background:#f87171;width:22px;"></div></div><span class="bar-label">Mai</span></div>
+            <div class="bar-group"><div class="bars"><div class="bar" style="height:90%;background:#34d399;width:22px;"></div><div class="bar" style="height:42%;background:#f87171;width:22px;"></div></div><span class="bar-label">Jun</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-filters">
+          <div class="search-bar" style="flex:1;"><span class="mi">search</span><input type="text" class="form-input" placeholder="Buscar lançamentos..." style="padding-left:34px;"/></div>
+          <select class="form-input" style="max-width:130px;"><option>Tipo: Todos</option><option>Receita</option><option>Despesa</option></select>
+          <select class="form-input" style="max-width:140px;"><option>Status: Todos</option><option>Pago</option><option>Pendente</option><option>Atrasado</option></select>
+          <button class="btn btn-secondary btn-sm"><span class="mi mi-sm">calendar_today</span>Período</button>
+        </div>
+        <table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+          <tr><td style="color:var(--text-muted);">15/10/2025</td><td style="font-weight:600;">Taxa Condominial Apto 102</td><td><span class="badge badge-gray">Receitas Mensais</span></td><td style="font-weight:700;color:var(--success);">R$ 350,00</td><td><span class="badge badge-green">● Pago</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--text-muted);">12/10/2025</td><td style="font-weight:600;">Manutenção Jardim Central</td><td><span class="badge badge-gray">Manutenção</span></td><td style="font-weight:700;color:var(--danger);">R$ 1.200,00</td><td><span class="badge badge-yellow">● Pendente</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--text-muted);">05/10/2025</td><td style="font-weight:600;">Conta de Energia — Áreas Comuns</td><td><span class="badge badge-gray">Utilidades</span></td><td style="font-weight:700;color:var(--danger);">R$ 4.580,20</td><td><span class="badge badge-red">● Atrasado</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--text-muted);">01/10/2025</td><td style="font-weight:600;">Reserva Salão de Festas</td><td><span class="badge badge-gray">Extras</span></td><td style="font-weight:700;color:var(--success);">R$ 150,00</td><td><span class="badge badge-green">● Pago</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+        <div class="table-footer"><span>Exibindo 4 de 28 lançamentos</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     NOVO LANÇAMENTO
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-novo-lancamento">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Novo Lançamento Financeiro</span>
+      <div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('financeiro')">Financeiro</a><span class="mi mi-sm">chevron_right</span><span class="current">Novo Lançamento</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Novo Lançamento</h1></div></div>
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">receipt_long</span>Detalhes da Transação</h3></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:16px;">
+          <div>
+            <label class="form-label">Tipo de Lançamento</label>
+            <div style="display:flex;gap:10px;margin-top:5px;">
+              <button class="toggle-btn" id="btn-pagar" onclick="ST('pagar')"><span class="mi mi-sm">trending_down</span>A Pagar</button>
+              <button class="toggle-btn active-receive" id="btn-receber" onclick="ST('receber')"><span class="mi mi-sm">trending_up</span>A Receber</button>
+            </div>
+          </div>
+          <div><label class="form-label">Descrição</label><input type="text" class="form-input" placeholder="Ex: Mensalidade de associado ou Aluguel da sede"/></div>
+          <div class="g2">
+            <div><label class="form-label">CPF / CNPJ Beneficiário/Pagador</label><input type="text" class="form-input" placeholder="000.000.000-00"/></div>
+            <div><label class="form-label">Valor (R$)</label><input type="text" class="form-input" placeholder="R$ 0,00"/></div>
+          </div>
+          <div class="g3">
+            <div>
+              <label class="form-label">Categoria / Tipo de Lançamento</label>
+              <select class="form-input">
+                <option>Selecione uma categoria</option>
+                <option>Anuidade</option>
+                <option>Mensalidade</option>
+                <option>Doação</option>
+                <option>Multa</option>
+                <option>Manutenção</option>
+                <option>Utilidades</option>
+                <option>Extras</option>
+              </select>
+            </div>
+            <div><label class="form-label">Data Vencimento</label><input type="date" class="form-input"/></div>
+            <div><label class="form-label">Data Pagamento</label><input type="date" class="form-input"/></div>
+          </div>
+          <div class="g3">
+            <div>
+              <label class="form-label">Conta Subordinada (automático)</label>
+              <select class="form-input" id="conta-sub-select">
+                <option>— será preenchida pela regra —</option>
+                <option>001 — Anuidades</option>
+                <option>002 — Mensalidades</option>
+                <option>003 — Doações</option>
+                <option>004 — Multas</option>
+                <option>005 — Manutenção</option>
+              </select>
+            </div>
+            <div><label class="form-label">Forma de Pagamento</label><select class="form-input"><option>Selecione o método</option><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option></select></div>
+            <div><label class="form-label">Status</label><select class="form-input"><option>Defina o status</option><option>Pago</option><option>Pendente</option><option>Atrasado</option></select></div>
+          </div>
+          <div style="background:var(--brand-pale);border:1px solid #bfdbfe;border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;gap:8px;">
+            <span class="mi mi-sm" style="color:var(--brand);">info</span>
+            <span style="font-size:12px;color:var(--brand);font-weight:500;">A conta subordinada será sugerida automaticamente com base na categoria selecionada, conforme as regras configuradas em <strong>Configurações → Relacionamentos</strong>.</span>
+          </div>
+          <div><label class="form-label">Observação</label><textarea class="form-input" rows="3" placeholder="Detalhes adicionais sobre esta transação..."></textarea></div>
+          <div class="action-bar"><button onclick="G('financeiro')" class="btn btn-secondary">Cancelar</button><button onclick="G('financeiro')" class="btn btn-primary"><span class="mi mi-sm">check_circle</span>Salvar Lançamento</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     RELATÓRIOS
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-relatorios">
+
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Relatórios Financeiros</span>
+      <div class="topbar-right"><button class="topbar-icon-btn"><span class="mi">notifications</span></button><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div>
+    </div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><a onclick="G('financeiro')">Financeiro</a><span class="mi mi-sm">chevron_right</span><span class="current">Relatórios</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Relatórios Financeiros</h1><p>Filtre e exporte transações da associação.</p></div></div>
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">filter_alt</span>Filtros de Busca</h3></div>
+        <div class="card-body g12">
+          <div class="gc3"><label class="form-label">Período De</label><input type="date" class="form-input"/></div>
+          <div class="gc3"><label class="form-label">Período Até</label><input type="date" class="form-input"/></div>
+          <div class="gc3"><label class="form-label">Tipo</label><select class="form-input"><option>Todos</option><option>Receita</option><option>Despesa</option></select></div>
+          <div class="gc3"><label class="form-label">Status</label><select class="form-input"><option>Todos</option><option>Pago</option><option>Pendente</option><option>Vencido</option></select></div>
+          <div class="gc3"><label class="form-label">CPF/CNPJ</label><input type="text" class="form-input" placeholder="000.000.000-00"/></div>
+          <div class="gc6"><label class="form-label">Descrição</label><input type="text" class="form-input" placeholder="Filtrar por descrição..."/></div>
+          <div class="gc3" style="display:flex;align-items:flex-end;"><button class="btn btn-primary" style="width:100%;justify-content:center;"><span class="mi mi-sm">search</span>Filtrar</button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">table_chart</span>Tabela de Resultados</h3><div class="flex gap8"><button class="btn btn-secondary btn-sm"><span class="mi mi-sm">picture_as_pdf</span>PDF</button><button class="btn btn-secondary btn-sm"><span class="mi mi-sm">table_chart</span>Excel</button></div></div>
+        <table><thead><tr><th>Data</th><th>CPF/CNPJ</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Status</th></tr></thead><tbody>
+          <tr><td style="color:var(--text-muted);">15/06/2025</td><td style="color:var(--brand);font-size:12px;">123.456.789-00</td><td style="font-weight:600;">Mensalidade Associado #204</td><td><span class="badge badge-green">Receita</span></td><td style="font-weight:700;color:var(--success);">R$ 150,00</td><td><span class="badge badge-green">Pago</span></td></tr>
+          <tr><td style="color:var(--text-muted);">12/06/2025</td><td style="color:var(--brand);font-size:12px;">98.765.432/0001-99</td><td style="font-weight:600;">Manutenção de Ar Condicionado</td><td><span class="badge badge-red">Despesa</span></td><td style="font-weight:700;color:var(--danger);">R$ 450,00</td><td><span class="badge badge-yellow">Pendente</span></td></tr>
+          <tr><td style="color:var(--text-muted);">10/06/2025</td><td style="color:var(--brand);font-size:12px;">456.789.012-34</td><td style="font-weight:600;">Doação Evento Beneficente</td><td><span class="badge badge-green">Receita</span></td><td style="font-weight:700;color:var(--success);">R$ 2.500,00</td><td><span class="badge badge-green">Pago</span></td></tr>
+          <tr><td style="color:var(--text-muted);">08/06/2025</td><td style="color:var(--brand);font-size:12px;">00.123.456/0001-77</td><td style="font-weight:600;">Pagamento Energia Elétrica</td><td><span class="badge badge-red">Despesa</span></td><td style="font-weight:700;color:var(--danger);">R$ 1.230,00</td><td><span class="badge badge-green">Pago</span></td></tr>
+          <tr><td style="color:var(--text-muted);">05/06/2025</td><td style="color:var(--brand);font-size:12px;">11.222.333/0001-44</td><td style="font-weight:600;">Aluguel Sede Social</td><td><span class="badge badge-red">Despesa</span></td><td style="font-weight:700;color:var(--danger);">R$ 5.000,00</td><td><span class="badge badge-red">Vencido</span></td></tr>
+        </tbody></table>
+        <div class="table-footer"><span>Exibindo 5 de 142 registros</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONTAS REGENTES
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-contas-regentes">
+
+  <div class="main-content">
+    <div class="topbar"><button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Contas Regentes</span><div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div></div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('financeiro')">Financeiro</a><span class="mi mi-sm">chevron_right</span><span class="current">Contas Regentes</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Contas Regentes</h1><p>Gerencie as contas principais do plano de contas.</p></div></div>
+      <div class="form-section-card mb18">
+        <div class="section-title"><span class="mi mi-sm">add_circle</span>Cadastrar Nova Conta Regente</div>
+        <div class="g12 mb14">
+          <div class="gc2"><label class="form-label">Código</label><input type="text" class="form-input" placeholder="Ex: 001"/></div>
+          <div class="gc6"><label class="form-label">Nome da Conta Regente</label><input type="text" class="form-input" placeholder="Digite o nome da conta"/></div>
+          <div class="gc4"><label class="form-label">Tipo</label><select class="form-input"><option>Selecione o tipo</option><option>Receita</option><option>Despesa</option></select></div>
+          <div class="gc12"><label class="form-label">Observações</label><textarea class="form-input" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
+        </div>
+        <div class="flex" style="justify-content:flex-end;gap:9px;"><button class="btn btn-secondary">Limpar</button><button class="btn btn-primary">Salvar Conta</button></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">format_list_bulleted</span>Contas Registradas</h3><div class="search-bar"><span class="mi">search</span><input type="text" class="form-input" placeholder="Filtrar..." style="padding-left:34px;width:180px;"/></div></div>
+        <table><thead><tr><th>Código</th><th>Nome</th><th>Data Criação</th><th>Tipo</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+          <tr><td style="color:var(--brand);font-weight:700;">001</td><td style="font-weight:600;">Administração Central</td><td style="color:var(--text-muted);">12/05/2023</td><td><span class="badge badge-green">Receita</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">002</td><td style="font-weight:600;">Manutenção Predial</td><td style="color:var(--text-muted);">15/05/2023</td><td><span class="badge badge-red">Despesa</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">003</td><td style="font-weight:600;">Projetos Sociais</td><td style="color:var(--text-muted);">20/06/2023</td><td><span class="badge badge-green">Receita</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">004</td><td style="font-weight:600;">Eventos Anuais</td><td style="color:var(--text-muted);">02/08/2023</td><td><span class="badge badge-red">Despesa</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+        <div class="table-footer"><span>Exibindo 4 de 28 contas regentes</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">›</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONTAS SUBORDINADAS
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-contas-subordinadas">
+
+  <div class="main-content">
+    <div class="topbar"><button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Contas Subordinadas</span><div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div></div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('financeiro')">Financeiro</a><span class="mi mi-sm">chevron_right</span><span class="current">Contas Subordinadas</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Contas Subordinadas</h1><p>Subcontas vinculadas ao plano de contas regentes.</p></div></div>
+      <div class="form-section-card mb18">
+        <div class="section-title"><span class="mi mi-sm">add_circle</span>Cadastrar Nova Conta Subordinada</div>
+        <div class="g12 mb14">
+          <div class="gc3"><label class="form-label">Conta Regente</label><select class="form-input"><option>Selecione a conta</option><option>001 — Administração Central</option><option>002 — Manutenção Predial</option><option>003 — Projetos Sociais</option><option>004 — Eventos Anuais</option></select></div>
+          <div class="gc4"><label class="form-label">Nome da Conta Subordinada</label><input type="text" class="form-input" placeholder="Ex: Mensalidades"/></div>
+          <div class="gc2"><label class="form-label">Código</label><input type="text" class="form-input" placeholder="Ex: 001.02"/></div>
+          <div class="gc3"><label class="form-label">Tipo</label><select class="form-input"><option>Receita</option><option>Despesa</option></select></div>
+          <div class="gc12"><label class="form-label">Observações</label><textarea class="form-input" rows="2" placeholder="Detalhes adicionais..."></textarea></div>
+        </div>
+        <div class="flex" style="justify-content:flex-end;gap:9px;"><button class="btn btn-secondary">Limpar</button><button class="btn btn-primary">Salvar Conta</button></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">account_tree</span>Contas Subordinadas</h3><div class="search-bar"><span class="mi">search</span><input type="text" class="form-input" placeholder="Filtrar..." style="padding-left:34px;width:180px;"/></div></div>
+        <table><thead><tr><th>Código</th><th>Nome</th><th>Conta Regente</th><th>Tipo</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+          <tr><td style="color:var(--brand);font-weight:700;">001.01</td><td style="font-weight:600;">Anuidades</td><td style="color:var(--text-muted);">Administração Central</td><td><span class="badge badge-green">Receita</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">001.02</td><td style="font-weight:600;">Mensalidades</td><td style="color:var(--text-muted);">Administração Central</td><td><span class="badge badge-green">Receita</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">001.03</td><td style="font-weight:600;">Doações</td><td style="color:var(--text-muted);">Projetos Sociais</td><td><span class="badge badge-green">Receita</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="color:var(--brand);font-weight:700;">002.01</td><td style="font-weight:600;">Manutenção Elétrica</td><td style="color:var(--text-muted);">Manutenção Predial</td><td><span class="badge badge-red">Despesa</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+        <div class="table-footer"><span>Exibindo 4 de 12 contas</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">›</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONFIGURAÇÕES — ASSOCIAÇÃO
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-cfg-associacao">
+
+  <div class="main-content">
+    <div class="topbar"><button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Configurações — Associação</span><div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div></div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><span style="color:var(--text-muted);">Configurações</span><span class="mi mi-sm">chevron_right</span><span class="current">Associação</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Configurações da Associação</h1><p>Dados institucionais, identidade visual, planos e documentos.</p></div><button class="btn btn-primary btn-sm"><span class="mi mi-sm">save</span>Salvar Alterações</button></div>
+
+      <!-- Dados Institucionais -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">account_balance</span>Dados Institucionais</h3></div>
+        <div class="card-body g12">
+          <div class="gc6"><label class="form-label">Nome da Associação</label><input type="text" class="form-input" value="Associação de Moradores do Bairro Califórnia"/></div>
+          <div class="gc3"><label class="form-label">Sigla</label><input type="text" class="form-input" id="cfg-sigla" value="AMBC" oninput="document.getElementById('sidebar-logo-name').textContent=this.value||'AMBC'"/></div>
+          <div class="gc3"><label class="form-label">CNPJ</label><input type="text" class="form-input" value="12.345.678/0001-90"/></div>
+          <div class="gc4"><label class="form-label">E-mail Institucional</label><input type="email" class="form-input" value="contato@ambc.org.br"/></div>
+          <div class="gc4"><label class="form-label">Telefone</label><input type="tel" class="form-input" value="(51) 3333-0000"/></div>
+          <div class="gc4"><label class="form-label">Site</label><input type="text" class="form-input" value="www.ambc.org.br"/></div>
+          <div class="gc3"><label class="form-label">CEP</label><input type="text" class="form-input" value="90000-000"/></div>
+          <div class="gc6"><label class="form-label">Endereço da Sede</label><input type="text" class="form-input" value="Rua das Flores, 100 — Bairro Califórnia"/></div>
+          <div class="gc3"><label class="form-label">Cidade / UF</label><input type="text" class="form-input" value="Porto Alegre / RS"/></div>
+          <div class="gc12"><label class="form-label">Missão / Descrição</label><textarea class="form-input" rows="3">Associação sem fins lucrativos que promove a melhoria da qualidade de vida dos moradores do Bairro Califórnia por meio de ações sociais, culturais e de infraestrutura.</textarea></div>
+        </div>
+      </div>
+
+      <!-- Identidade Visual -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">palette</span>Identidade Visual</h3></div>
+        <div class="card-body">
+          <div class="g3 mb18">
+            <div>
+              <label class="form-label">Logo da Associação</label>
+              <input type="file" id="logo-file-input" accept="image/*" style="display:none;" onchange="handleLogoUpload(this)"/>
+              <div id="logo-upload-area" style="border:2px dashed var(--border);border-radius:var(--radius-sm);padding:20px;text-align:center;cursor:pointer;transition:all .15s;position:relative;"
+                onclick="document.getElementById('logo-file-input').click()"
+                onmouseover="this.style.borderColor='var(--brand)';this.style.background='var(--brand-pale)'"
+                onmouseout="this.style.borderColor=currentLogo?'var(--brand)':'var(--border)';this.style.background='transparent'">
+                <div id="logo-preview-wrap" style="display:none;margin-bottom:10px;">
+                  <img id="logo-preview-img" src="" alt="Preview" style="max-height:56px;max-width:100%;object-fit:contain;border-radius:6px;"/>
+                </div>
+                <span class="mi mi-lg" id="logo-upload-icon" style="color:var(--text-muted);display:block;margin-bottom:6px;">upload_file</span>
+                <p id="logo-upload-label" style="font-size:12px;color:var(--text-muted);margin:0;">Clique para enviar logo</p>
+                <p style="font-size:10px;color:var(--text-muted);margin-top:3px;">PNG, JPG — máx. 2MB</p>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:8px;">
+                <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;" onclick="document.getElementById('logo-file-input').click()"><span class="mi mi-sm">upload</span>Selecionar Imagem</button>
+                <button class="btn btn-secondary btn-sm" onclick="removeLogo()" id="logo-remove-btn" style="display:none;"><span class="mi mi-sm">delete</span>Remover</button>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Favicon / Ícone</label>
+              <div style="border:2px dashed var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:border-color .12s;" onmouseover="this.style.borderColor='var(--brand)'" onmouseout="this.style.borderColor='var(--border)'">
+                <span class="mi mi-lg" style="color:var(--text-muted);display:block;margin-bottom:6px;">image</span>
+                <p style="font-size:12px;color:var(--text-muted);margin:0;">Clique para enviar ícone</p>
+                <p style="font-size:10px;color:var(--text-muted);margin-top:3px;">PNG — 32×32 ou 64×64px</p>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Cor Principal</label>
+              <div class="flex-center gap10 mb8">
+                <input type="color" value="#1a73e8" id="cor-principal" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;" oninput="applyBrandColor(this.value)"/>
+                <input type="text" class="form-input" id="cor-principal-text" value="#1a73e8" style="flex:1;" oninput="applyBrandColor(this.value)"/>
+              </div>
+              <label class="form-label">Cor Secundária</label>
+              <div class="flex-center gap10">
+                <input type="color" value="#1557b0" style="width:40px;height:40px;border:none;border-radius:8px;cursor:pointer;"/>
+                <input type="text" class="form-input" value="#1557b0" style="flex:1;"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Planos -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">card_membership</span>Planos de Associação</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Novo Plano</button></div>
+        <div class="card-body">
+          <div style="display:flex;gap:14px;">
+            <div class="plan-card selected">
+              <div class="flex-between mb8"><span class="badge badge-green">Ativo</span><button class="icon-btn"><span class="mi mi-sm">edit</span></button></div>
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Associado Padrão</div>
+              <div class="plan-price">R$ 60,00 <span>/ anuidade</span></div>
+              <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Acesso à sede social</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Até 3 dependentes</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Participação em eventos</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span>Sala de reuniões</div>
+            </div>
+            <div class="plan-card">
+              <div class="flex-between mb8"><span class="badge badge-blue">Premium</span><button class="icon-btn"><span class="mi mi-sm">edit</span></button></div>
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Associado Premium</div>
+              <div class="plan-price">R$ 120,00 <span>/ anuidade</span></div>
+              <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Acesso à sede social</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Dependentes ilimitados</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Participação em eventos</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Sala de reuniões</div>
+            </div>
+            <div class="plan-card">
+              <div class="flex-between mb8"><span class="badge badge-teal">Parceiro</span><button class="icon-btn"><span class="mi mi-sm">edit</span></button></div>
+              <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Parceiro Comercial</div>
+              <div class="plan-price">R$ 450,00 <span>/ anuidade</span></div>
+              <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Divulgação no portal</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Desconto em eventos</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Certificado parceiro</div>
+              <div class="plan-feature"><span class="mi mi-sm" style="color:var(--success);">check_circle</span>Sala de reuniões</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documentos -->
+      <div class="card mb18">
+        <div class="card-header"><h3><span class="mi">description</span>Documentos e Estatuto</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">upload_file</span>Enviar Documento</button></div>
+        <table><thead><tr><th>Nome</th><th>Tipo</th><th>Versão</th><th>Data Upload</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+          <tr><td style="font-weight:600;">Estatuto Social AMBC</td><td><span class="badge badge-blue">PDF</span></td><td style="color:var(--text-muted);">v3.2</td><td style="color:var(--text-muted);">01/01/2024</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">download</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="font-weight:600;">Regimento Interno</td><td><span class="badge badge-blue">PDF</span></td><td style="color:var(--text-muted);">v2.0</td><td style="color:var(--text-muted);">15/06/2023</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">download</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          <tr><td style="font-weight:600;">Ata da Última Assembleia</td><td><span class="badge badge-gray">DOCX</span></td><td style="color:var(--text-muted);">2025</td><td style="color:var(--text-muted);">10/03/2025</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">download</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONFIGURAÇÕES — RELACIONAMENTOS
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-cfg-relacionamentos">
+
+  <div class="main-content">
+    <div class="topbar"><button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Configurações — Relacionamentos</span><div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div></div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><span style="color:var(--text-muted);">Configurações</span><span class="mi mi-sm">chevron_right</span><span class="current">Relacionamentos</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Regras de Relacionamento</h1><p>Configure como tipos de lançamento se vinculam automaticamente às contas subordinadas.</p></div></div>
+
+      <!-- Info banner -->
+      <div style="background:linear-gradient(135deg,var(--brand-pale),var(--brand-light));border:1px solid #bfdbfe;border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;">
+        <span class="mi" style="color:var(--brand);flex-shrink:0;margin-top:1px;">info</span>
+        <div>
+          <p style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Como funciona?</p>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Quando um novo lançamento financeiro é criado, o sistema verifica a <strong>Categoria do Lançamento</strong> e automaticamente sugere ou preenche a <strong>Conta Subordinada</strong> correspondente, de acordo com as regras abaixo. Isso evita erros de classificação contábil e agiliza o lançamento.</p>
+        </div>
+      </div>
+
+      <!-- Nova Regra -->
+      <div class="form-section-blue mb18">
+        <div class="section-title"><span class="mi mi-sm" style="color:#fff;">add_circle</span>Criar Nova Regra de Relacionamento</div>
+        <div class="g12 mb14">
+          <div class="gc4">
+            <label class="form-label">Categoria do Lançamento (Gatilho)</label>
+            <select class="form-input">
+              <option>Selecione a categoria</option>
+              <option>Anuidade</option>
+              <option>Mensalidade</option>
+              <option>Doação</option>
+              <option>Multa</option>
+              <option>Manutenção</option>
+              <option>Utilidades</option>
+              <option>Extras</option>
+            </select>
+          </div>
+          <div class="gc4">
+            <label class="form-label">Conta Subordinada (Destino Automático)</label>
+            <select class="form-input">
+              <option>Selecione a conta</option>
+              <option>001.01 — Anuidades (Administração Central)</option>
+              <option>001.02 — Mensalidades (Administração Central)</option>
+              <option>001.03 — Doações (Projetos Sociais)</option>
+              <option>001.04 — Multas (Administração Central)</option>
+              <option>002.01 — Manutenção Elétrica (Manutenção Predial)</option>
+            </select>
+          </div>
+          <div class="gc2">
+            <label class="form-label">Tipo de Lançamento</label>
+            <select class="form-input"><option>A Receber</option><option>A Pagar</option><option>Ambos</option></select>
+          </div>
+          <div class="gc2">
+            <label class="form-label">Ação</label>
+            <select class="form-input"><option>Sugerir (editável)</option><option>Preencher (fixo)</option></select>
+          </div>
+          <div class="gc12"><label class="form-label">Descrição da Regra</label><input type="text" class="form-input" placeholder="Ex: Ao lançar Anuidade, classificar em 001.01 — Anuidades"/></div>
+        </div>
+        <div class="flex" style="justify-content:flex-end;gap:9px;"><button class="btn btn-secondary">Limpar</button><button class="btn btn-primary"><span class="mi mi-sm">save</span>Salvar Regra</button></div>
+      </div>
+
+      <!-- Regras Cadastradas -->
+      <div class="card">
+        <div class="card-header"><h3><span class="mi">account_tree</span>Regras Cadastradas</h3><span class="badge badge-blue">5 regras ativas</span></div>
+        <div style="padding:14px;">
+          <div class="rule-card">
+            <div style="background:var(--success-bg);border-radius:8px;padding:8px;display:flex;align-items:center;"><span class="mi" style="color:var(--success);">category</span></div>
+            <span class="mi rule-arrow">arrow_forward</span>
+            <div class="rule-info">
+              <div class="rule-title">Anuidade → 001.01 — Anuidades</div>
+              <div class="rule-desc">Ao criar lançamento do tipo <strong>Anuidade</strong>, preencher conta subordinada com <strong>001.01</strong> (Administração Central)</div>
+            </div>
+            <div class="flex-center gap8">
+              <span class="badge badge-green">A Receber</span>
+              <span class="badge badge-blue">Preencher (fixo)</span>
+              <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              <button class="icon-btn delete"><span class="mi mi-sm">delete</span></button>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div style="background:var(--brand-light);border-radius:8px;padding:8px;display:flex;align-items:center;"><span class="mi" style="color:var(--brand);">payments</span></div>
+            <span class="mi rule-arrow">arrow_forward</span>
+            <div class="rule-info">
+              <div class="rule-title">Mensalidade → 001.02 — Mensalidades</div>
+              <div class="rule-desc">Ao criar lançamento do tipo <strong>Mensalidade</strong>, sugerir conta subordinada <strong>001.02</strong> (Administração Central)</div>
+            </div>
+            <div class="flex-center gap8">
+              <span class="badge badge-green">A Receber</span>
+              <span class="badge badge-gray">Sugerir (editável)</span>
+              <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              <button class="icon-btn delete"><span class="mi mi-sm">delete</span></button>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div style="background:var(--purple-bg);border-radius:8px;padding:8px;display:flex;align-items:center;"><span class="mi" style="color:var(--purple);">volunteer_activism</span></div>
+            <span class="mi rule-arrow">arrow_forward</span>
+            <div class="rule-info">
+              <div class="rule-title">Doação → 001.03 — Doações</div>
+              <div class="rule-desc">Ao criar lançamento do tipo <strong>Doação</strong>, preencher conta subordinada com <strong>001.03</strong> (Projetos Sociais)</div>
+            </div>
+            <div class="flex-center gap8">
+              <span class="badge badge-green">A Receber</span>
+              <span class="badge badge-blue">Preencher (fixo)</span>
+              <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              <button class="icon-btn delete"><span class="mi mi-sm">delete</span></button>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div style="background:var(--danger-bg);border-radius:8px;padding:8px;display:flex;align-items:center;"><span class="mi" style="color:var(--danger);">gavel</span></div>
+            <span class="mi rule-arrow">arrow_forward</span>
+            <div class="rule-info">
+              <div class="rule-title">Multa → 001.04 — Multas</div>
+              <div class="rule-desc">Ao criar lançamento do tipo <strong>Multa</strong>, preencher conta subordinada com <strong>001.04</strong> (Administração Central)</div>
+            </div>
+            <div class="flex-center gap8">
+              <span class="badge badge-green">A Receber</span>
+              <span class="badge badge-blue">Preencher (fixo)</span>
+              <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              <button class="icon-btn delete"><span class="mi mi-sm">delete</span></button>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div style="background:#fff7ed;border-radius:8px;padding:8px;display:flex;align-items:center;"><span class="mi" style="color:#ea580c;">build</span></div>
+            <span class="mi rule-arrow">arrow_forward</span>
+            <div class="rule-info">
+              <div class="rule-title">Manutenção → 002.01 — Manutenção Elétrica</div>
+              <div class="rule-desc">Ao criar lançamento do tipo <strong>Manutenção</strong>, sugerir conta subordinada <strong>002.01</strong> (Manutenção Predial)</div>
+            </div>
+            <div class="flex-center gap8">
+              <span class="badge badge-red">A Pagar</span>
+              <span class="badge badge-gray">Sugerir (editável)</span>
+              <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              <button class="icon-btn delete"><span class="mi mi-sm">delete</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONFIGURAÇÕES GERAIS (com Usuários dentro)
+════════════════════════════════════════════════ -->
+<div class="screen" id="screen-cfg-geral">
+
+  <div class="main-content">
+    <div class="topbar"><button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Configurações Gerais</span><div class="topbar-right"><div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div></div></div>
+    <div class="page-body">
+      <div class="breadcrumb"><a onclick="G('painel')">Início</a><span class="mi mi-sm">chevron_right</span><span style="color:var(--text-muted);">Configurações</span><span class="mi mi-sm">chevron_right</span><span class="current">Configurações Gerais</span></div>
+      <div class="page-header"><div class="page-header-left"><h1>Configurações Gerais</h1><p>Preferências do sistema, notificações e gerenciamento de usuários.</p></div><button class="btn btn-primary btn-sm"><span class="mi mi-sm">save</span>Salvar Preferências</button></div>
+
+      <div class="g2 mb18" style="align-items:flex-start;">
+        <!-- Sistema -->
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">tune</span>Preferências do Sistema</h3></div>
+          <div class="card-body">
+            <div class="settings-section">
+              <div class="settings-section-title">Regional</div>
+              <div class="g2 mb14">
+                <div><label class="form-label">Idioma</label><select class="form-input"><option>Português (BR)</option><option>English</option><option>Español</option></select></div>
+                <div><label class="form-label">Fuso Horário</label><select class="form-input"><option>América/São_Paulo (UTC-3)</option><option>América/Manaus (UTC-4)</option></select></div>
+                <div><label class="form-label">Formato de Data</label><select class="form-input"><option>DD/MM/AAAA</option><option>MM/DD/YYYY</option></select></div>
+                <div><label class="form-label">Moeda</label><select class="form-input"><option>Real (R$)</option><option>Dólar ($)</option><option>Euro (€)</option></select></div>
+              </div>
+            </div>
+            <div class="settings-section">
+              <div class="settings-section-title">Notificações</div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">E-mail de vencimentos</div><div class="settings-row-desc">Avisar quando lançamentos estiverem próximos do vencimento</div></div>
+                <button class="toggle-switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Alertas de inadimplência</div><div class="settings-row-desc">Notificar associados com mensalidades atrasadas</div></div>
+                <button class="toggle-switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Resumo financeiro semanal</div><div class="settings-row-desc">Receber relatório por e-mail toda segunda-feira</div></div>
+                <button class="toggle-switch" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Novos cadastros</div><div class="settings-row-desc">Notificar quando um novo associado for registrado</div></div>
+                <button class="toggle-switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+            <div class="settings-section">
+              <div class="settings-section-title">Segurança</div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Autenticação em 2 etapas</div><div class="settings-row-desc">Exigir verificação extra ao fazer login</div></div>
+                <button class="toggle-switch" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Expirar sessão após inatividade</div><div class="settings-row-desc">Encerrar sessão após 30 minutos sem uso</div></div>
+                <button class="toggle-switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+            <div>
+              <label class="form-label">Dias para alerta de vencimento</label>
+              <input type="number" class="form-input" value="5" style="max-width:100px;"/>
+              <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Notificar X dias antes do vencimento de um lançamento.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usuários do Sistema -->
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="card">
+            <div class="card-header"><h3><span class="mi">manage_accounts</span>Usuários do Sistema</h3><button class="btn btn-primary btn-sm"><span class="mi mi-sm">person_add</span>Novo Usuário</button></div>
+            <div class="card-body">
+              <!-- Novo usuário form -->
+              <div style="background:var(--bg-page);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;">
+                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Cadastrar Novo Usuário</p>
+                <div class="g2 mb10">
+                  <div><label class="form-label">Nome Completo</label><input type="text" class="form-input" placeholder="Nome do usuário"/></div>
+                  <div><label class="form-label">E-mail</label><input type="email" class="form-input" placeholder="email@ambc.org.br"/></div>
+                  <div><label class="form-label">Perfil de Acesso</label><select class="form-input"><option>Administrador</option><option>Financeiro</option><option>Operacional</option><option>Somente Leitura</option></select></div>
+                  <div><label class="form-label">Senha Temporária</label><input type="password" class="form-input" placeholder="Definir senha inicial"/></div>
+                </div>
+                <div class="flex" style="justify-content:flex-end;"><button class="btn btn-primary btn-sm">Criar Usuário</button></div>
+              </div>
+              <!-- Usuários cadastrados -->
+              <div class="user-card">
+                <div class="user-avatar-lg">A</div>
+                <div style="flex:1;"><div class="user-card-name">Administrador AMBC</div><div class="user-card-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d7b6b3babeb997b6bab5b4f9b8a5b0f9b5a5">[email&#160;protected]</a></div></div>
+                <span class="badge badge-blue">Administrador</span>
+                <span class="badge badge-green">● Ativo</span>
+                <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              </div>
+              <div class="user-card">
+                <div class="user-avatar-lg" style="background:#f0fdf4;color:var(--success);border-color:var(--success);">C</div>
+                <div style="flex:1;"><div class="user-card-name">Carlos Financeiro</div><div class="user-card-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="503331223c3f2310313d32337e3f22377e3222">[email&#160;protected]</a></div></div>
+                <span class="badge badge-teal">Financeiro</span>
+                <span class="badge badge-green">● Ativo</span>
+                <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              </div>
+              <div class="user-card">
+                <div class="user-avatar-lg" style="background:#fff7ed;color:#ea580c;border-color:#ea580c;">P</div>
+                <div style="flex:1;"><div class="user-card-name">Paula Operacional</div><div class="user-card-role"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddadbca8b1bc9dbcb0bfbef3b2afbaf3bfaf">[email&#160;protected]</a></div></div>
+                <span class="badge badge-gray">Operacional</span>
+                <span class="badge badge-yellow">● Pendente</span>
+                <button class="icon-btn"><span class="mi mi-sm">edit</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Permissões por Perfil -->
+          <div class="card">
+            <div class="card-header"><h3><span class="mi">shield</span>Permissões por Perfil</h3></div>
+            <div class="card-body">
+              <table style="font-size:12px;">
+                <thead><tr><th>Módulo</th><th style="text-align:center;">Admin</th><th style="text-align:center;">Financeiro</th><th style="text-align:center;">Operacional</th><th style="text-align:center;">Leitura</th></tr></thead>
+                <tbody>
+                  <tr><td style="font-weight:600;">Painel</td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td></tr>
+                  <tr><td style="font-weight:600;">Cadastros</td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td></tr>
+                  <tr><td style="font-weight:600;">Financeiro</td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td></tr>
+                  <tr><td style="font-weight:600;">Relatórios</td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td></tr>
+                  <tr><td style="font-weight:600;">Configurações</td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--success);">check_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td><td style="text-align:center;"><span class="mi mi-sm" style="color:var(--text-muted);">remove_circle</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- TABELAS AUXILIARES -->
+<div class="screen" id="screen-tabelas-auxiliares">
+  <div class="main-content">
+    <div class="topbar">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span class="mi">menu</span></button><span class="topbar-title">Tabelas Auxiliares</span>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn"><span class="mi">notifications</span></button>
+        <div class="topbar-user"><div class="topbar-user-name">Admin AMBC</div><div class="avatar">A</div></div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="page-header">
+        <div class="page-header-left"><h1>Tabelas Auxiliares</h1><p>Gerencie os valores padrão utilizados nos formulários do sistema.</p></div>
+      </div>
+      <div class="aux-tabs" id="aux-tabs-container">
+        <button class="aux-tab active" onclick="auxTab('dependentes',this)"><span class="mi mi-sm">family_restroom</span> Dependentes</button>
+        <button class="aux-tab" onclick="auxTab('genero',this)"><span class="mi mi-sm">wc</span> Gênero</button>
+        <button class="aux-tab" onclick="auxTab('parentesco',this)"><span class="mi mi-sm">account_tree</span> Parentesco</button>
+        <button class="aux-tab" onclick="auxTab('profissao',this)"><span class="mi mi-sm">work</span> Profissão</button>
+        <button class="aux-tab" onclick="auxTab('estadocivil',this)"><span class="mi mi-sm">favorite</span> Estado Civil</button>
+        <button class="aux-tab" onclick="auxTab('status',this)"><span class="mi mi-sm">toggle_on</span> Status</button>
+      </div>
+
+      <!-- Dependentes -->
+      <div class="aux-panel active" id="aux-dependentes">
+        <div class="card">
+          <div class="card-header">
+            <h3><span class="mi">family_restroom</span>Listagem de Dependentes</h3>
+            <div class="flex-center gap8">
+              <span class="badge badge-blue" id="dep-count-badge">4 registros</span>
+              <button class="btn btn-secondary btn-sm" onclick="exportDepReport()"><span class="mi mi-sm">picture_as_pdf</span>Gerar Relatório</button>
+            </div>
+          </div>
+          <!-- Filtros -->
+          <div style="padding:12px 16px;background:#fafbfc;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;">
+            <div class="search-bar" style="flex:2;min-width:160px;">
+              <span class="mi">search</span>
+              <input type="text" class="form-input" id="dep-filter-nome" placeholder="Buscar por nome..." style="padding-left:34px;" oninput="filterDependentes()"/>
+            </div>
+            <div style="flex:1;min-width:130px;">
+              <label class="form-label" style="font-size:11px;margin-bottom:3px;">Parentesco</label>
+              <select class="form-input" id="dep-filter-par" onchange="filterDependentes()">
+                <option value="">Todos</option>
+                <option>Cônjuge</option>
+                <option>Filho(a)</option>
+                <option>Pai / Mãe</option>
+                <option>Irmão / Irmã</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:6px;min-width:200px;">
+              <div style="flex:1;">
+                <label class="form-label" style="font-size:11px;margin-bottom:3px;">Idade de</label>
+                <input type="number" class="form-input" id="dep-filter-idade-min" placeholder="0" min="0" max="120" oninput="filterDependentes()" style="text-align:center;"/>
+              </div>
+              <span style="padding-bottom:9px;color:var(--text-muted);font-size:13px;">até</span>
+              <div style="flex:1;">
+                <label class="form-label" style="font-size:11px;margin-bottom:3px;">Idade até</label>
+                <input type="number" class="form-input" id="dep-filter-idade-max" placeholder="120" min="0" max="120" oninput="filterDependentes()" style="text-align:center;"/>
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm" style="flex-shrink:0;" onclick="clearDepFilters()"><span class="mi mi-sm">filter_alt_off</span>Limpar</button>
+          </div>
+          <table>
+            <thead><tr><th>ID</th><th>Nome</th><th>Associado</th><th>Parentesco</th><th>Idade</th><th>Nascimento</th><th style="text-align:right;">Ações</th></tr></thead>
+            <tbody id="dep-aux-tbody">
+              <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Mariana Alcantara</td><td style="color:var(--text-muted);">Ricardo Alcantara</td><td><span class="badge badge-purple">Cônjuge</span></td><td style="color:var(--text-muted);">36 anos</td><td style="color:var(--text-muted);">22/08/1988</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+              <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Pedro Alcantara</td><td style="color:var(--text-muted);">Ricardo Alcantara</td><td><span class="badge badge-blue">Filho(a)</span></td><td style="color:var(--text-muted);">10 anos</td><td style="color:var(--text-muted);">10/01/2015</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+              <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Alice Mendonça</td><td style="color:var(--text-muted);">Ricardo Mendonça</td><td><span class="badge badge-blue">Filho(a)</span></td><td style="color:var(--text-muted);">15 anos</td><td style="color:var(--text-muted);">05/03/2010</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+              <tr><td style="color:var(--brand);font-weight:700;">#004</td><td style="font-weight:600;">Carlos Mendonça</td><td style="color:var(--text-muted);">Ricardo Mendonça</td><td><span class="badge badge-purple">Cônjuge</span></td><td style="color:var(--text-muted);">42 anos</td><td style="color:var(--text-muted);">14/11/1982</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            </tbody>
+          </table>
+          <div class="table-footer">
+            <span id="dep-aux-count">Exibindo 4 de 4 registros</span>
+            <div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">›</button></div>
+          </div>
+        </div>
+      </div>
+      <!-- Gênero -->
+      <div class="aux-panel" id="aux-genero">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">wc</span>Gênero</h3><span class="badge badge-blue">3 registros</span></div>
+          <div style="padding:14px 18px;background:var(--brand-pale);border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:flex-end;gap:10px;">
+              <div style="flex:1;"><label class="form-label" style="color:var(--brand);">Nome do Gênero</label><input type="text" class="form-input" placeholder="Ex: Não-binário"/></div>
+              <button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Adicionar</button>
+            </div>
+          </div>
+          <table><thead><tr><th>ID</th><th>Nome do Gênero</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+            <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Masculino</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Feminino</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Outro</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody></table>
+          <div class="table-footer"><span>Exibindo 3 de 3 registros</span></div>
+        </div>
+      </div>
+
+      <!-- Parentesco -->
+      <div class="aux-panel" id="aux-parentesco">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">account_tree</span>Parentesco</h3><span class="badge badge-blue">5 registros</span></div>
+          <div style="padding:14px 18px;background:var(--brand-pale);border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:flex-end;gap:10px;">
+              <div style="flex:1;"><label class="form-label" style="color:var(--brand);">Tipo de Parentesco</label><input type="text" class="form-input" placeholder="Ex: Sobrinho(a)"/></div>
+              <button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Adicionar</button>
+            </div>
+          </div>
+          <table><thead><tr><th>ID</th><th>Parentesco</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+            <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Cônjuge</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Filho(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Pai / Mãe</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#004</td><td style="font-weight:600;">Irmão / Irmã</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#005</td><td style="font-weight:600;">Outro</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody></table>
+          <div class="table-footer"><span>Exibindo 5 de 5 registros</span></div>
+        </div>
+      </div>
+
+      <!-- Profissão -->
+      <div class="aux-panel" id="aux-profissao">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">work</span>Profissão</h3><span class="badge badge-blue">6 registros</span></div>
+          <div style="padding:14px 18px;background:var(--brand-pale);border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:flex-end;gap:10px;">
+              <div style="flex:1;"><label class="form-label" style="color:var(--brand);">Nome da Profissão</label><input type="text" class="form-input" placeholder="Ex: Engenheiro(a)"/></div>
+              <button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Adicionar</button>
+            </div>
+          </div>
+          <table><thead><tr><th>ID</th><th>Profissão</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+            <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Analista de Sistemas</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Médico(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Professor(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#004</td><td style="font-weight:600;">Comerciante</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#005</td><td style="font-weight:600;">Aposentado(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#006</td><td style="font-weight:600;">Autônomo(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody></table>
+          <div class="table-footer"><span>Exibindo 6 de 6 registros</span></div>
+        </div>
+      </div>
+
+      <!-- Estado Civil -->
+      <div class="aux-panel" id="aux-estadocivil">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">favorite</span>Estado Civil</h3><span class="badge badge-blue">4 registros</span></div>
+          <div style="padding:14px 18px;background:var(--brand-pale);border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:flex-end;gap:10px;">
+              <div style="flex:1;"><label class="form-label" style="color:var(--brand);">Nome do Estado Civil</label><input type="text" class="form-input" placeholder="Ex: União Estável"/></div>
+              <button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Adicionar</button>
+            </div>
+          </div>
+          <table><thead><tr><th>ID</th><th>Nome do Estado Civil</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+            <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Solteiro(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Casado(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Divorciado(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#004</td><td style="font-weight:600;">Viúvo(a)</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody></table>
+          <div class="table-footer"><span>Exibindo 4 de 4 registros</span></div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="aux-panel" id="aux-status">
+        <div class="card">
+          <div class="card-header"><h3><span class="mi">toggle_on</span>Status</h3><span class="badge badge-blue">3 registros</span></div>
+          <div style="padding:14px 18px;background:var(--brand-pale);border-bottom:1px solid var(--border);">
+            <div style="display:flex;align-items:flex-end;gap:10px;">
+              <div style="flex:2;"><label class="form-label" style="color:var(--brand);">Nome do Status</label><input type="text" class="form-input" placeholder="Ex: Em Análise"/></div>
+              <div style="flex:1;"><label class="form-label" style="color:var(--brand);">Cor</label><select class="form-input"><option>Verde (Ativo)</option><option>Vermelho (Inativo)</option><option>Amarelo (Pendente)</option><option>Cinza (Neutro)</option></select></div>
+              <button class="btn btn-primary btn-sm"><span class="mi mi-sm">add</span>Adicionar</button>
+            </div>
+          </div>
+          <table><thead><tr><th>ID</th><th>Status</th><th>Badge</th><th style="text-align:right;">Ações</th></tr></thead><tbody>
+            <tr><td style="color:var(--brand);font-weight:700;">#001</td><td style="font-weight:600;">Ativo</td><td><span class="badge badge-green">● Ativo</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#002</td><td style="font-weight:600;">Inativo</td><td><span class="badge badge-gray">● Inativo</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+            <tr><td style="color:var(--brand);font-weight:700;">#003</td><td style="font-weight:600;">Pendente</td><td><span class="badge badge-yellow">● Pendente</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>
+          </tbody></table>
+          <div class="table-footer"><span>Exibindo 3 de 3 registros</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+<!-- ═══ MODALS ═══ -->
+<div class="modal-overlay" id="modal-dependente">
+  <div class="modal-box">
+    <div class="modal-header"><h3><span class="mi">family_restroom</span>Adicionar Dependente</h3><button class="modal-close" id="close-dep"><span class="mi">close</span></button></div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:12px;">
+        <div style="grid-column:span 8;"><label class="form-label">Nome Completo *</label><input type="text" class="form-input" id="dep-nome" placeholder="Nome do dependente"/></div>
+        <div style="grid-column:span 4;"><label class="form-label">Data Nascimento</label><input type="date" class="form-input" id="dep-nasc"/></div>
+        <div style="grid-column:span 4;"><label class="form-label">Parentesco</label><select class="form-input" id="dep-par"><option value="">Selecione</option><option>Cônjuge</option><option>Filho(a)</option><option>Pai / Mãe</option><option>Irmão / Irmã</option><option>Outro</option></select></div>
+        <div style="grid-column:span 4;"><label class="form-label">Gênero</label><select class="form-input"><option>Selecione</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select></div>
+        <div style="grid-column:span 4;"><label class="form-label">CPF</label><input type="text" class="form-input" placeholder="000.000.000-00"/></div>
+        <div style="grid-column:span 6;"><label class="form-label">E-mail</label><input type="email" class="form-input" placeholder="email@exemplo.com"/></div>
+        <div style="grid-column:span 6;"><label class="form-label">Telefone</label><input type="tel" class="form-input" placeholder="(00) 00000-0000"/></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" id="cancel-dep">Cancelar</button><button class="btn btn-primary" id="save-dep"><span class="mi mi-sm">save</span>Salvar Dependente</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-telefone">
+  <div class="modal-box">
+    <div class="modal-header"><h3><span class="mi">call</span>Adicionar Contato</h3><button class="modal-close" id="close-tel"><span class="mi">close</span></button></div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label class="form-label">Tipo</label><select class="form-input" id="m-tel-tipo"><option>Celular</option><option>Residencial</option><option>Comercial</option><option>WhatsApp</option><option>Recado</option></select></div>
+        <div><label class="form-label">Número *</label><input type="tel" class="form-input" id="m-tel-num" placeholder="(00) 00000-0000"/></div>
+        <div style="grid-column:span 2;"><label class="form-label">Observações</label><input type="text" class="form-input" id="m-tel-obs" placeholder="Ex: Principal, WhatsApp..."/></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" id="cancel-tel">Cancelar</button><button class="btn btn-primary" id="save-tel"><span class="mi mi-sm">save</span>Salvar Contato</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-lancamento-assoc">
+  <div class="modal-box modal-lg">
+    <div class="modal-header"><h3><span class="mi">account_balance_wallet</span>Adicionar Lançamento</h3><button class="modal-close" id="close-lanc"><span class="mi">close</span></button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="toggle-btn active-receive" id="m-btn-receber"><span class="mi mi-sm">trending_up</span>A Receber</button>
+        <button class="toggle-btn" id="m-btn-pagar"><span class="mi mi-sm">trending_down</span>A Pagar</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;">
+        <div style="grid-column:span 6;"><label class="form-label">Descrição *</label><input type="text" class="form-input" id="m-lanc-desc" placeholder="Ex: Mensalidade Março/2026"/></div>
+        <div style="grid-column:span 3;"><label class="form-label">Categoria</label><select class="form-input" id="m-lanc-cat"><option value="">Selecione</option><option>Anuidade</option><option>Mensalidade</option><option>Doação</option><option>Multa</option><option>Manutenção</option><option>Extras</option></select></div>
+        <div style="grid-column:span 3;"><label class="form-label">Conta Subordinada</label><select class="form-input" id="m-lanc-conta"><option>— automático —</option><option>001.01 — Anuidades</option><option>001.02 — Mensalidades</option><option>001.03 — Doações</option><option>001.04 — Multas</option></select></div>
+        <div style="grid-column:span 2;"><label class="form-label">Valor (R$) *</label><input type="text" class="form-input" id="m-lanc-valor" placeholder="R$ 0,00"/></div>
+        <div style="grid-column:span 2;"><label class="form-label">Vencimento</label><input type="date" class="form-input"/></div>
+        <div style="grid-column:span 2;"><label class="form-label">Data Pagamento</label><input type="date" class="form-input"/></div>
+        <div style="grid-column:span 3;"><label class="form-label">Forma Pagamento</label><select class="form-input"><option>Selecione</option><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option></select></div>
+        <div style="grid-column:span 3;"><label class="form-label">Status</label><select class="form-input" id="m-lanc-status"><option>Pendente</option><option>Pago</option><option>Atrasado</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" id="cancel-lanc">Cancelar</button><button class="btn btn-primary" id="save-lanc"><span class="mi mi-sm">check_circle</span>Salvar Lançamento</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="_toast" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.18);align-items:center;gap:8px;font-family:inherit;"></div>
+<script>
+
+function toggleSidebar() {
+  var s = document.getElementById('global-sidebar');
+  var o = document.getElementById('sidebar-overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('open');
+}
+// Auto-close sidebar on nav click (mobile)
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('#global-sidebar .nav-item').forEach(function(el){
+    el.addEventListener('click', function(){
+      if(window.innerWidth <= 900){
+        document.getElementById('global-sidebar').classList.remove('open');
+        document.getElementById('sidebar-overlay').classList.remove('open');
+      }
+    });
+  });
+});
+
+/* ═══ AMBC — SISTEMA DE GESTÃO ═══ */
+
+/* ── State ── */
+var dependentes = [
+  {nome:'Mariana Alcantara', parentesco:'Cônjuge',  idade:'35 anos', nasc:'22/08/1988'},
+  {nome:'Pedro Alcantara',   parentesco:'Filho(a)', idade:'9 anos',  nasc:'10/01/2015'}
+];
+var telefones = [
+  {tipo:'Celular',     num:'(11) 98765-4321', obs:'Principal - WhatsApp'},
+  {tipo:'Residencial', num:'(11) 4002-8922',  obs:'—'}
+];
+var lancamentos = [
+  {tipo:'Anuidade',    ref:'Fev/2025 a Fev/2026', conta:'001 — Anuidades',    valor:'R$ 60,00',  data:'15/02/2025', status:'Pago'},
+  {tipo:'Doação',      ref:'Reforma Parquinho',    conta:'003 — Doações',      valor:'R$ 300,00', data:'10/06/2025', status:'Pago'},
+  {tipo:'Mensalidade', ref:'Março/2026',           conta:'002 — Mensalidades', valor:'R$ 5,00',   data:'—',          status:'Pendente'},
+  {tipo:'Multa',       ref:'Infração Ruidosa',     conta:'004 — Multas',       valor:'R$ 250,00', data:'—',          status:'Atrasado'}
+];
+
+/* ── Screen names & nav groups ── */
+var SCREEN_NAMES = {
+  login:'Login', painel:'Painel Geral', listar:'Listar Cadastros',
+  'novo-associado':'Novo Associado', 'novo-parceiro':'Novo Parceiro',
+  financeiro:'Financeiro', 'novo-lancamento':'Novo Lançamento',
+  relatorios:'Relatórios', 'contas-regentes':'Contas Regentes',
+  'contas-subordinadas':'Contas Subordinadas',
+  'tabelas-auxiliares':'Tabelas Auxiliares',
+  'cfg-associacao':'Config. — Associação',
+  'cfg-relacionamentos':'Config. — Relacionamentos',
+  'cfg-geral':'Configurações Gerais',
+  'tabelas-auxiliares':'Tabelas Auxiliares'
+};
+var NAV_GROUPS = {
+  cad: ['listar','novo-associado','novo-parceiro'],
+  fin: ['financeiro','novo-lancamento','relatorios','contas-regentes','contas-subordinadas'],
+  aux: ['tabelas-auxiliares'],
+  aux: ['tabelas-auxiliares'],
+  cfg: ['cfg-associacao','cfg-relacionamentos','cfg-geral']
+};
+
+/* ── Navigation ── */
+function G(id) {
+  var shell      = document.getElementById('app-shell');
+  var loginEl    = document.getElementById('screen-login');
+  var contentArea= document.getElementById('content-area');
+
+  if (id === 'login') {
+    shell.style.display      = 'none';
+    loginEl.style.display    = 'flex';
+    document.getElementById('screen-indicator').textContent = 'Tela: Login';
+    return;
+  }
+
+  loginEl.style.display = 'none';
+  shell.style.display   = 'flex';
+
+  var template = document.querySelector('#screen-templates #screen-' + id);
+  if (!template) { console.warn('Screen not found:', id); return; }
+
+  contentArea.innerHTML = template.innerHTML;
+  contentArea.offsetHeight; // force reflow
+
+  attachHandlers(id);
+  updateSidebarActive(id);
+  document.getElementById('screen-indicator').textContent = 'Tela: ' + (SCREEN_NAMES[id] || id);
+}
+
+function updateSidebarActive(active) {
+  document.querySelectorAll('#global-sidebar .nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var navItem = document.getElementById('nav-' + active);
+  if (navItem) navItem.classList.add('active');
+  Object.keys(NAV_GROUPS).forEach(function(group) {
+    var screens = NAV_GROUPS[group];
+    var sub  = document.getElementById('sub-' + group);
+    var chev = document.getElementById('chev-' + group);
+    if (!sub) return;
+    if (screens.indexOf(active) >= 0) {
+      sub.classList.add('open');
+      if (chev) chev.style.transform = 'rotate(180deg)';
+    }
+  });
+}
+
+function toggleSub(subId, btnId) {
+  var sub  = document.getElementById(subId);
+  if (!sub) return;
+  var open = sub.classList.contains('open');
+  sub.classList.toggle('open', !open);
+  var chev = document.getElementById('chev-' + subId.replace('sub-',''));
+  if (chev) chev.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+/* ── Attach handlers after innerHTML swap ── */
+function attachHandlers(id) {
+  var ca = document.getElementById('content-area');
+  if (!ca) return;
+
+  /* Render lists */
+  if (id === 'novo-associado' || id === 'novo-parceiro') {
+    renderDependentes(); renderTelefones(); renderLancamentos();
+  }
+
+  /* Tabelas auxiliares tab buttons + filters */
+  if (id === 'tabelas-auxiliares') {
+    // Reconnect filter inputs (oninput stripped by innerHTML clone in some browsers)
+    setTimeout(function() {
+      var depNome = document.getElementById('dep-filter-nome');
+      var depPar  = document.getElementById('dep-filter-par');
+      var depMin  = document.getElementById('dep-filter-idade-min');
+      var depMax  = document.getElementById('dep-filter-idade-max');
+      var clearBtn= ca.querySelector('button[onclick*="clearDepFilters"]');
+      var repBtn  = ca.querySelector('button[onclick*="exportDepReport"]');
+      if (depNome) depNome.oninput  = filterDependentes;
+      if (depPar)  depPar.onchange  = filterDependentes;
+      if (depMin)  depMin.oninput   = filterDependentes;
+      if (depMax)  depMax.oninput   = filterDependentes;
+      if (clearBtn) clearBtn.onclick= clearDepFilters;
+      if (repBtn)   repBtn.onclick  = exportDepReport;
+    }, 0);
+    ['dependentes','genero','parentesco','profissao','estadocivil','status'].forEach(function(tab) {
+      var btn = document.getElementById('tab-btn-' + tab);
+      if (btn) btn.onclick = (function(t){ return function(){ auxTab(t, this); }; })(tab);
+    });
+  }
+
+  /* Partner type tabs */
+  var tpf = document.getElementById('tpf');
+  var tpj = document.getElementById('tpj');
+  if (tpf) tpf.onclick = function(){ SP('pf'); };
+  if (tpj) tpj.onclick = function(){ SP('pj'); };
+
+  /* Transaction toggles */
+  var bp = document.getElementById('btn-pagar');
+  var br = document.getElementById('btn-receber');
+  if (bp) bp.onclick = function(){ ST('pagar'); };
+  if (br) br.onclick = function(){ ST('receber'); };
+
+  /* Toggle switches */
+  ca.querySelectorAll('.toggle-switch').forEach(function(btn){
+    btn.onclick = function(){ this.classList.toggle('on'); };
+  });
+
+  /* Modal trigger buttons — scan all buttons in content-area */
+  ca.querySelectorAll('button').forEach(function(btn) {
+    var txt = btn.textContent || '';
+    if (txt.indexOf('Adicionar Dependente') >= 0)
+      btn.onclick = function(){ openModal('modal-dependente'); };
+    else if (txt.indexOf('Adicionar Contato') >= 0)
+      btn.onclick = function(){ openModal('modal-telefone'); };
+    else if (txt.indexOf('Adicionar Lançamento') >= 0)
+      btn.onclick = function(){ openModal('modal-lancamento-assoc'); };
+  });
+
+  /* Navigation buttons (breadcrumbs, cancel/save) */
+  ca.querySelectorAll('[onclick]').forEach(function(el) {
+    var oc = el.getAttribute('onclick') || '';
+    var m  = oc.match(/G\('([^']+)'\)/);
+    if (m) { var d = m[1]; el.onclick = function(){ G(d); }; }
+  });
+}
+
+/* ── Partner / transaction toggles ── */
+function SP(t) {
+  var fpf=document.getElementById('fpf'), fpj=document.getElementById('fpj');
+  var tpf=document.getElementById('tpf'), tpj=document.getElementById('tpj');
+  var pi=document.getElementById('pi'),   pt=document.getElementById('pt');
+  if(fpf) fpf.style.display = t==='pf'?'grid':'none';
+  if(fpj) fpj.style.display = t==='pj'?'grid':'none';
+  if(tpf) tpf.className = 'tab-btn'+(t==='pf'?' active':'');
+  if(tpj) tpj.className = 'tab-btn'+(t==='pj'?' active':'');
+  if(pi)  pi.textContent = t==='pj'?'business':'handshake';
+  if(pt)  pt.textContent = t==='pj'?'Dados da Empresa':'Dados do Parceiro';
+}
+function ST(t) {
+  var p=document.getElementById('btn-pagar'), r=document.getElementById('btn-receber');
+  if(p) p.className='toggle-btn'+(t==='pagar'?' active-pay':'');
+  if(r) r.className='toggle-btn'+(t==='receber'?' active-receive':'');
+}
+function modalST(t) {
+  var p=document.getElementById('m-btn-pagar'), r=document.getElementById('m-btn-receber');
+  if(p) p.className='toggle-btn'+(t==='pagar'?' active-pay':'');
+  if(r) r.className='toggle-btn'+(t==='receber'?' active-receive':'');
+}
+
+/* ── Aux tabs ── */
+function auxTab(name, btn) {
+  document.querySelectorAll('.aux-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.aux-tab').forEach(function(b){ b.classList.remove('active'); });
+  var panel = document.getElementById('aux-' + name);
+  if (panel) panel.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ── Modals ── */
+function openModal(id) {
+  var m = document.getElementById(id);
+  if (!m) return;
+  m.querySelectorAll('input:not([type=checkbox])').forEach(function(i){ i.value=''; });
+  m.querySelectorAll('select').forEach(function(s){ s.selectedIndex=0; });
+  m.querySelectorAll('textarea').forEach(function(t){ t.value=''; });
+  m.classList.add('open');
+}
+function closeModal(id) {
+  var m = document.getElementById(id); if (m) m.classList.remove('open');
+}
+
+/* Wire modal buttons (these are outside templates, always in DOM) */
+document.addEventListener('DOMContentLoaded', function() {
+  /* close buttons */
+  ['close-dep','cancel-dep'].forEach(function(id){ var el=document.getElementById(id); if(el) el.onclick=function(){ closeModal('modal-dependente'); }; });
+  ['close-tel','cancel-tel'].forEach(function(id){ var el=document.getElementById(id); if(el) el.onclick=function(){ closeModal('modal-telefone'); }; });
+  ['close-lanc','cancel-lanc'].forEach(function(id){ var el=document.getElementById(id); if(el) el.onclick=function(){ closeModal('modal-lancamento-assoc'); }; });
+  /* save buttons */
+  var sd=document.getElementById('save-dep');   if(sd) sd.onclick=saveDependente;
+  var st=document.getElementById('save-tel');   if(st) st.onclick=saveTelefone;
+  var sl=document.getElementById('save-lanc');  if(sl) sl.onclick=saveLancamento;
+  /* modal transaction type */
+  var mbp=document.getElementById('m-btn-pagar');   if(mbp) mbp.onclick=function(){ modalST('pagar'); };
+  var mbr=document.getElementById('m-btn-receber'); if(mbr) mbr.onclick=function(){ modalST('receber'); };
+  /* backdrop close */
+  document.querySelectorAll('.modal-overlay').forEach(function(m){
+    m.addEventListener('click', function(e){ if(e.target===m) m.classList.remove('open'); });
+  });
+});
+
+/* ── Save handlers ── */
+function saveDependente() {
+  var nome = document.getElementById('dep-nome') ? document.getElementById('dep-nome').value.trim() : '';
+  var nasc = document.getElementById('dep-nasc') ? document.getElementById('dep-nasc').value : '';
+  var par  = document.getElementById('dep-par')  ? document.getElementById('dep-par').value  : '';
+  if (!nome) { showToast('Informe o nome do dependente.','warn'); return; }
+  var nascFmt = nasc ? nasc.split('-').reverse().join('/') : '—';
+  var idade   = nasc ? Math.floor((new Date()-new Date(nasc))/(365.25*24*3600*1000))+' anos' : '—';
+  dependentes.push({nome:nome, parentesco:par||'—', idade:idade, nasc:nascFmt});
+  renderDependentes();
+  closeModal('modal-dependente');
+  showToast('Dependente adicionado com sucesso!','success');
+}
+function renderDependentes() {
+  var tbody = document.getElementById('dep-tbody'); if (!tbody) return;
+  tbody.innerHTML = dependentes.map(function(d){
+    var ini = d.nome.split(' ').map(function(w){return w[0];}).join('').substring(0,2).toUpperCase();
+    return '<tr><td><div class="flex-center gap8"><div style="width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:#64748b;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;">'+ini+'</div><span style="font-weight:600;">'+d.nome+'</span></div></td><td style="color:var(--text-muted);">'+d.parentesco+'</td><td style="color:var(--text-muted);">'+d.idade+'</td><td style="color:var(--text-muted);">'+d.nasc+'</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>';
+  }).join('');
+}
+
+function saveTelefone() {
+  var tipo = document.getElementById('m-tel-tipo') ? document.getElementById('m-tel-tipo').value : '';
+  var num  = document.getElementById('m-tel-num')  ? document.getElementById('m-tel-num').value.trim() : '';
+  var obs  = document.getElementById('m-tel-obs')  ? document.getElementById('m-tel-obs').value.trim() : '';
+  if (!num) { showToast('Informe o número de telefone.','warn'); return; }
+  telefones.push({tipo:tipo, num:num, obs:obs||'—'});
+  renderTelefones();
+  closeModal('modal-telefone');
+  showToast('Contato adicionado com sucesso!','success');
+}
+function renderTelefones() {
+  var tbody = document.getElementById('tel-tbody'); if (!tbody) return;
+  var bm = {Celular:'badge-blue',Residencial:'badge-gray',Comercial:'badge-teal',WhatsApp:'badge-green',Recado:'badge-yellow'};
+  tbody.innerHTML = telefones.map(function(t){
+    return '<tr><td><span class="badge '+(bm[t.tipo]||'badge-gray')+'">'+t.tipo+'</span></td><td style="font-weight:600;">'+t.num+'</td><td style="color:var(--text-muted);">'+t.obs+'</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>';
+  }).join('');
+}
+
+function saveLancamento() {
+  var desc  = document.getElementById('m-lanc-desc')  ? document.getElementById('m-lanc-desc').value.trim()  : '';
+  var valor = document.getElementById('m-lanc-valor') ? document.getElementById('m-lanc-valor').value.trim() : '';
+  var cat   = document.getElementById('m-lanc-cat');
+  var cont  = document.getElementById('m-lanc-conta');
+  var stat  = document.getElementById('m-lanc-status');
+  if (!desc||!valor) { showToast('Preencha descrição e valor.','warn'); return; }
+  lancamentos.push({
+    tipo:  cat  ? cat.options[cat.selectedIndex].text   : '—',
+    ref:   desc,
+    conta: cont ? cont.options[cont.selectedIndex].text : '—',
+    valor: valor, data:'—',
+    status: stat ? stat.options[stat.selectedIndex].text : 'Pendente'
+  });
+  renderLancamentos();
+  closeModal('modal-lancamento-assoc');
+  showToast('Lançamento adicionado com sucesso!','success');
+}
+function renderLancamentos() {
+  var tbody = document.getElementById('lanc-tbody'); if (!tbody) return;
+  var bs = {Pago:'badge-green',Pendente:'badge-yellow',Atrasado:'badge-red'};
+  tbody.innerHTML = lancamentos.map(function(l){
+    return '<tr><td><span class="badge badge-blue">'+l.tipo+'</span></td><td>'+l.ref+'</td><td style="color:var(--text-muted);font-size:12px;">'+l.conta+'</td><td>'+l.valor+'</td><td>'+l.data+'</td><td><span class="badge '+(bs[l.status]||'badge-gray')+'">● '+l.status+'</span></td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">visibility</span></button><button class="icon-btn"><span class="mi mi-sm">edit</span></button></td></tr>';
+  }).join('');
+}
+
+/* ── Toast ── */
+function showToast(msg, type) {
+  var t = document.getElementById('_toast');
+  if (!t) return;
+  var colors = {success:'#16a34a', warn:'#ca8a04', error:'#dc2626'};
+  var icons  = {success:'check_circle', warn:'warning', error:'error'};
+  t.style.background = colors[type] || '#1a73e8';
+  t.innerHTML = '<span style="font-family:\'Material Symbols Outlined\';font-size:18px;">'+(icons[type]||'info')+'</span> '+msg;
+  t.style.display = 'flex';
+  t.style.opacity = '1';
+  clearTimeout(t._tmr);
+  t._tmr = setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.style.display='none'; },300); }, 2800);
+}
+
+/* ── Start ── */
+G('login');
+
+// ── DEPENDENTES FILTER (Tabelas Auxiliares) ──
+var depAuxData = [
+  {id:'#001', nome:'Mariana Alcantara', assoc:'Ricardo Alcantara', par:'Cônjuge',  parBadge:'badge-purple', idade:36, nasc:'22/08/1988'},
+  {id:'#002', nome:'Pedro Alcantara',   assoc:'Ricardo Alcantara', par:'Filho(a)', parBadge:'badge-blue',   idade:10, nasc:'10/01/2015'},
+  {id:'#003', nome:'Alice Mendonça',    assoc:'Ricardo Mendonça',  par:'Filho(a)', parBadge:'badge-blue',   idade:15, nasc:'05/03/2010'},
+  {id:'#004', nome:'Carlos Mendonça',   assoc:'Ricardo Mendonça',  par:'Cônjuge',  parBadge:'badge-purple', idade:42, nasc:'14/11/1982'}
+];
+
+function filterDependentes() {
+  var nome    = (document.getElementById('dep-filter-nome')    || {value:''}).value.toLowerCase();
+  var par     = (document.getElementById('dep-filter-par')     || {value:''}).value;
+  var idadeMin= parseInt((document.getElementById('dep-filter-idade-min') || {value:''}).value) || 0;
+  var idadeMax= parseInt((document.getElementById('dep-filter-idade-max') || {value:''}).value) || 999;
+
+  var filtered = depAuxData.filter(function(d) {
+    var matchNome  = !nome || d.nome.toLowerCase().indexOf(nome) >= 0;
+    var matchPar   = !par  || d.par === par;
+    var matchIdade = d.idade >= idadeMin && d.idade <= idadeMax;
+    return matchNome && matchPar && matchIdade;
+  });
+
+  var tbody = document.getElementById('dep-aux-tbody');
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;"><span class="mi" style="display:block;font-size:32px;margin-bottom:8px;">search_off</span>Nenhum dependente encontrado com os filtros aplicados.</td></tr>';
+  } else {
+    tbody.innerHTML = filtered.map(function(d) {
+      return '<tr><td style="color:var(--brand);font-weight:700;">'+d.id+'</td><td style="font-weight:600;">'+d.nome+'</td><td style="color:var(--text-muted);">'+d.assoc+'</td><td><span class="badge '+d.parBadge+'">'+d.par+'</span></td><td style="color:var(--text-muted);">'+d.idade+' anos</td><td style="color:var(--text-muted);">'+d.nasc+'</td><td style="text-align:right;"><button class="icon-btn"><span class="mi mi-sm">edit</span></button><button class="icon-btn delete"><span class="mi mi-sm">delete</span></button></td></tr>';
+    }).join('');
+  }
+
+  var countEl = document.getElementById('dep-aux-count');
+  if (countEl) countEl.textContent = 'Exibindo ' + filtered.length + ' de ' + depAuxData.length + ' registros';
+  var badgeEl = document.getElementById('dep-count-badge');
+  if (badgeEl) badgeEl.textContent = filtered.length + ' registro' + (filtered.length !== 1 ? 's' : '');
+}
+
+function clearDepFilters() {
+  var fields = ['dep-filter-nome','dep-filter-par','dep-filter-idade-min','dep-filter-idade-max'];
+  fields.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  filterDependentes();
+}
+
+function exportDepReport() {
+  showToast('Relatório de dependentes gerado!', 'success');
+}
+
+
+// ── LOGO & BRANDING ──
+var currentLogo = "data:image/png;base64,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";
+
+function handleLogoUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (file.size > 3 * 1024 * 1024) { showToast('Imagem muito grande. Máx. 2MB.', 'warn'); return; }
+
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    currentLogo = e.target.result;
+    applyLogo(currentLogo);
+    showToast('Logo aplicado com sucesso!', 'success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyLogo(src) {
+  // Update sidebar
+  var sidebarImg  = document.getElementById('sidebar-logo-img');
+  var sidebarIcon = document.getElementById('sidebar-logo-default');
+  var sidebarArea = document.getElementById('sidebar-logo-icon');
+  if (sidebarImg)  { sidebarImg.src = src; sidebarImg.style.display = 'block'; }
+  if (sidebarIcon) sidebarIcon.style.display = 'none';
+  if (sidebarArea) { sidebarArea.style.background = 'transparent'; sidebarArea.style.padding = '0'; sidebarArea.style.boxShadow = 'none'; }
+
+  // Update preview in settings
+  var previewImg  = document.getElementById('logo-preview-img');
+  var previewWrap = document.getElementById('logo-preview-wrap');
+  var uploadIcon  = document.getElementById('logo-upload-icon');
+  var uploadLabel = document.getElementById('logo-upload-label');
+  var removeBtn   = document.getElementById('logo-remove-btn');
+  var uploadArea  = document.getElementById('logo-upload-area');
+  if (previewImg)  { previewImg.src = src; }
+  if (previewWrap) previewWrap.style.display = 'block';
+  if (uploadIcon)  uploadIcon.style.display = 'none';
+  if (uploadLabel) uploadLabel.textContent = 'Clique para trocar o logo';
+  if (removeBtn)   removeBtn.style.display = 'inline-flex';
+  if (uploadArea)  uploadArea.style.borderColor = 'var(--brand)';
+}
+
+function removeLogo() {
+  currentLogo = null;
+  // Reset sidebar
+  var sidebarImg  = document.getElementById('sidebar-logo-img');
+  var sidebarIcon = document.getElementById('sidebar-logo-default');
+  var sidebarArea = document.getElementById('sidebar-logo-icon');
+  if (sidebarImg)  { sidebarImg.style.display = 'none'; sidebarImg.src = ''; }
+  if (sidebarIcon) sidebarIcon.style.display = 'block';
+  if (sidebarArea) { sidebarArea.style.background = ''; sidebarArea.style.padding = ''; sidebarArea.style.boxShadow = ''; }
+
+  // Reset preview
+  var previewWrap = document.getElementById('logo-preview-wrap');
+  var uploadIcon  = document.getElementById('logo-upload-icon');
+  var uploadLabel = document.getElementById('logo-upload-label');
+  var removeBtn   = document.getElementById('logo-remove-btn');
+  var uploadArea  = document.getElementById('logo-upload-area');
+  var fileInput   = document.getElementById('logo-file-input');
+  if (previewWrap) previewWrap.style.display = 'none';
+  if (uploadIcon)  uploadIcon.style.display = 'block';
+  if (uploadLabel) uploadLabel.textContent = 'Clique para enviar logo';
+  if (removeBtn)   removeBtn.style.display = 'none';
+  if (uploadArea)  uploadArea.style.borderColor = 'var(--border)';
+  if (fileInput)   fileInput.value = '';
+  showToast('Logo removido.', 'success');
+}
+
+function applyBrandColor(color) {
+  if (!/^#[0-9a-fA-F]{3,6}$/.test(color)) return;
+  document.documentElement.style.setProperty('--brand', color);
+  // Sync text + color inputs
+  var cp = document.getElementById('cor-principal');
+  var ct = document.getElementById('cor-principal-text');
+  if (cp && cp.value !== color) cp.value = color;
+  if (ct && ct.value !== color) ct.value = color;
+  showToast('Cor aplicada!', 'success');
+}
+
+// Re-apply logo & color on cfg-associacao screen load
+var _origG = G;
+G = function(id) {
+  _origG(id);
+  if (id === 'cfg-associacao') {
+    setTimeout(function() {
+      if (currentLogo) applyLogo(currentLogo);
+      var cp = document.getElementById('cor-principal');
+      if (cp) {
+        cp.oninput = function(){ applyBrandColor(this.value); };
+      }
+      var ct = document.getElementById('cor-principal-text');
+      if (ct) {
+        ct.oninput = function(){ applyBrandColor(this.value); };
+      }
+      var fileInput = document.getElementById('logo-file-input');
+      if (fileInput) fileInput.onchange = function(){ handleLogoUpload(this); };
+      var removeBtn = document.getElementById('logo-remove-btn');
+      if (removeBtn) removeBtn.onclick = removeLogo;
+      var uploadArea = document.getElementById('logo-upload-area');
+      if (uploadArea) uploadArea.onclick = function(){ document.getElementById('logo-file-input').click(); };
+      var sigla = document.getElementById('cfg-sigla');
+      if (sigla) sigla.oninput = function(){
+        document.getElementById('sidebar-logo-name').textContent = this.value || 'AMBC';
+      };
+    }, 50);
+  }
+};
+
+</script>
+
+</body>
+</html>
