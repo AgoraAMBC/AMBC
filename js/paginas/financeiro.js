@@ -196,7 +196,21 @@ function renderizarResumoContas() {
   `).join('');
 }
 
-let modoEdicaoRegente = null;
+function abrirModalRegente(conta = null) {
+  document.getElementById('modal-regente-titulo').textContent   = conta ? 'Editar Conta Regente' : 'Nova Conta Regente';
+  document.getElementById('regente-id').value                   = conta?.id_conta_regente ?? '';
+  document.getElementById('regente-nome').value                 = conta?.descricao ?? '';
+  document.getElementById('regente-tipo').value                 = conta?.tipo ?? 'receita';
+  document.getElementById('regente-descricao').value            = conta?.observacao ?? '';
+  document.getElementById('modal-conta-regente').hidden         = false;
+  setTimeout(() => document.getElementById('regente-nome')?.focus(), 50);
+}
+
+function fecharModalRegente() {
+  document.getElementById('modal-conta-regente').hidden = true;
+  document.getElementById('form-conta-regente')?.reset();
+  document.getElementById('regente-id').value = '';
+}
 
 async function iniciarContasRegentes() {
   await renderizarContasRegentes();
@@ -208,24 +222,32 @@ async function iniciarContasRegentes() {
     cleanup.push(() => busca.removeEventListener('input', handler));
   }
 
+  document.getElementById('btn-nova-conta-regente')?.addEventListener('click', () => abrirModalRegente());
+  document.getElementById('modal-regente-fechar')?.addEventListener('click', fecharModalRegente);
+  document.getElementById('modal-regente-fundo')?.addEventListener('click', fecharModalRegente);
+  document.getElementById('modal-regente-cancelar')?.addEventListener('click', fecharModalRegente);
+
+  document.getElementById('modal-detalhe-regente-fechar')?.addEventListener('click', fecharDetalheRegente);
+  document.getElementById('modal-detalhe-regente-fundo')?.addEventListener('click', fecharDetalheRegente);
+  document.getElementById('modal-detalhe-regente-cancelar')?.addEventListener('click', fecharDetalheRegente);
+
   const form = document.getElementById('form-conta-regente');
   if (form) {
     const handler = async (evento) => {
       evento.preventDefault();
+      const id         = document.getElementById('regente-id')?.value;
       const descricao  = document.getElementById('regente-nome')?.value.trim();
       const tipo       = document.getElementById('regente-tipo')?.value;
       const observacao = document.getElementById('regente-descricao')?.value.trim();
       try {
-        if (modoEdicaoRegente) {
-          await api.put('/financeiro/contas-regentes/editar.php', { id_conta_regente: modoEdicaoRegente, descricao, tipo, observacao });
+        if (id) {
+          await api.put('/financeiro/contas-regentes/editar.php', { id_conta_regente: parseInt(id), descricao, tipo, observacao });
           Toast.sucesso('Conta regente atualizada com sucesso!');
-          modoEdicaoRegente = null;
-          atualizarTextoBotao('#form-conta-regente button[type=submit]', 'Adicionar conta');
         } else {
           await api.post('/financeiro/contas-regentes/cadastrar.php', { descricao, tipo, observacao });
           Toast.sucesso('Conta regente cadastrada com sucesso!');
         }
-        form.reset();
+        fecharModalRegente();
         await renderizarContasRegentes();
       } catch (err) {
         Toast.erro(err.message);
@@ -242,12 +264,12 @@ async function iniciarContasRegentes() {
       if (!btn) return;
       const id = parseInt(btn.dataset.id);
       if (btn.dataset.acao === 'editar-regente') {
-        document.getElementById('regente-nome').value       = btn.dataset.nome;
-        document.getElementById('regente-tipo').value       = btn.dataset.tipo;
-        document.getElementById('regente-descricao').value  = btn.dataset.obs || '';
-        modoEdicaoRegente = id;
-        atualizarTextoBotao('#form-conta-regente button[type=submit]', 'Salvar alterações');
-        document.getElementById('regente-nome').focus();
+        abrirModalRegente({
+          id_conta_regente: id,
+          descricao:  btn.dataset.nome,
+          tipo:       btn.dataset.tipo,
+          observacao: btn.dataset.obs || '',
+        });
       }
       if (btn.dataset.acao === 'alternar-regente') {
         try {
@@ -353,81 +375,50 @@ async function renderizarContasRegentes() {
   }
 }
 
-async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
-  const dialog = document.createElement('dialog');
-  dialog.className = 'modal modal-lg';
+function fecharDetalheRegente() {
+  document.getElementById('modal-detalhe-regente').hidden = true;
+}
 
-  dialog.innerHTML = `
-    <div class="modal__cabecalho">
-      <div style="flex:1;min-width:0">
-        <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
-        <div style="display:flex;gap:.5rem;align-items:center;margin-top:var(--esp-sm)">
-          ${badgeTipo(tipo)}
-          ${badgeStatus(ativo ? 'ativo' : 'inativo')}
-        </div>
-      </div>
-      <button type="button" class="modal__fechar" data-acao="fechar" aria-label="Fechar">
-        <span class="material-icons">close</span>
-      </button>
+async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
+  document.getElementById('detalhe-regente-titulo').textContent = nome;
+  document.getElementById('detalhe-regente-badges').innerHTML =
+    `${badgeTipo(tipo)} ${badgeStatus(ativo ? 'ativo' : 'inativo')}`;
+
+  const corpo = document.getElementById('detalhe-regente-corpo');
+  corpo.innerHTML = `
+    <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+      <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Descrição</p>
+      ${obs
+        ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+        : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+      }
     </div>
-    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
-      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Descrição</p>
-        ${obs
-          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
-          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
-        }
-      </div>
-      <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Subcontas vinculadas</p>
-        <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
-      </div>
-    </div>
-    <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
+    <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+      <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">Subcontas vinculadas</p>
+      <div id="detalhe-subcontas-lista"><p style="text-align:center;color:var(--texto-secundario)">Carregando…</p></div>
     </div>
   `;
 
-  document.body.appendChild(dialog);
+  document.getElementById('modal-detalhe-regente').hidden = false;
 
-  dialog.querySelectorAll('[data-acao="fechar"]').forEach((btn) =>
-    btn.addEventListener('click', () => dialog.close())
-  );
-  dialog.addEventListener('close', () => setTimeout(() => dialog.remove(), 200));
-
-  dialog.showModal();
-  Modal._configurarFechamentoBackdrop(dialog);
-
-  const lista = dialog.querySelector('#detalhe-subcontas-lista');
+  const lista = document.getElementById('detalhe-subcontas-lista');
   try {
     const { dados } = await api.get(`/financeiro/contas-subordinadas/listar.php?fk_conta_regente=${id}`);
-
     if (!dados.length) {
       lista.innerHTML = '<p style="text-align:center;color:var(--texto-secundario)">Nenhuma subconta cadastrada.</p>';
       return;
     }
-
     lista.innerHTML = `
-      <div class="tabela-responsiva" style="border-color:var(--cor-cinza-300)">
+      <div class="tabela-responsiva">
         <table class="tabela tabela-compacta">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Movimentos</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Nome</th><th>Movimentos</th><th>Status</th></tr></thead>
           <tbody>
             ${dados.map((s) => `
               <tr>
-                <td>
-                  ${escaparHtml(s.descricao)}
-                  ${s.observacao ? `<span class="tabela__sub">${escaparHtml(s.observacao)}</span>` : ''}
-                </td>
+                <td>${escaparHtml(s.descricao)}${s.observacao ? `<span class="tabela__sub">${escaparHtml(s.observacao)}</span>` : ''}</td>
                 <td>${s.total_movimentos}</td>
                 <td>${badgeStatus(s.ativo ? 'ativo' : 'inativo')}</td>
-              </tr>
-            `).join('')}
+              </tr>`).join('')}
           </tbody>
         </table>
       </div>
@@ -437,56 +428,53 @@ async function abrirDetalheRegente(id, nome, tipo, obs, ativo) {
   }
 }
 
-function abrirDetalheSubordinada(nome, regenteNome, obs, ativo, movimentos) {
-  const dialog = document.createElement('dialog');
-  dialog.className = 'modal modal-lg';
+function fecharDetalheSubordinada() {
+  document.getElementById('modal-detalhe-subordinada').hidden = true;
+}
 
-  dialog.innerHTML = `
-    <div class="modal__cabecalho">
-      <div style="flex:1;min-width:0">
-        <h2 class="modal__titulo">${escaparHtml(nome)}</h2>
-        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.25rem">
-          ${badgeStatus(ativo ? 'ativo' : 'inativo')}
-        </div>
-      </div>
-      <button type="button" class="modal__fechar" data-acao="fechar" aria-label="Fechar">
-        <span class="material-icons">close</span>
-      </button>
+function abrirDetalheSubordinada(nome, regenteNome, obs, ativo, movimentos) {
+  document.getElementById('detalhe-subordinada-titulo').textContent = nome;
+  document.getElementById('detalhe-subordinada-badges').innerHTML = badgeStatus(ativo ? 'ativo' : 'inativo');
+
+  const label = (txt) =>
+    `<p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin:0 0 var(--esp-sm)">${txt}</p>`;
+
+  document.getElementById('detalhe-subordinada-corpo').innerHTML = `
+    <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+      ${label('Conta regente')}
+      <p style="color:var(--texto-principal);margin:0">${escaparHtml(regenteNome)}</p>
     </div>
-    <div class="modal__corpo" style="display:flex;flex-direction:column;gap:var(--esp-lg)">
-      <div>
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Conta regente</p>
-        <p style="color:var(--texto-principal);margin:0">${escaparHtml(regenteNome)}</p>
-      </div>
-      <div>
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Descrição</p>
-        ${obs
-          ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
-          : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
-        }
-      </div>
-      <div>
-        <p style="font-size:var(--fs-xs);font-weight:var(--fw-semibold);text-transform:uppercase;letter-spacing:.5px;color:var(--texto-secundario);margin-bottom:var(--esp-sm)">Movimentos financeiros</p>
-        <p style="color:var(--texto-principal);margin:0">${movimentos} movimento${movimentos !== 1 ? 's' : ''} vinculado${movimentos !== 1 ? 's' : ''}</p>
-      </div>
+    <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+      ${label('Descrição')}
+      ${obs
+        ? `<p style="color:var(--texto-principal);line-height:var(--lh-base);margin:0">${escaparHtml(obs)}</p>`
+        : `<p style="color:var(--texto-suave);font-style:italic;margin:0">Sem descrição cadastrada.</p>`
+      }
     </div>
-    <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario" data-acao="fechar">Fechar</button>
+    <div style="background:var(--fundo-secao);border:var(--borda-padrao);border-radius:var(--raio-sm);padding:var(--esp-md)">
+      ${label('Movimentos financeiros')}
+      <p style="color:var(--texto-principal);margin:0">${movimentos} movimento${movimentos !== 1 ? 's' : ''} vinculado${movimentos !== 1 ? 's' : ''}</p>
     </div>
   `;
 
-  document.body.appendChild(dialog);
-
-  dialog.querySelectorAll('[data-acao="fechar"]').forEach((btn) =>
-    btn.addEventListener('click', () => dialog.close())
-  );
-  dialog.addEventListener('close', () => setTimeout(() => dialog.remove(), 200));
-
-  dialog.showModal();
-  Modal._configurarFechamentoBackdrop(dialog);
+  document.getElementById('modal-detalhe-subordinada').hidden = false;
 }
 
-let modoEdicaoSubordinada = null;
+function abrirModalSubordinada(conta = null) {
+  document.getElementById('modal-subordinada-titulo').textContent  = conta ? 'Editar Subconta' : 'Nova Subconta';
+  document.getElementById('subordinada-id').value                  = conta?.id_conta_subordinada ?? '';
+  document.getElementById('subordinada-regente').value             = conta?.fk_conta_regente ?? '';
+  document.getElementById('subordinada-nome').value                = conta?.descricao ?? '';
+  document.getElementById('subordinada-descricao').value           = conta?.observacao ?? '';
+  document.getElementById('modal-conta-subordinada').hidden        = false;
+  setTimeout(() => document.getElementById('subordinada-nome')?.focus(), 50);
+}
+
+function fecharModalSubordinada() {
+  document.getElementById('modal-conta-subordinada').hidden = true;
+  document.getElementById('form-conta-subordinada')?.reset();
+  document.getElementById('subordinada-id').value = '';
+}
 
 async function iniciarContasSubordinadas() {
   await preencherSelectsRegentes();
@@ -499,24 +487,32 @@ async function iniciarContasSubordinadas() {
     cleanup.push(() => filtro.removeEventListener('change', handler));
   }
 
+  document.getElementById('btn-nova-conta-subordinada')?.addEventListener('click', () => abrirModalSubordinada());
+  document.getElementById('modal-subordinada-fechar')?.addEventListener('click', fecharModalSubordinada);
+  document.getElementById('modal-subordinada-fundo')?.addEventListener('click', fecharModalSubordinada);
+  document.getElementById('modal-subordinada-cancelar')?.addEventListener('click', fecharModalSubordinada);
+
+  document.getElementById('modal-detalhe-subordinada-fechar')?.addEventListener('click', fecharDetalheSubordinada);
+  document.getElementById('modal-detalhe-subordinada-fundo')?.addEventListener('click', fecharDetalheSubordinada);
+  document.getElementById('modal-detalhe-subordinada-cancelar')?.addEventListener('click', fecharDetalheSubordinada);
+
   const form = document.getElementById('form-conta-subordinada');
   if (form) {
     const handler = async (evento) => {
       evento.preventDefault();
+      const id         = document.getElementById('subordinada-id')?.value;
       const fkRegente  = parseInt(document.getElementById('subordinada-regente')?.value);
       const descricao  = document.getElementById('subordinada-nome')?.value.trim();
       const observacao = document.getElementById('subordinada-descricao')?.value.trim();
       try {
-        if (modoEdicaoSubordinada) {
-          await api.put('/financeiro/contas-subordinadas/editar.php', { id_conta_subordinada: modoEdicaoSubordinada, fk_conta_regente: fkRegente, descricao, observacao });
+        if (id) {
+          await api.put('/financeiro/contas-subordinadas/editar.php', { id_conta_subordinada: parseInt(id), fk_conta_regente: fkRegente, descricao, observacao });
           Toast.sucesso('Conta subordinada atualizada com sucesso!');
-          modoEdicaoSubordinada = null;
-          atualizarTextoBotao('#form-conta-subordinada button[type=submit]', 'Adicionar subconta');
         } else {
           await api.post('/financeiro/contas-subordinadas/cadastrar.php', { fk_conta_regente: fkRegente, descricao, observacao });
           Toast.sucesso('Conta subordinada cadastrada com sucesso!');
         }
-        form.reset();
+        fecharModalSubordinada();
         await renderizarContasSubordinadas();
       } catch (err) {
         Toast.erro(err.message);
@@ -533,12 +529,12 @@ async function iniciarContasSubordinadas() {
       if (!btn) return;
       const id = parseInt(btn.dataset.id);
       if (btn.dataset.acao === 'editar-subordinada') {
-        document.getElementById('subordinada-regente').value    = btn.dataset.regente;
-        document.getElementById('subordinada-nome').value       = btn.dataset.nome;
-        document.getElementById('subordinada-descricao').value  = btn.dataset.obs || '';
-        modoEdicaoSubordinada = id;
-        atualizarTextoBotao('#form-conta-subordinada button[type=submit]', 'Salvar alterações');
-        document.getElementById('subordinada-nome').focus();
+        abrirModalSubordinada({
+          id_conta_subordinada: id,
+          fk_conta_regente:     btn.dataset.regente,
+          descricao:            btn.dataset.nome,
+          observacao:           btn.dataset.obs || '',
+        });
       }
       if (btn.dataset.acao === 'alternar-subordinada') {
         try {
@@ -704,15 +700,6 @@ function badgeTipo(tipo) {
   return `<span class="badge badge-pilula ${tipo === 'receita' ? 'badge-verde' : 'badge-vermelho'}">${capitalizar(tipo)}</span>`;
 }
 
-function atualizarTextoBotao(seletor, texto) {
-  const botao = document.querySelector(seletor);
-  const alvo = botao?.querySelector('.financeiro__botao-texto');
-  if (alvo) {
-    alvo.textContent = texto;
-  } else if (botao) {
-    botao.textContent = texto;
-  }
-}
 
 function linhaEstadoTabela(mensagem, erro = false) {
   return `

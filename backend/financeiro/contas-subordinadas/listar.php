@@ -31,10 +31,10 @@ $stmt = $pdo->prepare("
         cs.observacao,
         cs.ativo,
         cr.descricao AS regente,
-        COUNT(c.id_conta) AS total_movimentos
+        COUNT(l.id_lancamento) AS total_movimentos
     FROM conta_subordinada cs
     JOIN  conta_regente cr ON cr.id_conta_regente = cs.fk_conta_regente
-    LEFT JOIN conta c      ON c.fk_conta_subordinada = cs.id_conta_subordinada
+    LEFT JOIN lancamento l ON l.fk_conta_subordinada = cs.id_conta_subordinada
     WHERE $condicao
     GROUP BY cs.id_conta_subordinada, cr.descricao
     ORDER BY cr.descricao ASC, cs.descricao ASC
