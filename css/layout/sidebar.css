@@ -193,6 +193,11 @@
   color: var(--cor-cinza-600);
 }
 
+.sidebar__submenu .sidebar__link .sidebar__icone {
+  font-size: 18px;
+  margin-right: var(--esp-xs);
+}
+
 .sidebar__submenu .sidebar__link:hover {
   background-color: var(--cor-primaria-clara);
   color: var(--cor-primaria);
