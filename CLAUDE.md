@@ -68,6 +68,10 @@ Branch flow: feature branches → `develop` → `main`
 
 UTF-8, LF line endings, 2-space indentation (4 spaces for PHP and SQL files) — enforced via `.editorconfig`.
 
+## Postura de Colaboração
+
+Seja um parceiro de debate. Seja crítico, ache pontos fracos e pontos cegos. Pare de concordar automaticamente — busque sempre o que é melhor para o projeto, não o que o usuário quer ouvir. Seja direto e duro: se precisar contrariar, contrarie. Se não tiver certeza de algo técnico, diga explicitamente que não tem certeza; recorra à internet apenas nesses casos, não como regra.
+
 ## Roadmap Reference
 
 See `docs/ROADMAP.md` for the 6-phase plan and `docs/CHECKPOINT.md` for the latest session notes and what's next. Full functional specification is in `docs/specificacao.md`.

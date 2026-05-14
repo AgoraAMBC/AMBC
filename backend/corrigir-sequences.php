@@ -8,12 +8,15 @@ configurarCors();
 $pdo = obterConexao();
 
 $tabelas = [
-    ['tabela' => 'genero',       'coluna' => 'id_genero'],
-    ['tabela' => 'parentesco',   'coluna' => 'id_parentesco'],
-    ['tabela' => 'profissao',    'coluna' => 'id_profissao'],
-    ['tabela' => 'estado_civil', 'coluna' => 'id_estadocivil'],
-    ['tabela' => 'status_pessoa','coluna' => 'id_status'],
-    ['tabela' => 'associado',    'coluna' => 'id_associado'],
+    ['tabela' => 'genero',          'coluna' => 'id_genero'],
+    ['tabela' => 'parentesco',      'coluna' => 'id_parentesco'],
+    ['tabela' => 'profissao',       'coluna' => 'id_profissao'],
+    ['tabela' => 'estado_civil',    'coluna' => 'id_estadocivil'],
+    ['tabela' => 'status_pessoa',   'coluna' => 'id_status'],
+    ['tabela' => 'associado',       'coluna' => 'id_associado'],
+    ['tabela' => 'tipo_documento',  'coluna' => 'id_tipo_documento'],
+    ['tabela' => 'usuario',         'coluna' => 'id_usuario'],
+    ['tabela' => 'perfil_usuario',  'coluna' => 'id_perfil'],
 ];
 
 $resultados = [];

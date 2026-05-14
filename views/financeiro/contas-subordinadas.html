@@ -3,54 +3,101 @@
     <div class="financeiro__cabecalho-texto">
       <p class="financeiro__eyebrow">Plano de contas</p>
       <h1 class="financeiro__titulo">Contas subordinadas</h1>
-      <p class="financeiro__subtitulo">Detalhe as contas regentes para melhorar filtros, relat&oacute;rios e presta&ccedil;&atilde;o de contas.</p>
+      <p class="financeiro__subtitulo">Detalhe as contas regentes para melhorar filtros, relatórios e prestação de contas.</p>
     </div>
+    <button type="button" class="btn btn-primario" id="btn-nova-conta-subordinada">
+      <span class="material-icons">add</span>
+      Nova Subconta
+    </button>
   </header>
 
-  <section class="financeiro__grid-gestao">
-    <form class="financeiro__painel" id="form-conta-subordinada">
-      <h2 class="financeiro__secao-titulo">Cadastrar conta subordinada</h2>
-      <div class="campo">
-        <label class="form-label form-label-obrigatorio" for="subordinada-regente">Conta regente</label>
-        <select class="form-input" id="subordinada-regente" required></select>
-      </div>
-      <div class="campo">
-        <label class="form-label form-label-obrigatorio" for="subordinada-nome">Nome</label>
-        <input class="form-input" id="subordinada-nome" type="text" placeholder="Ex.: Mensalidades" required />
-      </div>
-      <div class="campo">
-        <label class="form-label" for="subordinada-descricao">Descri&ccedil;&atilde;o</label>
-        <textarea class="form-input" id="subordinada-descricao" rows="3" placeholder="Uso esperado desta subconta"></textarea>
-      </div>
-      <button class="btn btn-primario btn-bloco" type="submit">
-        <span class="material-icons">add</span>
-        <span class="financeiro__botao-texto">Adicionar subconta</span>
-      </button>
-    </form>
-
-    <div class="financeiro__painel">
-      <div class="financeiro__painel-cabecalho">
-        <h2 class="financeiro__secao-titulo">Subcontas cadastradas</h2>
-        <select class="form-input financeiro__busca" id="filtro-subordinada-regente" aria-label="Filtrar por conta regente"></select>
-      </div>
-      <div class="tabela-responsiva">
-        <table class="tabela financeiro__tabela">
-          <thead>
-            <tr>
-              <th>Subconta</th>
-              <th>Conta regente</th>
-              <th>Movimenta&ccedil;&otilde;es</th>
-              <th>Status</th>
-<<<<<<< HEAD
-              <th class="tabela__th-acoes">A&ccedil;&otilde;es</th>
-=======
-              <th class="tabela__th-acoes">Ações</th>
->>>>>>> ae6e39d890ee865553578c1baed9691494a1c21b
-            </tr>
-          </thead>
-          <tbody id="contas-subordinadas-tbody"></tbody>
-        </table>
-      </div>
+  <div class="financeiro__painel">
+    <div class="financeiro__painel-cabecalho">
+      <h2 class="financeiro__secao-titulo">Subcontas cadastradas</h2>
+      <select class="form-input financeiro__busca" id="filtro-subordinada-regente" aria-label="Filtrar por conta regente"></select>
     </div>
-  </section>
+    <div class="tabela-responsiva">
+      <table class="tabela financeiro__tabela">
+        <thead>
+          <tr>
+            <th>Subconta</th>
+            <th>Conta regente</th>
+            <th>Movimentações</th>
+            <th>Status</th>
+            <th class="tabela__th-acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="contas-subordinadas-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
+
+<!-- Modal: Detalhes da Conta Subordinada -->
+<div class="gu-modal" id="modal-detalhe-subordinada" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-detalhe-subordinada-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div>
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">account_balance_wallet</span>
+          <h3 class="gu-modal__titulo" id="detalhe-subordinada-titulo">Subconta</h3>
+        </div>
+        <div id="detalhe-subordinada-badges" style="margin-top:6px;display:flex;gap:6px"></div>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-detalhe-subordinada-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div id="detalhe-subordinada-corpo" style="padding:var(--esp-lg);display:flex;flex-direction:column;gap:var(--esp-md)">
+      <!-- Preenchido via JS -->
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="btn btn-secundario" id="modal-detalhe-subordinada-cancelar">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cadastro / Edição de Conta Subordinada -->
+<div class="gu-modal" id="modal-conta-subordinada" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-subordinada-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">account_balance_wallet</span>
+        <h3 class="gu-modal__titulo" id="modal-subordinada-titulo">Nova Subconta</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-subordinada-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form class="gu-modal__formulario" id="form-conta-subordinada" novalidate>
+      <input type="hidden" id="subordinada-id" />
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="subordinada-regente">Conta regente *</label>
+          <select class="gu-campo__input" id="subordinada-regente" required></select>
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="subordinada-nome">Nome *</label>
+          <input type="text" class="gu-campo__input" id="subordinada-nome" placeholder="Ex.: Mensalidades" required />
+        </div>
+      </div>
+
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="subordinada-descricao">Descrição</label>
+        <textarea class="gu-campo__input" id="subordinada-descricao" rows="3" placeholder="Uso esperado desta subconta"></textarea>
+      </div>
+
+      <div class="gu-modal__acoes">
+        <button type="button" class="btn btn-secundario" id="modal-subordinada-cancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primario">
+          <span class="material-icons">save</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

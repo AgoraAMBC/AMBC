@@ -5,51 +5,102 @@
       <h1 class="financeiro__titulo">Contas regentes</h1>
       <p class="financeiro__subtitulo">Categorias principais usadas para organizar receitas e despesas.</p>
     </div>
+    <button type="button" class="btn btn-primario" id="btn-nova-conta-regente">
+      <span class="material-icons">add</span>
+      Nova Conta Regente
+    </button>
   </header>
 
-  <section class="financeiro__grid-gestao">
-    <form class="financeiro__painel" id="form-conta-regente">
-      <h2 class="financeiro__secao-titulo">Cadastrar conta regente</h2>
-      <div class="campo">
-        <label class="form-label form-label-obrigatorio" for="regente-nome">Nome</label>
-        <input class="form-input" id="regente-nome" type="text" placeholder="Ex.: Receitas associativas" required />
-      </div>
-      <div class="campo">
-        <label class="form-label form-label-obrigatorio" for="regente-tipo">Tipo padr&atilde;o</label>
-        <select class="form-input" id="regente-tipo" required>
-          <option value="receita">Receita</option>
-          <option value="despesa">Despesa</option>
-        </select>
-      </div>
-      <div class="campo">
-        <label class="form-label" for="regente-descricao">Descri&ccedil;&atilde;o</label>
-        <textarea class="form-input" id="regente-descricao" rows="3" placeholder="Quando esta conta deve ser utilizada"></textarea>
-      </div>
-      <button class="btn btn-primario btn-bloco" type="submit">
-        <span class="material-icons">add</span>
-        <span class="financeiro__botao-texto">Adicionar conta</span>
-      </button>
-    </form>
-
-    <div class="financeiro__painel">
-      <div class="financeiro__painel-cabecalho">
-        <h2 class="financeiro__secao-titulo">Contas cadastradas</h2>
-        <input class="form-input financeiro__busca" id="busca-conta-regente" type="search" placeholder="Buscar conta" />
-      </div>
-      <div class="tabela-responsiva">
-        <table class="tabela financeiro__tabela">
-          <thead>
-            <tr>
-              <th>Conta</th>
-              <th>Tipo</th>
-              <th>Subcontas</th>
-              <th>Status</th>
-              <th class="tabela__th-acoes">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="contas-regentes-tbody"></tbody>
-        </table>
-      </div>
+  <div class="financeiro__painel">
+    <div class="financeiro__painel-cabecalho">
+      <h2 class="financeiro__secao-titulo">Contas cadastradas</h2>
+      <input class="form-input financeiro__busca" id="busca-conta-regente" type="search" placeholder="Buscar conta" />
     </div>
-  </section>
+    <div class="tabela-responsiva">
+      <table class="tabela financeiro__tabela">
+        <thead>
+          <tr>
+            <th>Conta</th>
+            <th>Tipo</th>
+            <th>Subcontas</th>
+            <th>Status</th>
+            <th class="tabela__th-acoes">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="contas-regentes-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </section>
+
+<!-- Modal: Detalhes da Conta Regente -->
+<div class="gu-modal" id="modal-detalhe-regente" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-detalhe-regente-fundo"></div>
+  <div class="gu-modal__caixa" style="max-width:680px">
+    <div class="gu-modal__cabecalho">
+      <div>
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">account_tree</span>
+          <h3 class="gu-modal__titulo" id="detalhe-regente-titulo">Conta Regente</h3>
+        </div>
+        <div id="detalhe-regente-badges" style="margin-top:6px;display:flex;gap:6px"></div>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-detalhe-regente-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div id="detalhe-regente-corpo" style="padding:var(--esp-lg);display:flex;flex-direction:column;gap:var(--esp-md)">
+      <!-- Preenchido via JS -->
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="btn btn-secundario" id="modal-detalhe-regente-cancelar">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cadastro / Edição de Conta Regente -->
+<div class="gu-modal" id="modal-conta-regente" aria-modal="true" role="dialog" hidden>
+  <div class="gu-modal__fundo" id="modal-regente-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">account_tree</span>
+        <h3 class="gu-modal__titulo" id="modal-regente-titulo">Nova Conta Regente</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-regente-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form class="gu-modal__formulario" id="form-conta-regente" novalidate>
+      <input type="hidden" id="regente-id" />
+
+      <div class="gu-campo-grupo">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regente-nome">Nome *</label>
+          <input type="text" class="gu-campo__input" id="regente-nome" placeholder="Ex.: Receitas associativas" required />
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="regente-tipo">Tipo padrão *</label>
+          <select class="gu-campo__input" id="regente-tipo" required>
+            <option value="receita">Receita</option>
+            <option value="despesa">Despesa</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gu-campo">
+        <label class="gu-campo__label" for="regente-descricao">Descrição</label>
+        <textarea class="gu-campo__input" id="regente-descricao" rows="3" placeholder="Quando esta conta deve ser utilizada"></textarea>
+      </div>
+
+      <div class="gu-modal__acoes">
+        <button type="button" class="btn btn-secundario" id="modal-regente-cancelar">Cancelar</button>
+        <button type="submit" class="btn btn-primario">
+          <span class="material-icons">save</span>
+          Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -30,17 +30,21 @@ $stmt = $pdo->prepare("
         cs.descricao,
         cs.observacao,
         cs.ativo,
-        cr.descricao AS regente
+        cr.descricao AS regente,
+        COUNT(l.id_lancamento) AS total_movimentos
     FROM conta_subordinada cs
     JOIN  conta_regente cr ON cr.id_conta_regente = cs.fk_conta_regente
+    LEFT JOIN lancamento l ON l.fk_conta_subordinada = cs.id_conta_subordinada
     WHERE $condicao
+    GROUP BY cs.id_conta_subordinada, cr.descricao
     ORDER BY cr.descricao ASC, cs.descricao ASC
 ");
 $stmt->execute($params);
 $dados = $stmt->fetchAll();
 
 foreach ($dados as &$r) {
-    $r['ativo'] = (bool)$r['ativo'];
+    $r['ativo']            = (bool)$r['ativo'];
+    $r['total_movimentos'] = (int)$r['total_movimentos'];
 }
 
 jsonResposta(['dados' => $dados]);
