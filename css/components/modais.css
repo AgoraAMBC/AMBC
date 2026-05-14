@@ -5,6 +5,93 @@
    ========================================================================== */
 
 /* ============================================
+   🔲 MODAL TIPO GU-MODAL (estrutura padrão do sistema)
+   ============================================ */
+.gu-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-md);
+}
+
+.gu-modal[hidden] { display: none; }
+
+.gu-modal__fundo {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.gu-modal__caixa {
+  position: relative;
+  background: var(--cor-branco);
+  border-radius: var(--raio-xl);
+  box-shadow: var(--sombra-xl);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.gu-modal__caixa--pequena {
+  max-width: 420px;
+}
+
+.gu-modal__corpo {
+  padding: var(--esp-lg) var(--esp-xl);
+}
+
+.gu-modal__acoes {
+  padding: var(--esp-md) var(--esp-xl);
+  border-top: var(--borda-padrao);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--esp-sm);
+}
+
+/* Ícone de confirmação */
+.modal-confirmacao__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--raio-full);
+  flex-shrink: 0;
+  margin-bottom: var(--esp-md);
+}
+
+.modal-confirmacao__icone .mi,
+.modal-confirmacao__icone .material-icons {
+  font-size: 28px;
+}
+
+.modal-confirmacao__icone-info    { background: var(--cor-info-clara);    color: var(--cor-info-escura);    }
+.modal-confirmacao__icone-sucesso { background: var(--cor-sucesso-clara); color: var(--cor-sucesso-escura); }
+.modal-confirmacao__icone-alerta  { background: var(--cor-alerta-clara);  color: var(--cor-alerta-escura);  }
+.modal-confirmacao__icone-erro    { background: var(--cor-erro-clara);    color: var(--cor-erro-escura);    }
+
+.modal-confirmacao__titulo {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-principal);
+  margin: 0 0 var(--esp-xs) 0;
+}
+
+.modal-confirmacao__mensagem {
+  font-size: var(--fs-sm);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--lh-base);
+}
+
+/* ============================================
    💫 MODAL BASE (<dialog>)
    ============================================ */
 .modal {
@@ -18,9 +105,12 @@
   width: calc(100% - var(--esp-lg) * 2);
   max-height: calc(100vh - var(--esp-lg) * 2);
   overflow: hidden;
-  margin: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
-    transition: opacity var(--transicao-padrao), transform var(--transicao-padrao);
+  transition: opacity var(--transicao-padrao), transform var(--transicao-padrao);
 }
 
 /* Modal aberto — estado final visível */

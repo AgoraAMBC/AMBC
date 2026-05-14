@@ -20,7 +20,27 @@ import { ConfiguracoesService } from '../services/configuracoes-service.js';
 Sessao.exigirAutenticacao();
 
 /* ---------------------------------------------------------
-   2. Inicializacao da aplicacao
+   2. Carregar logo da associacao ao iniciar
+--------------------------------------------------------- */
+async function inicializarLogoSidebar() {
+  const logoContainer = document.getElementById('sidebar-logo-container');
+  if (!logoContainer) return;
+
+  try {
+    const config = await ConfiguracoesService.obter();
+    if (config.logo) {
+      logoContainer.innerHTML = `<img src="${config.logo}" alt="Logo" class="sidebar__logo-img" />`;
+    } else {
+      logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
+    }
+  } catch (erro) {
+    console.warn('[App] Erro ao carregar logo:', erro);
+    logoContainer.innerHTML = '<span class="sidebar__logo-texto">A</span>';
+  }
+}
+
+/* ---------------------------------------------------------
+   3. Inicializacao da aplicacao
 --------------------------------------------------------- */
 async function iniciarApp() {
   console.log('[AMBC-V2] Iniciando aplicacao...');
@@ -34,6 +54,9 @@ async function iniciarApp() {
     // Falha silenciosa — formatadores usam os defaults (America/Sao_Paulo, DD/MM/YYYY)
   }
 
+  // Carregar logo da associação (assíncrono)
+  await inicializarLogoSidebar();
+
   // Modulos de layout (antes do router, pois escutam hashchange)
   Sidebar.iniciar();
   Topbar.iniciar();
@@ -45,7 +68,7 @@ async function iniciarApp() {
 }
 
 /* ---------------------------------------------------------
-   3. Aguarda o DOM estar completamente carregado
+   4. Aguarda o DOM estar completamente carregado
 --------------------------------------------------------- */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', iniciarApp);

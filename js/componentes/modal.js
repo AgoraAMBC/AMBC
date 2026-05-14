@@ -58,50 +58,61 @@ const Modal = {
       aoCancelar = null,
     } = opcoes;
 
-    // Cria o dialog dinamicamente
-    const dialog = document.createElement('dialog');
-    dialog.className = 'modal modal-sm modal-confirmacao';
+    // Cria estrutura gu-modal (igual aos outros modais do sistema)
+    const modal = document.createElement('div');
+    modal.className = 'gu-modal';
+    modal.id = 'modal-confirmacao-' + Date.now();
 
-    dialog.innerHTML = `
-      <div class="modal__corpo">
-        <div class="modal-confirmacao__icone modal-confirmacao__icone-${variante}">
-          <span class="mi material-icons">${icone}</span>
+    modal.innerHTML = `
+      <div class="gu-modal__fundo"></div>
+      <div class="gu-modal__caixa gu-modal__caixa--pequena">
+        <div class="gu-modal__corpo" style="padding: var(--esp-xl); text-align: center;">
+          <div class="modal-confirmacao__icone modal-confirmacao__icone-${variante}" style="margin: 0 auto var(--esp-md);">
+            <span class="mi material-icons">${icone}</span>
+          </div>
+          <p class="modal-confirmacao__titulo" style="font-size: var(--fs-lg); font-weight: var(--fw-semibold); margin-bottom: var(--esp-sm);">${titulo}</p>
+          <p class="modal-confirmacao__mensagem" style="color: var(--texto-secundario);">${mensagem}</p>
         </div>
-        <div class="modal-confirmacao__texto">
-          <p class="modal-confirmacao__titulo">${titulo}</p>
-          <p class="modal-confirmacao__mensagem">${mensagem}</p>
+        <div class="gu-modal__acoes" style="padding: var(--esp-md) var(--esp-xl); border-top: var(--borda-padrao); display: flex; justify-content: flex-end; gap: var(--esp-sm);">
+          ${textoCancelar ? `<button type="button" class="btn btn-secundario" data-acao="cancelar">${textoCancelar}</button>` : ''}
+          <button type="button" class="btn btn-${estiloConfirmar}" data-acao="confirmar">${textoConfirmar}</button>
         </div>
-      </div>
-      <div class="modal__rodape">
-        ${textoCancelar ? `<button type="button" class="btn btn-secundario" data-acao="cancelar">${textoCancelar}</button>` : ''}
-        <button type="button" class="btn btn-${estiloConfirmar}" data-acao="confirmar">${textoConfirmar}</button>
       </div>
     `;
 
-    document.body.appendChild(dialog);
+    document.body.appendChild(modal);
+
+    // Referências
+    const btnConfirmar = modal.querySelector('[data-acao="confirmar"]');
+    const btnCancelar = modal.querySelector('[data-acao="cancelar"]');
+    const fundo = modal.querySelector('.gu-modal__fundo');
 
     // Eventos dos botões
-    dialog.querySelector('[data-acao="confirmar"]').addEventListener('click', () => {
-      dialog.close('confirmado');
+    btnConfirmar?.addEventListener('click', () => {
+      if (typeof aoConfirmar === 'function') aoConfirmar();
+      modal.remove();
     });
 
-    dialog.querySelector('[data-acao="cancelar"]').addEventListener('click', () => {
-      dialog.close('cancelado');
+    btnCancelar?.addEventListener('click', () => {
+      if (typeof aoCancelar === 'function') aoCancelar();
+      modal.remove();
     });
 
-    // Ao fechar — dispara callback e remove do DOM
-    dialog.addEventListener('close', () => {
-      if (dialog.returnValue === 'confirmado' && typeof aoConfirmar === 'function') {
-        aoConfirmar();
-      } else if (typeof aoCancelar === 'function') {
-        aoCancelar();
+    // Fechar ao clicar no fundo
+    fundo?.addEventListener('click', () => {
+      if (typeof aoCancelar === 'function') aoCancelar();
+      modal.remove();
+    });
+
+    // Fechar com Escape
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        document.removeEventListener('keydown', handleEscape);
+        if (typeof aoCancelar === 'function') aoCancelar();
+        modal.remove();
       }
-      // Remove após animação
-      setTimeout(() => dialog.remove(), 200);
-    });
-
-    dialog.showModal();
-    this._configurarFechamentoBackdrop(dialog);
+    };
+    document.addEventListener('keydown', handleEscape);
   },
 
   /**

@@ -1,38 +1,41 @@
 <?php
 declare(strict_types=1);
+
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../helpers.php';
+require_once __DIR__ . '/../config/headers.php';
 
-configurarCors();
+session_start();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonErro('Método não permitido', 405);
-
-$pdo   = obterConexao();
-$dados = corpoJson();
-
-$chavesPermitidas = [
-    'idioma', 'fuso_horario', 'formato_data', 'moeda',
-    'notif_vencimentos', 'notif_inadimplencia', 'notif_resumo_semanal', 'notif_novos_cadastros',
-    'seg_2fa', 'seg_expirar_sessao',
-    'dias_alerta_vencimento',
-];
-
-$recebidas = array_intersect_key($dados, array_flip($chavesPermitidas));
-
-if (empty($recebidas)) jsonErro('Nenhuma configuração válida recebida');
+header('Content-Type: application/json');
 
 try {
-    $stmt = $pdo->prepare(
-        'INSERT INTO configuracao_sistema (chave, valor, atualizado_em)
-         VALUES (:chave, :valor, NOW())
-         ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor, atualizado_em = NOW()'
-    );
+    $pdo = obterConexao();
 
-    foreach ($recebidas as $chave => $valor) {
-        $stmt->execute([':chave' => $chave, ':valor' => (string) $valor]);
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input || !is_array($input)) {
+        http_response_code(400);
+        echo json_encode(['erro' => 'Dados inválidos']);
+        exit;
     }
 
-    jsonResposta(['mensagem' => 'Configurações salvas com sucesso']);
-} catch (PDOException $e) {
-    jsonErro('Erro ao salvar configurações: ' . $e->getMessage(), 500);
+    $pdo->beginTransaction();
+
+    $stmt = $pdo->prepare("
+        INSERT INTO configuracoes (chave, valor, atualizado_em)
+        VALUES (:chave, :valor, NOW())
+        ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor, atualizado_em = NOW()
+    ");
+
+    foreach ($input as $chave => $valor) {
+        $stmt->execute(['chave' => $chave, 'valor' => $valor]);
+    }
+
+    $pdo->commit();
+
+    echo json_encode(['sucesso' => true, 'mensagem' => 'Configurações salvas com sucesso']);
+} catch (Exception $e) {
+    $pdo?->rollBack();
+    http_response_code(500);
+    echo json_encode(['erro' => $e->getMessage()]);
 }

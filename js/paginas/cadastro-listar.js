@@ -6,35 +6,32 @@
 
 import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
-import { AssociadosService }  from '../services/associados-service.js';
-import { ParceirosService }   from '../services/parceiros-service.js';
-import { DependentesService } from '../services/dependentes-service.js';
-import { formatarData } from '../core/formatadores.js';
+import { CadastrosService } from '../services/cadastros-service.js';
 
 /* ---------------------------------------------------------
    ESTADO INTERNO
 --------------------------------------------------------- */
 const estado = {
-  termoBusca:   '',
-  filtroTipo:   'todos',
+  termoBusca: '',
   filtroStatus: 'todos',
-  paginaAtual:  1,
+  filtroTipo: 'todos',
+  paginaAtual: 1,
   totalPaginas: 1,
-  total:        0,
-  carregando:   false,
+  total: 0,
+  carregando: false,
 };
 
 /* ---------------------------------------------------------
    REFERENCIAS DOM
 --------------------------------------------------------- */
 const refs = {
-  inputBusca:      null,
-  filtroTipo:      null,
-  filtroStatus:    null,
-  tbody:           null,
-  contador:        null,
-  paginacao:       null,
-  estadoVazio:     null,
+  inputBusca: null,
+  filtroTipo: null,
+  filtroStatus: null,
+  tbody: null,
+  contador: null,
+  paginacao: null,
+  estadoVazio: null,
   btnNovoCadastro: null,
 };
 
@@ -52,8 +49,8 @@ function init() {
   refs.btnNovoCadastro = document.getElementById('btn-novo-cadastro');
 
   estado.termoBusca   = '';
-  estado.filtroTipo   = 'todos';
   estado.filtroStatus = 'todos';
+  estado.filtroTipo   = 'todos';
   estado.paginaAtual  = 1;
 
   ativarFiltros();
@@ -76,43 +73,25 @@ async function buscarEAtualizar() {
     refs.tbody.innerHTML = `<tr><td colspan="5" class="cadastro-listar__estado-carregando">Carregando…</td></tr>`;
   }
 
-  const filtros = {
-    pagina: estado.paginaAtual,
-    busca:  estado.termoBusca  || undefined,
-    status: estado.filtroStatus !== 'todos' ? estado.filtroStatus : undefined,
-  };
-
   try {
-    const tipo = estado.filtroTipo;
+    const filtros = {
+      pagina: estado.paginaAtual,
+      busca:  estado.termoBusca  || undefined,
+      status: estado.filtroStatus !== 'todos' ? estado.filtroStatus : undefined,
+      tipo:   estado.filtroTipo !== 'todos' ? estado.filtroTipo : undefined,
+    };
 
-    if (tipo === 'parceiro') {
-      const resp = await ParceirosService.listar(filtros);
-      estado.total        = resp.total    ?? 0;
-      estado.totalPaginas = resp.paginas  ?? 1;
-      renderizarLinhasParceiros(resp.dados ?? []);
-      renderizarContador(resp.total ?? 0, (resp.dados ?? []).length);
+    const resp = await CadastrosService.listar(filtros);
 
-    } else if (tipo === 'dependente') {
-      const resp = await DependentesService.listar(filtros);
-      estado.total        = resp.total    ?? 0;
-      estado.totalPaginas = resp.paginas  ?? 1;
-      renderizarLinhasDependentes(resp.dados ?? []);
-      renderizarContador(resp.total ?? 0, (resp.dados ?? []).length);
+    estado.total       = resp.total ?? 0;
+    estado.totalPaginas = resp.paginas ?? 1;
 
-    } else {
-      // 'todos' e 'associado' → busca associados
-      const resp = await AssociadosService.listar(filtros);
-      estado.total        = resp.total    ?? 0;
-      estado.totalPaginas = resp.paginas  ?? 1;
-      renderizarLinhasAssociados(resp.dados ?? []);
-      renderizarContador(resp.total ?? 0, (resp.dados ?? []).length);
-    }
-
+    renderizarLinhas(resp.dados ?? []);
+    renderizarContador(resp.total ?? 0, (resp.dados ?? []).length);
     renderizarPaginacao(estado.totalPaginas);
-    alternarEstadoVazio(estado.total === 0);
-
+    alternarEstadoVazio((resp.dados ?? []).length === 0);
   } catch (erro) {
-    console.error('[CadastroListar] Erro:', erro);
+    console.error('[CadastroListar] Erro ao buscar associados:', erro);
     Toast.erro('Não foi possível carregar os cadastros.');
     if (refs.tbody) {
       refs.tbody.innerHTML = `<tr><td colspan="5" class="cadastro-listar__estado-carregando">Erro ao carregar dados.</td></tr>`;
@@ -123,142 +102,74 @@ async function buscarEAtualizar() {
 }
 
 /* ---------------------------------------------------------
-   RENDERIZAÇÃO — ASSOCIADOS
+   RENDERIZAÇÃO
 --------------------------------------------------------- */
-function renderizarLinhasAssociados(associados) {
+function renderizarLinhas(cadastros) {
   if (!refs.tbody) return;
-  if (!associados.length) { refs.tbody.innerHTML = ''; return; }
 
-  refs.tbody.innerHTML = associados.map(a => {
-    const status = a.ativo ? 'ativo' : 'inativo';
-    const cpf    = a.cpf_cnpj ? formatarCpfCnpj(a.cpf_cnpj) : '—';
-    const data   = a.criado_em ? formatarData(a.criado_em) : '—';
+  if (cadastros.length === 0) {
+    refs.tbody.innerHTML = '';
+    return;
+  }
+
+  const labelTipo = (tipo) => {
+    switch (tipo) {
+      case 'associado': return 'Associado';
+      case 'dependente': return 'Dependente';
+      case 'parceiro': return 'Parceiro';
+      default: return tipo;
+    }
+  };
+
+  refs.tbody.innerHTML = cadastros.map(c => {
+    const status = c.ativo ? 'ativo' : 'inativo';
+    const cpf    = c.cpf_cnpj ? formatarCpfCnpj(c.cpf_cnpj) : '—';
+    const data   = c.criado_em ? formatarData(c.criado_em) : '—';
+    const tipo   = c.tipo || 'associado';
+    const nomeSecundario = c.email || cpf || '';
 
     return `
-      <tr data-id="${a.id_associado}" data-tipo="associado">
+      <tr data-id="${c.id}" data-tipo="${tipo}">
         <td>
           <div class="cadastro-listar__pessoa">
-            <div class="cadastro-listar__avatar ${classeCorAvatar(a.nome)}">
-              ${obterIniciais(a.nome)}
+            <div class="cadastro-listar__avatar ${classeCorAvatar(c.nome)}">
+              ${obterIniciais(c.nome)}
             </div>
             <div class="cadastro-listar__pessoa-textos">
-              <span class="cadastro-listar__pessoa-nome">${escaparHtml(a.nome)}</span>
-              <span class="cadastro-listar__pessoa-email">${escaparHtml(a.email ?? cpf)}</span>
+              <span class="cadastro-listar__pessoa-nome">${escaparHtml(c.nome)}</span>
+              <span class="cadastro-listar__pessoa-email">${escaparHtml(nomeSecundario)}</span>
             </div>
           </div>
         </td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--associado">Associado</span></td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--${status}">${status === 'ativo' ? 'Ativo' : 'Inativo'}</span></td>
+        <td>
+          <span class="cadastro-listar__badge cadastro-listar__badge--${tipo}">${labelTipo(tipo)}</span>
+        </td>
+        <td>
+          <span class="cadastro-listar__badge cadastro-listar__badge--${status}">
+            ${status === 'ativo' ? 'Ativo' : 'Inativo'}
+          </span>
+        </td>
         <td>${data}</td>
         <td class="cadastro-listar__col-acoes">
           <div class="cadastro-listar__acoes">
-            <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-tipo="associado" data-id="${a.id_associado}" aria-label="Visualizar">
+            <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-id="${c.id}" data-tipo="${tipo}" aria-label="Visualizar">
               <span class="material-icons">visibility</span>
             </button>
-            <button type="button" class="cadastro-listar__acao" data-acao="editar" data-tipo="associado" data-id="${a.id_associado}" aria-label="Editar">
+            <button type="button" class="cadastro-listar__acao" data-acao="editar" data-id="${c.id}" data-tipo="${tipo}" aria-label="Editar">
               <span class="material-icons">edit</span>
             </button>
-            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-tipo="associado" data-id="${a.id_associado}" data-nome="${escaparHtml(a.nome)}" aria-label="Excluir">
+            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${tipo}" data-nome="${escaparHtml(c.nome)}" aria-label="Excluir">
               <span class="material-icons">delete</span>
             </button>
           </div>
         </td>
-      </tr>`;
+      </tr>
+    `;
   }).join('');
 
   refs.tbody.onclick = tratarCliqueAcao;
 }
 
-/* ---------------------------------------------------------
-   RENDERIZAÇÃO — PARCEIROS
---------------------------------------------------------- */
-function renderizarLinhasParceiros(parceiros) {
-  if (!refs.tbody) return;
-  if (!parceiros.length) { refs.tbody.innerHTML = ''; return; }
-
-  refs.tbody.innerHTML = parceiros.map(p => {
-    const status    = p.ativo ? 'ativo' : 'inativo';
-    const cpfCnpj   = p.cpf_cnpj ? formatarCpfCnpj(p.cpf_cnpj) : '—';
-    const data      = p.criado_em ? formatarData(p.criado_em) : '—';
-    const tipoPessoa = p.tipo_pessoa === 'PJ' ? 'Jurídica' : 'Física';
-
-    return `
-      <tr data-id="${p.id_parceiro}" data-tipo="parceiro">
-        <td>
-          <div class="cadastro-listar__pessoa">
-            <div class="cadastro-listar__avatar ${classeCorAvatar(p.nome_razao_social)}">
-              ${obterIniciais(p.nome_razao_social)}
-            </div>
-            <div class="cadastro-listar__pessoa-textos">
-              <span class="cadastro-listar__pessoa-nome">${escaparHtml(p.nome_razao_social)}</span>
-              <span class="cadastro-listar__pessoa-email">${escaparHtml(p.email ?? cpfCnpj)}</span>
-            </div>
-          </div>
-        </td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--parceiro">Parceiro ${tipoPessoa}</span></td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--${status}">${status === 'ativo' ? 'Ativo' : 'Inativo'}</span></td>
-        <td>${data}</td>
-        <td class="cadastro-listar__col-acoes">
-          <div class="cadastro-listar__acoes">
-            <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-tipo="parceiro" data-id="${p.id_parceiro}" aria-label="Visualizar">
-              <span class="material-icons">visibility</span>
-            </button>
-            <button type="button" class="cadastro-listar__acao" data-acao="editar" data-tipo="parceiro" data-id="${p.id_parceiro}" aria-label="Editar">
-              <span class="material-icons">edit</span>
-            </button>
-          </div>
-        </td>
-      </tr>`;
-  }).join('');
-
-  refs.tbody.onclick = tratarCliqueAcao;
-}
-
-/* ---------------------------------------------------------
-   RENDERIZAÇÃO — DEPENDENTES
---------------------------------------------------------- */
-function renderizarLinhasDependentes(dependentes) {
-  if (!refs.tbody) return;
-  if (!dependentes.length) { refs.tbody.innerHTML = ''; return; }
-
-  refs.tbody.innerHTML = dependentes.map(d => {
-    const status     = d.ativo ? 'ativo' : 'inativo';
-    const cpf        = d.cpf ? formatarCpfCnpj(d.cpf) : '—';
-    const data       = d.criado_em ? formatarData(d.criado_em) : '—';
-    const parentesco = d.parentesco ? ` · ${escaparHtml(d.parentesco)}` : '';
-
-    return `
-      <tr data-id="${d.id_dependente}" data-tipo="dependente">
-        <td>
-          <div class="cadastro-listar__pessoa">
-            <div class="cadastro-listar__avatar ${classeCorAvatar(d.nome)}">
-              ${obterIniciais(d.nome)}
-            </div>
-            <div class="cadastro-listar__pessoa-textos">
-              <span class="cadastro-listar__pessoa-nome">${escaparHtml(d.nome)}</span>
-              <span class="cadastro-listar__pessoa-email">de ${escaparHtml(d.nome_associado ?? '—')}${parentesco}</span>
-            </div>
-          </div>
-        </td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--dependente">Dependente</span></td>
-        <td><span class="cadastro-listar__badge cadastro-listar__badge--${status}">${status === 'ativo' ? 'Ativo' : 'Inativo'}</span></td>
-        <td>${data}</td>
-        <td class="cadastro-listar__col-acoes">
-          <div class="cadastro-listar__acoes">
-            <button type="button" class="cadastro-listar__acao" data-acao="ver-associado" data-tipo="dependente" data-id="${d.id_associado_pai}" aria-label="Ver associado">
-              <span class="material-icons">person</span>
-            </button>
-          </div>
-        </td>
-      </tr>`;
-  }).join('');
-
-  refs.tbody.onclick = tratarCliqueAcao;
-}
-
-/* ---------------------------------------------------------
-   CONTADOR / PAGINAÇÃO / ESTADO VAZIO
---------------------------------------------------------- */
 function renderizarContador(total, exibindo) {
   if (!refs.contador) return;
   refs.contador.textContent = `Exibindo ${exibindo} de ${total} ${total === 1 ? 'cadastro' : 'cadastros'}`;
@@ -270,23 +181,34 @@ function renderizarPaginacao(totalPaginas) {
   const atual = estado.paginaAtual;
   let html = '';
 
-  html += `<button type="button" class="cadastro-listar__pagina-btn"
-    data-pagina="${atual - 1}" ${atual === 1 ? 'disabled' : ''} aria-label="Página anterior">
-    <span class="material-icons">chevron_left</span></button>`;
+  html += `
+    <button type="button" class="cadastro-listar__pagina-btn"
+            data-pagina="${atual - 1}" ${atual === 1 ? 'disabled' : ''} aria-label="Página anterior">
+      <span class="material-icons">chevron_left</span>
+    </button>
+  `;
 
-  for (const p of calcularPaginasVisiveis(atual, totalPaginas)) {
+  const paginas = calcularPaginasVisiveis(atual, totalPaginas);
+  for (const p of paginas) {
     if (p === '...') {
       html += `<button type="button" class="cadastro-listar__pagina-btn" disabled>…</button>`;
     } else {
-      html += `<button type="button"
-        class="cadastro-listar__pagina-btn ${p === atual ? 'cadastro-listar__pagina-btn--ativo' : ''}"
-        data-pagina="${p}">${p}</button>`;
+      html += `
+        <button type="button"
+                class="cadastro-listar__pagina-btn ${p === atual ? 'cadastro-listar__pagina-btn--ativo' : ''}"
+                data-pagina="${p}">
+          ${p}
+        </button>
+      `;
     }
   }
 
-  html += `<button type="button" class="cadastro-listar__pagina-btn"
-    data-pagina="${atual + 1}" ${atual === totalPaginas ? 'disabled' : ''} aria-label="Próxima página">
-    <span class="material-icons">chevron_right</span></button>`;
+  html += `
+    <button type="button" class="cadastro-listar__pagina-btn"
+            data-pagina="${atual + 1}" ${atual === totalPaginas ? 'disabled' : ''} aria-label="Próxima página">
+      <span class="material-icons">chevron_right</span>
+    </button>
+  `;
 
   refs.paginacao.innerHTML = html;
   refs.paginacao.onclick = tratarCliquePaginacao;
@@ -294,13 +216,17 @@ function renderizarPaginacao(totalPaginas) {
 
 function calcularPaginasVisiveis(atual, total) {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
   const paginas = [1];
   if (atual > 3) paginas.push('...');
+
   const inicio = Math.max(2, atual - 1);
   const fim    = Math.min(total - 1, atual + 1);
   for (let i = inicio; i <= fim; i++) paginas.push(i);
+
   if (atual < total - 2) paginas.push('...');
   paginas.push(total);
+
   return paginas;
 }
 
@@ -313,7 +239,7 @@ function alternarEstadoVazio(vazio) {
    EVENTOS
 --------------------------------------------------------- */
 function ativarFiltros() {
-  if (!refs.inputBusca) return;
+  if (!refs.inputBusca || !refs.filtroStatus) return;
 
   let timeoutBusca;
   refs.inputBusca.addEventListener('input', e => {
@@ -325,17 +251,19 @@ function ativarFiltros() {
     }, 200);
   });
 
-  refs.filtroTipo?.addEventListener('change', e => {
-    estado.filtroTipo  = e.target.value;
-    estado.paginaAtual = 1;
-    buscarEAtualizar();
-  });
-
-  refs.filtroStatus?.addEventListener('change', e => {
+  refs.filtroStatus.addEventListener('change', e => {
     estado.filtroStatus = e.target.value;
     estado.paginaAtual  = 1;
     buscarEAtualizar();
   });
+
+  if (refs.filtroTipo) {
+    refs.filtroTipo.addEventListener('change', e => {
+      estado.filtroTipo = e.target.value;
+      estado.paginaAtual = 1;
+      buscarEAtualizar();
+    });
+  }
 }
 
 function ativarBotaoNovoCadastro() {
@@ -347,8 +275,10 @@ function ativarBotaoNovoCadastro() {
 function tratarCliquePaginacao(e) {
   const btn = e.target.closest('[data-pagina]');
   if (!btn || btn.disabled) return;
+
   const pagina = parseInt(btn.dataset.pagina, 10);
   if (isNaN(pagina) || pagina < 1 || pagina > estado.totalPaginas) return;
+
   estado.paginaAtual = pagina;
   buscarEAtualizar();
   document.querySelector('.cadastro-listar__tabela-wrapper')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -357,33 +287,64 @@ function tratarCliquePaginacao(e) {
 function tratarCliqueAcao(e) {
   const btn = e.target.closest('[data-acao]');
   if (!btn) return;
-  const { acao, tipo, id, nome } = btn.dataset;
-  const idNum = parseInt(id, 10);
+
+  const acao = btn.dataset.acao;
+  const id   = parseInt(btn.dataset.id, 10);
+  const tipo = btn.dataset.tipo || 'associado';
+  const nome = btn.dataset.nome ?? '';
 
   switch (acao) {
-    case 'visualizar':
-      if (tipo === 'associado') window.location.hash = `#/cadastro/novo-associado?id=${idNum}&visualizar=1`;
-      if (tipo === 'parceiro')  window.location.hash = `#/cadastro/novo-parceiro?id=${idNum}&visualizar=1`;
-      break;
-    case 'editar':
-      if (tipo === 'associado') window.location.hash = `#/cadastro/novo-associado?id=${idNum}`;
-      if (tipo === 'parceiro')  window.location.hash = `#/cadastro/novo-parceiro?id=${idNum}`;
-      break;
-    case 'ver-associado':
-      window.location.hash = `#/cadastro/novo-associado?id=${idNum}&visualizar=1`;
-      break;
-    case 'excluir':
-      aoExcluirAssociado(idNum, nome ?? '');
-      break;
+    case 'visualizar': aoVisualizar(id, tipo);   break;
+    case 'editar':     aoEditar(id, tipo);       break;
+    case 'excluir':    aoExcluir(id, nome, tipo); break;
   }
 }
 
 /* ---------------------------------------------------------
-   AÇÃO — EXCLUIR ASSOCIADO
+   AÇÕES DE LINHA
 --------------------------------------------------------- */
-function aoExcluirAssociado(id, nome) {
+function aoVisualizar(id, tipo) {
+  switch (tipo) {
+    case 'associado':
+      window.location.hash = `#/cadastro/novo-associado?id=${id}&visualizar=1`;
+      break;
+    case 'dependente':
+      window.location.hash = `#/cadastro/dependentes?visualizar=1&id=${id}`;
+      break;
+    case 'parceiro':
+      window.location.hash = `#/cadastro/novo-parceiro?id=${id}&visualizar=1`;
+      break;
+    default:
+      window.location.hash = `#/cadastro/novo-associado?id=${id}&visualizar=1`;
+  }
+}
+
+function aoEditar(id, tipo) {
+  switch (tipo) {
+    case 'associado':
+      window.location.hash = `#/cadastro/novo-associado?id=${id}`;
+      break;
+    case 'dependente':
+      window.location.hash = `#/cadastro/dependentes?id=${id}`;
+      break;
+    case 'parceiro':
+      window.location.hash = `#/cadastro/novo-parceiro?id=${id}`;
+      break;
+    default:
+      window.location.hash = `#/cadastro/novo-associado?id=${id}`;
+  }
+}
+
+function aoExcluir(id, nome, tipo) {
+  const labels = {
+    associado: 'associado',
+    dependente: 'dependente',
+    parceiro: 'parceiro',
+  };
+  const label = labels[tipo] || 'cadastro';
+
   Modal.confirmar({
-    titulo: 'Excluir associado?',
+    titulo: `Excluir ${label}?`,
     mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta ação não pode ser desfeita.`,
     icone: 'delete_forever',
     variante: 'erro',
@@ -392,12 +353,12 @@ function aoExcluirAssociado(id, nome) {
     estiloConfirmar: 'perigo',
     aoConfirmar: async () => {
       try {
-        await AssociadosService.deletar(id);
+        await CadastrosService.excluir(id, tipo);
         Toast.sucesso(`${nome} foi excluído com sucesso.`);
         buscarEAtualizar();
       } catch (erro) {
         console.error('[CadastroListar] Erro ao excluir:', erro);
-        Toast.erro('Não foi possível excluir o associado.');
+        Toast.erro(`Não foi possível excluir o ${label}.`);
       }
     },
   });
@@ -420,6 +381,11 @@ function classeCorAvatar(nome) {
   return `cadastro-listar__avatar--cor-${hash + 1}`;
 }
 
+function formatarData(valor) {
+  if (!valor) return '—';
+  return new Date(valor).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+}
+
 function formatarCpfCnpj(valor) {
   if (!valor) return '—';
   const v = valor.replace(/\D/g, '');
@@ -431,8 +397,11 @@ function formatarCpfCnpj(valor) {
 function escaparHtml(texto) {
   if (texto == null) return '';
   return String(texto)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 /* ---------------------------------------------------------
