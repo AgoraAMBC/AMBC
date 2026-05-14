@@ -12,146 +12,200 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 $pdo = obterConexao();
 
-$temTipoContaRegente = colunaExiste($pdo, 'conta_regente', 'tipo');
-
-$totalAssociados = (int)$pdo
-    ->query('SELECT COUNT(*) FROM associado WHERE ativo = TRUE')
-    ->fetchColumn();
-
-$totalDependentes = (int)$pdo
-    ->query('SELECT COUNT(*) FROM dependente')
-    ->fetchColumn();
-
-$totalParceiros = (int)$pdo
-    ->query('SELECT COUNT(*) FROM parceiro WHERE ativo = TRUE')
-    ->fetchColumn();
-
-$resultadoMes = buscarResultadoMes($pdo, $temTipoContaRegente, 'CURRENT_DATE');
-$resultadoAnterior = buscarResultadoMes($pdo, $temTipoContaRegente, "CURRENT_DATE - INTERVAL '1 month'");
+$resumo = buscarResumoConsolidado($pdo);
+$cardsResumo = $resumo['cards'];
 
 jsonResposta([
     'cards' => [
         'associados' => [
-            'total' => $totalAssociados,
-            'variacao' => buscarVariacaoCadastro($pdo, 'associado', 'ativo = TRUE'),
+            'total' => $cardsResumo['total_associados'],
+            'variacao' => calcularVariacao($cardsResumo['associados_mes'], $cardsResumo['associados_mes_anterior']),
         ],
         'dependentes' => [
-            'total' => $totalDependentes,
-            'variacao' => buscarVariacaoCadastro($pdo, 'dependente'),
+            'total' => $cardsResumo['total_dependentes'],
+            'variacao' => calcularVariacao($cardsResumo['dependentes_mes'], $cardsResumo['dependentes_mes_anterior']),
         ],
         'parceiros' => [
-            'total' => $totalParceiros,
-            'variacao' => buscarVariacaoCadastro($pdo, 'parceiro', 'ativo = TRUE'),
+            'total' => $cardsResumo['total_parceiros'],
+            'variacao' => calcularVariacao($cardsResumo['parceiros_mes'], $cardsResumo['parceiros_mes_anterior']),
         ],
         'resultado_mes' => [
-            'total' => $resultadoMes,
-            'variacao' => calcularVariacao($resultadoMes, $resultadoAnterior),
+            'total' => $cardsResumo['resultado_mes'],
+            'variacao' => calcularVariacao($cardsResumo['resultado_mes'], $cardsResumo['resultado_mes_anterior']),
         ],
     ],
-    'grafico' => buscarGraficoFinanceiro($pdo, $temTipoContaRegente),
+    'grafico' => preencherMesesVazios($resumo['grafico']),
     'distribuicao' => [
-        'associados' => $totalAssociados,
-        'dependentes' => $totalDependentes,
-        'parceiros' => $totalParceiros,
+        'associados' => $cardsResumo['total_associados'],
+        'dependentes' => $cardsResumo['total_dependentes'],
+        'parceiros' => $cardsResumo['total_parceiros'],
     ],
-    'ultimas_transacoes' => buscarUltimasTransacoes($pdo, $temTipoContaRegente),
+    'ultimas_transacoes' => $resumo['ultimas_transacoes'],
 ]);
 
-function colunaExiste(PDO $pdo, string $tabela, string $coluna): bool {
-    $stmt = $pdo->prepare("
-        SELECT EXISTS (
-            SELECT 1
-            FROM information_schema.columns
-            WHERE table_schema = 'public'
-              AND table_name = :tabela
-              AND column_name = :coluna
-        )
-    ");
-    $stmt->execute([
-        ':tabela' => $tabela,
-        ':coluna' => $coluna,
-    ]);
-    return (bool)$stmt->fetchColumn();
-}
-
-function buscarVariacaoCadastro(PDO $pdo, string $tabela, string $filtro = '1=1'): float {
+function buscarResumoConsolidado(PDO $pdo): array {
     $stmt = $pdo->query("
-        SELECT
-            COUNT(*) FILTER (
-                WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE)
-            ) AS este_mes,
-            COUNT(*) FILTER (
-                WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
-            ) AS mes_anterior
-        FROM {$tabela}
-        WHERE {$filtro}
-    ");
-
-    $linha = $stmt->fetch();
-    return calcularVariacao((float)$linha['este_mes'], (float)$linha['mes_anterior']);
-}
-
-function buscarResultadoMes(PDO $pdo, bool $temTipoContaRegente, string $dataReferenciaSql): float {
-    if ($temTipoContaRegente) {
-        $stmt = $pdo->query("
-            SELECT COALESCE(
+        WITH
+        assoc AS (
+            SELECT
+                COUNT(*) AS total,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE)
+                ) AS este_mes,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+                ) AS mes_anterior
+            FROM associado
+            WHERE ativo = TRUE
+        ),
+        dep AS (
+            SELECT
+                COUNT(*) AS total,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE)
+                ) AS este_mes,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+                ) AS mes_anterior
+            FROM dependente
+        ),
+        par AS (
+            SELECT
+                COUNT(*) AS total,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE)
+                ) AS este_mes,
+                COUNT(*) FILTER (
+                    WHERE DATE_TRUNC('month', criado_em) = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+                ) AS mes_anterior
+            FROM parceiro
+            WHERE ativo = TRUE
+        ),
+        fin AS (
+            SELECT
                 SUM(CASE
-                    WHEN cr.tipo = 'receita' THEN c.valor
-                    WHEN cr.tipo = 'despesa' THEN -c.valor
-                    ELSE c.valor
-                END),
-                0
-            ) AS resultado
+                    WHEN DATE_TRUNC('month', c.data_lancamento) = DATE_TRUNC('month', CURRENT_DATE)
+                    THEN CASE
+                        WHEN cr.tipo = 'receita' THEN c.valor
+                        WHEN cr.tipo = 'despesa' THEN -c.valor
+                        ELSE c.valor
+                    END
+                    ELSE 0
+                END) AS resultado_mes,
+                SUM(CASE
+                    WHEN DATE_TRUNC('month', c.data_lancamento) = DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+                    THEN CASE
+                        WHEN cr.tipo = 'receita' THEN c.valor
+                        WHEN cr.tipo = 'despesa' THEN -c.valor
+                        ELSE c.valor
+                    END
+                    ELSE 0
+                END) AS resultado_mes_anterior
             FROM lancamento c
             LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
             LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
             WHERE (LOWER(sc.descricao) = 'liquidado' OR c.fk_status_conta = 2)
-              AND DATE_TRUNC('month', c.data_lancamento) = DATE_TRUNC('month', {$dataReferenciaSql})
-        ");
-        return (float)$stmt->fetchColumn();
-    }
-
-    $stmt = $pdo->query("
-        SELECT COALESCE(SUM(c.valor), 0) AS resultado
-        FROM lancamento c
-        LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-        WHERE (LOWER(sc.descricao) = 'liquidado' OR c.fk_status_conta = 2)
-          AND DATE_TRUNC('month', c.data_lancamento) = DATE_TRUNC('month', {$dataReferenciaSql})
+              AND c.data_lancamento >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '1 month')
+              AND c.data_lancamento < DATE_TRUNC('month', CURRENT_DATE + INTERVAL '1 month')
+        ),
+        grafico AS (
+            SELECT COALESCE(
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'mes', g.mes,
+                        'receita', g.receita,
+                        'despesa', g.despesa
+                    )
+                    ORDER BY g.mes_ord
+                ),
+                '[]'::json
+            ) AS dados
+            FROM (
+                SELECT
+                    DATE_TRUNC('month', c.data_lancamento) AS mes_ord,
+                    TO_CHAR(DATE_TRUNC('month', c.data_lancamento), 'YYYY-MM') AS mes,
+                    COALESCE(SUM(CASE WHEN cr.tipo = 'receita' THEN c.valor ELSE 0 END), 0) AS receita,
+                    COALESCE(SUM(CASE WHEN cr.tipo = 'despesa' THEN c.valor ELSE 0 END), 0) AS despesa
+                FROM lancamento c
+                LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
+                LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
+                WHERE (LOWER(sc.descricao) = 'liquidado' OR c.fk_status_conta = 2)
+                  AND c.data_lancamento >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '5 months')
+                GROUP BY DATE_TRUNC('month', c.data_lancamento)
+            ) g
+        ),
+        ultimas AS (
+            SELECT COALESCE(
+                JSON_AGG(ROW_TO_JSON(u)),
+                '[]'::json
+            ) AS dados
+            FROM (
+                SELECT
+                    c.id_lancamento AS id_conta,
+                    c.descricao,
+                    c.valor AS valor_total,
+                    TO_CHAR(c.data_lancamento, 'YYYY-MM-DD') AS data_lancamento,
+                    sc.descricao AS status,
+                    cr.descricao AS categoria,
+                    cr.tipo AS tipo,
+                    a.nome AS associado
+                FROM lancamento c
+                LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
+                LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
+                LEFT JOIN associado a ON a.id_associado = c.fk_associado
+                ORDER BY c.data_lancamento DESC, c.criado_em DESC
+                LIMIT 10
+            ) u
+        )
+        SELECT
+            COALESCE(assoc.total, 0) AS total_associados,
+            COALESCE(assoc.este_mes, 0) AS associados_mes,
+            COALESCE(assoc.mes_anterior, 0) AS associados_mes_anterior,
+            COALESCE(dep.total, 0) AS total_dependentes,
+            COALESCE(dep.este_mes, 0) AS dependentes_mes,
+            COALESCE(dep.mes_anterior, 0) AS dependentes_mes_anterior,
+            COALESCE(par.total, 0) AS total_parceiros,
+            COALESCE(par.este_mes, 0) AS parceiros_mes,
+            COALESCE(par.mes_anterior, 0) AS parceiros_mes_anterior,
+            COALESCE(fin.resultado_mes, 0) AS resultado_mes,
+            COALESCE(fin.resultado_mes_anterior, 0) AS resultado_mes_anterior,
+            grafico.dados AS grafico,
+            ultimas.dados AS ultimas_transacoes
+        FROM assoc
+        CROSS JOIN dep
+        CROSS JOIN par
+        CROSS JOIN fin
+        CROSS JOIN grafico
+        CROSS JOIN ultimas
     ");
-    return (float)$stmt->fetchColumn();
-}
 
-function buscarGraficoFinanceiro(PDO $pdo, bool $temTipoContaRegente): array {
-    if ($temTipoContaRegente) {
-        $stmt = $pdo->query("
-            SELECT
-                TO_CHAR(DATE_TRUNC('month', c.data_lancamento), 'YYYY-MM') AS mes,
-                COALESCE(SUM(CASE WHEN cr.tipo = 'receita' THEN c.valor ELSE 0 END), 0) AS receita,
-                COALESCE(SUM(CASE WHEN cr.tipo = 'despesa' THEN c.valor ELSE 0 END), 0) AS despesa
-            FROM lancamento c
-            LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
-            LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-            WHERE (LOWER(sc.descricao) = 'liquidado' OR c.fk_status_conta = 2)
-              AND c.data_lancamento >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '5 months')
-            GROUP BY DATE_TRUNC('month', c.data_lancamento)
-            ORDER BY DATE_TRUNC('month', c.data_lancamento)
-        ");
-    } else {
-        $stmt = $pdo->query("
-            SELECT
-                TO_CHAR(DATE_TRUNC('month', c.data_lancamento), 'YYYY-MM') AS mes,
-                COALESCE(SUM(c.valor), 0) AS receita,
-                0 AS despesa
-            FROM lancamento c
-            LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-            WHERE (LOWER(sc.descricao) = 'liquidado' OR c.fk_status_conta = 2)
-              AND c.data_lancamento >= DATE_TRUNC('month', CURRENT_DATE - INTERVAL '5 months')
-            GROUP BY DATE_TRUNC('month', c.data_lancamento)
-            ORDER BY DATE_TRUNC('month', c.data_lancamento)
-        ");
+    $linha = $stmt->fetch() ?: [];
+    $grafico = json_decode((string)($linha['grafico'] ?? '[]'), true) ?: [];
+    $transacoes = json_decode((string)($linha['ultimas_transacoes'] ?? '[]'), true) ?: [];
+
+    foreach ($transacoes as &$transacao) {
+        $transacao['id_conta'] = (int)($transacao['id_conta'] ?? 0);
+        $transacao['valor_total'] = (float)($transacao['valor_total'] ?? 0);
     }
+    unset($transacao);
 
-    return preencherMesesVazios($stmt->fetchAll());
+    return [
+        'cards' => [
+            'total_associados' => (int)($linha['total_associados'] ?? 0),
+            'associados_mes' => (float)($linha['associados_mes'] ?? 0),
+            'associados_mes_anterior' => (float)($linha['associados_mes_anterior'] ?? 0),
+            'total_dependentes' => (int)($linha['total_dependentes'] ?? 0),
+            'dependentes_mes' => (float)($linha['dependentes_mes'] ?? 0),
+            'dependentes_mes_anterior' => (float)($linha['dependentes_mes_anterior'] ?? 0),
+            'total_parceiros' => (int)($linha['total_parceiros'] ?? 0),
+            'parceiros_mes' => (float)($linha['parceiros_mes'] ?? 0),
+            'parceiros_mes_anterior' => (float)($linha['parceiros_mes_anterior'] ?? 0),
+            'resultado_mes' => (float)($linha['resultado_mes'] ?? 0),
+            'resultado_mes_anterior' => (float)($linha['resultado_mes_anterior'] ?? 0),
+        ],
+        'grafico' => $grafico,
+        'ultimas_transacoes' => $transacoes,
+    ];
 }
 
 function preencherMesesVazios(array $dados): array {
@@ -175,37 +229,6 @@ function preencherMesesVazios(array $dados): array {
     }
 
     return $resultado;
-}
-
-function buscarUltimasTransacoes(PDO $pdo, bool $temTipoContaRegente): array {
-    $campoTipo = $temTipoContaRegente ? 'cr.tipo' : "'receita'";
-
-    $stmt = $pdo->query("
-        SELECT
-            c.id_lancamento AS id_conta,
-            c.descricao,
-            c.valor AS valor_total,
-            TO_CHAR(c.data_lancamento, 'YYYY-MM-DD') AS data_lancamento,
-            sc.descricao AS status,
-            cr.descricao AS categoria,
-            {$campoTipo} AS tipo,
-            a.nome AS associado
-        FROM lancamento c
-        LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-        LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
-        LEFT JOIN associado a ON a.id_associado = c.fk_associado
-        ORDER BY c.data_lancamento DESC, c.criado_em DESC
-        LIMIT 10
-    ");
-
-    $transacoes = $stmt->fetchAll();
-    foreach ($transacoes as &$transacao) {
-        $transacao['id_conta'] = (int)$transacao['id_conta'];
-        $transacao['valor_total'] = (float)$transacao['valor_total'];
-    }
-    unset($transacao);
-
-    return $transacoes;
 }
 
 function calcularVariacao(float $atual, float $anterior): float {
