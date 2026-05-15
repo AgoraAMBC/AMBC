@@ -12,6 +12,11 @@
   padding: var(--espaco-6, 1.5rem);
 }
 
+.view--dependentes .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ---------- CABEÇALHO ---------- */
 .dependentes__cabecalho {
   display: flex;
@@ -67,10 +72,9 @@
 .dependentes__filtros {
   display: flex;
   gap: var(--espaco-3, 0.75rem);
-  background: var(--cor-superficie, #fff);
+  background: var(--cor-cinza-50, #f8fafc);
   padding: var(--espaco-4, 1rem);
-  border-radius: var(--raio-md, 8px);
-  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-bottom: 1px solid var(--cor-borda, #e2e8f0);
   align-items: flex-end;
   flex-wrap: wrap;
 }
@@ -160,8 +164,7 @@
 /* ---------- TABELA ---------- */
 .dependentes__tabela-wrapper {
   background: var(--cor-superficie, #fff);
-  border: 1px solid var(--cor-borda, #e2e8f0);
-  border-radius: var(--raio-md, 8px);
+  flex: 1;
   overflow: hidden;
 }
 
@@ -309,9 +312,8 @@
   flex-wrap: wrap;
   gap: var(--espaco-3, 0.75rem);
   padding: var(--espaco-3, 0.75rem) var(--espaco-4, 1rem);
-  background: var(--cor-superficie, #fff);
-  border: 1px solid var(--cor-borda, #e2e8f0);
-  border-radius: var(--raio-md, 8px);
+  background: var(--cor-cinza-50, #f8fafc);
+  border-top: 1px solid var(--cor-borda, #e2e8f0);
 }
 
 .dependentes__contador-rodape {
