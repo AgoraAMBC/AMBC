@@ -48,6 +48,19 @@
   font-size: var(--fs-sm);
 }
 
+/* ── Wrapper unificado dentro do gu-card ── */
+.cfg-associacao .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cfg-associacao__secoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+}
+
 /* ── Grid de campos reutilizável ── */
 .cfg-associacao__grid {
   display: grid;

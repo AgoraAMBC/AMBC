@@ -11,6 +11,19 @@
   width: 100%;
 }
 
+/* ── Wrapper unificado dentro do gu-card ── */
+.cfg-rel .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cfg-rel__secoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+}
+
 /* ── Banner informativo ── */
 .cfg-rel__banner {
   display: flex;
