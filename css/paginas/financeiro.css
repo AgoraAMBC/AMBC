@@ -94,14 +94,35 @@
 .financeiro__painel,
 .financeiro__resumo-form {
   background: var(--fundo-card);
-  border: var(--borda-padrao);
-  border-radius: var(--raio-md);
-  box-shadow: var(--sombra-sm);
   padding: var(--esp-lg);
 }
 
 .financeiro__painel {
   overflow: hidden;
+}
+
+/* ── Dentro do gu-card: o card pai assume sombra e raio ─── */
+.financeiro .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.financeiro .gu-card .financeiro__painel,
+.financeiro .gu-card .financeiro__resumo-form {
+  border-top: var(--borda-padrao);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.financeiro .gu-card .financeiro__metricas {
+  padding: var(--esp-lg);
+  border-top: var(--borda-padrao);
+}
+
+.financeiro .gu-card .financeiro__grid-2 {
+  border-top: var(--borda-padrao);
+  padding: var(--esp-lg);
+  gap: var(--esp-md);
 }
 
 .financeiro__painel--form {
