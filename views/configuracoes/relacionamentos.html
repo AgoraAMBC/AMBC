@@ -10,11 +10,14 @@
   </div>
 
   <!-- CABEÇALHO -->
-  <header class="cfg-associacao__cabecalho">
-    <div>
-      <p class="cfg-associacao__eyebrow">Configurações</p>
-      <h1 class="cfg-associacao__titulo">Regras de Relacionamento</h1>
-      <p class="cfg-associacao__subtitulo">Defina como as categorias de lançamentos se vinculam às contas subordinadas.</p>
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">hub</span>
+      <div>
+        <h2 class="gu-card__titulo">Regras de Relacionamento</h2>
+        <p class="gu-card__subtitulo">Defina como as categorias de lançamentos se vinculam às contas subordinadas.</p>
+      </div>
     </div>
     <button type="button" class="btn btn-primario" id="btn-nova-regra" data-modal-abrir="modal-regra">
       <span class="material-icons">add</span>
@@ -22,6 +25,7 @@
     </button>
   </header>
 
+  <div class="cfg-rel__secoes">
   <!-- REGRAS CADASTRADAS -->
   <div class="card">
     <div class="card__cabecalho">
@@ -162,6 +166,9 @@
 
     </div>
   </div>
+
+  </div><!-- /.cfg-rel__secoes -->
+  </div><!-- /.gu-card -->
 
 </section>
 

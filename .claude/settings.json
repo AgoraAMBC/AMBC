@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m 'fix: corrige API_LOGIN para path relativo no login.html *)"
+      "Bash(git commit -m 'fix: corrige API_LOGIN para path relativo no login.html *)",
+      "Bash(git fetch *)"
     ]
   }
 }

@@ -4,24 +4,24 @@
      ========================================================= -->
 <section class="view view--dependentes">
 
+  <div class="gu-card">
+
   <!-- Cabeçalho da página -->
-  <header class="dependentes__cabecalho">
-    <div class="dependentes__cabecalho-textos">
-      <div class="dependentes__titulo-bloco">
-        <span class="material-icons dependentes__icone-titulo">people</span>
-        <div>
-          <h2 class="dependentes__titulo">Listagem de Dependentes</h2>
-          <p class="dependentes__subtitulo">Visualize e gerencie todos os dependentes vinculados aos associados.</p>
-        </div>
-      </div>
-      <div class="dependentes__contador" id="contador-total">
-        Total: 0 dependentes
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">family_restroom</span>
+      <div>
+        <h2 class="gu-card__titulo">Listagem de Dependentes</h2>
+        <p class="gu-card__subtitulo">Visualize e gerencie todos os dependentes vinculados aos associados.</p>
       </div>
     </div>
-    <button type="button" class="btn btn-primario" id="btn-gerar-relatorio">
-      <span class="material-icons">download</span>
-      <span>Gerar Relatório</span>
-    </button>
+    <div style="display:flex;align-items:center;gap:var(--esp-md)">
+      <span class="dependentes__contador" id="contador-total">Total: 0 dependentes</span>
+      <button type="button" class="btn btn-primario" id="btn-gerar-relatorio">
+        <span class="material-icons">download</span>
+        <span>Gerar Relatório</span>
+      </button>
+    </div>
   </header>
 
   <!-- Barra de filtros -->
@@ -122,6 +122,8 @@
       <!-- Botões de paginação inseridos dinamicamente pelo JS -->
     </nav>
   </footer>
+
+  </div><!-- /.gu-card -->
 
 </section>
 

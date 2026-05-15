@@ -75,7 +75,14 @@
 }
 
 .financeiro__filtros--relatorio {
-  min-width: min(100%, 560px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--esp-sm);
+  width: 100%;
+}
+
+.financeiro__filtros--relatorio .form-input {
+  width: 100%;
 }
 
 .financeiro__metricas {
@@ -87,14 +94,39 @@
 .financeiro__painel,
 .financeiro__resumo-form {
   background: var(--fundo-card);
-  border: var(--borda-padrao);
-  border-radius: var(--raio-md);
-  box-shadow: var(--sombra-sm);
   padding: var(--esp-lg);
 }
 
 .financeiro__painel {
   overflow: hidden;
+}
+
+/* ── Dentro do gu-card: o card pai assume sombra e raio ─── */
+.financeiro .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.financeiro .gu-card .financeiro__metricas {
+  padding: var(--esp-lg);
+  border-top: var(--borda-padrao);
+}
+
+.financeiro .gu-card .tabela-responsiva {
+  overflow-x: auto;
+}
+
+/* Barra de filtros/título dentro do card (substitui financeiro__painel wrapper) */
+.financeiro__painel-cabecalho--card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  flex-wrap: wrap;
+  padding: var(--esp-md) var(--esp-lg);
+  background: var(--cor-cinza-50, #f8fafc);
+  border-top: var(--borda-padrao);
+  border-bottom: var(--borda-padrao);
 }
 
 .financeiro__painel--form {

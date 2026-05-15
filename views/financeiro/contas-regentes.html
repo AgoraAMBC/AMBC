@@ -1,9 +1,12 @@
 <section class="view financeiro" data-financeiro-view="contas-regentes">
-  <header class="financeiro__cabecalho">
-    <div class="financeiro__cabecalho-texto">
-      <p class="financeiro__eyebrow">Plano de contas</p>
-      <h1 class="financeiro__titulo">Contas regentes</h1>
-      <p class="financeiro__subtitulo">Categorias principais usadas para organizar receitas e despesas.</p>
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">account_tree</span>
+      <div>
+        <h2 class="gu-card__titulo">Contas Regentes</h2>
+        <p class="gu-card__subtitulo">Categorias principais usadas para organizar receitas e despesas.</p>
+      </div>
     </div>
     <button type="button" class="btn btn-primario" id="btn-nova-conta-regente">
       <span class="material-icons">add</span>
@@ -11,26 +14,25 @@
     </button>
   </header>
 
-  <div class="financeiro__painel">
-    <div class="financeiro__painel-cabecalho">
-      <h2 class="financeiro__secao-titulo">Contas cadastradas</h2>
-      <input class="form-input financeiro__busca" id="busca-conta-regente" type="search" placeholder="Buscar conta" />
-    </div>
-    <div class="tabela-responsiva">
-      <table class="tabela financeiro__tabela">
-        <thead>
-          <tr>
-            <th>Conta</th>
-            <th>Tipo</th>
-            <th>Subcontas</th>
-            <th>Status</th>
-            <th class="tabela__th-acoes">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="contas-regentes-tbody"></tbody>
-      </table>
-    </div>
+  <div class="financeiro__painel-cabecalho financeiro__painel-cabecalho--card">
+    <h2 class="financeiro__secao-titulo">Contas cadastradas</h2>
+    <input class="form-input financeiro__busca" id="busca-conta-regente" type="search" placeholder="Buscar conta" />
   </div>
+  <div class="tabela-responsiva">
+    <table class="tabela financeiro__tabela">
+      <thead>
+        <tr>
+          <th>Conta</th>
+          <th>Tipo</th>
+          <th>Subcontas</th>
+          <th>Status</th>
+          <th class="tabela__th-acoes">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="contas-regentes-tbody"></tbody>
+    </table>
+  </div>
+  </div><!-- /.gu-card -->
 </section>
 
 <!-- Modal: Detalhes da Conta Regente -->

@@ -127,16 +127,68 @@ function iniciarNovoLancamento() {
     });
   });
 
-  const submit = (evento) => {
-    evento.preventDefault();
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return;
-    }
-    Toast.sucesso('Lançamento financeiro salvo em memória.');
-    form.reset();
-    atualizar();
+const submit = async (evento) => {
+  evento.preventDefault();
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const payload = {
+
+    fk_tipo_lancamento:
+      parseInt(document.getElementById('lancamento-tipo')?.value),
+
+    fk_status_conta:
+      parseInt(document.getElementById('lancamento-status')?.value),
+
+    fk_forma_pagamento:
+      parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
+
+    valor:
+      Number(document.getElementById('lancamento-valor')?.value || 0),
+
+    descricao:
+      document.getElementById('lancamento-descricao')?.value,
+
+    pessoa:
+      document.getElementById('lancamento-pessoa')?.value,
+
+    observacao:
+      document.getElementById('lancamento-observacao')?.value,
+
+    fk_conta_regente:
+      document.getElementById('lancamento-conta')?.value || null,
+
+    fk_conta_subordinada:
+      document.getElementById('lancamento-subconta')?.value || null,
+
+    dataLancamento:
+      document.getElementById('lancamento-pagamento')?.value,
+
+    data_vencimento:
+      document.getElementById('lancamento-vencimento')?.value,
   };
+
+  console.log(payload);
+
+  try {
+
+    await api.post('/financeiro/lancamentos/cadastrar.php', payload);
+
+    Toast.sucesso('Lançamento cadastrado com sucesso!');
+
+    form.reset();
+
+    atualizar();
+
+  } catch (err) {
+
+    Toast.erro(err.message);
+
+  }
+};
 
   form.addEventListener('submit', submit);
   cleanup.push(() => form.removeEventListener('submit', submit));

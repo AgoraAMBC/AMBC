@@ -1,9 +1,12 @@
 <section class="view financeiro" data-financeiro-view="novo-lancamento">
-  <header class="financeiro__cabecalho">
-    <div class="financeiro__cabecalho-texto">
-      <p class="financeiro__eyebrow">Financeiro</p>
-      <h1 class="financeiro__titulo">Novo lan&ccedil;amento</h1>
-      <p class="financeiro__subtitulo">Registre receitas, despesas, mensalidades, acordos e pagamentos operacionais.</p>
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">add_card</span>
+      <div>
+        <h2 class="gu-card__titulo">Novo Lançamento</h2>
+        <p class="gu-card__subtitulo">Registre receitas, despesas, mensalidades, acordos e pagamentos operacionais.</p>
+      </div>
     </div>
     <a href="#/financeiro/visao-geral" class="btn btn-secundario">
       <span class="material-icons">arrow_back</span>
@@ -18,18 +21,35 @@
         <div class="campo form-col-3">
           <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo</label>
           <select class="form-input" id="lancamento-tipo" required>
-            <option value="receita">Receita</option>
-            <option value="despesa">Despesa</option>
+           <option value="1">Anuidade</option>
+           <option value="2">Mensalidade</option>
+           <option value="3">Doação</option>
+           <option value="4">Multa</option>
+           <option value="5">Outro</option>
           </select>
         </div>
         <div class="campo form-col-3">
           <label class="form-label form-label-obrigatorio" for="lancamento-status">Status</label>
           <select class="form-input" id="lancamento-status" required>
-            <option value="pendente">Pendente</option>
-            <option value="pago">Pago</option>
-            <option value="atrasado">Atrasado</option>
+           <option value="1">Aberto</option>
+           <option value="2">Liquidado</option>
+           <option value="3">Cancelado</option>
           </select>
         </div>
+<div class="campo form-col-3">
+  <label class="form-label form-label-obrigatorio" for="lancamento-forma-pagamento">
+    Forma de pagamento
+  </label>
+       <select class="form-input" id="lancamento-forma-pagamento" required>
+           <option value="1">PIX</option>
+           <option value="2">Boleto</option>
+           <option value="3">Cartão de crédito</option>
+           <option value="4">Cartão de débito</option>
+           <option value="5">Dinheiro</option>
+           <option value="6">Transferência bancária</option>
+         </select>
+        </div>  
+
         <div class="campo form-col-3">
           <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
           <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
@@ -45,19 +65,19 @@
         <div class="campo form-col-3">
           <label class="form-label" for="lancamento-conta">Conta regente</label>
           <select class="form-input" id="lancamento-conta">
-            <option>Receitas associativas</option>
-            <option>Eventos e reservas</option>
-            <option>Despesas administrativas</option>
-            <option>Manuten&ccedil;&atilde;o e obras</option>
+            <option value="1">Receitas associativas</option>
+            <option value="2">Eventos e reservas</option>
+            <option value="3">Despesas administrativas</option>
+            <option value="4">Manutenção e obras</option>
           </select>
         </div>
         <div class="campo form-col-3">
           <label class="form-label" for="lancamento-subconta">Conta subordinada</label>
           <select class="form-input" id="lancamento-subconta">
-            <option>Mensalidades</option>
-            <option>Reserva de espa&ccedil;o</option>
-            <option>Material de consumo</option>
-            <option>Servi&ccedil;os contratados</option>
+            <option value="1">Mensalidades</option>
+            <option value="2">Reserva de espaço</option>
+            <option value="3">Material de consumo</option>
+            <option value="4">Serviços contratados</option>
           </select>
         </div>
         <div class="campo form-col-4">
@@ -96,4 +116,5 @@
       </button>
     </aside>
   </form>
+  </div><!-- /.gu-card -->
 </section>

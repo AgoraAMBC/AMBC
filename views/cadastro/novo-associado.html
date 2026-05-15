@@ -1,12 +1,14 @@
 <section class="view view--cadastro-novo-associado">
-  <header class="cadastro-associado__cabecalho">
-    <div class="cadastro-associado__cabecalho-textos">
-      <h2 class="cadastro-associado__titulo" data-titulo-modo>Novo Associado</h2>
-      <p class="cadastro-associado__subtitulo">
-        Preencha os dados pessoais, endereço, contatos, dependentes e informações financeiras do associado.
-      </p>
-    </div>
-  </header>
+  <div class="gu-card">
+    <header class="gu-card__topo">
+      <div class="gu-card__titulo-grupo">
+        <span class="material-icons gu-card__icone">person_add</span>
+        <div>
+          <h2 class="gu-card__titulo" data-titulo-modo>Novo Associado</h2>
+          <p class="gu-card__subtitulo">Preencha os dados pessoais, endereço, contatos, dependentes e informações financeiras do associado.</p>
+        </div>
+      </div>
+    </header>
 
   <form class="cadastro-associado__form" id="form-associado">
 
@@ -264,6 +266,8 @@
     </div>
 
   </form>
+
+  </div><!-- /.gu-card -->
 
   <!-- ── MODAL: Telefone ──────────────────────────────────────── -->
   <div class="gu-modal" id="modal-telefone" aria-modal="true" role="dialog" hidden>

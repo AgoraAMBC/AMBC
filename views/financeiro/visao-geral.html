@@ -1,63 +1,64 @@
 <section class="view financeiro" data-financeiro-view="visao-geral">
-  <header class="financeiro__cabecalho">
-    <div class="financeiro__cabecalho-texto">
-      <p class="financeiro__eyebrow">Financeiro</p>
-      <h1 class="financeiro__titulo">Vis&atilde;o geral</h1>
-      <p class="financeiro__subtitulo">Acompanhe receitas, despesas, pend&ecirc;ncias e o fluxo de caixa da associa&ccedil;&atilde;o.</p>
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">analytics</span>
+      <div>
+        <h2 class="gu-card__titulo">Visão Geral</h2>
+        <p class="gu-card__subtitulo">Acompanhe receitas, despesas, pendências e o fluxo de caixa da associação.</p>
+      </div>
     </div>
     <div class="financeiro__acoes">
       <a href="#/financeiro/novo-lancamento" class="btn btn-primario">
         <span class="material-icons">add</span>
-        Novo lan&ccedil;amento
+        Novo Lançamento
       </a>
       <a href="#/financeiro/relatorios" class="btn btn-secundario">
         <span class="material-icons">summarize</span>
-        Relat&oacute;rios
+        Relatórios
       </a>
     </div>
   </header>
 
   <div class="financeiro__metricas" id="financeiro-metricas"></div>
 
-  <section class="financeiro__painel">
-    <div class="financeiro__painel-cabecalho">
-      <div>
-        <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos recentes</h2>
-        <p class="financeiro__secao-texto">Movimenta&ccedil;&otilde;es cadastradas para o m&ecirc;s atual.</p>
-      </div>
-      <div class="financeiro__filtros">
-        <select class="form-input" id="filtro-tipo-lancamento" aria-label="Filtrar por tipo">
-          <option value="todos">Todos os tipos</option>
-          <option value="receita">Receitas</option>
-          <option value="despesa">Despesas</option>
-        </select>
-        <select class="form-input" id="filtro-status-lancamento" aria-label="Filtrar por status">
-          <option value="todos">Todos os status</option>
-          <option value="pago">Pagos</option>
-          <option value="pendente">Pendentes</option>
-          <option value="atrasado">Atrasados</option>
-        </select>
-      </div>
+  <div class="financeiro__painel-cabecalho financeiro__painel-cabecalho--card">
+    <div>
+      <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos recentes</h2>
+      <p class="financeiro__secao-texto">Movimenta&ccedil;&otilde;es cadastradas para o m&ecirc;s atual.</p>
     </div>
-
-    <div class="tabela-responsiva">
-      <table class="tabela financeiro__tabela">
-        <thead>
-          <tr>
-            <th>Descri&ccedil;&atilde;o</th>
-            <th>Conta</th>
-            <th>Vencimento</th>
-            <th>Status</th>
-            <th class="tabela__num">Valor</th>
-          </tr>
-        </thead>
-        <tbody id="financeiro-lancamentos-tbody"></tbody>
-      </table>
-      <div class="tabela-vazia" id="financeiro-lancamentos-vazio" hidden>
-        <span class="material-icons tabela-vazia__icone">receipt_long</span>
-        <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento encontrado</h3>
-        <p class="tabela-vazia__mensagem">Ajuste os filtros ou cadastre uma nova movimenta&ccedil;&atilde;o financeira.</p>
-      </div>
+    <div class="financeiro__filtros">
+      <select class="form-input" id="filtro-tipo-lancamento" aria-label="Filtrar por tipo">
+        <option value="todos">Todos os tipos</option>
+        <option value="receita">Receitas</option>
+        <option value="despesa">Despesas</option>
+      </select>
+      <select class="form-input" id="filtro-status-lancamento" aria-label="Filtrar por status">
+        <option value="todos">Todos os status</option>
+        <option value="pago">Pagos</option>
+        <option value="pendente">Pendentes</option>
+        <option value="atrasado">Atrasados</option>
+      </select>
     </div>
-  </section>
+  </div>
+  <div class="tabela-responsiva">
+    <table class="tabela financeiro__tabela">
+      <thead>
+        <tr>
+          <th>Descri&ccedil;&atilde;o</th>
+          <th>Conta</th>
+          <th>Vencimento</th>
+          <th>Status</th>
+          <th class="tabela__num">Valor</th>
+        </tr>
+      </thead>
+      <tbody id="financeiro-lancamentos-tbody"></tbody>
+    </table>
+    <div class="tabela-vazia" id="financeiro-lancamentos-vazio" hidden>
+      <span class="material-icons tabela-vazia__icone">receipt_long</span>
+      <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento encontrado</h3>
+      <p class="tabela-vazia__mensagem">Ajuste os filtros ou cadastre uma nova movimenta&ccedil;&atilde;o financeira.</p>
+    </div>
+  </div>
+  </div><!-- /.gu-card -->
 </section>

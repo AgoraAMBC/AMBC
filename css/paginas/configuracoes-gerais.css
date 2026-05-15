@@ -11,6 +11,19 @@
   width: 100%;
 }
 
+/* ── Wrapper unificado dentro do gu-card ── */
+.cfg-gerais .gu-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cfg-gerais__secoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-lg);
+  padding: var(--esp-lg);
+}
+
 /* ── Seção interna do card ── */
 .cfg-gerais__secao {
   padding-bottom: var(--esp-lg);
