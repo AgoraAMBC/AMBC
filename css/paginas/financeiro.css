@@ -75,7 +75,14 @@
 }
 
 .financeiro__filtros--relatorio {
-  min-width: min(100%, 560px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--esp-sm);
+  width: 100%;
+}
+
+.financeiro__filtros--relatorio .form-input {
+  width: 100%;
 }
 
 .financeiro__metricas {
