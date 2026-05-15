@@ -3,21 +3,25 @@
   Descricao: Visao geral da AMBC
 ========================================================= -->
 <section class="dashboard view" data-view="Painel">
-  <header class="dashboard__cabecalho">
-    <div>
-      <h1 class="dashboard__titulo">Olá, Administrador</h1>
-      <p class="dashboard__subtitulo">Bem-vindo ao sistema de gestão AMBC. Aqui está um resumo do dia.</p>
-    </div>
+  <div class="gu-card">
+    <header class="gu-card__topo">
+      <div class="gu-card__titulo-grupo">
+        <span class="material-icons gu-card__icone">dashboard</span>
+        <div>
+          <h1 class="gu-card__titulo">Olá, Administrador</h1>
+          <p class="gu-card__subtitulo">Bem-vindo ao sistema de gestão AMBC. Aqui está um resumo do dia.</p>
+        </div>
+      </div>
+      <div class="dashboard__acoes">
+        <span class="dashboard__mes" id="dashboard-mes-atual" aria-live="polite">Mês atual</span>
+        <a class="btn btn-primario" href="#/financeiro/novo-lancamento">
+          <span class="material-icons" aria-hidden="true">add</span>
+          Novo Lançamento
+        </a>
+      </div>
+    </header>
 
-    <div class="dashboard__acoes">
-      <span class="dashboard__mes" id="dashboard-mes-atual" aria-live="polite">Mês atual</span>
-      <a class="btn btn-primario" href="#/financeiro/novo-lancamento">
-        <span class="material-icons" aria-hidden="true">add</span>
-        Novo Lançamento
-      </a>
-    </div>
-  </header>
-
+  <div class="dashboard__corpo">
   <div class="dashboard__cards" aria-label="Resumo geral">
     <article class="card dashboard-card" data-card="associados">
       <div class="dashboard-card__topo">
@@ -133,4 +137,6 @@
       </table>
     </div>
   </article>
+  </div><!-- /.dashboard__corpo -->
+  </div><!-- /.gu-card -->
 </section>
