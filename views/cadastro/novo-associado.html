@@ -21,7 +21,8 @@
         </h3>
       </div>
       <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-2">
+        <!-- Linha 1: Matrícula | Categoria | Status | Data Entrada -->
+        <div class="cadastro-associado__campo span-3">
           <label for="matricula">Matrícula</label>
           <input type="text" id="matricula" name="matricula"
             placeholder="Gerada automaticamente" readonly />
@@ -38,18 +39,26 @@
             <option value="">Selecione...</option>
           </select>
         </div>
-        <div class="cadastro-associado__campo span-4">
+        <div class="cadastro-associado__campo span-3">
           <label for="data_entrada">Data de Entrada</label>
           <input type="date" id="data_entrada" name="data_entrada" />
         </div>
-        <div class="cadastro-associado__campo span-6">
+
+        <!-- Linha 2: Nome | CPF | E-mail -->
+        <div class="cadastro-associado__campo span-5">
           <label for="nome">Nome Completo</label>
           <input type="text" id="nome" name="nome" placeholder="Digite o nome completo" />
         </div>
-        <div class="cadastro-associado__campo span-3">
+        <div class="cadastro-associado__campo span-2">
           <label for="cpf_cnpj">CPF</label>
           <input type="text" id="cpf_cnpj" name="cpf_cnpj" placeholder="000.000.000-00" />
         </div>
+        <div class="cadastro-associado__campo span-5">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="nome@exemplo.com" />
+        </div>
+
+        <!-- Linha 3: Nascimento | Gênero | Estado Civil | Profissão -->
         <div class="cadastro-associado__campo span-3">
           <label for="data_nascimento">Nascimento</label>
           <input type="date" id="data_nascimento" name="data_nascimento" />
@@ -72,10 +81,6 @@
             <option value="">Selecione...</option>
           </select>
         </div>
-        <div class="cadastro-associado__campo span-3">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" placeholder="nome@exemplo.com" />
-        </div>
       </div>
     </section>
 
@@ -88,43 +93,46 @@
         </h3>
       </div>
       <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-3">
+        <!-- Linha 1: CEP | Logradouro | Número | Bairro | Cidade | UF | Complemento -->
+        <div class="cadastro-associado__campo span-2">
           <label for="cep">CEP</label>
-          <input type="text" id="cep" name="cep" placeholder="00000-000" />
+          <input type="text" id="cep" name="cep" value="92480-000" placeholder="00000-000" />
         </div>
-        <div class="cadastro-associado__campo span-2 cadastro-associado__campo--acao">
-          <label>&nbsp;</label>
-          <button type="button" class="btn btn-secundario btn-sm cadastro-associado__botao"
-            id="btn-buscar-cep">
-            <span class="material-icons">search</span>
-            <span>Buscar CEP</span>
-          </button>
-        </div>
-        <div class="cadastro-associado__campo span-5">
+        <div class="cadastro-associado__campo span-3">
           <label for="logradouro">Logradouro</label>
           <input type="text" id="logradouro" name="logradouro" placeholder="Rua / Avenida" />
         </div>
-        <div class="cadastro-associado__campo span-2">
+        <div class="cadastro-associado__campo span-1">
           <label for="numero">Número</label>
           <input type="text" id="numero" name="numero" placeholder="Nº" />
         </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="complemento">Complemento</label>
-          <input type="text" id="complemento" name="complemento" placeholder="Apto, bloco, casa..." />
-        </div>
-        <div class="cadastro-associado__campo span-4">
+        <div class="cadastro-associado__campo span-2">
           <label for="bairro">Bairro</label>
-          <input type="text" id="bairro" name="bairro" placeholder="Digite o bairro" />
+          <input type="text" id="bairro" name="bairro" value="Califórnia" placeholder="Digite o bairro" />
         </div>
-        <div class="cadastro-associado__campo span-3">
+        <div class="cadastro-associado__campo span-2">
           <label for="cidade">Cidade</label>
-          <input type="text" id="cidade" name="cidade" placeholder="Digite a cidade" />
+          <input type="text" id="cidade" name="cidade" value="Nova Santa Rita" placeholder="Digite a cidade" />
         </div>
         <div class="cadastro-associado__campo span-1">
           <label for="uf">UF</label>
           <select id="uf" name="uf">
             <option value="">UF</option>
+            <option value="RS" selected>RS</option>
           </select>
+        </div>
+        <div class="cadastro-associado__campo span-1">
+          <label for="complemento">Complemento</label>
+          <input type="text" id="complemento" name="complemento" placeholder="Apto, bloco, casa..." />
+        </div>
+
+        <!-- Linha 2: Botão Buscar CEP -->
+        <div class="cadastro-associado__campo span-2">
+          <button type="button" class="btn btn-primario btn-sm"
+            id="btn-buscar-cep">
+            <span class="material-icons">search</span>
+            <span>Buscar CEP</span>
+          </button>
         </div>
       </div>
     </section>
@@ -487,5 +495,33 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Adiciona classe 'preenchido' aos campos que têm valor
+    (function() {
+      const form = document.getElementById('form-associado');
+      if (!form) return;
+
+      const campos = form.querySelectorAll('input, select, textarea');
+
+      function verificarPreenchimento(campo) {
+        const hasValue = campo.tagName === 'SELECT'
+          ? campo.value !== ''
+          : campo.value.trim() !== '';
+
+        if (hasValue) {
+          campo.classList.add('preenchido');
+        } else {
+          campo.classList.remove('preenchido');
+        }
+      }
+
+      campos.forEach(campo => {
+        verificarPreenchimento(campo);
+        campo.addEventListener('input', () => verificarPreenchimento(campo));
+        campo.addEventListener('change', () => verificarPreenchimento(campo));
+      });
+    })();
+  </script>
 
 </section>

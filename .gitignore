@@ -49,3 +49,8 @@ lixeira/
 
 # ===== Mock API =====
 mock/db.json
+
+# ===== Claude Code (configs pessoais) =====
+.claude/settings.json
+.claude/settings.local.json
+!.claude/settings.local.json

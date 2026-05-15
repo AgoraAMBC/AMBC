@@ -133,9 +133,16 @@
 }
 
 .cadastro-associado__campo input[readonly] {
-  background: #f8fafc;
+  background: #f1f5f9;
   color: #64748b;
   cursor: not-allowed;
+}
+
+/* Campos preenchidos/selecionados com tom mais escuro */
+.cadastro-associado__campo input.preenchido,
+.cadastro-associado__campo select.preenchido,
+.cadastro-associado__campo textarea.preenchido {
+  background: #f1f5f9;
 }
 
 .cadastro-associado__campo--acao {

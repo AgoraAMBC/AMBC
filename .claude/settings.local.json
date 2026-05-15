@@ -12,9 +12,8 @@
       "Bash(git push *)",
       "Bash(git pull *)",
       "Bash(git rebase *)",
-      "Bash(cp .claude/settings.json .claude/settings.json.bak)",
-      "Bash(cp backup_ambc.sql backup_ambc.sql.bak)",
-      "Bash(git stash *)"
+      "Bash(curl *)",
+      "Bash(git commit *)"
     ]
   }
 }
