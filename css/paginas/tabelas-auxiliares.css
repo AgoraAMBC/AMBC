@@ -192,7 +192,7 @@
   padding: 0 var(--esp-sm);
   border: var(--borda-padrao);
   border-radius: var(--raio-sm);
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   color: var(--texto-principal);
   font-size: var(--fs-sm);
   font-weight: 500;

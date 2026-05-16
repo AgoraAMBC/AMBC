@@ -221,6 +221,43 @@ async function inicializarUploadLogo() {
 }
 
 /* =========================================================
+   Tema da Interface (claro / escuro)
+========================================================= */
+export function aplicarTema(tema) {
+    if (tema === 'escuro') {
+        document.documentElement.dataset.tema = 'escuro';
+    } else {
+        delete document.documentElement.dataset.tema;
+    }
+}
+
+async function salvarTema(tema) {
+    aplicarTema(tema);
+    document.querySelectorAll('[data-tema]').forEach(btn => {
+        btn.classList.toggle('cfg-associacao__tema-opcao--ativo', btn.dataset.tema === tema);
+    });
+    try {
+        await ConfiguracoesService.salvar({ tema });
+        Toast.sucesso(`Tema ${tema === 'escuro' ? 'escuro' : 'claro'} aplicado.`);
+    } catch (erro) {
+        console.error('[Configuracoes] Erro ao salvar tema:', erro);
+        Toast.erro('Erro ao salvar tema.');
+    }
+}
+
+async function inicializarSeletorTema() {
+    try {
+        const config = await ConfiguracoesService.obter();
+        const temaAtual = config.tema || 'claro';
+        aplicarTema(temaAtual);
+        document.querySelectorAll('[data-tema]').forEach(btn => {
+            btn.classList.toggle('cfg-associacao__tema-opcao--ativo', btn.dataset.tema === temaAtual);
+            btn.addEventListener('click', () => salvarTema(btn.dataset.tema));
+        });
+    } catch { /* silencioso */ }
+}
+
+/* =========================================================
    Favicon da Associação
 ========================================================= */
 export function aplicarFavicon(base64) {
@@ -491,6 +528,10 @@ const ConfiguracoesPage = {
 
         if (document.getElementById('favicon-input')) {
             await inicializarUploadFavicon();
+        }
+
+        if (document.getElementById('tema-claro')) {
+            await inicializarSeletorTema();
         }
     },
 

@@ -29,7 +29,7 @@
   left: 0;
   width: var(--largura-sidebar);
   height: 100vh;
-  background-color: var(--cor-branco);
+  background-color: var(--fundo-card);
   border-right: var(--borda-padrao);
   box-shadow: var(--sombra-sm);
   z-index: var(--z-sidebar);
@@ -49,7 +49,7 @@
   left: var(--largura-sidebar);
   right: 0;
   height: var(--altura-header);
-  background-color: var(--cor-branco);
+  background-color: var(--fundo-card);
   border-bottom: var(--borda-padrao);
   box-shadow: var(--sombra-sm);
   z-index: var(--z-header);

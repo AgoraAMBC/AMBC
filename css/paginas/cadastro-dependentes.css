@@ -136,7 +136,7 @@
   padding: 0.625rem 2rem 0.625rem 0.875rem;
   border: 1px solid var(--cor-borda, #e2e8f0);
   border-radius: var(--raio-md, 8px);
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   color: var(--cor-texto-principal, #0f172a);
   font-family: inherit;
   font-size: 0.9rem;
@@ -163,7 +163,7 @@
 
 /* ---------- TABELA ---------- */
 .dependentes__tabela-wrapper {
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   flex: 1;
   overflow: hidden;
 }
@@ -331,7 +331,7 @@
   height: 36px;
   padding: 0 0.5rem;
   border: 1px solid var(--cor-borda, #e2e8f0);
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   border-radius: var(--raio-sm, 6px);
   cursor: pointer;
   font-family: inherit;
@@ -429,6 +429,16 @@
 .dependentes__checkbox input[type="checkbox"] {
   cursor: pointer;
 }
+
+/* ── DARK MODE ── */
+[data-tema="escuro"] .dependentes__badge--filho   { background: var(--cor-primaria-clara); color: var(--cor-primaria); }
+[data-tema="escuro"] .dependentes__badge--filha   { background: rgba(190, 24, 93, 0.15); color: #f472b6; }
+[data-tema="escuro"] .dependentes__badge--conjuge { background: var(--cor-roxo-clara); color: var(--cor-roxo); }
+[data-tema="escuro"] .dependentes__badge--genro   { background: var(--cor-sucesso-clara); color: var(--cor-sucesso); }
+[data-tema="escuro"] .dependentes__badge--nora    { background: var(--cor-alerta-clara); color: var(--cor-alerta); }
+[data-tema="escuro"] .dependentes__badge--outro   { background: var(--cor-cinza-200); color: var(--texto-secundario); }
+[data-tema="escuro"] .dependentes__acao--editar:hover { background: var(--cor-primaria-clara); color: var(--cor-primaria); }
+[data-tema="escuro"] .dependentes__opcao-relatorio:has(input:checked) { background: var(--cor-primaria-clara); }
 
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 1200px) {

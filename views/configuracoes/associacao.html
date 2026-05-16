@@ -177,21 +177,25 @@
           </div>
         </div>
 
-        <!-- Cores -->
+        <!-- Tema -->
         <div>
-          <label class="form-label">Cor Principal</label>
-          <div class="cfg-associacao__cor-grupo" style="margin-bottom:var(--esp-md)">
-            <input type="color" class="cfg-associacao__color-picker"
-              id="cor-principal" value="#1a73e8" />
-            <input type="text" class="form-input" id="cor-principal-texto"
-              value="#1a73e8" maxlength="7" />
-          </div>
-          <label class="form-label">Cor Secundária</label>
-          <div class="cfg-associacao__cor-grupo">
-            <input type="color" class="cfg-associacao__color-picker"
-              id="cor-secundaria" value="#1557b0" />
-            <input type="text" class="form-input" id="cor-secundaria-texto"
-              value="#1557b0" maxlength="7" />
+          <label class="form-label">Tema da Interface</label>
+          <div style="display:flex;gap:var(--esp-md);margin-top:var(--esp-xs)">
+
+            <button type="button" id="tema-claro" data-tema="claro"
+              class="cfg-associacao__tema-opcao cfg-associacao__tema-opcao--ativo"
+              title="Modo Claro">
+              <span class="material-icons" style="font-size:2rem;color:#f59e0b">light_mode</span>
+              <span style="font-size:var(--fs-sm);font-weight:var(--fw-semibold)">Claro</span>
+            </button>
+
+            <button type="button" id="tema-escuro" data-tema="escuro"
+              class="cfg-associacao__tema-opcao"
+              title="Modo Escuro">
+              <span class="material-icons" style="font-size:2rem;color:#818cf8">dark_mode</span>
+              <span style="font-size:var(--fs-sm);font-weight:var(--fw-semibold)">Escuro</span>
+            </button>
+
           </div>
         </div>
 

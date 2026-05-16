@@ -28,7 +28,7 @@
 
 .gu-modal__caixa {
   position: relative;
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   border-radius: var(--raio-xl);
   box-shadow: var(--sombra-xl);
   width: 100%;

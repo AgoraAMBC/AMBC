@@ -41,6 +41,13 @@
   --fundo-card:              var(--cor-branco);
   --fundo-secao:             #fafbfc;
 
+  /* Aliases de compatibilidade (usados em páginas de cadastro) */
+  --cor-borda:               var(--cor-cinza-200);
+  --cor-fundo:               var(--cor-cinza-50);
+  --cor-fundo-suave:         var(--fundo-secao);
+  --cor-texto-principal:     var(--texto-principal);
+  --cor-texto-secundario:    var(--texto-secundario);
+
   /* ============================================
      🎨 CORES — FEEDBACK / ESTADOS
      ============================================ */
@@ -138,6 +145,15 @@
   --largura-max-conteudo:    1400px;
 
   /* ============================================
+     🌑 TEMA (referência — sobrescrito em [data-tema="escuro"])
+     ============================================ */
+  --cor-sidebar-fundo:         #1e293b;
+  --cor-sidebar-texto:         #cbd5e1;
+  --cor-sidebar-ativo:         rgba(255,255,255,0.08);
+  --cor-topbar-fundo:          var(--cor-branco);
+  --cor-topbar-borda:          var(--cor-cinza-200);
+
+  /* ============================================
      ⏱️ TRANSIÇÕES E ANIMAÇÕES
      ============================================ */
   --transicao-rapida:        120ms ease;
@@ -156,4 +172,49 @@
   --z-modal:                 600;
   --z-toast:                 700;
   --z-tooltip:               800;
+}
+
+/* ==========================================================================
+   MODO ESCURO
+   Ativado via document.documentElement.dataset.tema = "escuro"
+   ========================================================================== */
+[data-tema="escuro"] {
+  --fundo-pagina:            #0f172a;
+  --fundo-card:              #1e293b;
+  --fundo-secao:             #1e293b;
+
+  --cor-cinza-50:            #1e293b;
+  --cor-cinza-100:           #0f172a;
+  --cor-cinza-200:           #334155;
+  --cor-cinza-300:           #475569;
+  --cor-cinza-400:           #64748b;
+  --cor-cinza-500:           #94a3b8;
+  --cor-cinza-600:           #cbd5e1;
+  --cor-cinza-700:           #e2e8f0;
+  --cor-cinza-800:           #f1f5f9;
+  --cor-cinza-900:           #f8fafc;
+
+  --texto-principal:         #f1f5f9;
+  --texto-secundario:        #94a3b8;
+  --texto-suave:             #64748b;
+
+  --borda-padrao:            1px solid #334155;
+  --borda-input:             1px solid #334155;
+
+  --cor-primaria-clara:      rgba(26, 115, 232, 0.15);
+  --cor-primaria-palida:     rgba(26, 115, 232, 0.08);
+
+  --cor-sucesso-clara:       rgba(22, 163, 74, 0.15);
+  --cor-erro-clara:          rgba(220, 38, 38, 0.15);
+  --cor-alerta-clara:        rgba(202, 138, 4, 0.15);
+  --cor-info-clara:          rgba(59, 130, 246, 0.15);
+  --cor-roxo-clara:          rgba(124, 58, 237, 0.15);
+  --cor-teal-clara:          rgba(15, 118, 110, 0.15);
+
+  --cor-topbar-fundo:        #1e293b;
+  --cor-topbar-borda:        #334155;
+
+  --sombra-sm:               0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --sombra-md:               0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --sombra-lg:               0 10px 30px rgba(0, 0, 0, 0.5);
 }

@@ -107,3 +107,31 @@
 .parceiro-financeiro__status--cancelado::before {
   background: #dc2626;
 }
+
+/* ── DARK MODE ── */
+[data-tema="escuro"] .parceiro-financeiro__status--pago {
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso);
+}
+
+[data-tema="escuro"] .parceiro-financeiro__status--pago::before {
+  background: var(--cor-sucesso);
+}
+
+[data-tema="escuro"] .parceiro-financeiro__status--pendente {
+  background: var(--cor-alerta-clara);
+  color: var(--cor-alerta);
+}
+
+[data-tema="escuro"] .parceiro-financeiro__status--pendente::before {
+  background: var(--cor-alerta);
+}
+
+[data-tema="escuro"] .parceiro-financeiro__status--cancelado {
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro);
+}
+
+[data-tema="escuro"] .parceiro-financeiro__status--cancelado::before {
+  background: var(--cor-erro);
+}

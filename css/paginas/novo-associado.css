@@ -44,7 +44,7 @@
 }
 
 .cadastro-associado__bloco {
-  background: #ffffff;
+  background: var(--fundo-card);
   border: 1px solid #dbe4f0;
   border-radius: 18px;
   padding: 1.2rem;
@@ -107,7 +107,7 @@
   padding: 0.85rem 1rem;
   border: 1px solid #c7d4e5;
   border-radius: 14px;
-  background: #ffffff;
+  background: var(--fundo-card);
   color: #0f172a;
   font-size: 0.98rem;
   outline: none;
@@ -177,7 +177,7 @@
   overflow-x: auto;
   border: 1px solid #dbe4f0;
   border-radius: 16px;
-  background: #ffffff;
+  background: var(--fundo-card);
 }
 
 .cadastro-associado__tabela {
@@ -291,7 +291,7 @@ dialog.modal::backdrop {
 .modal__dialog {
   position: relative;
   width: 100%;
-  background: #ffffff;
+  background: var(--fundo-card);
   border-radius: 20px;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
   border: 1px solid #dbe4f0;
@@ -315,7 +315,7 @@ dialog.modal::backdrop {
   gap: 1rem;
   padding: 1.1rem 1.25rem;
   border-bottom: 1px solid #dbe4f0;
-  background: #ffffff;
+  background: var(--fundo-card);
   flex-shrink: 0;
 }
 
@@ -374,7 +374,7 @@ dialog.modal::backdrop {
   gap: 0.75rem;
   padding: 1rem 1.25rem 1.25rem;
   border-top: 1px solid #dbe4f0;
-  background: #ffffff;
+  background: var(--fundo-card);
   flex-shrink: 0;
 }
 
@@ -390,7 +390,7 @@ dialog.modal::backdrop {
   min-height: 46px;
   border-radius: 14px;
   border: 1px solid #dbe4f0;
-  background: #ffffff;
+  background: var(--fundo-card);
   color: #94a3b8;
   font-size: 1rem;
   font-weight: 700;
@@ -591,4 +591,92 @@ body.modal-open {
   .cadastro-associado__tabela tbody td {
     padding: 0.9rem 0.85rem;
   }
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+[data-tema="escuro"] .cadastro-associado__bloco {
+  border-color: #334155;
+  box-shadow: none;
+}
+
+[data-tema="escuro"] .cadastro-associado__bloco-titulo {
+  color: var(--texto-principal);
+}
+
+[data-tema="escuro"] .cadastro-associado__campo label {
+  color: var(--texto-principal);
+}
+
+[data-tema="escuro"] .cadastro-associado__campo input,
+[data-tema="escuro"] .cadastro-associado__campo select,
+[data-tema="escuro"] .cadastro-associado__campo textarea {
+  color: var(--texto-principal);
+  border-color: #334155;
+  background: var(--fundo-card);
+}
+
+[data-tema="escuro"] .cadastro-associado__campo input::placeholder,
+[data-tema="escuro"] .cadastro-associado__campo textarea::placeholder {
+  color: var(--texto-suave);
+}
+
+[data-tema="escuro"] .cadastro-associado__campo input[readonly] {
+  background: var(--cor-cinza-50);
+  color: var(--texto-secundario);
+}
+
+[data-tema="escuro"] .cadastro-associado__campo input.preenchido,
+[data-tema="escuro"] .cadastro-associado__campo select.preenchido,
+[data-tema="escuro"] .cadastro-associado__campo textarea.preenchido {
+  background: var(--cor-cinza-50);
+}
+
+[data-tema="escuro"] .cadastro-associado__tabela-wrapper {
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .cadastro-associado__tabela thead th {
+  color: var(--texto-secundario);
+  background: var(--fundo-secao);
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .cadastro-associado__tabela tbody td {
+  color: var(--texto-principal);
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .modal__dialog {
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .modal__cabecalho {
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .modal__titulo {
+  color: var(--texto-principal);
+}
+
+[data-tema="escuro"] .modal__fechar:hover {
+  background: var(--cor-cinza-50);
+  color: var(--texto-principal);
+}
+
+[data-tema="escuro"] .modal__rodape {
+  border-color: #334155;
+}
+
+[data-tema="escuro"] .modal__tipo-btn--receber.modal__tipo-btn--ativo {
+  border-color: var(--cor-sucesso);
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso);
+}
+
+[data-tema="escuro"] .modal__tipo-btn--pagar.modal__tipo-btn--ativo {
+  border-color: var(--cor-erro);
+  background: var(--cor-erro-clara);
+  color: var(--cor-erro);
 }

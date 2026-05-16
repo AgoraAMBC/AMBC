@@ -9,7 +9,7 @@
 
 /* ── Card principal ─────────────────────────────────────────────── */
 .gu-card {
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   border-radius: var(--raio-xl);
   box-shadow: var(--sombra-md);
   border: var(--borda-padrao);
@@ -23,7 +23,7 @@
   justify-content: space-between;
   padding: var(--esp-lg) var(--esp-xl);
   border-bottom: var(--borda-padrao);
-  background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--cor-branco) 60%);
+  background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--fundo-card) 60%);
 }
 
 .gu-card__titulo-grupo {
@@ -85,7 +85,7 @@
   border: var(--borda-input);
   border-radius: var(--raio-md);
   font-size: var(--fs-sm);
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   color: var(--cor-cinza-800);
   transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
 }
@@ -101,7 +101,7 @@
   border: var(--borda-input);
   border-radius: var(--raio-md);
   font-size: var(--fs-sm);
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   color: var(--cor-cinza-700);
   min-width: 160px;
   cursor: pointer;
@@ -283,7 +283,7 @@
 }
 
 .gu-btn--secundario {
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   color: var(--cor-cinza-700);
   border: var(--borda-input);
 }
@@ -349,7 +349,7 @@
   justify-content: center;
   border: var(--borda-input);
   border-radius: var(--raio-md);
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   color: var(--cor-cinza-600);
   font-size: var(--fs-sm);
   cursor: pointer;
@@ -385,7 +385,7 @@
 
 .gu-modal__caixa {
   position: relative;
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   border-radius: var(--raio-xl);
   box-shadow: var(--sombra-xl);
   width: 100%;
@@ -502,7 +502,7 @@
   border-radius: var(--raio-md);
   font-size: var(--fs-sm);
   color: var(--cor-cinza-800);
-  background: var(--cor-branco);
+  background: var(--fundo-card);
   transition: border-color var(--transicao-rapida), box-shadow var(--transicao-rapida);
 }
 

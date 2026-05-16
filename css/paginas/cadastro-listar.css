@@ -85,7 +85,7 @@
   padding: 0.625rem 2rem 0.625rem 0.875rem;
   border: 1px solid var(--cor-borda, #e2e8f0);
   border-radius: var(--raio-md, 8px);
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   color: var(--cor-texto-principal, #0f172a);
   font-family: inherit;
   font-size: 0.9rem;
@@ -105,7 +105,7 @@
 
 /* ---------- TABELA ---------- */
 .cadastro-listar__tabela-wrapper {
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   flex: 1;
   overflow: hidden;
 }
@@ -324,7 +324,7 @@
   height: 36px;
   padding: 0 0.5rem;
   border: 1px solid var(--cor-borda, #e2e8f0);
-  background: var(--cor-superficie, #fff);
+  background: var(--fundo-card);
   border-radius: var(--raio-sm, 6px);
   cursor: pointer;
   font-family: inherit;
@@ -356,6 +356,14 @@
 .cadastro-listar__pagina-btn--ativo:hover:not(:disabled) {
   background: var(--cor-primaria, #2563eb);
 }
+
+/* ── DARK MODE ── */
+[data-tema="escuro"] .cadastro-listar__badge--associado  { background: var(--cor-primaria-clara); color: var(--cor-primaria); }
+[data-tema="escuro"] .cadastro-listar__badge--dependente { background: var(--cor-roxo-clara); color: var(--cor-roxo); }
+[data-tema="escuro"] .cadastro-listar__badge--parceiro   { background: var(--cor-sucesso-clara); color: var(--cor-sucesso); }
+[data-tema="escuro"] .cadastro-listar__badge--ativo      { color: var(--cor-sucesso); }
+[data-tema="escuro"] .cadastro-listar__badge--ativo::before { background: var(--cor-sucesso); }
+[data-tema="escuro"] .cadastro-listar__acao--excluir:hover { background: var(--cor-erro-clara); color: var(--cor-erro); }
 
 /* ---------- RESPONSIVO ---------- */
 @media (max-width: 768px) {
