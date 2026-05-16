@@ -138,18 +138,21 @@
           <input type="file" id="logo-input" accept="image/*" hidden />
           <div class="cfg-associacao__upload-area" id="logo-upload-area"
             onclick="document.getElementById('logo-input').click()">
-            <span class="material-icons cfg-associacao__upload-icone">upload_file</span>
-            <p class="cfg-associacao__upload-label">Clique para enviar logo</p>
-            <p class="cfg-associacao__upload-hint">PNG, JPG — máx. 2 MB</p>
+            <div id="logo-preview-container">
+              <span class="material-icons cfg-associacao__upload-icone">upload_file</span>
+              <p class="cfg-associacao__upload-label">Clique para enviar logo</p>
+              <p class="cfg-associacao__upload-hint">PNG, JPG — máx. 2 MB</p>
+            </div>
           </div>
           <div class="cfg-associacao__upload-acoes">
             <button type="button" class="btn btn-primario btn-sm"
               style="flex:1;justify-content:center"
               onclick="document.getElementById('logo-input').click()">
               <span class="material-icons">upload</span>
-              Selecionar Imagem
+              Alterar Logo
             </button>
           </div>
+          <div id="logo-historico"></div>
         </div>
 
         <!-- Favicon -->
