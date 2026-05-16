@@ -161,9 +161,11 @@
           <input type="file" id="favicon-input" accept="image/png" hidden />
           <div class="cfg-associacao__upload-area"
             onclick="document.getElementById('favicon-input').click()">
-            <span class="material-icons cfg-associacao__upload-icone">image</span>
-            <p class="cfg-associacao__upload-label">Clique para enviar ícone</p>
-            <p class="cfg-associacao__upload-hint">PNG — 32×32 ou 64×64 px</p>
+            <div id="favicon-preview-container">
+              <span class="material-icons cfg-associacao__upload-icone">image</span>
+              <p class="cfg-associacao__upload-label">Clique para enviar ícone</p>
+              <p class="cfg-associacao__upload-hint">PNG — 32×32 ou 64×64 px</p>
+            </div>
           </div>
           <div class="cfg-associacao__upload-acoes">
             <button type="button" class="btn btn-primario btn-sm"

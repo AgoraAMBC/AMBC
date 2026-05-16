@@ -11,6 +11,7 @@ import Sidebar from '../layout/sidebar.js';
 import Topbar  from '../layout/topbar.js';
 import { configurar } from './formatadores.js';
 import { ConfiguracoesService } from '../services/configuracoes-service.js';
+import { aplicarFavicon } from '../paginas/configuracoes.js';
 
 /* ---------------------------------------------------------
    1. Guarda de autenticacao
@@ -48,8 +49,9 @@ async function iniciarApp() {
 
   // Carrega preferências antes do router para que formatadores já estejam configurados
   try {
-    const configs = await ConfiguracoesService.listar();
+    const configs = await ConfiguracoesService.obter();
     configurar(configs.fuso_horario, configs.formato_data);
+    aplicarFavicon(configs.favicon || null);
   } catch {
     // Falha silenciosa — formatadores usam os defaults (America/Sao_Paulo, DD/MM/YYYY)
   }

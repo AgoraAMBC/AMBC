@@ -221,6 +221,68 @@ async function inicializarUploadLogo() {
 }
 
 /* =========================================================
+   Favicon da Associação
+========================================================= */
+export function aplicarFavicon(base64) {
+    if (!base64) return;
+    let link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+    }
+    link.href = base64;
+}
+
+function renderizarPreviewFavicon(base64) {
+    const container = document.getElementById('favicon-preview-container');
+    if (!container) return;
+    if (base64) {
+        container.innerHTML = `<img src="${base64}" alt="Favicon atual"
+          style="width:48px;height:48px;object-fit:contain;border-radius:4px;" />`;
+    } else {
+        container.innerHTML = `
+          <span class="material-icons cfg-associacao__upload-icone">image</span>
+          <p class="cfg-associacao__upload-label">Clique para enviar ícone</p>
+          <p class="cfg-associacao__upload-hint">PNG — 32×32 ou 64×64 px</p>`;
+    }
+}
+
+async function salvarFavicon(base64) {
+    try {
+        await ConfiguracoesService.salvar({ favicon: base64 });
+        Toast.sucesso('Favicon atualizado com sucesso!');
+        renderizarPreviewFavicon(base64);
+        aplicarFavicon(base64);
+    } catch (erro) {
+        console.error('[Configuracoes] Erro ao salvar favicon:', erro);
+        Toast.erro('Erro ao salvar favicon. Tente novamente.');
+    }
+}
+
+function processarUploadFavicon(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+        alert('O ícone excede o limite de 500 KB.');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) { salvarFavicon(e.target.result); };
+    reader.readAsDataURL(file);
+}
+
+async function inicializarUploadFavicon() {
+    const input = document.getElementById('favicon-input');
+    if (input) input.addEventListener('change', processarUploadFavicon);
+    try {
+        const config = await ConfiguracoesService.obter();
+        renderizarPreviewFavicon(config.favicon || null);
+        aplicarFavicon(config.favicon || null);
+    } catch { /* silencioso */ }
+}
+
+/* =========================================================
    Documentos — estado local
 ========================================================= */
 let _excluindoDocId   = null;
@@ -425,6 +487,10 @@ const ConfiguracoesPage = {
 
         if (document.getElementById('logo-input')) {
             await inicializarUploadLogo();
+        }
+
+        if (document.getElementById('favicon-input')) {
+            await inicializarUploadFavicon();
         }
     },
 
