@@ -10,10 +10,6 @@
         <p class="gu-card__subtitulo">Preferências do sistema, notificações e segurança.</p>
       </div>
     </div>
-    <button type="button" class="btn btn-primario" id="btn-salvar-gerais">
-      <span class="material-icons">save</span>
-      Salvar Preferências
-    </button>
   </header>
 
   <div class="cfg-gerais__secoes">
@@ -27,51 +23,6 @@
       </h3>
     </div>
     <div class="card__corpo">
-
-      <!-- Regional -->
-      <div class="cfg-gerais__secao">
-        <div class="cfg-gerais__secao-titulo">Regional</div>
-        <div class="cfg-associacao__grid">
-
-          <div class="campo gc-3">
-            <label class="form-label" for="ger-idioma">Idioma</label>
-            <select class="form-input" id="ger-idioma">
-              <option value="pt-BR" selected>Português (BR)</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-            </select>
-          </div>
-
-          <div class="campo gc-3">
-            <label class="form-label" for="ger-fuso">Fuso Horário</label>
-            <select class="form-input" id="ger-fuso">
-              <option value="America/Sao_Paulo" selected>América/São_Paulo (UTC-3)</option>
-              <option value="America/Manaus">América/Manaus (UTC-4)</option>
-              <option value="America/Belem">América/Belém (UTC-3)</option>
-              <option value="America/Fortaleza">América/Fortaleza (UTC-3)</option>
-            </select>
-          </div>
-
-          <div class="campo gc-3">
-            <label class="form-label" for="ger-data">Formato de Data</label>
-            <select class="form-input" id="ger-data">
-              <option value="DD/MM/YYYY" selected>DD/MM/AAAA</option>
-              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-              <option value="YYYY-MM-DD">AAAA-MM-DD</option>
-            </select>
-          </div>
-
-          <div class="campo gc-3">
-            <label class="form-label" for="ger-moeda">Moeda</label>
-            <select class="form-input" id="ger-moeda">
-              <option value="BRL" selected>Real (R$)</option>
-              <option value="USD">Dólar ($)</option>
-              <option value="EUR">Euro (€)</option>
-            </select>
-          </div>
-
-        </div>
-      </div>
 
       <!-- Notificações -->
       <div class="cfg-gerais__secao">
@@ -117,14 +68,6 @@
 
         <div class="cfg-gerais__linha">
           <div class="cfg-gerais__linha-texto">
-            <div class="cfg-gerais__linha-label">Autenticação em 2 etapas</div>
-            <div class="cfg-gerais__linha-desc">Exigir verificação extra ao fazer login</div>
-          </div>
-          <button type="button" class="cfg-gerais__toggle" id="tog-2fa" aria-pressed="false"></button>
-        </div>
-
-        <div class="cfg-gerais__linha">
-          <div class="cfg-gerais__linha-texto">
             <div class="cfg-gerais__linha-label">Expirar sessão após inatividade</div>
             <div class="cfg-gerais__linha-desc">Encerrar sessão após 30 minutos sem uso</div>
           </div>
@@ -151,7 +94,7 @@
 
     </div>
     <div class="card__rodape">
-      <button type="button" class="btn btn-primario" id="btn-salvar-gerais-rodape">
+      <button type="button" class="btn btn-primario" id="btn-salvar-gerais-prefs">
         <span class="material-icons">save</span>
         Salvar Preferências
       </button>
@@ -217,6 +160,12 @@
           </tbody>
         </table>
       </div>
+    </div>
+    <div class="card__rodape">
+      <button type="button" class="btn btn-primario" id="btn-salvar-gerais">
+        <span class="material-icons">save</span>
+        Salvar Preferências
+      </button>
     </div>
   </div>
 

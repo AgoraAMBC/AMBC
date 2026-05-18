@@ -56,19 +56,13 @@ async function salvarDadosInstitucionais() {
 /* =========================================================
    Config Gerais — mapeamento campo → chave no banco
 ========================================================= */
-const CAMPOS_SELECTS = {
-    'ger-idioma': 'idioma',
-    'ger-fuso':   'fuso_horario',
-    'ger-data':   'formato_data',
-    'ger-moeda':  'moeda',
-};
+const CAMPOS_SELECTS = {};
 
 const CAMPOS_TOGGLES = {
     'tog-vencimentos':   'notif_vencimentos',
     'tog-inadimplencia': 'notif_inadimplencia',
     'tog-resumo':        'notif_resumo_semanal',
     'tog-cadastros':     'notif_novos_cadastros',
-    'tog-2fa':           'seg_2fa',
     'tog-sessao':        'seg_expirar_sessao',
 };
 
@@ -801,7 +795,7 @@ const ConfiguracoesPage = {
             await carregarPreferencias();
             document.getElementById('btn-salvar-gerais')
                 ?.addEventListener('click', salvarPreferencias);
-            document.getElementById('btn-salvar-gerais-rodape')
+            document.getElementById('btn-salvar-gerais-prefs')
                 ?.addEventListener('click', salvarPreferencias);
         }
 
