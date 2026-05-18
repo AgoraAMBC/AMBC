@@ -20,5 +20,18 @@ INSERT INTO configuracao_sistema (chave, valor) VALUES
     ('notif_novos_cadastros',   'true'),
     ('seg_2fa',                 'false'),
     ('seg_expirar_sessao',      'true'),
-    ('dias_alerta_vencimento',  '5')
+    ('dias_alerta_vencimento',  '5'),
+    -- Dados institucionais
+    ('assoc_nome',     'Associação de Moradores do Bairro Califórnia'),
+    ('assoc_sigla',    'AMBC'),
+    ('assoc_cnpj',     ''),
+    ('assoc_email',    ''),
+    ('assoc_telefone', ''),
+    ('assoc_site',     ''),
+    ('assoc_cep',      ''),
+    ('assoc_endereco', ''),
+    ('assoc_bairro',   'Bairro Califórnia'),
+    ('assoc_cidade',   'Porto Alegre'),
+    ('assoc_uf',       'RS'),
+    ('assoc_missao',   '')
 ON CONFLICT (chave) DO NOTHING;
