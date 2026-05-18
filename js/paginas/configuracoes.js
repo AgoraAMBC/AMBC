@@ -4,6 +4,55 @@ import Toast from '../componentes/toast.js';
 import { formatarData } from '../core/formatadores.js';
 
 /* =========================================================
+   Dados Institucionais — mapeamento campo → chave no banco
+========================================================= */
+const CAMPOS_INSTITUCIONAIS = {
+    'assoc-nome':     'assoc_nome',
+    'assoc-sigla':    'assoc_sigla',
+    'assoc-cnpj':     'assoc_cnpj',
+    'assoc-email':    'assoc_email',
+    'assoc-telefone': 'assoc_telefone',
+    'assoc-site':     'assoc_site',
+    'assoc-cep':      'assoc_cep',
+    'assoc-endereco': 'assoc_endereco',
+    'assoc-bairro':   'assoc_bairro',
+    'assoc-cidade':   'assoc_cidade',
+    'assoc-uf':       'assoc_uf',
+    'assoc-missao':   'assoc_missao',
+};
+
+async function carregarDadosInstitucionais() {
+    try {
+        const config = await ConfiguracoesService.obter();
+        for (const [id, chave] of Object.entries(CAMPOS_INSTITUCIONAIS)) {
+            const el = document.getElementById(id);
+            if (el && config[chave] !== undefined) el.value = config[chave];
+        }
+    } catch (e) {
+        Toast.erro('Erro ao carregar dados institucionais: ' + e.message);
+    }
+}
+
+async function salvarDadosInstitucionais() {
+    const dados = {};
+    for (const [id, chave] of Object.entries(CAMPOS_INSTITUCIONAIS)) {
+        const el = document.getElementById(id);
+        if (el) dados[chave] = el.value.trim();
+    }
+    if (!dados['assoc_nome']) {
+        Toast.alerta('O nome da associação é obrigatório.');
+        document.getElementById('assoc-nome')?.focus();
+        return;
+    }
+    try {
+        await ConfiguracoesService.salvar(dados);
+        Toast.sucesso('Dados institucionais salvos com sucesso.');
+    } catch (e) {
+        Toast.erro('Erro ao salvar: ' + e.message);
+    }
+}
+
+/* =========================================================
    Config Gerais — mapeamento campo → chave no banco
 ========================================================= */
 const CAMPOS_SELECTS = {
@@ -520,6 +569,12 @@ const ConfiguracoesPage = {
 
         if (document.getElementById('tbody-documentos')) {
             await inicializarDocumentos();
+        }
+
+        if (document.getElementById('btn-salvar-associacao')) {
+            await carregarDadosInstitucionais();
+            document.getElementById('btn-salvar-associacao')
+                ?.addEventListener('click', salvarDadosInstitucionais);
         }
 
         if (document.getElementById('logo-input')) {
