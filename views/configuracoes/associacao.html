@@ -211,7 +211,7 @@
         Planos de Associação
       </h3>
       <div class="card__acoes">
-        <button type="button" class="btn btn-primario btn-sm">
+        <button type="button" class="btn btn-primario btn-sm" id="btn-novo-plano">
           <span class="material-icons">add</span>
           Novo Plano
         </button>
@@ -223,52 +223,11 @@
         Os planos definem os benefícios e o valor da anuidade de cada categoria de associado.
         Clique em <strong>Novo Plano</strong> para adicionar novas categorias.
       </p>
-
-      <div class="cfg-associacao__planos">
-
-        <!-- Plano ativo -->
-        <div class="cfg-associacao__plano cfg-associacao__plano--ativo">
-          <div class="cfg-associacao__plano-topo">
-            <span class="badge badge-verde">Ativo</span>
-            <button type="button" class="btn btn-secundario btn-sm">
-              <span class="material-icons">edit</span>
-            </button>
-          </div>
-          <p class="cfg-associacao__plano-nome">Associado Padrão</p>
-          <p class="cfg-associacao__plano-preco">R$ 60,00 <span>/ anuidade</span></p>
-          <hr class="cfg-associacao__plano-divisor" />
-          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
-            <span class="material-icons">check_circle</span>
-            Acesso à sede social
-          </div>
-          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
-            <span class="material-icons">check_circle</span>
-            Até 3 dependentes
-          </div>
-          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--sim">
-            <span class="material-icons">check_circle</span>
-            Participação em eventos
-          </div>
-          <div class="cfg-associacao__plano-feature cfg-associacao__plano-feature--nao">
-            <span class="material-icons">remove_circle</span>
-            Sala de reuniões
-          </div>
+      <div class="cfg-associacao__planos" id="container-planos">
+        <div class="cfg-associacao__plano cfg-associacao__plano--placeholder" id="placeholder-novo-plano">
+          <span class="material-icons">hourglass_empty</span>
+          <p class="cfg-associacao__plano-placeholder-titulo">Carregando…</p>
         </div>
-
-        <!-- Plano placeholder 2 -->
-        <div class="cfg-associacao__plano cfg-associacao__plano--placeholder">
-          <span class="material-icons">add_circle_outline</span>
-          <p class="cfg-associacao__plano-placeholder-titulo">Novo Plano</p>
-          <p class="cfg-associacao__plano-placeholder-hint">Clique para configurar uma nova categoria de associado</p>
-        </div>
-
-        <!-- Plano placeholder 3 -->
-        <div class="cfg-associacao__plano cfg-associacao__plano--placeholder">
-          <span class="material-icons">add_circle_outline</span>
-          <p class="cfg-associacao__plano-placeholder-titulo">Novo Plano</p>
-          <p class="cfg-associacao__plano-placeholder-hint">Clique para configurar uma nova categoria de associado</p>
-        </div>
-
       </div>
     </div>
   </div>
@@ -309,6 +268,87 @@
   </div><!-- /.gu-card -->
 
 </section>
+
+<!-- ── Modal: Criar / Editar Plano ── -->
+<div class="gu-modal" id="modal-plano" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-plano-fundo"></div>
+  <div class="gu-modal__caixa">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone">card_membership</span>
+        <h3 class="gu-modal__titulo" id="modal-plano-titulo">Novo Plano</h3>
+      </div>
+      <button type="button" class="gu-modal__fechar" id="modal-plano-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <form class="gu-modal__formulario" id="form-plano" novalidate>
+      <input type="hidden" id="plano-id" />
+
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:var(--esp-md)">
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="plano-nome">Nome do plano *</label>
+          <input type="text" class="gu-campo__input" id="plano-nome"
+            placeholder="Ex: Associado Padrão" autocomplete="off" />
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="plano-preco">Preço (R$) *</label>
+          <input type="number" class="gu-campo__input" id="plano-preco"
+            min="0" step="0.01" placeholder="0,00" style="width:120px" />
+        </div>
+        <div class="gu-campo">
+          <label class="gu-campo__label" for="plano-periodo">Período *</label>
+          <select class="gu-campo__input" id="plano-periodo" style="width:140px">
+            <option value="anuidade">Anuidade</option>
+            <option value="mensalidade">Mensalidade</option>
+            <option value="semestral">Semestral</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gu-campo">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--esp-xs)">
+          <label class="gu-campo__label" style="margin:0">Benefícios</label>
+          <button type="button" class="btn btn-secundario btn-sm" id="btn-add-beneficio">
+            <span class="material-icons">add</span> Adicionar
+          </button>
+        </div>
+        <div id="lista-beneficios" style="display:flex;flex-direction:column;gap:var(--esp-xs)">
+          <!-- preenchido dinamicamente -->
+        </div>
+      </div>
+
+      <div class="gu-modal__acoes">
+        <button type="button" class="gu-btn gu-btn--secundario" id="modal-plano-cancelar">Cancelar</button>
+        <button type="submit" class="gu-btn gu-btn--primario" id="btn-plano-salvar">
+          <span class="material-icons">save</span> Salvar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmar exclusão de plano ── -->
+<div class="gu-modal" id="modal-plano-confirmar" hidden aria-modal="true" role="dialog">
+  <div class="gu-modal__fundo" id="modal-plano-confirmar-fundo"></div>
+  <div class="gu-modal__caixa gu-modal__caixa--pequena">
+    <div class="gu-modal__cabecalho">
+      <div class="gu-modal__titulo-grupo">
+        <span class="material-icons gu-modal__icone" style="color:var(--cor-erro)">delete_forever</span>
+        <h3 class="gu-modal__titulo">Confirmar exclusão</h3>
+      </div>
+    </div>
+    <div class="gu-modal__corpo">
+      <p class="gu-modal__mensagem" id="modal-plano-confirmar-msg"></p>
+    </div>
+    <div class="gu-modal__acoes">
+      <button type="button" class="gu-btn gu-btn--secundario" id="modal-plano-confirmar-cancelar">Cancelar</button>
+      <button type="button" class="gu-btn gu-btn--perigo" id="modal-plano-confirmar-ok">
+        <span class="material-icons">delete</span> Excluir
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- ── Modal: Enviar Documento ── -->
 <div class="gu-modal" id="modal-documento" hidden aria-modal="true" role="dialog">

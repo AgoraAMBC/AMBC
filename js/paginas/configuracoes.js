@@ -1,5 +1,6 @@
 import { ConfiguracoesService } from '../services/configuracoes-service.js';
 import { DocumentosService }   from '../services/documentos-service.js';
+import { PlanosService }       from '../services/planos-service.js';
 import Toast from '../componentes/toast.js';
 import { formatarData } from '../core/formatadores.js';
 
@@ -369,6 +370,243 @@ async function inicializarUploadFavicon() {
 }
 
 /* =========================================================
+   Planos de Associação
+========================================================= */
+let _excluindoPlanoId   = null;
+let _excluindoPlanoNome = null;
+let _planosCache        = [];
+
+const _PERIODOS = { anuidade: 'anuidade', mensalidade: 'mensalidade', semestral: 'semestral' };
+
+function _renderPlanos(planos) {
+    _planosCache = planos;
+    const container = document.getElementById('container-planos');
+    if (!container) return;
+
+    let html = planos.map(p => {
+        const badge   = p.ativo
+            ? '<span class="badge badge-verde">Ativo</span>'
+            : '<span class="badge badge-cinza">Inativo</span>';
+        const precoFmt = `R$ ${Number(p.preco).toFixed(2).replace('.', ',')}`;
+        const periodo  = _PERIODOS[p.periodo] ?? p.periodo;
+        const features = (p.beneficios ?? []).map(b => {
+            const cls  = b.incluido ? 'cfg-associacao__plano-feature--sim' : 'cfg-associacao__plano-feature--nao';
+            const icon = b.incluido ? 'check_circle' : 'remove_circle';
+            return `<div class="cfg-associacao__plano-feature ${cls}">
+                      <span class="material-icons">${icon}</span>
+                      ${b.descricao}
+                    </div>`;
+        }).join('');
+
+        return `
+          <div class="cfg-associacao__plano${p.ativo ? ' cfg-associacao__plano--ativo' : ''}">
+            <div class="cfg-associacao__plano-topo">
+              ${badge}
+              <div style="display:flex;gap:4px">
+                <button type="button" class="btn btn-secundario btn-sm" title="Editar"
+                  data-plano-acao="editar" data-plano-id="${p.id_plano}">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button type="button" class="btn btn-secundario btn-sm"
+                  title="${p.ativo ? 'Inativar' : 'Ativar'}"
+                  data-plano-acao="status" data-plano-id="${p.id_plano}">
+                  <span class="material-icons">${p.ativo ? 'toggle_on' : 'toggle_off'}</span>
+                </button>
+                <button type="button" class="btn btn-secundario btn-sm" title="Excluir"
+                  data-plano-acao="excluir" data-plano-id="${p.id_plano}" data-plano-nome="${p.nome}">
+                  <span class="material-icons">delete</span>
+                </button>
+              </div>
+            </div>
+            <p class="cfg-associacao__plano-nome">${p.nome}</p>
+            <p class="cfg-associacao__plano-preco">${precoFmt} <span>/ ${periodo}</span></p>
+            <hr class="cfg-associacao__plano-divisor" />
+            ${features}
+          </div>`;
+    }).join('');
+
+    html += `
+      <div class="cfg-associacao__plano cfg-associacao__plano--placeholder" id="btn-novo-plano-card"
+        style="cursor:pointer" title="Novo plano">
+        <span class="material-icons">add_circle_outline</span>
+        <p class="cfg-associacao__plano-placeholder-titulo">Novo Plano</p>
+        <p class="cfg-associacao__plano-placeholder-hint">Clique para configurar uma nova categoria</p>
+      </div>`;
+
+    container.innerHTML = html;
+}
+
+async function carregarPlanos() {
+    const container = document.getElementById('container-planos');
+    if (!container) return;
+    try {
+        const res = await PlanosService.listar();
+        _renderPlanos(res.dados ?? []);
+    } catch (e) {
+        container.innerHTML = '<p style="color:var(--cor-erro);padding:var(--esp-md)">Erro ao carregar planos.</p>';
+        Toast.erro('Erro ao carregar planos: ' + e.message);
+    }
+}
+
+function _novaBeneficioHtml(descricao = '', incluido = true) {
+    const checked = incluido ? 'checked' : '';
+    return `
+      <div style="display:flex;align-items:center;gap:var(--esp-sm)" class="beneficio-linha">
+        <input type="checkbox" ${checked} class="beneficio-incluido"
+          style="width:18px;height:18px;accent-color:var(--cor-primaria);cursor:pointer" />
+        <input type="text" class="gu-campo__input beneficio-descricao" value="${descricao}"
+          placeholder="Descreva o benefício…" style="flex:1" />
+        <button type="button" class="btn btn-secundario btn-sm beneficio-remover" title="Remover">
+          <span class="material-icons">close</span>
+        </button>
+      </div>`;
+}
+
+function _abrirModalPlano(plano = null) {
+    const modal = document.getElementById('modal-plano');
+    if (!modal) return;
+
+    document.getElementById('modal-plano-titulo').textContent = plano ? 'Editar Plano' : 'Novo Plano';
+    document.getElementById('plano-id').value      = plano?.id_plano ?? '';
+    document.getElementById('plano-nome').value    = plano?.nome     ?? '';
+    document.getElementById('plano-preco').value   = plano?.preco    ?? '';
+    document.getElementById('plano-periodo').value = plano?.periodo  ?? 'anuidade';
+
+    const listaBen = document.getElementById('lista-beneficios');
+    listaBen.innerHTML = (plano?.beneficios ?? [])
+        .map(b => _novaBeneficioHtml(b.descricao, b.incluido))
+        .join('');
+
+    modal.hidden = false;
+    setTimeout(() => document.getElementById('plano-nome')?.focus(), 50);
+}
+
+function _fecharModalPlano() {
+    document.getElementById('modal-plano').hidden = true;
+}
+
+function _lerBeneficios() {
+    return [...document.querySelectorAll('#lista-beneficios .beneficio-linha')].map(linha => ({
+        descricao: linha.querySelector('.beneficio-descricao').value.trim(),
+        incluido:  linha.querySelector('.beneficio-incluido').checked,
+    })).filter(b => b.descricao !== '');
+}
+
+async function _salvarPlano(e) {
+    e.preventDefault();
+    const nome   = document.getElementById('plano-nome').value.trim();
+    const preco  = parseFloat(document.getElementById('plano-preco').value);
+    const periodo = document.getElementById('plano-periodo').value;
+    const id     = Number(document.getElementById('plano-id').value) || null;
+
+    if (!nome) { Toast.alerta('Informe o nome do plano.'); return; }
+    if (isNaN(preco) || preco < 0) { Toast.alerta('Informe um preço válido.'); return; }
+
+    const dados = { nome, preco, periodo, beneficios: _lerBeneficios(), ordem: 0 };
+    const btn = document.getElementById('btn-plano-salvar');
+    btn.disabled = true;
+
+    try {
+        if (id) {
+            await PlanosService.editar({ ...dados, id_plano: id });
+        } else {
+            await PlanosService.criar(dados);
+        }
+        Toast.sucesso(id ? 'Plano atualizado com sucesso.' : 'Plano criado com sucesso.');
+        _fecharModalPlano();
+        await carregarPlanos();
+    } catch (err) {
+        Toast.erro(err.message || 'Erro ao salvar plano.');
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+function _abrirConfirmarExclusaoPlano(id, nome) {
+    _excluindoPlanoId   = id;
+    _excluindoPlanoNome = nome;
+    const msg = document.getElementById('modal-plano-confirmar-msg');
+    if (msg) msg.innerHTML = `Deseja excluir o plano <strong>${nome}</strong>? Esta ação não pode ser desfeita.`;
+    document.getElementById('modal-plano-confirmar').hidden = false;
+}
+
+function _fecharConfirmarExclusaoPlano() {
+    document.getElementById('modal-plano-confirmar').hidden = true;
+}
+
+async function _executarExclusaoPlano() {
+    _fecharConfirmarExclusaoPlano();
+    try {
+        await PlanosService.excluir(_excluindoPlanoId);
+        Toast.sucesso('Plano excluído com sucesso.');
+        await carregarPlanos();
+    } catch (err) {
+        Toast.erro(err.message || 'Erro ao excluir plano.');
+    }
+}
+
+async function _alternarStatusPlano(id) {
+    try {
+        const res = await PlanosService.alternarStatus(id);
+        Toast.sucesso(res.mensagem);
+        await carregarPlanos();
+    } catch (err) {
+        Toast.erro(err.message || 'Erro ao alterar status.');
+    }
+}
+
+async function inicializarPlanos() {
+    await carregarPlanos();
+
+    document.getElementById('btn-novo-plano')
+        ?.addEventListener('click', () => _abrirModalPlano());
+
+    document.getElementById('container-planos')
+        ?.addEventListener('click', e => {
+            if (e.target.closest('#btn-novo-plano-card')) {
+                _abrirModalPlano();
+                return;
+            }
+            const btn = e.target.closest('[data-plano-acao]');
+            if (!btn) return;
+            const { planoAcao, planoId, planoNome } = btn.dataset;
+            const id = Number(planoId);
+            if (planoAcao === 'editar')  _abrirModalPlano(_planosCache.find(p => p.id_plano === id));
+            if (planoAcao === 'status')  _alternarStatusPlano(id);
+            if (planoAcao === 'excluir') _abrirConfirmarExclusaoPlano(id, planoNome);
+        });
+
+    document.getElementById('modal-plano-fechar')
+        ?.addEventListener('click', _fecharModalPlano);
+    document.getElementById('modal-plano-cancelar')
+        ?.addEventListener('click', _fecharModalPlano);
+    document.getElementById('modal-plano-fundo')
+        ?.addEventListener('click', _fecharModalPlano);
+
+    document.getElementById('form-plano')
+        ?.addEventListener('submit', _salvarPlano);
+
+    document.getElementById('btn-add-beneficio')
+        ?.addEventListener('click', () => {
+            document.getElementById('lista-beneficios')
+                .insertAdjacentHTML('beforeend', _novaBeneficioHtml());
+        });
+
+    document.getElementById('lista-beneficios')
+        ?.addEventListener('click', e => {
+            const btn = e.target.closest('.beneficio-remover');
+            if (btn) btn.closest('.beneficio-linha').remove();
+        });
+
+    document.getElementById('modal-plano-confirmar-cancelar')
+        ?.addEventListener('click', _fecharConfirmarExclusaoPlano);
+    document.getElementById('modal-plano-confirmar-fundo')
+        ?.addEventListener('click', _fecharConfirmarExclusaoPlano);
+    document.getElementById('modal-plano-confirmar-ok')
+        ?.addEventListener('click', _executarExclusaoPlano);
+}
+
+/* =========================================================
    Documentos — estado local
 ========================================================= */
 let _excluindoDocId   = null;
@@ -565,6 +803,10 @@ const ConfiguracoesPage = {
                 ?.addEventListener('click', salvarPreferencias);
             document.getElementById('btn-salvar-gerais-rodape')
                 ?.addEventListener('click', salvarPreferencias);
+        }
+
+        if (document.getElementById('container-planos')) {
+            await inicializarPlanos();
         }
 
         if (document.getElementById('tbody-documentos')) {
