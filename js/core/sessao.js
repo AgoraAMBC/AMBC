@@ -99,6 +99,80 @@ function obterIniciais() {
 }
 
 /* ---------------------------------------------------------
+   Timer de inatividade
+   Encerra a sessão após 30 min sem interação do usuário.
+   Exibe aviso 2 minutos antes de expirar.
+--------------------------------------------------------- */
+const _INATIVIDADE_MS  = 30 * 60 * 1000;
+const _AVISO_MS        =  2 * 60 * 1000;
+const _THROTTLE_MS     = 30 * 1000;
+const _EVENTOS         = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+
+let _timerExpiracao  = null;
+let _timerAviso      = null;
+let _ultimaAtividade = 0;
+let _avisoAtivo      = false;
+
+function _removerAviso() {
+  document.getElementById('sessao-aviso-inatividade')?.remove();
+  _avisoAtivo = false;
+}
+
+function _exibirAviso() {
+  if (_avisoAtivo) return;
+  _avisoAtivo = true;
+
+  const div = document.createElement('div');
+  div.id = 'sessao-aviso-inatividade';
+  div.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    background:var(--cor-alerta-clara);border:1px solid var(--cor-alerta);
+    border-radius:var(--raio-md);padding:14px 18px;max-width:320px;
+    box-shadow:var(--sombra-md);display:flex;align-items:center;gap:12px;
+  `;
+  div.innerHTML = `
+    <span class="material-icons" style="color:var(--cor-alerta);flex-shrink:0">timer</span>
+    <div style="flex:1;font-size:var(--fs-sm)">
+      <strong>Sessão expirando</strong><br>
+      Você será desconectado em 2 minutos por inatividade.
+    </div>
+    <button onclick="document.getElementById('sessao-aviso-inatividade').remove()"
+      style="background:none;border:none;cursor:pointer;padding:0;line-height:1">
+      <span class="material-icons" style="font-size:18px;color:var(--cor-alerta-escura)">close</span>
+    </button>
+  `;
+  document.body.appendChild(div);
+}
+
+function _resetarTimer() {
+  const agora = Date.now();
+  if (agora - _ultimaAtividade < _THROTTLE_MS) return;
+  _ultimaAtividade = agora;
+
+  clearTimeout(_timerExpiracao);
+  clearTimeout(_timerAviso);
+  _removerAviso();
+
+  _timerAviso = setTimeout(_exibirAviso, _INATIVIDADE_MS - _AVISO_MS);
+  _timerExpiracao = setTimeout(() => encerrar(true), _INATIVIDADE_MS);
+}
+
+function iniciarTimerInatividade() {
+  _ultimaAtividade = Date.now() - _THROTTLE_MS; // força reset imediato
+  _EVENTOS.forEach(ev => document.addEventListener(ev, _resetarTimer, { passive: true }));
+  _resetarTimer();
+  console.log('[Sessao] Timer de inatividade iniciado (30 min)');
+}
+
+function pararTimerInatividade() {
+  clearTimeout(_timerExpiracao);
+  clearTimeout(_timerAviso);
+  _removerAviso();
+  _EVENTOS.forEach(ev => document.removeEventListener(ev, _resetarTimer));
+  console.log('[Sessao] Timer de inatividade parado');
+}
+
+/* ---------------------------------------------------------
    Exporta API publica
 --------------------------------------------------------- */
 const Sessao = {
@@ -108,6 +182,8 @@ const Sessao = {
   encerrar,
   exigirAutenticacao,
   obterIniciais,
+  iniciarTimerInatividade,
+  pararTimerInatividade,
 };
 
 export default Sessao;

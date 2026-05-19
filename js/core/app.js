@@ -53,6 +53,9 @@ async function iniciarApp() {
     configurar(configs.fuso_horario, configs.formato_data);
     aplicarFavicon(configs.favicon || null);
     aplicarTema(configs.tema || 'claro');
+    if (configs.seg_expirar_sessao === 'true') {
+      Sessao.iniciarTimerInatividade();
+    }
   } catch {
     // Falha silenciosa — formatadores usam os defaults (America/Sao_Paulo, DD/MM/YYYY)
   }
