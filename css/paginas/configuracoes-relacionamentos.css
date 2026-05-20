@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-/* ── Wrapper unificado dentro do gu-card ── */
+/* -- Wrapper unificado dentro do gu-card -- */
 .cfg-rel .gu-card {
   display: flex;
   flex-direction: column;
@@ -24,7 +24,7 @@
   padding: var(--esp-lg);
 }
 
-/* ── Banner informativo ── */
+/* -- Banner informativo -- */
 .cfg-rel__banner {
   display: flex;
   align-items: center;
@@ -48,7 +48,61 @@
   line-height: var(--lh-base);
 }
 
-/* ── Regra item ── */
+/* -- Loading -- */
+.cfg-rel__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--esp-xl);
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+}
+
+.cfg-rel__loading p::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--cor-primaria-clara);
+  border-top-color: var(--cor-primaria);
+  border-radius: 50%;
+  animation: cfg-rel-spin 0.6s linear infinite;
+  margin-right: var(--esp-xs);
+  vertical-align: middle;
+}
+
+@keyframes cfg-rel-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* -- Estado vazio -- */
+.cfg-rel__vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--esp-xl) var(--esp-lg);
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.cfg-rel__vazio .material-icons {
+  font-size: 48px;
+  margin-bottom: var(--esp-sm);
+  color: var(--texto-suave);
+}
+
+.cfg-rel__vazio p {
+  margin: 0 0 var(--esp-xs);
+  font-size: var(--fs-sm);
+}
+
+.cfg-rel__vazio-dica {
+  font-size: var(--fs-xs);
+  color: var(--texto-secundario);
+}
+
+/* -- Regra item -- */
 .cfg-rel__regra {
   display: flex;
   align-items: center;
@@ -62,7 +116,17 @@
   padding-bottom: 0;
 }
 
-/* Ícone colorido à esquerda */
+/* -- Regra inativa -- */
+.cfg-rel__regra--inativo {
+  opacity: 0.6;
+}
+
+.cfg-rel__regra--inativo .cfg-rel__regra-titulo {
+  text-decoration: line-through;
+  color: var(--texto-suave);
+}
+
+/* Icone colorido a esquerda */
 .cfg-rel__regra-icone {
   display: flex;
   align-items: center;
@@ -104,7 +168,7 @@
   line-height: var(--lh-base);
 }
 
-/* Badges + botões à direita */
+/* Badges + botoes a direita */
 .cfg-rel__regra-acoes {
   display: flex;
   align-items: center;
@@ -112,7 +176,13 @@
   flex-shrink: 0;
 }
 
-/* ── Grid de campos do formulário no modal ── */
+/* Botao perigo */
+.btn-perigo:hover {
+  background-color: var(--cor-erro-clara);
+  color: var(--cor-erro);
+}
+
+/* -- Grid de campos do formulario no modal -- */
 .cfg-rel__form-linha {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -120,7 +190,7 @@
   margin-bottom: var(--esp-md);
 }
 
-/* ── Responsivo ── */
+/* -- Responsivo -- */
 @media (max-width: 768px) {
   .cfg-rel__regra {
     flex-wrap: wrap;

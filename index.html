@@ -48,15 +48,13 @@
        CSS — Páginas
        ========================================================== -->
   <link rel="stylesheet" href="css/paginas/painel.css" />
-  <link rel="stylesheet" href="css/paginas/novo-parceiro.css" />
-  <link rel="stylesheet" href="css/paginas/configuracoes-associacao.css" />
-  <link rel="stylesheet" href="css/paginas/configuracoes-relacionamentos.css" />
   <link rel="stylesheet" href="css/paginas/cadastro-listar.css" />
   <link rel="stylesheet" href="css/paginas/cadastro-dependentes.css" />
   <link rel="stylesheet" href="css/paginas/usuarios.css" />
   <link rel="stylesheet" href="css/paginas/financeiro.css" />
-  <link rel="stylesheet" href="css/paginas/tabelas-auxiliares.css" />
+  <link rel="stylesheet" href="css/paginas/configuracoes-relacionamentos.css" />
   <link rel="stylesheet" href="css/paginas/configuracoes-gerais.css" />
+  <link rel="stylesheet" href="css/paginas/configuracoes-associacao.css" />
 </head>
 
 <body>
@@ -72,9 +70,7 @@
 
       <!-- Cabeçalho da sidebar -->
       <div class="sidebar__cabecalho">
-        <div class="sidebar__logo" id="sidebar-logo-container" aria-hidden="true">
-          <span class="sidebar__logo-texto">A</span>
-        </div>
+        <div class="sidebar__logo" aria-hidden="true">A</div>
         <div>
           <div class="sidebar__titulo">AMBC</div>
           <div class="sidebar__subtitulo">Bairro Califórnia</div>
@@ -103,10 +99,10 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-cadastro">
-                <li><a href="#/cadastro/listar" class="sidebar__link"><span class="material-icons sidebar__icone">group</span><span class="sidebar__texto">Listar Todos</span></a></li>
-                <li><a href="#/cadastro/novo-associado" class="sidebar__link"><span class="material-icons sidebar__icone">person_add</span><span class="sidebar__texto">Novo Associado</span></a></li>
-                <li><a href="#/cadastro/novo-parceiro" class="sidebar__link"><span class="material-icons sidebar__icone">handshake</span><span class="sidebar__texto">Novo Parceiro</span></a></li>
-                <li><a href="#/cadastro/dependentes" class="sidebar__link"><span class="material-icons sidebar__icone">family_restroom</span><span class="sidebar__texto">Dependentes</span></a></li>
+                <li><a href="#/cadastro/listar" class="sidebar__link"><span class="sidebar__texto">Listar Todos</span></a></li>
+                <li><a href="#/cadastro/novo-associado" class="sidebar__link"><span class="sidebar__texto">Novo Associado</span></a></li>
+                <li><a href="#/cadastro/novo-parceiro" class="sidebar__link"><span class="sidebar__texto">Novo Parceiro</span></a></li>
+                <li><a href="#/cadastro/dependentes" class="sidebar__link"><span class="sidebar__texto">Dependentes</span></a></li>
               </ul>
             </li>
 
@@ -117,11 +113,11 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-financeiro">
-                <li><a href="#/financeiro/visao-geral" class="sidebar__link"><span class="material-icons sidebar__icone">analytics</span><span class="sidebar__texto">Visão Geral</span></a></li>
-                <li><a href="#/financeiro/novo-lancamento" class="sidebar__link"><span class="material-icons sidebar__icone">add_card</span><span class="sidebar__texto">Novo Lançamento</span></a></li>
-                <li><a href="#/financeiro/relatorios" class="sidebar__link"><span class="material-icons sidebar__icone">description</span><span class="sidebar__texto">Relatórios</span></a></li>
-                <li><a href="#/financeiro/contas-regentes" class="sidebar__link"><span class="material-icons sidebar__icone">account_tree</span><span class="sidebar__texto">Contas Regentes</span></a></li>
-                <li><a href="#/financeiro/contas-subordinadas" class="sidebar__link"><span class="material-icons sidebar__icone">subdirectory_arrow_right</span><span class="sidebar__texto">Contas Subordinadas</span></a></li>
+                <li><a href="#/financeiro/visao-geral" class="sidebar__link"><span class="sidebar__texto">Visão Geral</span></a></li>
+                <li><a href="#/financeiro/novo-lancamento" class="sidebar__link"><span class="sidebar__texto">Novo Lançamento</span></a></li>
+                <li><a href="#/financeiro/relatorios" class="sidebar__link"><span class="sidebar__texto">Relatórios</span></a></li>
+                <li><a href="#/financeiro/contas-regentes" class="sidebar__link"><span class="sidebar__texto">Contas Regentes</span></a></li>
+                <li><a href="#/financeiro/contas-subordinadas" class="sidebar__link"><span class="sidebar__texto">Contas Subordinadas</span></a></li>
               </ul>
             </li>
 
@@ -132,7 +128,7 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-tabelas">
-                <li><a href="#/tabelas/ver" class="sidebar__link"><span class="material-icons sidebar__icone">list_alt</span><span class="sidebar__texto">Ver Tabelas</span></a></li>
+                <li><a href="#/tabelas/ver" class="sidebar__link"><span class="sidebar__texto">Ver Tabelas</span></a></li>
               </ul>
             </li>
 
@@ -151,10 +147,10 @@
                 <span class="material-icons sidebar__seta">chevron_right</span>
               </button>
               <ul class="sidebar__submenu" id="submenu-configuracoes">
-                <li><a href="#/configuracoes/usuarios" class="sidebar__link"><span class="material-icons sidebar__icone">people</span><span class="sidebar__texto">Gestão de Usuários</span></a></li>
-                <li><a href="#/configuracoes/associacao" class="sidebar__link"><span class="material-icons sidebar__icone">account_balance</span><span class="sidebar__texto">Associação</span></a></li>
-                <li><a href="#/configuracoes/relacionamentos" class="sidebar__link"><span class="material-icons sidebar__icone">hub</span><span class="sidebar__texto">Relacionamentos</span></a></li>
-                <li><a href="#/configuracoes/config-gerais" class="sidebar__link"><span class="material-icons sidebar__icone">tune</span><span class="sidebar__texto">Config. Gerais</span></a></li>
+                <li><a href="#/configuracoes/usuarios" class="sidebar__link"><span class="sidebar__texto">Gestão de Usuários</span></a></li>
+                <li><a href="#/configuracoes/associacao" class="sidebar__link"><span class="sidebar__texto">Associação</span></a></li>
+                <li><a href="#/configuracoes/relacionamentos" class="sidebar__link"><span class="sidebar__texto">Relacionamentos</span></a></li>
+                <li><a href="#/configuracoes/config-gerais" class="sidebar__link"><span class="sidebar__texto">Config. Gerais</span></a></li>
               </ul>
             </li>
 

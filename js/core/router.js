@@ -89,7 +89,7 @@ const rotas = {
   },
   '#/configuracoes/relacionamentos': {
     view: 'views/configuracoes/relacionamentos.html',
-    page: 'configuracoes',
+    page: 'relacionamentos',
     titulo: 'Relacionamentos'
   },
   '#/configuracoes/config-gerais': {

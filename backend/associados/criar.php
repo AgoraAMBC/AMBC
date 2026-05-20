@@ -31,8 +31,8 @@ $numero      = $body['numero']      ?? null;
 $complemento = $body['complemento'] ?? null;
 $bairro      = $body['bairro']      ?? null;
 $cidade      = $body['cidade']      ?? null;
-$uf  = trim($uf ?? '');
-$cep = preg_replace('/\D/', '', $cep ?? '');
+$uf  = trim($body['uf'] ?? '');
+$cep = preg_replace('/\D/', '', $body['cep'] ?? '');
 
 if (!$nome || !$cpf_cnpj) jsonErro('Nome e CPF são obrigatórios', 422);
 
