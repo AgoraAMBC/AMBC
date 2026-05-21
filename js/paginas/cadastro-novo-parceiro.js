@@ -15,6 +15,7 @@ let lancamentos = [];
 let cleanup = [];
 let idParceiro = null;
 let modoEdicao = false;
+let indiceTelefoneEdicao = null;
 let indiceLancamentoEdicao = null;
 let dominiosFinanceiros = {
     tipos: [],
@@ -26,6 +27,7 @@ function init() {
 
     telefones = [];
     lancamentos = [];
+    indiceTelefoneEdicao = null;
     indiceLancamentoEdicao = null;
     idParceiro = _obterIdDaRota();
     modoEdicao = idParceiro !== null;
@@ -42,6 +44,7 @@ function destroy() {
     cleanup.forEach(fn => fn());
     cleanup = [];
     delete window._removerTelefone;
+    delete window._editarTelefone;
     delete window._editarLancamento;
     delete window._removerLancamento;
     console.log('[NovoParceiro] Pagina destruida');
@@ -103,40 +106,99 @@ function _coletarDados(form) {
 
 function _bindTelefones() {
     const btnAdd = document.getElementById('btn-add-telefone');
-    if (!btnAdd) return;
+    const btnSalvar = document.getElementById('btn-salvar-telefone-parceiro');
+    const btnFechar = document.getElementById('modal-telefone-parceiro-fechar');
+    const btnCancelar = document.getElementById('modal-telefone-parceiro-cancelar');
+    const fundo = document.getElementById('modal-telefone-parceiro-fundo');
+    const numero = document.getElementById('telefone-parceiro-numero');
 
-    const handler = () => _adicionarTelefone();
-    btnAdd.addEventListener('click', handler);
-    cleanup.push(() => btnAdd.removeEventListener('click', handler));
+    if (btnAdd) {
+        const handler = () => _abrirModalTelefone();
+        btnAdd.addEventListener('click', handler);
+        cleanup.push(() => btnAdd.removeEventListener('click', handler));
+    }
+
+    if (btnSalvar) {
+        const handler = () => _salvarTelefoneModal();
+        btnSalvar.addEventListener('click', handler);
+        cleanup.push(() => btnSalvar.removeEventListener('click', handler));
+    }
+
+    [btnFechar, btnCancelar, fundo].forEach((el) => {
+        if (!el) return;
+        const handler = () => _fecharModalTelefone();
+        el.addEventListener('click', handler);
+        cleanup.push(() => el.removeEventListener('click', handler));
+    });
+
+    if (numero) {
+        const handler = aplicarMascaraTelefone;
+        numero.addEventListener('input', handler);
+        cleanup.push(() => numero.removeEventListener('input', handler));
+    }
 }
 
-function _adicionarTelefone() {
-    const ddd = document.getElementById('tel-ddd')?.value.trim() ?? '';
-    const numero = document.getElementById('tel-numero')?.value.trim() ?? '';
-    const tipo = document.getElementById('tel-tipo')?.value ?? null;
-    const obs = document.getElementById('tel-obs')?.value.trim() ?? '';
+function _abrirModalTelefone(index = null) {
+    indiceTelefoneEdicao = Number.isInteger(index) ? index : null;
+    const telefone = indiceTelefoneEdicao !== null ? telefones[indiceTelefoneEdicao] : null;
+    const modal = document.getElementById('modal-telefone-parceiro');
+    const titulo = document.getElementById('modal-telefone-parceiro-titulo');
+    const tipo = document.getElementById('telefone-parceiro-tipo');
+    const numero = document.getElementById('telefone-parceiro-numero');
+    const obs = document.getElementById('telefone-parceiro-observacao');
+    const btnSalvar = document.getElementById('btn-salvar-telefone-parceiro');
 
-    if (!ddd || !numero) {
-        Toast.alerta('Informe o DDD e o numero do telefone.');
+    if (titulo) titulo.textContent = telefone ? 'Editar Contato' : 'Adicionar Contato';
+    if (tipo) tipo.value = telefone?.fk_tipo_telefone ? String(telefone.fk_tipo_telefone) : '1';
+    if (numero) numero.value = telefone ? formatarTelefone(telefone.ddd, telefone.numero) : '';
+    if (obs) obs.value = telefone?.observacao ?? '';
+    if (btnSalvar) btnSalvar.innerHTML = '<span class="material-icons">save</span><span>Salvar Contato</span>';
+    if (modal) modal.hidden = false;
+}
+
+function _fecharModalTelefone() {
+    const modal = document.getElementById('modal-telefone-parceiro');
+    if (modal) modal.hidden = true;
+    indiceTelefoneEdicao = null;
+}
+
+function _salvarTelefoneModal() {
+    const numeroCampo = document.getElementById('telefone-parceiro-numero');
+    const tipo = document.getElementById('telefone-parceiro-tipo')?.value ?? '1';
+    const obs = document.getElementById('telefone-parceiro-observacao')?.value.trim() ?? '';
+    const digitos = numeroCampo?.value.replace(/\D/g, '').slice(0, 11) ?? '';
+
+    if (digitos.length < 10) {
+        Toast.alerta('Informe um numero de telefone valido.');
         return;
     }
 
-    telefones.push({
-        ddd,
-        numero,
+    const telefone = {
+        ddd: digitos.slice(0, 2),
+        numero: digitos.slice(2),
         fk_tipo_telefone: tipo || null,
         observacao: obs || null,
-    });
+    };
+
+    if (indiceTelefoneEdicao !== null) {
+        telefones[indiceTelefoneEdicao] = telefone;
+    } else {
+        telefones.push(telefone);
+    }
 
     _renderizarTelefones();
+    _fecharModalTelefone();
+}
 
-    document.getElementById('tel-ddd').value = '';
-    document.getElementById('tel-numero').value = '';
-    document.getElementById('tel-obs').value = '';
+function _editarTelefone(index) {
+    _abrirModalTelefone(index);
 }
 
 function _removerTelefone(index) {
     telefones.splice(index, 1);
+    if (indiceTelefoneEdicao === index) {
+        indiceTelefoneEdicao = null;
+    }
     _renderizarTelefones();
 }
 
@@ -160,9 +222,13 @@ function _renderizarTelefones() {
     tbody.innerHTML = telefones.map((tel, i) => `
         <tr>
             <td>${TIPOS_TELEFONE[tel.fk_tipo_telefone] ?? '-'}</td>
-            <td>(${escaparHtml(tel.ddd)}) ${escaparHtml(tel.numero)}</td>
+            <td>${escaparHtml(formatarTelefone(tel.ddd, tel.numero))}</td>
             <td>${escaparHtml(tel.observacao ?? '-')}</td>
             <td class="col-acoes">
+                <button type="button" class="btn btn-secundario btn-sm"
+                    onclick="window._editarTelefone(${i})" title="Editar">
+                    <span class="material-icons">edit</span>
+                </button>
                 <button type="button" class="btn btn-secundario btn-sm"
                     onclick="window._removerTelefone(${i})" title="Remover">
                     <span class="material-icons">delete</span>
@@ -171,6 +237,7 @@ function _renderizarTelefones() {
         </tr>
     `).join('');
 
+    window._editarTelefone = _editarTelefone;
     window._removerTelefone = _removerTelefone;
 }
 
@@ -446,6 +513,33 @@ function formatarData(valor) {
     if (!valor) return '-';
     const [ano, mes, dia] = valor.split('-');
     return `${dia}/${mes}/${ano}`;
+}
+
+function aplicarMascaraTelefone(event) {
+    const input = event.target;
+    const valor = input.value.replace(/\D/g, '').slice(0, 11);
+    if (valor.length <= 2) {
+        input.value = valor.length > 0 ? `(${valor}` : '';
+        return;
+    }
+    if (valor.length <= 6) {
+        input.value = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+        return;
+    }
+    if (valor.length <= 10) {
+        input.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
+        return;
+    }
+    input.value = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7, 11)}`;
+}
+
+function formatarTelefone(ddd, numero) {
+    if (!ddd || !numero) return '';
+    const digitos = String(numero).replace(/\D/g, '');
+    const numeroFormatado = digitos.length === 9
+        ? `${digitos.slice(0, 5)}-${digitos.slice(5)}`
+        : `${digitos.slice(0, 4)}-${digitos.slice(4)}`;
+    return `(${String(ddd).replace(/\D/g, '')}) ${numeroFormatado}`;
 }
 
 function escaparHtml(texto) {
