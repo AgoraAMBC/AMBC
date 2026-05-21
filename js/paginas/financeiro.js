@@ -100,20 +100,47 @@ function renderizarLancamentos() {
   if (vazio) vazio.hidden = filtrados.length > 0;
 }
 
+async function carregarTiposLancamento() {
+  const select = document.getElementById('lancamento-tipo');
+  if (!select) return;
+
+  try {
+    const response = await fetch('/backend/lancamentos/tipos/listar.php');
+    if (!response.ok) throw new Error('Erro ao buscar tipos');
+
+    const resultado = await response.json();
+    const tipos = resultado.data || [];
+
+    select.innerHTML = '<option value="">Selecione...</option>';
+    tipos.forEach(tipo => {
+      const option = document.createElement('option');
+      option.value = tipo.id_tipo_lancamento;
+      option.textContent = tipo.descricao;
+      select.appendChild(option);
+    });
+  } catch (erro) {
+    console.error('[Financeiro] Erro ao carregar tipos:', erro);
+    select.innerHTML = '<option value="">Erro ao carregar tipos</option>';
+  }
+}
+
 function iniciarNovoLancamento() {
   const form = document.getElementById('form-lancamento');
   if (!form) return;
+
+  carregarTiposLancamento();
 
   const campos = ['lancamento-tipo', 'lancamento-status', 'lancamento-valor']
     .map((id) => document.getElementById(id))
     .filter(Boolean);
 
   const atualizar = () => {
-    const tipo = document.getElementById('lancamento-tipo')?.value || 'receita';
+    const tipoSelect = document.getElementById('lancamento-tipo');
+    const tipoTexto = tipoSelect?.selectedOptions[0]?.textContent || 'Tipo';
     const status = document.getElementById('lancamento-status')?.value || 'pendente';
     const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
 
-    document.getElementById('resumo-tipo').textContent = capitalizar(tipo);
+    document.getElementById('resumo-tipo').textContent = tipoTexto;
     document.getElementById('resumo-status').textContent = capitalizar(status);
     document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
   };
@@ -138,7 +165,7 @@ const submit = async (evento) => {
   const payload = {
 
     fk_tipo_lancamento:
-      parseInt(document.getElementById('lancamento-tipo')?.value),
+      parseInt(document.getElementById('lancamento-tipo')?.value) || null,
 
     fk_status_conta:
       parseInt(document.getElementById('lancamento-status')?.value),

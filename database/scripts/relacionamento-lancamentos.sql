@@ -7,18 +7,16 @@ CREATE TABLE IF NOT EXISTS tipo_lancamento (
     id_tipo_lancamento SERIAL PRIMARY KEY,
     descricao VARCHAR(50) NOT NULL UNIQUE,
     observacao TEXT,
-    ativo BOOLEAN DEFAULT true,
-    criado_em TIMESTAMP DEFAULT NOW(),
-    atualizado_em TIMESTAMP DEFAULT NOW()
+    criado_em TIMESTAMP DEFAULT NOW()
 );
 
-INSERT INTO tipo_lancamento (descricao, observacao, ativo) VALUES
-    ('Anuidade', 'Taxa anual de associação', true),
-    ('Mensalidade', 'Taxa mensal de manutenção', true),
-    ('Doação', 'Doação voluntária', true),
-    ('Multa por Atraso', 'Multa por atraso no pagamento', true),
-    ('Manutenção', 'Despesa de manutenção da associação', true)
-ON CONFLICT DO NOTHING;
+INSERT INTO tipo_lancamento (descricao, observacao) VALUES
+    ('Anuidade', 'Taxa anual de associação'),
+    ('Mensalidade', 'Taxa mensal de manutenção'),
+    ('Doação', 'Doação voluntária'),
+    ('Multa por Atraso', 'Multa por atraso no pagamento'),
+    ('Manutenção', 'Despesa de manutenção da associação')
+ON CONFLICT (descricao) DO NOTHING;
 
 -- Relacionamento: Tipo de Lançamento ↔ Contas + Natureza + Modo
 CREATE TABLE IF NOT EXISTS relacionamento_lancamento (
@@ -40,13 +38,9 @@ CREATE TABLE IF NOT EXISTS relacionamento_lancamento (
     criado_em TIMESTAMP DEFAULT NOW(),
     criado_por INT,
     atualizado_em TIMESTAMP DEFAULT NOW(),
-    atualizado_por INT,
-
-    -- Garante: máximo 1 relacionamento ATIVO por tipo de lançamento
-    CONSTRAINT uk_relacionamento_tipo_lancamento
-        UNIQUE (fk_tipo_lancamento, ativo)
-        WHERE ativo = true
+    atualizado_por INT
 );
 
+-- Índice para busca por tipo
 CREATE INDEX IF NOT EXISTS idx_relacionamento_tipo ON relacionamento_lancamento(fk_tipo_lancamento);
 CREATE INDEX IF NOT EXISTS idx_relacionamento_ativo ON relacionamento_lancamento(ativo);

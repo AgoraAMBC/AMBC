@@ -29,9 +29,22 @@ try {
     $campos = [];
     $params = [':id' => $id];
 
-    if (isset($body['fk_tipo_lancamento'])) {
+    if (isset($body['tipo'])) {
+        $tipo = trim($body['tipo']);
+        // Verificar ou criar o tipo de lançamento
+        $stmtTipo = $pdo->prepare("SELECT id_tipo_lancamento FROM tipo_lancamento WHERE descricao ILIKE :tipo");
+        $stmtTipo->execute([':tipo' => $tipo]);
+        $tipoExistente = $stmtTipo->fetch(PDO::FETCH_ASSOC);
+
+        if ($tipoExistente) {
+            $fk_tipo_lancamento = $tipoExistente['id_tipo_lancamento'];
+        } else {
+            $stmtInsertTipo = $pdo->prepare("INSERT INTO tipo_lancamento (descricao) VALUES (:tipo) RETURNING id_tipo_lancamento");
+            $stmtInsertTipo->execute([':tipo' => $tipo]);
+            $fk_tipo_lancamento = $stmtInsertTipo->fetchColumn();
+        }
         $campos[] = 'fk_tipo_lancamento = :tipo';
-        $params[':tipo'] = $body['fk_tipo_lancamento'];
+        $params[':tipo'] = $fk_tipo_lancamento;
     }
     if (isset($body['fk_conta_regente'])) {
         $campos[] = 'fk_conta_regente = :regente';
