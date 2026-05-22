@@ -5,25 +5,31 @@ require_once __DIR__ . '/../helpers.php';
 
 configurarCors();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('M√©todo n√£o permitido', 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('MÈtodo n„o permitido', 405);
 
 $pdo = obterConexao();
 
-$pagina       = max(1, (int)($_GET['pagina']       ?? 1));
-$busca        = trim($_GET['busca']                 ?? '');
-$status       = trim($_GET['status']                ?? '');
-$idParentesco = (int)($_GET['id_parentesco']        ?? 0);
-$idGenero     = (int)($_GET['id_genero']            ?? 0);
+$pagina       = max(1, (int)($_GET['pagina']           ?? 1));
+$busca        = trim($_GET['busca']                     ?? '');
+$status       = trim($_GET['status']                    ?? '');
+$idAssociado  = isset($_GET['id_associado']) ? (int)$_GET['id_associado'] : null;
+$idParentesco = (int)($_GET['id_parentesco']            ?? 0);
+$idGenero     = (int)($_GET['id_genero']                ?? 0);
 $idadeMin     = ($_GET['idade_min'] ?? '') !== '' ? (int)$_GET['idade_min'] : null;
 $idadeMax     = ($_GET['idade_max'] ?? '') !== '' ? (int)$_GET['idade_max'] : null;
-$logradouro   = trim($_GET['logradouro']            ?? '');
-$semPaginacao = ($_GET['sem_paginacao']             ?? '') === '1';
+$logradouro   = trim($_GET['logradouro']                ?? '');
+$semPaginacao = ($_GET['sem_paginacao']                 ?? '') === '1';
 
 $limite = 25;
 $offset = ($pagina - 1) * $limite;
 
 $where  = ['1=1'];
 $params = [];
+
+if ($idAssociado !== null) {
+    $where[]                  = 'd.fk_associado = :fk_associado';
+    $params[':fk_associado']  = $idAssociado;
+}
 
 if ($busca !== '') {
     $where[]          = '(d.nome ILIKE :busca OR a.nome ILIKE :busca OR d.cpf ILIKE :busca)';

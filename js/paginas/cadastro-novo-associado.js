@@ -261,7 +261,7 @@ async function carregarTelefones() {
   if (!estado.idAssociado) return;
   try {
     const resp = await api.get(`/telefones/listar.php?id_associado=${estado.idAssociado}`);
-    telefones = resp?.telefones || [];
+    telefones = (resp?.telefones || []).map(t => ({ ...t, temp: false }));
     renderizarTelefones();
   } catch {
     telefones = [];
@@ -299,6 +299,7 @@ function renderizarTelefones() {
 }
 
 function aoAbrirModalTelefone() {
+  estado.editandoTelefone = null; 
   // Limpa edição anterior
   delete refs.telefoneTipo;
   delete refs.telefoneNumero;
@@ -331,14 +332,40 @@ async function aoSalvarTelefone() {
   const ddd = numeros.slice(0, 2);
   const num = numeros.slice(2);
 
+  if (estado.editandoTelefone !== null) {
+    const idx = estado.editandoTelefone;
+    const t = telefones[idx];
+    if (t?.id_telefone && !t.temp) {
+      try {
+        await api.put('/telefones/atualizar.php', {
+          id_telefone: t.id_telefone,
+          ddd,
+          numero: num,
+          tipo,
+          observacao: obs
+        });
+        Toast.sucesso('Telefone atualizado com sucesso.');
+      } catch (erro) {
+        Toast.erro(erro?.mensagem || erro?.erro || 'Erro ao atualizar telefone.');
+        return;
+      }
+    } else {
+      telefones[idx] = { ...t, ddd, numero: num, tipo, observacao: obs };
+      Toast.sucesso('Telefone atualizado.');
+    }
+    estado.editandoTelefone = null;
+    renderizarTelefones();
+    aoFecharModalTelefone();
+    return;
+  }
+
   if (estado.idAssociado) {
-    // Modo edição: salvar no banco
     try {
       await api.post('/telefones/cadastrar.php', {
         fk_associado: estado.idAssociado,
         ddd,
         numero: num,
-        fk_tipo_telefone: tipo,
+        tipo,
         observacao: obs
       });
       Toast.sucesso('Telefone salvo com sucesso.');
@@ -348,7 +375,6 @@ async function aoSalvarTelefone() {
       Toast.erro(erro?.mensagem || erro?.erro || 'Erro ao salvar telefone.');
     }
   } else {
-    // Modo novo: salvar em memória
     telefones.push({
       ddd, numero: num, tipo, observacao: obs, temp: true
     });
@@ -357,10 +383,10 @@ async function aoSalvarTelefone() {
     aoFecharModalTelefone();
   }
 }
-
 window.__editarTelefone = function(index) {
   const t = telefones[index];
   if (!t) return;
+  estado.editandoTelefone = index;
   const tipo = document.getElementById('telefone-tipo');
   const numero = document.getElementById('telefone-numero');
   const obs = document.getElementById('telefone-observacao');
@@ -392,7 +418,7 @@ async function carregarDependentes() {
   if (!estado.idAssociado) return;
   try {
     const resp = await api.get(`/dependentes/listar.php?id_associado=${estado.idAssociado}`);
-    dependentes = resp?.dependentes || [];
+    dependentes = (resp?.dados || []).map(d => ({ ...d, temp: false }));
     renderizarDependentes();
   } catch {
     dependentes = [];
@@ -430,6 +456,7 @@ function formatarDataBR(data) {
 }
 
 function aoAbrirModalDependente() {
+  estado.editandoDependente = null;
   refs.modalDependente.hidden = false;
   const nome = document.getElementById('dependente-nome');
   const nasc = document.getElementById('dependente-nascimento');
@@ -465,6 +492,38 @@ async function aoSalvarDependente() {
     return;
   }
 
+  if (estado.editandoDependente !== null) {
+    const idx = estado.editandoDependente;
+    const d = dependentes[idx];
+    const dadosAtualizados = {
+      nome,
+      data_nascimento: nasc,
+      fk_parentesco: parentesco,
+      fk_genero: genero,
+      cpf: cpfInput,
+      observacao: `Email: ${email || ''} | Tel: ${tel || ''}` 
+    };
+    if (d?.id_dependente && !d.temp) {
+      try {
+        await api.put('/dependentes/atualizar.php', {
+          id_dependente: d.id_dependente,
+          ...dadosAtualizados
+        });
+        Toast.sucesso('Dependente atualizado com sucesso.');
+      } catch (erro) {
+        Toast.erro(erro?.mensagem || erro?.erro || 'Erro ao atualizar dependente.');
+        return;
+      }
+    } else {
+      dependentes[idx] = { ...d, ...dadosAtualizados };
+      Toast.sucesso('Dependente atualizado.');
+    }
+    estado.editandoDependente = null;
+    renderizarDependentes();
+    aoFecharModalDependente();
+    return;
+  }
+
   if (estado.idAssociado) {
     try {
       await api.post('/dependentes/cadastrar.php', {
@@ -474,7 +533,7 @@ async function aoSalvarDependente() {
         cpf: cpfInput || null,
         fk_parentesco: parentesco || null,
         fk_genero: genero || null,
-        observacao: `Email: ${email} | Tel: ${tel}`
+        observacao: `Email: ${email} | Tel: ${tel}` 
       });
       Toast.sucesso('Dependente salvo com sucesso.');
       aoFecharModalDependente();
@@ -492,10 +551,10 @@ async function aoSalvarDependente() {
     aoFecharModalDependente();
   }
 }
-
 window.__editarDependente = function(index) {
   const d = dependentes[index];
   if (!d) return;
+  estado.editandoDependente = index;
   const nome = document.getElementById('dependente-nome');
   const nasc = document.getElementById('dependente-nascimento');
   const parentesco = document.getElementById('dependente-parentesco');

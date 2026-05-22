@@ -5,6 +5,7 @@
 
 import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
+import { CadastrosService } from '../services/cadastros-service.js';
 import { AssociadosService } from '../services/associados-service.js';
 import { ParceirosService } from '../services/parceiros-service.js';
 
@@ -89,55 +90,10 @@ async function buscarEAtualizar() {
 }
 
 async function buscarCadastros(filtros) {
-  if (estado.filtroTipo === 'associado') {
-    const resp = await AssociadosService.listar(filtros);
-    return { ...resp, dados: (resp.dados ?? []).map(normalizarAssociado) };
-  }
-
-  if (estado.filtroTipo === 'parceiro') {
-    const resp = await ParceirosService.listar(filtros);
-    return { ...resp, dados: (resp.dados ?? []).map(normalizarParceiro) };
-  }
-
-  const [associados, parceiros] = await Promise.all([
-    AssociadosService.listar(filtros),
-    ParceirosService.listar(filtros),
-  ]);
-
-  const dados = [
-    ...(associados.dados ?? []).map(normalizarAssociado),
-    ...(parceiros.dados ?? []).map(normalizarParceiro),
-  ].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
-
-  return {
-    dados,
-    total: (associados.total ?? 0) + (parceiros.total ?? 0),
-    paginas: Math.max(associados.paginas ?? 1, parceiros.paginas ?? 1),
-  };
-}
-
-function normalizarAssociado(a) {
-  return {
-    id: a.id_associado,
-    tipo: 'associado',
-    nome: a.nome,
-    email: a.email,
-    cpf_cnpj: a.cpf_cnpj,
-    ativo: a.ativo,
-    criado_em: a.criado_em,
-  };
-}
-
-function normalizarParceiro(p) {
-  return {
-    id: p.id_parceiro,
-    tipo: 'parceiro',
-    nome: p.nome_razao_social,
-    email: p.email,
-    cpf_cnpj: p.cpf_cnpj,
-    ativo: p.ativo,
-    criado_em: p.criado_em,
-  };
+  return CadastrosService.listar({
+    ...filtros,
+    tipo: estado.filtroTipo !== 'todos' ? estado.filtroTipo : undefined,
+  });
 }
 
 function renderizarLinhas(cadastros) {
@@ -152,10 +108,10 @@ function renderizarLinhas(cadastros) {
     const status = c.ativo ? 'ativo' : 'inativo';
     const cpf = c.cpf_cnpj ? formatarCpfCnpj(c.cpf_cnpj) : '-';
     const data = c.criado_em ? formatarData(c.criado_em) : '-';
-    const rotuloTipo = c.tipo === 'parceiro' ? 'Parceiro' : 'Associado';
+    const rotuloTipo = c.tipo === 'parceiro' ? 'Parceiro' : c.tipo === 'dependente' ? 'Dependente' : 'Associado';
 
     return `
-      <tr data-id="${c.id}" data-tipo="${c.tipo}">
+      <tr data-id="${c.id}" data-tipo="${c.tipo}" ${c.tipo === 'dependente' ? `data-associado-id="${c.id_associado_titular}"` : ''}>
         <td>
           <div class="cadastro-listar__pessoa">
             <div class="cadastro-listar__avatar ${classeCorAvatar(c.nome)}">
@@ -187,6 +143,9 @@ function renderizarLinhas(cadastros) {
             <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="${c.tipo === 'parceiro' ? 'Alterar status' : 'Excluir'}">
               <span class="material-icons">${c.tipo === 'parceiro' ? 'block' : 'delete'}</span>
             </button>
+            ${c.tipo === 'dependente' ? `<button type="button" class="cadastro-listar__acao" data-acao="ver-associado" data-id="${c.id_associado_titular}" aria-label="Ver associado titular">
+              <span class="material-icons">person</span>
+            </button>` : ''}
           </div>
         </td>
       </tr>
@@ -311,11 +270,14 @@ function tratarCliqueAcao(e) {
   const tipo = btn.dataset.tipo ?? 'associado';
   const nome = btn.dataset.nome ?? '';
   const ativo = btn.dataset.ativo === '1';
+  const linha = btn.closest('tr');
+  const associadoId = linha?.dataset?.associadoId ? parseInt(linha.dataset.associadoId, 10) : null;
 
   switch (acao) {
-    case 'visualizar': aoVisualizar(id, tipo); break;
-    case 'editar': aoEditar(id, tipo); break;
-    case 'excluir': aoExcluir(id, nome, tipo, ativo); break;
+    case 'visualizar': aoVisualizar(id, tipo, associadoId); break;
+    case 'editar': aoEditar(id, tipo, associadoId); break;
+    case 'excluir': aoExcluir(id, nome, tipo, ativo, associadoId); break;
+    case 'ver-associado': aoVisualizar(associadoId ?? id, 'associado'); break;
   }
 }
 
@@ -323,13 +285,44 @@ function aoVisualizar(id, tipo) {
   Toast.info('Visualizacao detalhada em construcao.');
 }
 
-function aoEditar(id, tipo) {
+function aoEditar(id, tipo, associadoId) {
+  if (tipo === 'dependente' && associadoId) {
+    window.location.hash = `#/cadastro/novo-associado?id=${associadoId}&tab=dependentes`;
+    return;
+  }
+  if (tipo === 'dependente' && !associadoId) {
+    Toast.erro('Associado titular não encontrado para este dependente.');
+    return;
+  }
   window.location.hash = tipo === 'parceiro'
     ? `#/cadastro/novo-parceiro?id=${id}`
     : `#/cadastro/novo-associado?id=${id}`;
 }
 
-function aoExcluir(id, nome, tipo, ativo) {
+function aoExcluir(id, nome, tipo, ativo, associadoId) {
+  if (tipo === 'dependente') {
+    Modal.confirmar({
+      titulo: 'Excluir dependente?',
+      mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta acao nao pode ser desfeita.`,
+      icone: 'delete_forever',
+      variante: 'erro',
+      textoConfirmar: 'Sim, excluir',
+      textoCancelar: 'Cancelar',
+      estiloConfirmar: 'perigo',
+      aoConfirmar: async () => {
+        try {
+          await CadastrosService.excluir(id, 'dependente');
+          Toast.sucesso(`${nome} foi excluido com sucesso.`);
+          buscarEAtualizar();
+        } catch (erro) {
+          console.error('[CadastroListar] Erro ao excluir dependente:', erro);
+          Toast.erro('Nao foi possivel excluir o dependente.');
+        }
+      },
+    });
+    return;
+  }
+
   if (tipo === 'parceiro') {
     aoAlternarStatusParceiro(id, nome, ativo);
     return;
