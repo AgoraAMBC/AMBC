@@ -75,37 +75,31 @@
       </div>
       <div class="cadastro-associado__grid">
 
-        <div class="cadastro-associado__campo span-3">
+        <div class="cadastro-associado__campo span-2">
           <label for="parceiro-cep">CEP</label>
           <input type="text" id="parceiro-cep" name="cep"
             placeholder="00000-000" maxlength="9" autocomplete="off" />
         </div>
 
-        <div class="cadastro-associado__campo span-5">
+        <div class="cadastro-associado__campo span-3">
           <label for="parceiro-logradouro">Logradouro</label>
           <input type="text" id="parceiro-logradouro" name="logradouro"
-            placeholder="Rua, Avenida..." autocomplete="off" />
+            placeholder="Rua / Avenida" autocomplete="off" />
         </div>
 
-        <div class="cadastro-associado__campo span-2">
+        <div class="cadastro-associado__campo span-1">
           <label for="parceiro-numero">Número</label>
           <input type="text" id="parceiro-numero" name="numero"
-            placeholder="123" autocomplete="off" />
+            placeholder="Nº" autocomplete="off" />
         </div>
 
         <div class="cadastro-associado__campo span-2">
-          <label for="parceiro-complemento">Complemento</label>
-          <input type="text" id="parceiro-complemento" name="complemento"
-            placeholder="Apto, Bloco..." autocomplete="off" />
-        </div>
-
-        <div class="cadastro-associado__campo span-4">
           <label for="parceiro-bairro">Bairro</label>
           <input type="text" id="parceiro-bairro" name="bairro"
             placeholder="Bairro" autocomplete="off" />
         </div>
 
-        <div class="cadastro-associado__campo span-4">
+        <div class="cadastro-associado__campo span-2">
           <label for="parceiro-cidade">Cidade</label>
           <input type="text" id="parceiro-cidade" name="cidade"
             placeholder="Cidade" autocomplete="off" />
@@ -132,51 +126,27 @@
           </select>
         </div>
 
+        <div class="cadastro-associado__campo span-1">
+          <label for="parceiro-complemento">Complemento</label>
+          <input type="text" id="parceiro-complemento" name="complemento"
+            placeholder="Apto, bloco, casa..." autocomplete="off" />
+        </div>
+
       </div>
     </section>
 
     <!-- TELEFONES -->
     <section class="cadastro-associado__bloco">
-      <div class="cadastro-associado__bloco-topo">
+      <div class="cadastro-associado__bloco-topo cadastro-associado__bloco-topo--acoes">
         <h3 class="cadastro-associado__bloco-titulo">
           <span class="material-icons">call</span>
           <span>Telefones</span>
         </h3>
-      </div>
-
-      <!-- Linha de adição inline -->
-      <div class="cadastro-associado__grid">
-        <div class="cadastro-associado__campo span-1">
-          <label for="tel-ddd">DDD</label>
-          <input type="text" id="tel-ddd" placeholder="51" maxlength="2" autocomplete="off" />
-        </div>
-        <div class="cadastro-associado__campo span-3">
-          <label for="tel-numero">Número</label>
-          <input type="text" id="tel-numero" placeholder="999999999" maxlength="9" autocomplete="off" />
-        </div>
-        <div class="cadastro-associado__campo span-2">
-          <label for="tel-tipo">Tipo</label>
-          <select id="tel-tipo">
-            <option value="">Selecione</option>
-            <option value="1">Celular</option>
-            <option value="2">Residencial</option>
-            <option value="3">Comercial</option>
-            <option value="4">WhatsApp</option>
-            <option value="5">Outro</option>
-          </select>
-        </div>
-        <div class="cadastro-associado__campo span-4">
-          <label for="tel-obs">Observação</label>
-          <input type="text" id="tel-obs" placeholder="Ex: Principal - WhatsApp" autocomplete="off" />
-        </div>
-        <div class="cadastro-associado__campo span-2 cadastro-associado__campo--acao">
-          <label>&nbsp;</label>
-          <button type="button" class="btn btn-primario btn-sm cadastro-associado__botao"
-            id="btn-add-telefone">
-            <span class="material-icons">add_call</span>
-            <span>Adicionar</span>
-          </button>
-        </div>
+        <button type="button" class="btn btn-primario btn-sm cadastro-associado__botao"
+          id="btn-add-telefone">
+          <span class="material-icons">add_call</span>
+          <span>Adicionar Telefone</span>
+        </button>
       </div>
 
       <!-- Tabela de telefones -->
@@ -287,5 +257,52 @@
   </form>
 
   </div><!-- /.gu-card -->
+
+  <!-- MODAL: Telefone do parceiro -->
+  <div class="gu-modal" id="modal-telefone-parceiro" aria-modal="true" role="dialog" hidden>
+    <div class="gu-modal__fundo" id="modal-telefone-parceiro-fundo"></div>
+    <div class="gu-modal__caixa">
+      <div class="gu-modal__cabecalho">
+        <div class="gu-modal__titulo-grupo">
+          <span class="material-icons gu-modal__icone">call</span>
+          <h3 class="gu-modal__titulo" id="modal-telefone-parceiro-titulo">Adicionar Contato</h3>
+        </div>
+        <button type="button" class="gu-modal__fechar" id="modal-telefone-parceiro-fechar" aria-label="Fechar modal">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="gu-modal__formulario">
+        <div class="cadastro-associado__grid">
+          <div class="cadastro-associado__campo span-6">
+            <label for="telefone-parceiro-tipo">Tipo</label>
+            <select id="telefone-parceiro-tipo" name="telefone_parceiro_tipo">
+              <option value="1">Celular</option>
+              <option value="2">Residencial</option>
+              <option value="3">Comercial</option>
+              <option value="4">WhatsApp</option>
+              <option value="5">Outro</option>
+            </select>
+          </div>
+          <div class="cadastro-associado__campo span-6">
+            <label for="telefone-parceiro-numero">Número *</label>
+            <input type="text" id="telefone-parceiro-numero" name="telefone_parceiro_numero"
+              placeholder="(00) 00000-0000" autocomplete="off" />
+          </div>
+          <div class="cadastro-associado__campo span-12">
+            <label for="telefone-parceiro-observacao">Observações</label>
+            <input type="text" id="telefone-parceiro-observacao" name="telefone_parceiro_observacao"
+              placeholder="Ex: Principal, WhatsApp..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="gu-modal__acoes">
+          <button type="button" class="btn btn-secundario" id="modal-telefone-parceiro-cancelar">Cancelar</button>
+          <button type="button" class="btn btn-primario" id="btn-salvar-telefone-parceiro">
+            <span class="material-icons">save</span>
+            <span>Salvar Contato</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </section>
