@@ -13,8 +13,20 @@ $id    = (int)($dados['id'] ?? $_GET['id'] ?? 0);
 
 if ($id <= 0) jsonErro('ID inválido');
 
-$stmt = $pdo->prepare('DELETE FROM status_pessoa WHERE id_status = :id');
+$stmt = $pdo->prepare('SELECT a.nome FROM associado a WHERE a.fk_status = :id');
 $stmt->execute([':id' => $id]);
+$associados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+if ($associados) {
+    jsonErro('Este status não pode ser excluído, pois está vinculado a ' . listarVinculados($associados, 'associado') . '.', 409);
+}
+
+try {
+    $stmt = $pdo->prepare('DELETE FROM status_pessoa WHERE id_status = :id');
+    $stmt->execute([':id' => $id]);
+} catch (PDOException $e) {
+    jsonErro('Erro ao excluir: ' . $e->getMessage(), 500);
+}
 
 if ($stmt->rowCount() === 0) jsonErro('Registro não encontrado', 404);
 

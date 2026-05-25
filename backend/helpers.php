@@ -30,3 +30,17 @@ function jsonErro(string $mensagem, int $codigo = 400): void {
 function corpoJson(): array {
     return json_decode(file_get_contents('php://input'), true) ?? [];
 }
+
+function listarVinculados(array $nomes, string $rotulo): string {
+    $total = count($nomes);
+    if ($total === 0) return '';
+
+    $parte = $total === 1
+        ? $rotulo . ': ' . $nomes[0]
+        : $rotulo . 's: ' . implode(', ', array_slice($nomes, 0, 5));
+
+    if ($total > 5) {
+        $parte .= '... (+' . ($total - 5) . ' — total ' . $total . ' ' . $rotulo . 's)';
+    }
+    return $parte;
+}
