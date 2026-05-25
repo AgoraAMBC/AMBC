@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    cadastro-listar.js
    Pagina: Listar Todos os Cadastros
 ========================================================= */
@@ -7,7 +7,6 @@ import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
 import { CadastrosService } from '../services/cadastros-service.js';
 import { AssociadosService } from '../services/associados-service.js';
-import { ParceirosService } from '../services/parceiros-service.js';
 
 const estado = {
   termoBusca: '',
@@ -140,9 +139,9 @@ function renderizarLinhas(cadastros) {
             <button type="button" class="cadastro-listar__acao" data-acao="editar" data-id="${c.id}" data-tipo="${c.tipo}" aria-label="Editar">
               <span class="material-icons">edit</span>
             </button>
-            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="${c.tipo === 'parceiro' ? 'Alterar status' : 'Excluir'}">
-              <span class="material-icons">${c.tipo === 'parceiro' ? 'block' : 'delete'}</span>
-            </button>
+<button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="Excluir">
+  <span class="material-icons">delete</span>
+</button>
             ${c.tipo === 'dependente' ? `<button type="button" class="cadastro-listar__acao" data-acao="ver-associado" data-id="${c.id_associado_titular}" aria-label="Ver associado titular">
               <span class="material-icons">person</span>
             </button>` : ''}
@@ -291,7 +290,7 @@ function aoEditar(id, tipo, associadoId) {
     return;
   }
   if (tipo === 'dependente' && !associadoId) {
-    Toast.erro('Associado titular não encontrado para este dependente.');
+    Toast.erro('Associado titular nÃ£o encontrado para este dependente.');
     return;
   }
   window.location.hash = tipo === 'parceiro'
@@ -323,13 +322,8 @@ function aoExcluir(id, nome, tipo, ativo, associadoId) {
     return;
   }
 
-  if (tipo === 'parceiro') {
-    aoAlternarStatusParceiro(id, nome, ativo);
-    return;
-  }
-
   Modal.confirmar({
-    titulo: 'Excluir associado?',
+    titulo: tipo === 'parceiro' ? 'Excluir parceiro?' : 'Excluir associado?',
     mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta acao nao pode ser desfeita.`,
     icone: 'delete_forever',
     variante: 'erro',
@@ -338,34 +332,16 @@ function aoExcluir(id, nome, tipo, ativo, associadoId) {
     estiloConfirmar: 'perigo',
     aoConfirmar: async () => {
       try {
-        await AssociadosService.deletar(id);
+        if (tipo === 'parceiro') {
+          await CadastrosService.excluir(id, 'parceiro');
+        } else {
+          await AssociadosService.deletar(id);
+        }
         Toast.sucesso(`${nome} foi excluido com sucesso.`);
         buscarEAtualizar();
       } catch (erro) {
         console.error('[CadastroListar] Erro ao excluir:', erro);
-        Toast.erro('Nao foi possivel excluir o associado.');
-      }
-    },
-  });
-}
-
-function aoAlternarStatusParceiro(id, nome, ativo) {
-  Modal.confirmar({
-    titulo: ativo ? 'Inativar parceiro?' : 'Ativar parceiro?',
-    mensagem: `Deseja ${ativo ? 'inativar' : 'ativar'} <strong>${escaparHtml(nome)}</strong>?`,
-    icone: ativo ? 'block' : 'check_circle',
-    variante: 'alerta',
-    textoConfirmar: ativo ? 'Sim, inativar' : 'Sim, ativar',
-    textoCancelar: 'Cancelar',
-    estiloConfirmar: ativo ? 'perigo' : 'primario',
-    aoConfirmar: async () => {
-      try {
-        await ParceirosService.alternarStatus(id);
-        Toast.sucesso(`Status de ${nome} atualizado com sucesso.`);
-        buscarEAtualizar();
-      } catch (erro) {
-        console.error('[CadastroListar] Erro ao alterar parceiro:', erro);
-        Toast.erro('Nao foi possivel alterar o status do parceiro.');
+        Toast.erro('Nao foi possivel excluir o ' + (tipo === 'parceiro' ? 'parceiro' : 'associado') + '.');
       }
     },
   });
