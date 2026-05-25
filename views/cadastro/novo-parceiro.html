@@ -5,9 +5,17 @@
       <div class="gu-card__titulo-grupo">
         <span class="material-icons gu-card__icone">handshake</span>
         <div>
-          <h2 class="gu-card__titulo">Novo Parceiro</h2>
-          <p class="gu-card__subtitulo">Preencha os dados do parceiro, endereço e contatos.</p>
+          <h2 class="gu-card__titulo" data-titulo-modo>Novo Parceiro</h2>
+          <p class="gu-card__subtitulo" data-subtitulo-modo>Preencha os dados do parceiro, endereço e contatos.</p>
         </div>
+      </div>
+      <div class="gu-card__acoes" data-acoes-visualizacao hidden>
+        <button type="button" class="gu-btn gu-btn--icone" id="btn-visualizar-editar" title="Editar">
+          <span class="material-icons">edit</span>
+        </button>
+        <button type="button" class="gu-btn gu-btn--icone gu-btn--icone-perigo" id="btn-visualizar-excluir" title="Excluir">
+          <span class="material-icons">delete</span>
+        </button>
       </div>
     </header>
 

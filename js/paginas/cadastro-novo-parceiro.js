@@ -9,12 +9,14 @@
 import Toast from '../componentes/toast.js';
 import Modal from '../componentes/modal.js';
 import { ParceirosService } from '../services/parceiros-service.js';
+import { CadastrosService } from '../services/cadastros-service.js';
 
 let telefones = [];
 let lancamentos = [];
 let cleanup = [];
 let idParceiro = null;
 let modoEdicao = false;
+let modoVisualizar = false;
 let indiceTelefoneEdicao = null;
 let indiceLancamentoEdicao = null;
 let dominiosFinanceiros = {
@@ -31,11 +33,13 @@ function init() {
     indiceLancamentoEdicao = null;
     idParceiro = _obterIdDaRota();
     modoEdicao = idParceiro !== null;
+    modoVisualizar = _obterVisualizarDaRota();
 
     _bindForm();
     _bindTelefones();
     _bindLancamentos();
     _bindCancelamento();
+    _bindAcoesVisualizacao();
     _carregarDominiosFinanceiros();
     _prepararModoEdicao();
 }
@@ -43,6 +47,8 @@ function init() {
 function destroy() {
     cleanup.forEach(fn => fn());
     cleanup = [];
+    const acoes = document.querySelector('[data-acoes-visualizacao]');
+    if (acoes) acoes.hidden = true;
     delete window._removerTelefone;
     delete window._editarTelefone;
     delete window._editarLancamento;
@@ -408,13 +414,26 @@ function _obterIdDaRota() {
     return Number.isInteger(id) && id > 0 ? id : null;
 }
 
-async function _prepararModoEdicao() {
-    if (!modoEdicao) return;
+function _obterVisualizarDaRota() {
+    const query = window.location.hash.split('?')[1] ?? '';
+    return new URLSearchParams(query).get('visualizar') === '1';
+}
 
-    const titulo = document.querySelector('.cadastro-associado__titulo');
-    const subtitulo = document.querySelector('.cadastro-associado__subtitulo');
-    if (titulo) titulo.textContent = 'Editar Parceiro';
-    if (subtitulo) subtitulo.textContent = 'Atualize os dados do parceiro, endereco, contatos e lancamentos.';
+async function _prepararModoEdicao() {
+    if (!modoEdicao && !modoVisualizar) return;
+
+    const titulo = document.querySelectorAll('[data-titulo-modo]');
+    const subtitulo = document.querySelectorAll('[data-subtitulo-modo]');
+
+    if (modoVisualizar) {
+        titulo.forEach(el => { el.textContent = 'Visualizar Parceiro'; });
+        subtitulo.forEach(el => { el.textContent = 'Visualize os dados do parceiro, endereco, contatos e lancamentos.'; });
+        _bloquearFormularioParceiro();
+        return;
+    }
+
+    titulo.forEach(el => { el.textContent = 'Editar Parceiro'; });
+    subtitulo.forEach(el => { el.textContent = 'Atualize os dados do parceiro, endereco, contatos e lancamentos.'; });
 
     const btnSalvar = document.getElementById('btn-salvar');
     if (btnSalvar) {
@@ -427,6 +446,59 @@ async function _prepararModoEdicao() {
     } catch (err) {
         console.error('[NovoParceiro] Erro ao carregar parceiro:', err);
         Toast.erro(err.message || 'Nao foi possivel carregar o parceiro.');
+    }
+}
+
+function _bloquearFormularioParceiro() {
+    document.querySelectorAll('#form-parceiro input, #form-parceiro select, #form-parceiro textarea')
+        .forEach(el => { el.disabled = true; });
+    const btnSalvar = document.getElementById('btn-salvar');
+    if (btnSalvar) btnSalvar.hidden = true;
+    const btnCancelar = document.getElementById('btn-cancelar');
+    if (btnCancelar) btnCancelar.textContent = 'Fechar';
+    const acoes = document.querySelector('[data-acoes-visualizacao]');
+    if (acoes) acoes.hidden = false;
+}
+
+function _bindAcoesVisualizacao() {
+    const btnEditar = document.getElementById('btn-visualizar-editar');
+    const btnExcluir = document.getElementById('btn-visualizar-excluir');
+
+    if (btnEditar) {
+        const handler = () => {
+            if (!idParceiro) return;
+            window.location.hash = `#/cadastro/novo-parceiro?id=${idParceiro}`;
+        };
+        btnEditar.addEventListener('click', handler);
+        cleanup.push(() => btnEditar.removeEventListener('click', handler));
+    }
+
+    if (btnExcluir) {
+        const handler = () => {
+            if (!idParceiro) return;
+            const nome = document.getElementById('parceiro-nome')?.value ?? '';
+            Modal.confirmar({
+                titulo: 'Excluir parceiro?',
+                mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta acao nao pode ser desfeita.`,
+                icone: 'delete_forever',
+                variante: 'erro',
+                textoConfirmar: 'Sim, excluir',
+                textoCancelar: 'Cancelar',
+                estiloConfirmar: 'perigo',
+                aoConfirmar: async () => {
+                    try {
+                        await CadastrosService.excluir(idParceiro, 'parceiro');
+                        Toast.sucesso('Parceiro excluido com sucesso.');
+                        window.location.hash = '#/cadastro/listar';
+                    } catch (erro) {
+                        console.error('[NovoParceiro] Erro ao excluir:', erro);
+                        Toast.erro(erro.message || 'Nao foi possivel excluir o parceiro.');
+                    }
+                },
+            });
+        };
+        btnExcluir.addEventListener('click', handler);
+        cleanup.push(() => btnExcluir.removeEventListener('click', handler));
     }
 }
 
@@ -491,6 +563,10 @@ function _bindCancelamento() {
     if (!btn) return;
 
     const handler = () => {
+        if (modoVisualizar) {
+            window.location.hash = '#/cadastro/listar';
+            return;
+        }
         Modal.confirmar({
             titulo: modoEdicao ? 'Cancelar edicao' : 'Cancelar cadastro',
             mensagem: 'Deseja cancelar? Os dados preenchidos serao perdidos.',

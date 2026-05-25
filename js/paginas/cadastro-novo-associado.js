@@ -1,4 +1,5 @@
 import Toast from '../componentes/toast.js';
+import Modal from '../componentes/modal.js';
 import { api } from '../services/api.js';
 import { AssociadosService } from '../services/associados-service.js?v=4';
 import { AuxiliaresService } from '../services/associados-auxiliares-service.js?v=4';
@@ -736,6 +737,36 @@ function bloquearFormulario() {
   const btnSalvar = document.getElementById('btn-salvar');
   if (btnSalvar) btnSalvar.hidden = true;
   if (refs.btnCancelar) refs.btnCancelar.textContent = 'Fechar';
+  if (refs.acoesVisualizacao) refs.acoesVisualizacao.hidden = false;
+}
+
+function aoVisualizarEditar() {
+  if (!Number.isInteger(estado.idAssociado)) return;
+  window.location.hash = `#/cadastro/novo-associado?id=${estado.idAssociado}`;
+}
+
+function aoVisualizarExcluir() {
+  if (!Number.isInteger(estado.idAssociado)) return;
+  const nome = document.getElementById('nome')?.value ?? '';
+  Modal.confirmar({
+    titulo: 'Excluir associado?',
+    mensagem: `Tem certeza que deseja excluir <strong>${escaparHtml(nome)}</strong>? Esta ação não pode ser desfeita.`,
+    icone: 'delete_forever',
+    variante: 'erro',
+    textoConfirmar: 'Sim, excluir',
+    textoCancelar: 'Cancelar',
+    estiloConfirmar: 'perigo',
+    aoConfirmar: async () => {
+      try {
+        await AssociadosService.deletar(estado.idAssociado);
+        Toast.sucesso('Associado excluído com sucesso.');
+        window.location.hash = '#/cadastro/listar';
+      } catch (erro) {
+        console.error('[NovoAssociado] Erro ao excluir:', erro);
+        Toast.erro(erro.message || 'Não foi possível excluir o associado.');
+      }
+    },
+  });
 }
 
 async function aoEnviarFormulario(event) {
@@ -828,6 +859,10 @@ function mapearRefs() {
   refs.cidade = document.getElementById('cidade');
   refs.uf = document.getElementById('uf');
   refs.btnCancelar = document.getElementById('btn-cancelar');
+  // Ações do visualizar
+  refs.acoesVisualizacao = document.querySelector('[data-acoes-visualizacao]');
+  refs.btnVisualizarEditar = document.getElementById('btn-visualizar-editar');
+  refs.btnVisualizarExcluir = document.getElementById('btn-visualizar-excluir');
   // Botões
   refs.btnAddTelefone = document.getElementById('btn-add-telefone');
   refs.btnAddDependente = document.getElementById('btn-add-dependente');
@@ -879,6 +914,10 @@ function registrarEventos() {
       estado.tipoLancamento = e.currentTarget.dataset.tipoLancamento;
     });
   });
+
+  // Ações do visualizar
+  refs.btnVisualizarEditar?.addEventListener('click', aoVisualizarEditar);
+  refs.btnVisualizarExcluir?.addEventListener('click', aoVisualizarExcluir);
 }
 
 function removerEventos() {
@@ -887,6 +926,8 @@ function removerEventos() {
   refs.btnBuscarCep?.removeEventListener('click', aoBuscarCep);
   refs.cpf?.removeEventListener('input', aoDigitarCpf);
   refs.cep?.removeEventListener('input', aplicarMascaraCep);
+  refs.btnVisualizarEditar?.removeEventListener('click', aoVisualizarEditar);
+  refs.btnVisualizarExcluir?.removeEventListener('click', aoVisualizarExcluir);
 }
 
 async function init() {
@@ -935,8 +976,15 @@ async function init() {
   console.log('[NovoAssociado] Página pronta');
 }
 
+function escaparHtml(texto) {
+  const div = document.createElement('div');
+  div.textContent = String(texto ?? '');
+  return div.innerHTML;
+}
+
 function destroy() {
   removerEventos();
+  if (refs.acoesVisualizacao) refs.acoesVisualizacao.hidden = true;
   Object.keys(refs).forEach(key => { refs[key] = null; });
   estado = { modo: 'novo', idAssociado: null, tipoLancamento: 'receber', editandoTelefone: null, editandoDependente: null, editandoLancamento: null };
   telefones = [];

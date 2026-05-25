@@ -152,6 +152,20 @@ function renderizarLinhas(cadastros) {
   }).join('');
 
   refs.tbody.onclick = tratarCliqueAcao;
+
+  const linhas = refs.tbody.querySelectorAll('tr');
+  linhas.forEach(tr => {
+    tr.style.cursor = 'pointer';
+    tr.ondblclick = () => {
+      const id = parseInt(tr.dataset.id, 10);
+      const tipo = tr.dataset.tipo ?? 'associado';
+      if (tipo === 'dependente' && tr.dataset.associadoId) {
+        aoVisualizar(id, tipo, parseInt(tr.dataset.associadoId, 10));
+      } else {
+        aoVisualizar(id, tipo);
+      }
+    };
+  });
 }
 
 function renderizarContador(total, exibindo) {
@@ -280,8 +294,18 @@ function tratarCliqueAcao(e) {
   }
 }
 
-function aoVisualizar(id, tipo) {
-  Toast.info('Visualizacao detalhada em construcao.');
+function aoVisualizar(id, tipo, associadoId) {
+  if (tipo === 'dependente') {
+    if (associadoId) {
+      window.location.hash = `#/cadastro/novo-associado?id=${associadoId}&tab=dependentes`;
+    } else {
+      Toast.erro('Associado titular nao encontrado para este dependente.');
+    }
+    return;
+  }
+  window.location.hash = tipo === 'parceiro'
+    ? `#/cadastro/novo-parceiro?id=${id}&visualizar=1`
+    : `#/cadastro/novo-associado?id=${id}&visualizar=1`;
 }
 
 function aoEditar(id, tipo, associadoId) {
