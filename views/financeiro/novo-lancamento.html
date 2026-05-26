@@ -18,47 +18,53 @@
     <section class="financeiro__painel financeiro__painel--form">
       <h2 class="financeiro__secao-titulo">Dados do lan&ccedil;amento</h2>
       <div class="form-grid">
-        <div class="campo form-col-3">
-          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo</label>
-          <select class="form-input" id="lancamento-tipo" required>
-           <option value="">Selecione...</option>
-          </select>
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Nome do lançamento</label>
+          <input class="form-input" id="lancamento-descricao" type="text" placeholder="Ex.: Mensalidade de associado" required />
         </div>
-        <div class="campo form-col-3">
-          <label class="form-label form-label-obrigatorio" for="lancamento-status">Status</label>
-          <select class="form-input" id="lancamento-status" required>
-           <option value="1">Aberto</option>
-           <option value="2">Liquidado</option>
-           <option value="3">Cancelado</option>
-          </select>
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-pessoa">Nome relacionado</label>
+          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Associado, parceiro ou fornecedor" />
         </div>
-<div class="campo form-col-3">
-  <label class="form-label form-label-obrigatorio" for="lancamento-forma-pagamento">
-    Forma de pagamento
-  </label>
-       <select class="form-input" id="lancamento-forma-pagamento" required>
-           <option value="1">PIX</option>
-           <option value="2">Boleto</option>
-           <option value="3">Cartão de crédito</option>
-           <option value="4">Cartão de débito</option>
-           <option value="5">Dinheiro</option>
-           <option value="6">Transferência bancária</option>
-         </select>
-        </div>  
 
         <div class="campo form-col-3">
           <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
           <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
         </div>
         <div class="campo form-col-3">
-          <label class="form-label form-label-obrigatorio" for="lancamento-vencimento">Vencimento</label>
-          <input class="form-input" id="lancamento-vencimento" type="date" required />
-        </div>
-        <div class="campo form-col-6">
-          <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Descri&ccedil;&atilde;o</label>
-          <input class="form-input" id="lancamento-descricao" type="text" placeholder="Ex.: Mensalidade de associado" required />
+          <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
+          <select class="form-input" id="lancamento-pagamento-modo" required>
+            <option value="avista">À vista</option>
+            <option value="parcelado">Parcelado</option>
+          </select>
         </div>
         <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-forma-pagamento">Forma de pagamento</label>
+          <select class="form-input" id="lancamento-forma-pagamento" required>
+            <option value="1">PIX</option>
+            <option value="2">Boleto</option>
+            <option value="3">Cartão de crédito</option>
+            <option value="4">Cartão de débito</option>
+            <option value="5">Dinheiro</option>
+            <option value="6">Transferência bancária</option>
+          </select>
+        </div>
+        <div class="campo form-col-3">
+          <label class="form-label form-label-obrigatorio" for="lancamento-status">Status</label>
+          <select class="form-input" id="lancamento-status" required>
+            <option value="1">Aberto</option>
+            <option value="2">Liquidado</option>
+            <option value="3">Cancelado</option>
+          </select>
+        </div>
+
+        <div class="campo form-col-4">
+          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo do lançamento</label>
+          <select class="form-input" id="lancamento-tipo" required>
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="campo form-col-4">
           <label class="form-label" for="lancamento-conta">Conta regente</label>
           <select class="form-input" id="lancamento-conta">
             <option value="1">Receitas associativas</option>
@@ -67,7 +73,7 @@
             <option value="4">Manutenção e obras</option>
           </select>
         </div>
-        <div class="campo form-col-3">
+        <div class="campo form-col-4">
           <label class="form-label" for="lancamento-subconta">Conta subordinada</label>
           <select class="form-input" id="lancamento-subconta">
             <option value="1">Mensalidades</option>
@@ -76,21 +82,41 @@
             <option value="4">Serviços contratados</option>
           </select>
         </div>
+
         <div class="campo form-col-4">
-          <label class="form-label" for="lancamento-pessoa">Associado, parceiro ou fornecedor</label>
-          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Nome relacionado" />
+          <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
+          <input class="form-input" id="lancamento-pagamento" type="date" />
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label" for="lancamento-vencimento">Data de vencimento</label>
+          <input class="form-input" id="lancamento-vencimento" type="date" required />
         </div>
         <div class="campo form-col-4">
           <label class="form-label" for="lancamento-competencia">Compet&ecirc;ncia</label>
           <input class="form-input" id="lancamento-competencia" type="month" />
         </div>
-        <div class="campo form-col-4">
-          <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
-          <input class="form-input" id="lancamento-pagamento" type="date" />
-        </div>
         <div class="campo form-col-12">
-          <label class="form-label" for="lancamento-observacao">Observa&ccedil;&otilde;es</label>
-          <textarea class="form-input" id="lancamento-observacao" rows="4" placeholder="Detalhes internos do lan&ccedil;amento"></textarea>
+          <div class="financeiro__parcelamento-panel" id="parcelamento-panel" hidden>
+            <div class="form-grid">
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-total-parcelas">Número de parcelas</label>
+                <input class="form-input" id="lancamento-total-parcelas" type="number" min="1" max="24" value="1" />
+              </div>
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-valor-parcela">Valor da parcela</label>
+                <input class="form-input" id="lancamento-valor-parcela" type="text" readonly />
+              </div>
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-primeira-parcela">1ª parcela</label>
+                <input class="form-input" id="lancamento-primeira-parcela" type="date" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="campo form-col-12">
+          <label class="form-label" for="lancamento-observacao">Descrição</label>
+          <textarea class="form-input" id="lancamento-observacao" rows="4" placeholder="Detalhes internos do lançamento"></textarea>
         </div>
       </div>
     </section>
@@ -100,6 +126,7 @@
       <dl class="financeiro__dl">
         <div><dt>Tipo</dt><dd id="resumo-tipo">Receita</dd></div>
         <div><dt>Status</dt><dd id="resumo-status">Pendente</dd></div>
+        <div><dt>Parcelas</dt><dd id="resumo-parcelas">1x</dd></div>
         <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
       </dl>
       <button type="submit" class="btn btn-primario btn-bloco">

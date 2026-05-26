@@ -130,9 +130,60 @@ function iniciarNovoLancamento() {
 
   carregarTiposLancamento();
 
-  const campos = ['lancamento-tipo', 'lancamento-status', 'lancamento-valor']
+  const campos = ['lancamento-tipo', 'lancamento-status', 'lancamento-valor', 'lancamento-vencimento', 'lancamento-primeira-parcela', 'lancamento-pagamento-modo']
     .map((id) => document.getElementById(id))
     .filter(Boolean);
+
+  const pagamentoModoSelect = document.getElementById('lancamento-pagamento-modo');
+  const totalParcelasInput = document.getElementById('lancamento-total-parcelas');
+  const valorParcelaInput = document.getElementById('lancamento-valor-parcela');
+  const primeiraParcelaInput = document.getElementById('lancamento-primeira-parcela');
+  const parcelamentoPanel = document.getElementById('parcelamento-panel');
+
+  const calcularParcelas = (valorTotal, primeiroVencimento, totalParcelas) => {
+    if (!valorTotal || totalParcelas <= 1 || !primeiroVencimento) return [];
+
+    const base = Math.floor((valorTotal / totalParcelas) * 100) / 100;
+    const resto = Number((valorTotal - base * totalParcelas).toFixed(2));
+    const parcelas = [];
+    const dataBase = new Date(primeiroVencimento);
+    if (Number.isNaN(dataBase.getTime())) return [];
+
+    for (let i = 1; i <= totalParcelas; i += 1) {
+      const valorParcela = i === totalParcelas ? Number((base + resto).toFixed(2)) : Number(base.toFixed(2));
+      const data = new Date(dataBase);
+      data.setMonth(data.getMonth() + (i - 1));
+      parcelas.push({
+        numero_parcela: i,
+        valor: valorParcela,
+        data_vencimento: data.toISOString().slice(0, 10),
+      });
+    }
+
+    return parcelas;
+  };
+
+  const atualizarParcelamento = () => {
+    const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
+    const modo = pagamentoModoSelect?.value || 'avista';
+    const totalParcelas = Math.max(1, parseInt(totalParcelasInput?.value, 10) || 1);
+    const primeiraParcela = primeiraParcelaInput?.value;
+    const parcelado = modo === 'parcelado';
+
+    if (parcelado) {
+      parcelamentoPanel?.removeAttribute('hidden');
+      if (totalParcelasInput) totalParcelasInput.disabled = false;
+      const parcelas = calcularParcelas(valor, primeiraParcela, totalParcelas);
+      valorParcelaInput.value = parcelas.length > 0 ? formatarMoeda(parcelas[0].valor) : '';
+    } else {
+      parcelamentoPanel?.setAttribute('hidden', '');
+      if (totalParcelasInput) totalParcelasInput.disabled = true;
+      if (totalParcelasInput) totalParcelasInput.value = '1';
+      if (valorParcelaInput) valorParcelaInput.value = '';
+    }
+
+    document.getElementById('resumo-parcelas').textContent = `${parcelado ? totalParcelas : 1}x`;
+  };
 
   const atualizar = () => {
     const tipoSelect = document.getElementById('lancamento-tipo');
@@ -143,6 +194,7 @@ function iniciarNovoLancamento() {
     document.getElementById('resumo-tipo').textContent = tipoTexto;
     document.getElementById('resumo-status').textContent = capitalizar(status);
     document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
+    atualizarParcelamento();
   };
 
   campos.forEach((campo) => {
@@ -154,6 +206,22 @@ function iniciarNovoLancamento() {
     });
   });
 
+  if (pagamentoModoSelect) {
+    const handler = () => atualizar();
+    pagamentoModoSelect.addEventListener('change', handler);
+    cleanup.push(() => pagamentoModoSelect.removeEventListener('change', handler));
+  }
+
+  if (totalParcelasInput) {
+    const handler = () => atualizar();
+    totalParcelasInput.addEventListener('input', handler);
+    totalParcelasInput.addEventListener('change', handler);
+    cleanup.push(() => {
+      totalParcelasInput.removeEventListener('input', handler);
+      totalParcelasInput.removeEventListener('change', handler);
+    });
+  }
+
 const submit = async (evento) => {
   evento.preventDefault();
 
@@ -162,8 +230,13 @@ const submit = async (evento) => {
     return;
   }
 
-  const payload = {
+  const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
+  const pagamentoModo = document.getElementById('lancamento-pagamento-modo')?.value || 'avista';
+  const valorTotal = Number(document.getElementById('lancamento-valor')?.value || 0);
+  const dataVencimento = document.getElementById('lancamento-vencimento')?.value;
+  const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value;
 
+  const payload = {
     fk_tipo_lancamento:
       parseInt(document.getElementById('lancamento-tipo')?.value) || null,
 
@@ -173,8 +246,7 @@ const submit = async (evento) => {
     fk_forma_pagamento:
       parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
 
-    valor:
-      Number(document.getElementById('lancamento-valor')?.value || 0),
+    valor: valorTotal,
 
     descricao:
       document.getElementById('lancamento-descricao')?.value,
@@ -195,8 +267,19 @@ const submit = async (evento) => {
       document.getElementById('lancamento-pagamento')?.value,
 
     data_vencimento:
-      document.getElementById('lancamento-vencimento')?.value,
+      pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
+    modo_pagamento: pagamentoModo,
   };
+
+  if (pagamentoModo === 'parcelado' && totalParcelas > 1) {
+    payload.total_parcelas = totalParcelas;
+    payload.parcelas = calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
+
+    if (payload.parcelas.length !== totalParcelas) {
+      Toast.erro('Preencha corretamente a data da primeira parcela e o número de parcelas.');
+      return;
+    }
+  }
 
   console.log(payload);
 

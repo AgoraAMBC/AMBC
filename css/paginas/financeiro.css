@@ -250,6 +250,13 @@
   text-align: right;
 }
 
+.financeiro__parcelamento-panel {
+  border: 1px solid var(--cor-cinza-200);
+  border-radius: var(--raio-padrao);
+  padding: var(--esp-md);
+  background: var(--cor-cinza-50);
+}
+
 .financeiro__grid-2 {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
