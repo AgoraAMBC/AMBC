@@ -18,11 +18,6 @@ let idParceiro = null;
 let modoEdicao = false;
 let modoVisualizar = false;
 let indiceTelefoneEdicao = null;
-let indiceLancamentoEdicao = null;
-let dominiosFinanceiros = {
-    tipos: [],
-    status: [],
-};
 
 function init() {
     console.log('[NovoParceiro] Pagina carregada');
@@ -30,17 +25,17 @@ function init() {
     telefones = [];
     lancamentos = [];
     indiceTelefoneEdicao = null;
-    indiceLancamentoEdicao = null;
     idParceiro = _obterIdDaRota();
     modoEdicao = idParceiro !== null;
     modoVisualizar = _obterVisualizarDaRota();
 
     _bindForm();
     _bindTelefones();
-    _bindLancamentos();
     _bindCancelamento();
     _bindAcoesVisualizacao();
-    _carregarDominiosFinanceiros();
+    _bindTipoPessoa();
+    _bindBuscarCep();
+    _bindMascaras();
     _prepararModoEdicao();
 }
 
@@ -49,10 +44,6 @@ function destroy() {
     cleanup = [];
     const acoes = document.querySelector('[data-acoes-visualizacao]');
     if (acoes) acoes.hidden = true;
-    delete window._removerTelefone;
-    delete window._editarTelefone;
-    delete window._editarLancamento;
-    delete window._removerLancamento;
     console.log('[NovoParceiro] Pagina destruida');
 }
 
@@ -62,6 +53,8 @@ function _bindForm() {
 
     const handler = async (e) => {
         e.preventDefault();
+
+        if (!_validarFormulario(form)) return;
 
         const btnSalvar = form.querySelector('#btn-salvar');
         _setBotaoSalvando(btnSalvar, true);
@@ -91,10 +84,29 @@ function _bindForm() {
     cleanup.push(() => form.removeEventListener('submit', handler));
 }
 
+function _validarFormulario(form) {
+    const nome = form.querySelector('#parceiro-nome')?.value.trim();
+    const cpfCnpj = form.querySelector('#parceiro-cpf-cnpj')?.value.trim();
+
+    if (!nome) {
+        Toast.alerta('Informe o nome / razão social do parceiro.');
+        form.querySelector('#parceiro-nome')?.focus();
+        return false;
+    }
+
+    if (!cpfCnpj) {
+        Toast.alerta('Informe o CPF / CNPJ do parceiro.');
+        form.querySelector('#parceiro-cpf-cnpj')?.focus();
+        return false;
+    }
+
+    return true;
+}
+
 function _coletarDados(form) {
     return {
         nome_razao_social: form.querySelector('#parceiro-nome')?.value.trim() ?? '',
-        cpf_cnpj: form.querySelector('#parceiro-cpf-cnpj')?.value.trim() ?? '',
+        cpf_cnpj: form.querySelector('#parceiro-cpf-cnpj')?.value.replace(/\D/g, '') ?? '',
         email: form.querySelector('#parceiro-email')?.value.trim() ?? '',
         tipo_pessoa: form.querySelector('input[name="tipo_pessoa"]:checked')?.value ?? 'PF',
         tipo_servico: form.querySelector('#parceiro-tipo-servico')?.value.trim() ?? '',
@@ -106,7 +118,6 @@ function _coletarDados(form) {
         cidade: form.querySelector('#parceiro-cidade')?.value.trim() ?? '',
         uf: form.querySelector('#parceiro-uf')?.value ?? '',
         telefones,
-        lancamentos: lancamentos.map(({ id_lancamento, ...lancamento }) => lancamento),
     };
 }
 
@@ -117,6 +128,7 @@ function _bindTelefones() {
     const btnCancelar = document.getElementById('modal-telefone-parceiro-cancelar');
     const fundo = document.getElementById('modal-telefone-parceiro-fundo');
     const numero = document.getElementById('telefone-parceiro-numero');
+    const tbody = document.getElementById('lista-telefones');
 
     if (btnAdd) {
         const handler = () => _abrirModalTelefone();
@@ -141,6 +153,18 @@ function _bindTelefones() {
         const handler = aplicarMascaraTelefone;
         numero.addEventListener('input', handler);
         cleanup.push(() => numero.removeEventListener('input', handler));
+    }
+
+    if (tbody) {
+        const handler = (e) => {
+            const btn = e.target.closest('.btn-acao-telefone');
+            if (!btn) return;
+            const indice = parseInt(btn.dataset.indice, 10);
+            if (btn.dataset.acao === 'editar') _editarTelefone(indice);
+            if (btn.dataset.acao === 'remover') _removerTelefone(indice);
+        };
+        tbody.addEventListener('click', handler);
+        cleanup.push(() => tbody.removeEventListener('click', handler));
     }
 }
 
@@ -231,120 +255,26 @@ function _renderizarTelefones() {
             <td>${escaparHtml(formatarTelefone(tel.ddd, tel.numero))}</td>
             <td>${escaparHtml(tel.observacao ?? '-')}</td>
             <td class="col-acoes">
-                <button type="button" class="btn btn-secundario btn-sm"
-                    onclick="window._editarTelefone(${i})" title="Editar">
+                <button type="button" class="btn btn-secundario btn-sm btn-acao-telefone"
+                    data-acao="editar" data-indice="${i}" title="Editar">
                     <span class="material-icons">edit</span>
                 </button>
-                <button type="button" class="btn btn-secundario btn-sm"
-                    onclick="window._removerTelefone(${i})" title="Remover">
+                <button type="button" class="btn btn-secundario btn-sm btn-acao-telefone"
+                    data-acao="remover" data-indice="${i}" title="Remover">
                     <span class="material-icons">delete</span>
                 </button>
             </td>
         </tr>
     `).join('');
-
-    window._editarTelefone = _editarTelefone;
-    window._removerTelefone = _removerTelefone;
 }
 
-function _bindLancamentos() {
-    const btnAdd = document.getElementById('btn-add-lancamento');
-    if (!btnAdd) return;
-
-    const handler = () => _salvarLancamentoLocal();
-    btnAdd.addEventListener('click', handler);
-    cleanup.push(() => btnAdd.removeEventListener('click', handler));
-}
-
-async function _carregarDominiosFinanceiros() {
+async function _carregarLancamentosFinanceiros() {
+    if (!idParceiro) return;
     try {
-        const dados = await ParceirosService.dominiosLancamentos();
-        dominiosFinanceiros = dados;
-        _preencherSelectTiposLancamento();
-    } catch (err) {
-        console.warn('[NovoParceiro] Dominios financeiros indisponiveis:', err);
-        dominiosFinanceiros = {
-            tipos: [
-                { id_tipo_lancamento: 1, descricao: 'Anuidade' },
-                { id_tipo_lancamento: 2, descricao: 'Mensalidade' },
-                { id_tipo_lancamento: 5, descricao: 'Outro' },
-            ],
-            status: [
-                { id_status_conta: 1, descricao: 'Aberto' },
-                { id_status_conta: 2, descricao: 'Liquidado' },
-                { id_status_conta: 3, descricao: 'Cancelado' },
-            ],
-        };
-        _preencherSelectTiposLancamento();
-    }
-}
-
-function _preencherSelectTiposLancamento() {
-    const select = document.getElementById('lancamento-tipo');
-    if (!select) return;
-
-    select.innerHTML = '<option value="">Tipo</option>' + (dominiosFinanceiros.tipos ?? []).map((tipo) =>
-        `<option value="${tipo.id_tipo_lancamento}">${escaparHtml(tipo.descricao)}</option>`
-    ).join('');
-    _renderizarLancamentos();
-}
-
-function _salvarLancamentoLocal() {
-    const lancamento = _coletarLancamento();
-    if (!lancamento) return;
-
-    if (indiceLancamentoEdicao !== null) {
-        lancamentos[indiceLancamentoEdicao] = lancamento;
-        indiceLancamentoEdicao = null;
-        _setTextoBotaoLancamento('Adicionar');
-    } else {
-        lancamentos.push(lancamento);
-    }
-
-    _limparCamposLancamento();
-    _renderizarLancamentos();
-}
-
-function _coletarLancamento() {
-    const tipo = document.getElementById('lancamento-tipo')?.value ?? '';
-    const referencia = document.getElementById('lancamento-referencia')?.value.trim() ?? '';
-    const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
-    const dataPagamento = document.getElementById('lancamento-data-pagamento')?.value ?? '';
-    const status = document.getElementById('lancamento-status')?.value ?? '1';
-
-    if (!tipo || !referencia || valor <= 0) {
-        Toast.alerta('Informe tipo, referencia e valor do lancamento.');
-        return null;
-    }
-
-    return {
-        fk_tipo_lancamento: Number(tipo),
-        referencia,
-        valor,
-        data_pagamento: dataPagamento || null,
-        fk_status_conta: Number(status),
-    };
-}
-
-function _editarLancamento(index) {
-    const item = lancamentos[index];
-    if (!item) return;
-
-    _setValor('#lancamento-tipo', item.fk_tipo_lancamento);
-    _setValor('#lancamento-referencia', item.referencia);
-    _setValor('#lancamento-valor', item.valor);
-    _setValor('#lancamento-data-pagamento', item.data_pagamento);
-    _setValor('#lancamento-status', item.fk_status_conta);
-    indiceLancamentoEdicao = index;
-    _setTextoBotaoLancamento('Salvar');
-}
-
-function _removerLancamento(index) {
-    lancamentos.splice(index, 1);
-    if (indiceLancamentoEdicao === index) {
-        indiceLancamentoEdicao = null;
-        _limparCamposLancamento();
-        _setTextoBotaoLancamento('Adicionar');
+        const resp = await ParceirosService.listarLancamentos(idParceiro);
+        lancamentos = resp?.lancamentos || resp?.dados || [];
+    } catch {
+        lancamentos = [];
     }
     _renderizarLancamentos();
 }
@@ -354,58 +284,123 @@ function _renderizarLancamentos() {
     if (!tbody) return;
 
     if (lancamentos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="cadastro-associado__estado-vazio">Nenhum lançamento adicionado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="cadastro-associado__estado-vazio">Nenhum lançamento encontrado.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = lancamentos.map((item, i) => `
+    tbody.innerHTML = lancamentos.map((item) => {
+        const statusId = Number(item.fk_status_conta || item.status_conta || 1);
+        const statusClasse = statusId === 2 ? 'parceiro-financeiro__status--pago' : statusId === 3 ? 'parceiro-financeiro__status--cancelado' : 'parceiro-financeiro__status--pendente';
+        const statusLabel = statusId === 2 ? 'Pago' : statusId === 3 ? 'Cancelado' : 'Pendente';
+        return `
         <tr>
-            <td><span class="parceiro-financeiro__tipo">${escaparHtml(_obterTipoLancamento(item.fk_tipo_lancamento))}</span></td>
-            <td>${escaparHtml(item.referencia)}</td>
-            <td>${formatarMoeda(item.valor)}</td>
-            <td>${formatarData(item.data_pagamento)}</td>
-            <td>${_badgeStatusLancamento(item.fk_status_conta)}</td>
-            <td class="col-acoes">
-                <button type="button" class="btn btn-secundario btn-sm" onclick="window._editarLancamento(${i})" title="Editar">
-                    <span class="material-icons">edit</span>
-                </button>
-                <button type="button" class="btn btn-secundario btn-sm" onclick="window._removerLancamento(${i})" title="Remover">
-                    <span class="material-icons">delete</span>
-                </button>
-            </td>
+            <td>${escaparHtml(item.descricao || item.referencia || '-')}</td>
+            <td>${formatarMoeda(Number(item.valor || 0))}</td>
+            <td>${formatarData(item.data_vencimento || item.data_pagamento)}</td>
+            <td><span class="parceiro-financeiro__status ${statusClasse}">${statusLabel}</span></td>
         </tr>
-    `).join('');
-
-    window._editarLancamento = _editarLancamento;
-    window._removerLancamento = _removerLancamento;
+    `}).join('');
 }
 
-function _limparCamposLancamento() {
-    _setValor('#lancamento-tipo', '');
-    _setValor('#lancamento-referencia', '');
-    _setValor('#lancamento-valor', '');
-    _setValor('#lancamento-data-pagamento', '');
-    _setValor('#lancamento-status', '1');
+function acharInputTipoPessoa() {
+    return document.querySelector('input[name="tipo_pessoa"]:checked');
 }
 
-function _setTextoBotaoLancamento(texto) {
-    const btn = document.getElementById('btn-add-lancamento');
+function _bindTipoPessoa() {
+    document.querySelectorAll('input[name="tipo_pessoa"]').forEach((radio) => {
+        const handler = () => {
+            const cpfInput = document.getElementById('parceiro-cpf-cnpj');
+            if (!cpfInput) return;
+            cpfInput.value = '';
+            if (radio.value === 'PJ') {
+                cpfInput.placeholder = '00.000.000/0000-00';
+                cpfInput.maxLength = 18;
+            } else {
+                cpfInput.placeholder = '000.000.000-00';
+                cpfInput.maxLength = 18;
+            }
+        };
+        radio.addEventListener('change', handler);
+        cleanup.push(() => radio.removeEventListener('change', handler));
+    });
+}
+
+function _bindBuscarCep() {
+    const btn = document.getElementById('btn-buscar-cep');
     if (!btn) return;
-    btn.innerHTML = texto === 'Salvar'
-        ? '<span class="material-icons">check</span>'
-        : '<span class="material-icons">add_circle</span>';
+    const handler = async () => {
+        const cep = document.getElementById('parceiro-cep')?.value?.trim() || '';
+        if (!cep) { Toast.alerta('Informe o CEP para buscar.'); return; }
+        try {
+            const dados = await buscarCep(cep);
+            if (!dados) { Toast.erro('CEP não encontrado.'); return; }
+            _setValor('#parceiro-logradouro', dados.logradouro);
+            _setValor('#parceiro-bairro', dados.bairro);
+            _setValor('#parceiro-cidade', dados.cidade);
+            _setValor('#parceiro-uf', dados.uf);
+            Toast.sucesso('Endereço preenchido com sucesso.');
+        } catch (erro) {
+            Toast.erro(erro.message || 'Erro ao consultar CEP.');
+        }
+    };
+    btn.addEventListener('click', handler);
+    cleanup.push(() => btn.removeEventListener('click', handler));
 }
 
-function _obterTipoLancamento(id) {
-    const tipo = (dominiosFinanceiros.tipos ?? []).find((item) => Number(item.id_tipo_lancamento) === Number(id));
-    return tipo?.descricao ?? '-';
+function _bindMascaras() {
+    const cpfInput = document.getElementById('parceiro-cpf-cnpj');
+    if (cpfInput) {
+        const handler = (e) => aplicarMascaraCpfCnpj(e);
+        cpfInput.addEventListener('input', handler);
+        cleanup.push(() => cpfInput.removeEventListener('input', handler));
+    }
+    const cepInput = document.getElementById('parceiro-cep');
+    if (cepInput) {
+        const handler = (e) => aplicarMascaraCep(e);
+        cepInput.addEventListener('input', handler);
+        cleanup.push(() => cepInput.removeEventListener('input', handler));
+    }
 }
 
-function _badgeStatusLancamento(idStatus) {
-    const id = Number(idStatus);
-    if (id === 2) return '<span class="parceiro-financeiro__status parceiro-financeiro__status--pago">Pago</span>';
-    if (id === 3) return '<span class="parceiro-financeiro__status parceiro-financeiro__status--cancelado">Cancelado</span>';
-    return '<span class="parceiro-financeiro__status parceiro-financeiro__status--pendente">Pendente</span>';
+function aplicarMascaraCep(event) {
+    const input = event.target;
+    const valor = input.value.replace(/\D/g, '').slice(0, 8);
+    input.value = valor.length > 5 ? `${valor.slice(0, 5)}-${valor.slice(5)}` : valor;
+}
+
+function aplicarMascaraCpfCnpj(event) {
+    const input = event.target;
+    const tipo = acharInputTipoPessoa()?.value ?? 'PF';
+    const digitos = input.value.replace(/\D/g, '');
+
+    if (tipo === 'PJ') {
+        const v = digitos.slice(0, 14);
+        if (v.length <= 2) { input.value = v; return; }
+        if (v.length <= 5) { input.value = `${v.slice(0, 2)}.${v.slice(2)}`; return; }
+        if (v.length <= 8) { input.value = `${v.slice(0, 2)}.${v.slice(2, 5)}.${v.slice(5)}`; return; }
+        if (v.length <= 12) { input.value = `${v.slice(0, 2)}.${v.slice(2, 5)}.${v.slice(5, 8)}/${v.slice(8)}`; return; }
+        input.value = `${v.slice(0, 2)}.${v.slice(2, 5)}.${v.slice(5, 8)}/${v.slice(8, 12)}-${v.slice(12, 14)}`;
+    } else {
+        const v = digitos.slice(0, 11);
+        if (v.length <= 3) { input.value = v; return; }
+        if (v.length <= 6) { input.value = `${v.slice(0, 3)}.${v.slice(3)}`; return; }
+        if (v.length <= 9) { input.value = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`; return; }
+        input.value = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9, 11)}`;
+    }
+}
+
+async function buscarCep(cep) {
+    const cepLimpo = (cep || '').replace(/\D/g, '');
+    if (cepLimpo.length !== 8) throw new Error('CEP deve conter 8 dígitos.');
+    const resposta = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+    const dados = await resposta.json();
+    if (dados.erro) return null;
+    return {
+        logradouro: dados.logradouro || '',
+        bairro: dados.bairro || '',
+        cidade: dados.localidade || '',
+        uf: dados.uf || ''
+    };
 }
 
 function _obterIdDaRota() {
@@ -429,6 +424,7 @@ async function _prepararModoEdicao() {
         titulo.forEach(el => { el.textContent = 'Visualizar Parceiro'; });
         subtitulo.forEach(el => { el.textContent = 'Visualize os dados do parceiro, endereco, contatos e lancamentos.'; });
         _bloquearFormularioParceiro();
+        if (idParceiro) await _carregarLancamentosFinanceiros();
         return;
     }
 
@@ -443,6 +439,7 @@ async function _prepararModoEdicao() {
     try {
         const parceiro = await ParceirosService.buscar(idParceiro);
         _preencherFormulario(parceiro);
+        await _carregarLancamentosFinanceiros();
     } catch (err) {
         console.error('[NovoParceiro] Erro ao carregar parceiro:', err);
         Toast.erro(err.message || 'Nao foi possivel carregar o parceiro.');
@@ -530,19 +527,8 @@ function _preencherFormulario(parceiro) {
         }))
         : [];
 
-    lancamentos = Array.isArray(parceiro.lancamentos)
-        ? parceiro.lancamentos.map(item => ({
-            id_lancamento: item.id_lancamento ?? null,
-            fk_tipo_lancamento: item.fk_tipo_lancamento ? Number(item.fk_tipo_lancamento) : null,
-            referencia: item.referencia ?? item.descricao ?? '',
-            valor: Number(item.valor || 0),
-            data_pagamento: item.data_pagamento ?? null,
-            fk_status_conta: item.fk_status_conta ? Number(item.fk_status_conta) : 1,
-        }))
-        : [];
-
     _renderizarTelefones();
-    _renderizarLancamentos();
+    _carregarLancamentosFinanceiros();
 }
 
 function _setValor(seletor, valor) {

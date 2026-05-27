@@ -464,23 +464,6 @@ body.modal-open {
   }
 }
 
-/* ── Animação de entrada ─────────────────────────────────── */
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Bloqueia scroll do body enquanto modal está aberto */
-body.modal-open {
-  overflow: hidden;
-}
-
 /* ============================================================
    RESPONSIVIDADE
    ============================================================ */
