@@ -33,7 +33,10 @@ const contasSubordinadas = [
   { id: 6, nome: 'Serviços contratados', regente: 'Manutenção e obras', movimentos: 5, status: 'ativo' },
 ];
 
+lancamentos.splice(0, lancamentos.length);
+
 let cleanup = [];
+let dominiosFinanceiros = null;
 
 function init() {
   cleanup = [];
@@ -53,7 +56,8 @@ function destroy() {
   cleanup = [];
 }
 
-function iniciarVisaoGeral() {
+async function iniciarVisaoGeral() {
+  await carregarLancamentos();
   renderizarMetricas('financeiro-metricas', calcularResumo(lancamentos));
   renderizarLancamentos();
 
@@ -63,7 +67,11 @@ function iniciarVisaoGeral() {
   ].filter(Boolean);
 
   filtros.forEach((filtro) => {
-    const handler = () => renderizarLancamentos();
+    const handler = () => {
+      const filtrados = filtrarLancamentos();
+      renderizarMetricas('financeiro-metricas', calcularResumo(filtrados));
+      renderizarLancamentos();
+    };
     filtro.addEventListener('change', handler);
     cleanup.push(() => filtro.removeEventListener('change', handler));
   });
@@ -74,13 +82,7 @@ function renderizarLancamentos() {
   const vazio = document.getElementById('financeiro-lancamentos-vazio');
   if (!tbody) return;
 
-  const tipo = document.getElementById('filtro-tipo-lancamento')?.value || 'todos';
-  const status = document.getElementById('filtro-status-lancamento')?.value || 'todos';
-  const filtrados = lancamentos.filter((item) => {
-    if (tipo !== 'todos' && item.tipo !== tipo) return false;
-    if (status !== 'todos' && item.status !== status) return false;
-    return true;
-  });
+  const filtrados = filtrarLancamentos();
 
   tbody.innerHTML = filtrados.map((item) => `
     <tr>
@@ -100,16 +102,77 @@ function renderizarLancamentos() {
   if (vazio) vazio.hidden = filtrados.length > 0;
 }
 
+async function carregarLancamentos(filtros = {}) {
+  try {
+    const params = new URLSearchParams();
+    params.set('limite', String(filtros.limite || 100));
+    if (filtros.tipo && filtros.tipo !== 'todos') params.set('tipo', filtros.tipo);
+    if (filtros.status && filtros.status !== 'todos') params.set('status', filtros.status);
+    if (filtros.inicio) params.set('inicio', filtros.inicio);
+    if (filtros.fim) params.set('fim', filtros.fim);
+
+    const resposta = await api.get(`/financeiro/lancamentos/listar.php?${params.toString()}`);
+    const dados = normalizarLancamentos(resposta.dados || resposta.lancamentos || []);
+    lancamentos.splice(0, lancamentos.length, ...dados);
+  } catch (erro) {
+    lancamentos.splice(0, lancamentos.length);
+    Toast.erro(erro.message || 'Nao foi possivel carregar os lancamentos.');
+  }
+}
+
+function filtrarLancamentos() {
+  const tipo = document.getElementById('filtro-tipo-lancamento')?.value || 'todos';
+  const status = document.getElementById('filtro-status-lancamento')?.value || 'todos';
+
+  return lancamentos.filter((item) => {
+    if (tipo !== 'todos' && item.tipo !== tipo) return false;
+    if (status !== 'todos' && item.status !== status) return false;
+    return true;
+  });
+}
+
+function normalizarLancamentos(lista) {
+  return lista.map((item) => ({
+    ...item,
+    id: Number(item.id || item.id_lancamento),
+    descricao: item.descricao || '',
+    conta: item.conta || item.conta_regente || '',
+    subconta: item.subconta || item.conta_subordinada || '',
+    tipo: normalizarTipo(item.tipo),
+    status: normalizarStatus(item.status || item.status_conta, item.vencimento || item.data_vencimento),
+    vencimento: item.vencimento || item.data_vencimento || item.data_lancamento || '',
+    valor: Number(item.valor || 0),
+    pessoa: item.pessoa || '',
+  }));
+}
+
+function normalizarTipo(tipo) {
+  const texto = String(tipo || '').toLowerCase();
+  return texto === 'despesa' ? 'despesa' : 'receita';
+}
+
+function normalizarStatus(status, vencimento = '') {
+  const texto = String(status || '').toLowerCase();
+  if (texto.includes('liquidado') || texto.includes('pago')) return 'pago';
+  if (texto.includes('cancelado')) return 'cancelado';
+  if (texto.includes('atrasado')) return 'atrasado';
+  if (vencimento && vencimento < new Date().toISOString().slice(0, 10)) return 'atrasado';
+  return 'pendente';
+}
+
+async function carregarDominiosFinanceiros() {
+  if (dominiosFinanceiros) return dominiosFinanceiros;
+  dominiosFinanceiros = await api.get('/financeiro/dominios.php');
+  return dominiosFinanceiros;
+}
+
 async function carregarTiposLancamento() {
   const select = document.getElementById('lancamento-tipo');
   if (!select) return;
 
   try {
-    const response = await fetch('/backend/lancamentos/tipos/listar.php');
-    if (!response.ok) throw new Error('Erro ao buscar tipos');
-
-    const resultado = await response.json();
-    const tipos = resultado.data || [];
+    const resultado = await carregarDominiosFinanceiros();
+    const tipos = resultado.tipos || resultado.data || [];
 
     select.innerHTML = '<option value="">Selecione...</option>';
     tipos.forEach(tipo => {
@@ -124,11 +187,45 @@ async function carregarTiposLancamento() {
   }
 }
 
+async function preencherSelectsNovoLancamento() {
+  try {
+    const dominios = await carregarDominiosFinanceiros();
+    preencherSelect('lancamento-status', dominios.status || [], 'id_status_conta', 'descricao');
+    preencherSelect('lancamento-forma-pagamento', dominios.formas_pagamento || [], 'id_forma_pagamento', 'descricao');
+    preencherSelect('lancamento-conta', dominios.contas_regentes || [], 'id_conta_regente', 'descricao');
+    atualizarSubcontasNovoLancamento();
+  } catch (erro) {
+    Toast.erro(erro.message || 'Nao foi possivel carregar os campos financeiros.');
+  }
+}
+
+function atualizarSubcontasNovoLancamento() {
+  const select = document.getElementById('lancamento-subconta');
+  const regente = document.getElementById('lancamento-conta')?.value || '';
+  if (!select || !dominiosFinanceiros) return;
+
+  const subordinadas = (dominiosFinanceiros.contas_subordinadas || [])
+    .filter((item) => !regente || String(item.fk_conta_regente) === String(regente));
+
+  preencherSelect('lancamento-subconta', subordinadas, 'id_conta_subordinada', 'descricao', 'Selecione...');
+}
+
+function preencherSelect(id, itens, campoValor, campoTexto, textoVazio = null) {
+  const select = document.getElementById(id);
+  if (!select) return;
+
+  select.innerHTML = [
+    textoVazio ? `<option value="">${textoVazio}</option>` : '',
+    ...itens.map((item) => `<option value="${item[campoValor]}">${escaparHtml(item[campoTexto])}</option>`),
+  ].join('');
+}
+
 function iniciarNovoLancamento() {
   const form = document.getElementById('form-lancamento');
   if (!form) return;
 
   carregarTiposLancamento();
+  preencherSelectsNovoLancamento();
 
   const campos = ['lancamento-tipo', 'lancamento-status', 'lancamento-valor', 'lancamento-vencimento', 'lancamento-primeira-parcela', 'lancamento-pagamento-modo']
     .map((id) => document.getElementById(id))
@@ -140,14 +237,27 @@ function iniciarNovoLancamento() {
   const primeiraParcelaInput = document.getElementById('lancamento-primeira-parcela');
   const parcelamentoPanel = document.getElementById('parcelamento-panel');
 
+  const formatarDataISO = (data) => {
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  };
+
+  const criarDataLocal = (iso) => {
+    const [ano, mes, dia] = String(iso || '').split('-').map(Number);
+    if (!ano || !mes || !dia) return null;
+    return new Date(ano, mes - 1, dia);
+  };
+
   const calcularParcelas = (valorTotal, primeiroVencimento, totalParcelas) => {
     if (!valorTotal || totalParcelas <= 1 || !primeiroVencimento) return [];
 
     const base = Math.floor((valorTotal / totalParcelas) * 100) / 100;
     const resto = Number((valorTotal - base * totalParcelas).toFixed(2));
     const parcelas = [];
-    const dataBase = new Date(primeiroVencimento);
-    if (Number.isNaN(dataBase.getTime())) return [];
+    const dataBase = criarDataLocal(primeiroVencimento);
+    if (!dataBase || Number.isNaN(dataBase.getTime())) return [];
 
     for (let i = 1; i <= totalParcelas; i += 1) {
       const valorParcela = i === totalParcelas ? Number((base + resto).toFixed(2)) : Number(base.toFixed(2));
@@ -156,7 +266,7 @@ function iniciarNovoLancamento() {
       parcelas.push({
         numero_parcela: i,
         valor: valorParcela,
-        data_vencimento: data.toISOString().slice(0, 10),
+        data_vencimento: formatarDataISO(data),
       });
     }
 
@@ -188,11 +298,12 @@ function iniciarNovoLancamento() {
   const atualizar = () => {
     const tipoSelect = document.getElementById('lancamento-tipo');
     const tipoTexto = tipoSelect?.selectedOptions[0]?.textContent || 'Tipo';
-    const status = document.getElementById('lancamento-status')?.value || 'pendente';
+    const statusSelect = document.getElementById('lancamento-status');
+    const status = statusSelect?.selectedOptions[0]?.textContent || 'Pendente';
     const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
 
     document.getElementById('resumo-tipo').textContent = tipoTexto;
-    document.getElementById('resumo-status').textContent = capitalizar(status);
+    document.getElementById('resumo-status').textContent = status;
     document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
     atualizarParcelamento();
   };
@@ -222,6 +333,13 @@ function iniciarNovoLancamento() {
     });
   }
 
+  const contaSelect = document.getElementById('lancamento-conta');
+  if (contaSelect) {
+    const handler = () => atualizarSubcontasNovoLancamento();
+    contaSelect.addEventListener('change', handler);
+    cleanup.push(() => contaSelect.removeEventListener('change', handler));
+  }
+
 const submit = async (evento) => {
   evento.preventDefault();
 
@@ -234,14 +352,18 @@ const submit = async (evento) => {
   const pagamentoModo = document.getElementById('lancamento-pagamento-modo')?.value || 'avista';
   const valorTotal = Number(document.getElementById('lancamento-valor')?.value || 0);
   const dataVencimento = document.getElementById('lancamento-vencimento')?.value;
-  const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value;
+  const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value || dataVencimento;
+  const statusConta = parseInt(document.getElementById('lancamento-status')?.value);
+  const dataPagamento = statusConta === 2
+    ? document.getElementById('lancamento-pagamento')?.value || formatarDataISO(new Date())
+    : null;
 
   const payload = {
     fk_tipo_lancamento:
       parseInt(document.getElementById('lancamento-tipo')?.value) || null,
 
     fk_status_conta:
-      parseInt(document.getElementById('lancamento-status')?.value),
+      statusConta,
 
     fk_forma_pagamento:
       parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
@@ -264,7 +386,13 @@ const submit = async (evento) => {
       document.getElementById('lancamento-subconta')?.value || null,
 
     dataLancamento:
-      document.getElementById('lancamento-pagamento')?.value,
+      formatarDataISO(new Date()),
+
+    data_pagamento:
+      dataPagamento,
+
+    valor_pago:
+      dataPagamento ? valorTotal : null,
 
     data_vencimento:
       pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
@@ -280,8 +408,6 @@ const submit = async (evento) => {
       return;
     }
   }
-
-  console.log(payload);
 
   try {
 
@@ -305,10 +431,25 @@ const submit = async (evento) => {
   atualizar();
 }
 
-function iniciarRelatorios() {
+async function iniciarRelatorios() {
+  await carregarLancamentos({ limite: 200 });
   renderizarMetricas('relatorio-metricas', calcularResumo(lancamentos));
   renderizarBarrasRelatorio();
   renderizarResumoContas();
+
+  const filtros = [
+    document.getElementById('relatorio-inicio'),
+    document.getElementById('relatorio-fim'),
+    document.getElementById('relatorio-tipo'),
+  ].filter(Boolean);
+
+  filtros.forEach((filtro) => {
+    const handler = async () => {
+      await atualizarRelatorio();
+    };
+    filtro.addEventListener('change', handler);
+    cleanup.push(() => filtro.removeEventListener('change', handler));
+  });
 
   const btn = document.getElementById('btn-exportar-relatorio');
   if (btn) {
@@ -318,27 +459,56 @@ function iniciarRelatorios() {
   }
 }
 
+async function atualizarRelatorio() {
+  const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
+  const mesFim = document.getElementById('relatorio-fim')?.value || '';
+  const tipo = document.getElementById('relatorio-tipo')?.value || 'todos';
+
+  await carregarLancamentos({
+    limite: 200,
+    tipo,
+    inicio: mesInicio ? `${mesInicio}-01` : '',
+    fim: mesFim ? ultimoDiaMes(mesFim) : '',
+  });
+
+  renderizarMetricas('relatorio-metricas', calcularResumo(lancamentos));
+  renderizarBarrasRelatorio();
+  renderizarResumoContas();
+}
+
 function renderizarBarrasRelatorio() {
   const container = document.getElementById('relatorio-barras');
   if (!container) return;
 
-  const meses = [
-    { mes: 'Jan', valor: 1840 },
-    { mes: 'Fev', valor: 2260 },
-    { mes: 'Mar', valor: 1985 },
-    { mes: 'Abr', valor: 2650 },
-  ];
-  const maior = Math.max(...meses.map((m) => m.valor));
+  const meses = agruparLancamentosPorMes(lancamentos);
+  const maior = Math.max(1, ...meses.map((m) => Math.abs(m.valor)));
 
   container.innerHTML = meses.map((item) => `
     <div class="financeiro__barra">
       <span>${item.mes}</span>
       <div class="financeiro__barra-trilho">
-        <div class="financeiro__barra-valor" style="width: ${(item.valor / maior) * 100}%"></div>
+        <div class="financeiro__barra-valor" style="width: ${(Math.abs(item.valor) / maior) * 100}%"></div>
       </div>
       <strong>${formatarMoeda(item.valor)}</strong>
     </div>
   `).join('');
+}
+
+function agruparLancamentosPorMes(lista) {
+  const mapa = new Map();
+
+  lista.forEach((item) => {
+    const data = item.vencimento || item.data_lancamento || '';
+    const chave = data.slice(0, 7) || 'Sem data';
+    const valor = item.tipo === 'receita' ? item.valor : -item.valor;
+    mapa.set(chave, (mapa.get(chave) || 0) + valor);
+  });
+
+  const itens = [...mapa.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([mes, valor]) => ({ mes: formatarMes(mes), valor }));
+
+  return itens.length ? itens : [{ mes: '-', valor: 0 }];
 }
 
 function renderizarResumoContas() {
@@ -642,11 +812,11 @@ async function iniciarContasSubordinadas() {
   await preencherSelectsRegentes();
   await renderizarContasSubordinadas();
 
-  const filtro = document.getElementById('filtro-subordinada-regente');
-  if (filtro) {
+  const busca = document.getElementById('busca-conta-subordinada');
+  if (busca) {
     const handler = () => renderizarContasSubordinadas();
-    filtro.addEventListener('change', handler);
-    cleanup.push(() => filtro.removeEventListener('change', handler));
+    busca.addEventListener('input', handler);
+    cleanup.push(() => busca.removeEventListener('input', handler));
   }
 
   document.getElementById('btn-nova-conta-subordinada')?.addEventListener('click', () => abrirModalSubordinada());
@@ -756,9 +926,7 @@ async function preencherSelectsRegentes() {
     const { dados } = await api.get('/financeiro/contas-regentes/listar.php?ativos=1');
     const opcoes = dados.map((c) => `<option value="${c.id_conta_regente}">${escaparHtml(c.descricao)}</option>`).join('');
     const cadastro = document.getElementById('subordinada-regente');
-    const filtro   = document.getElementById('filtro-subordinada-regente');
     if (cadastro) cadastro.innerHTML = opcoes;
-    if (filtro)   filtro.innerHTML   = `<option value="0">Todas as contas regentes</option>${opcoes}`;
   } catch (_) {}
 }
 
@@ -766,12 +934,12 @@ async function renderizarContasSubordinadas() {
   const tbody = document.getElementById('contas-subordinadas-tbody');
   if (!tbody) return;
 
-  const regente = parseInt(document.getElementById('filtro-subordinada-regente')?.value || '0');
+  const busca = document.getElementById('busca-conta-subordinada')?.value.trim() || '';
   tbody.innerHTML = linhaEstadoTabela('Carregando...');
 
   try {
     const params = new URLSearchParams();
-    if (regente > 0) params.set('fk_conta_regente', String(regente));
+    if (busca) params.set('busca', busca);
     const { dados } = await api.get(`/financeiro/contas-subordinadas/listar.php?${params}`);
 
     if (!dados.length) {
@@ -839,7 +1007,7 @@ function renderizarMetricas(id, resumo) {
         <span class="card-stat__icone ${card.classe}"><span class="material-icons">${card.icone}</span></span>
       </div>
       <p class="card-stat__valor ${card.valorClasse}">${formatarMoeda(card.valor)}</p>
-      <div class="card-stat__rodape">Atualizado com dados locais</div>
+      <div class="card-stat__rodape">Atualizado com dados do banco</div>
     </article>
   `).join('');
 }
@@ -881,6 +1049,19 @@ function formatarData(iso) {
   if (!iso) return '-';
   const [ano, mes, dia] = iso.split('-');
   return `${dia}/${mes}/${ano}`;
+}
+
+function formatarMes(anoMes) {
+  if (!anoMes || anoMes === 'Sem data') return '-';
+  const [ano, mes] = anoMes.split('-').map(Number);
+  const data = new Date(ano, mes - 1, 1);
+  return data.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+}
+
+function ultimoDiaMes(anoMes) {
+  const [ano, mes] = anoMes.split('-').map(Number);
+  const data = new Date(ano, mes, 0);
+  return data.toISOString().slice(0, 10);
 }
 
 function capitalizar(texto) {

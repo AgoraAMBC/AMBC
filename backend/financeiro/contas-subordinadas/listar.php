@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Método não permitido', 405
 
 $pdo     = obterConexao();
 $regente = (int)($_GET['fk_conta_regente'] ?? 0);
+$busca   = trim($_GET['busca'] ?? '');
 $ativos  = $_GET['ativos'] ?? '';
 
 $where  = ['1=1'];
@@ -16,6 +17,10 @@ $params = [];
 if ($regente > 0) {
     $where[]           = 'cs.fk_conta_regente = :regente';
     $params[':regente'] = $regente;
+}
+if ($busca !== '') {
+    $where[] = '(cs.descricao ILIKE :busca OR cr.descricao ILIKE :busca)';
+    $params[':busca'] = '%' . $busca . '%';
 }
 if ($ativos === '1') {
     $where[] = 'cs.ativo = TRUE';

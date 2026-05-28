@@ -20,6 +20,12 @@ if ((int)$stmtVerifica->fetchColumn() > 0) {
     jsonErro('Não é possível excluir uma conta que possui subcontas vinculadas', 409);
 }
 
+$stmtVerifica = $pdo->prepare('SELECT COUNT(*) FROM lancamento WHERE fk_conta_regente = :id');
+$stmtVerifica->execute([':id' => $id]);
+if ((int)$stmtVerifica->fetchColumn() > 0) {
+    jsonErro('Nao e possivel excluir uma conta que possui lancamentos vinculados', 409);
+}
+
 $stmt = $pdo->prepare('DELETE FROM conta_regente WHERE id_conta_regente = :id');
 $stmt->execute([':id' => $id]);
 

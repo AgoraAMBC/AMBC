@@ -29,8 +29,10 @@ $fk_conta_subordinada = $dados['fk_conta_subordinada'] ?? null;
 $fk_tipo_lancamento   = $dados['fk_tipo_lancamento'] ?? null;
 $fk_forma_pagamento   = $dados['fk_forma_pagamento'] ?? null;
 $fk_status_conta      = $dados['fk_status_conta'] ?? null;
-$data_lancamento      = $dados['dataLancamento'] ?? null;
+$data_lancamento      = $dados['dataLancamento'] ?? ($dados['data_lancamento'] ?? date('Y-m-d'));
 $data_vencimento      = $dados['data_vencimento'] ?? null;
+$data_pagamento       = $dados['data_pagamento'] ?? null;
+$valor_pago           = parseDecimal($dados['valor_pago'] ?? null);
 $observacao           = trim($dados['observacao'] ?? '');
 $total_parcelas       = isset($dados['total_parcelas']) ? (int)$dados['total_parcelas'] : 1;
 $parcelas             = $dados['parcelas'] ?? [];
@@ -66,8 +68,45 @@ if (!$fk_status_conta) {
     exit;
 }
 
+if ((int)$fk_status_conta === 2) {
+    $data_pagamento = $data_pagamento ?: date('Y-m-d');
+    $valor_pago = $valor_pago ?: $valor;
+} else {
+    $data_pagamento = null;
+    $valor_pago = null;
+}
+
 try {
     $pdo->beginTransaction();
+
+    if ($fk_conta_regente) {
+        $stmtConta = $pdo->prepare('SELECT id_conta_regente FROM conta_regente WHERE id_conta_regente = :id AND ativo = TRUE');
+        $stmtConta->execute([':id' => $fk_conta_regente]);
+        if (!$stmtConta->fetch()) {
+            throw new Exception('Conta regente nÃ£o encontrada ou inativa.');
+        }
+    }
+
+    if ($fk_conta_subordinada) {
+        $sqlSubconta = '
+            SELECT id_conta_subordinada
+            FROM conta_subordinada
+            WHERE id_conta_subordinada = :id
+              AND ativo = TRUE
+        ';
+        $paramsSubconta = [':id' => $fk_conta_subordinada];
+
+        if ($fk_conta_regente) {
+            $sqlSubconta .= ' AND fk_conta_regente = :regente';
+            $paramsSubconta[':regente'] = $fk_conta_regente;
+        }
+
+        $stmtSubconta = $pdo->prepare($sqlSubconta);
+        $stmtSubconta->execute($paramsSubconta);
+        if (!$stmtSubconta->fetch()) {
+            throw new Exception('Conta subordinada nÃ£o encontrada, inativa ou incompatÃ­vel com a conta regente.');
+        }
+    }
 
     $sql = "
         INSERT INTO lancamento (
@@ -78,8 +117,10 @@ try {
             fk_status_conta,
             descricao,
             valor,
+            valor_pago,
             data_lancamento,
             data_vencimento,
+            data_pagamento,
             observacao
         ) VALUES (
             :fk_conta_regente,
@@ -89,8 +130,10 @@ try {
             :fk_status_conta,
             :descricao,
             :valor,
+            :valor_pago,
             :data_lancamento,
             :data_vencimento,
+            :data_pagamento,
             :observacao
         )
     ";
@@ -118,8 +161,10 @@ try {
                 ':fk_status_conta'      => $fk_status_conta,
                 ':descricao'            => $descricaoParcela,
                 ':valor'                => $parcelaValor,
+                ':valor_pago'           => $data_pagamento ? $parcelaValor : null,
                 ':data_lancamento'      => $data_lancamento ?: null,
                 ':data_vencimento'      => $parcelaVencimento,
+                ':data_pagamento'       => $data_pagamento ?: null,
                 ':observacao'           => $observacao ?: null
             ]);
         }
@@ -136,8 +181,10 @@ try {
             ':fk_status_conta'      => $fk_status_conta,
             ':descricao'            => $descricao,
             ':valor'                => $valor,
+            ':valor_pago'           => $valor_pago ?: null,
             ':data_lancamento'      => $data_lancamento ?: null,
             ':data_vencimento'      => $data_vencimento ?: null,
+            ':data_pagamento'       => $data_pagamento ?: null,
             ':observacao'           => $observacao ?: null
         ]);
     }

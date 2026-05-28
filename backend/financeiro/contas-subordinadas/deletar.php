@@ -14,7 +14,7 @@ if ($id <= 0) jsonErro('ID da conta subordinada é obrigatório', 400);
 
 $pdo = obterConexao();
 
-$stmtVerifica = $pdo->prepare('SELECT COUNT(*) FROM conta WHERE fk_conta_subordinada = :id');
+$stmtVerifica = $pdo->prepare('SELECT COUNT(*) FROM lancamento WHERE fk_conta_subordinada = :id');
 $stmtVerifica->execute([':id' => $id]);
 if ((int)$stmtVerifica->fetchColumn() > 0) {
     jsonErro('Não é possível excluir uma subconta que possui movimentos financeiros vinculados', 409);

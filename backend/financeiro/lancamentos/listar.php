@@ -1,20 +1,63 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../helpers.php';
+
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../helpers.php';
 
 configurarCors();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Método não permitido', 405);
-
-$id_associado = isset($_GET['id_associado']) ? (int)$_GET['id_associado'] : null;
-
-if (!$id_associado) jsonErro('ID do associado é obrigatório', 400);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Metodo nao permitido', 405);
 
 try {
     $pdo = obterConexao();
 
-    $sql = "
+    $tipo = trim($_GET['tipo'] ?? '');
+    $status = trim($_GET['status'] ?? '');
+    $inicio = trim($_GET['inicio'] ?? '');
+    $fim = trim($_GET['fim'] ?? '');
+    $idAssociado = isset($_GET['id_associado']) ? (int)$_GET['id_associado'] : 0;
+    $limite = max(1, min(200, (int)($_GET['limite'] ?? 100)));
+
+    $where = ['1=1'];
+    $params = [];
+
+    if ($idAssociado > 0) {
+        $where[] = 'l.fk_associado = :id_associado';
+        $params[':id_associado'] = $idAssociado;
+    }
+
+    if (in_array($tipo, ['receita', 'despesa'], true)) {
+        $where[] = 'LOWER(cr.tipo) = :tipo';
+        $params[':tipo'] = $tipo;
+    }
+
+    if ($status !== '' && $status !== 'todos') {
+        if ($status === 'pago') {
+            $where[] = "LOWER(sc.descricao) IN ('liquidado', 'pago')";
+        } elseif ($status === 'pendente') {
+            $where[] = "LOWER(sc.descricao) = 'aberto'";
+            $where[] = "(l.data_vencimento IS NULL OR l.data_vencimento >= CURRENT_DATE)";
+        } elseif ($status === 'atrasado') {
+            $where[] = "LOWER(sc.descricao) = 'aberto'";
+            $where[] = 'l.data_vencimento < CURRENT_DATE';
+        } elseif ($status === 'cancelado') {
+            $where[] = "LOWER(sc.descricao) = 'cancelado'";
+        }
+    }
+
+    if ($inicio !== '') {
+        $where[] = 'COALESCE(l.data_vencimento, l.data_lancamento) >= :inicio';
+        $params[':inicio'] = $inicio;
+    }
+
+    if ($fim !== '') {
+        $where[] = 'COALESCE(l.data_vencimento, l.data_lancamento) <= :fim';
+        $params[':fim'] = $fim;
+    }
+
+    $condicao = implode(' AND ', $where);
+
+    $stmt = $pdo->prepare("
         SELECT
             l.id_lancamento,
             l.descricao,
@@ -23,27 +66,51 @@ try {
             l.data_lancamento,
             l.data_vencimento,
             l.data_pagamento,
-            COALESCE(reg.descricao, '') AS conta_regente,
-            COALESCE(sub.descricao, '') AS conta_subordinada,
+            COALESCE(cr.descricao, '') AS conta_regente,
+            COALESCE(cs.descricao, '') AS conta_subordinada,
             COALESCE(tl.descricao, '') AS tipo_lancamento,
             COALESCE(sc.descricao, 'Aberto') AS status_conta,
+            COALESCE(fp.descricao, '') AS forma_pagamento,
+            COALESCE(cr.tipo, 'receita') AS tipo,
             l.fk_status_conta,
+            l.fk_tipo_lancamento,
+            l.fk_forma_pagamento,
+            l.fk_conta_regente,
+            l.fk_conta_subordinada,
             l.criado_em
         FROM lancamento l
-        LEFT JOIN conta_regente reg ON reg.id_conta_regente = l.fk_conta_regente
-        LEFT JOIN conta_subordinada sub ON sub.id_conta_subordinada = l.fk_conta_subordinada
+        LEFT JOIN conta_regente cr ON cr.id_conta_regente = l.fk_conta_regente
+        LEFT JOIN conta_subordinada cs ON cs.id_conta_subordinada = l.fk_conta_subordinada
         LEFT JOIN tipo_lancamento tl ON tl.id_tipo_lancamento = l.fk_tipo_lancamento
         LEFT JOIN status_conta sc ON sc.id_status_conta = l.fk_status_conta
-        WHERE l.fk_associado = :id_associado
-        ORDER BY l.data_lancamento DESC
-    ";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id_associado' => $id_associado]);
+        LEFT JOIN forma_pagamento fp ON fp.id_forma_pagamento = l.fk_forma_pagamento
+        WHERE $condicao
+        ORDER BY COALESCE(l.data_vencimento, l.data_lancamento) DESC, l.id_lancamento DESC
+        LIMIT $limite
+    ");
+    $stmt->execute($params);
     $lancamentos = $stmt->fetchAll();
 
-    jsonResposta(['lancamentos' => $lancamentos]);
+    foreach ($lancamentos as &$lancamento) {
+        $statusNormalizado = strtolower((string)$lancamento['status_conta']);
+        $vencimento = $lancamento['data_vencimento'] ?? null;
 
+        $lancamento['id'] = (int)$lancamento['id_lancamento'];
+        $lancamento['valor'] = (float)$lancamento['valor'];
+        $lancamento['valor_pago'] = $lancamento['valor_pago'] !== null ? (float)$lancamento['valor_pago'] : null;
+        $lancamento['conta'] = $lancamento['conta_regente'];
+        $lancamento['subconta'] = $lancamento['conta_subordinada'];
+        $lancamento['vencimento'] = $vencimento;
+        $lancamento['pessoa'] = '';
+        $lancamento['status'] = match (true) {
+            str_contains($statusNormalizado, 'liquidado'), str_contains($statusNormalizado, 'pago') => 'pago',
+            str_contains($statusNormalizado, 'cancelado') => 'cancelado',
+            $vencimento && $vencimento < date('Y-m-d') => 'atrasado',
+            default => 'pendente',
+        };
+    }
+
+    jsonResposta(['dados' => $lancamentos, 'lancamentos' => $lancamentos]);
 } catch (PDOException $e) {
-    jsonErro('Erro ao buscar lançamentos: ' . $e->getMessage(), 500);
+    jsonErro('Erro ao buscar lancamentos: ' . $e->getMessage(), 500);
 }
