@@ -2,11 +2,11 @@ import { AuxiliaresService } from '../services/associados-auxiliares-service.js'
 import Toast from '../componentes/toast.js';
 
 const CONFIGS = {
-  genero:      { label: 'Gênero',       fieldLabel: 'Nome do Gênero',       placeholder: 'Ex: Não-binário',     listar: () => AuxiliaresService.listarGeneros(),      criar: (d) => AuxiliaresService.criarGenero(d),      editar: (id, d) => AuxiliaresService.editarGenero(id, d),      excluir: (id) => AuxiliaresService.excluirGenero(id) },
-  parentesco:  { label: 'Parentesco',   fieldLabel: 'Tipo de Parentesco',   placeholder: 'Ex: Sobrinho(a)',     listar: () => AuxiliaresService.listarParentescos(),  criar: (d) => AuxiliaresService.criarParentesco(d),  editar: (id, d) => AuxiliaresService.editarParentesco(id, d),  excluir: (id) => AuxiliaresService.excluirParentesco(id) },
-  profissao:   { label: 'Profissão',    fieldLabel: 'Nome da Profissão',    placeholder: 'Ex: Engenheiro(a)',   listar: () => AuxiliaresService.listarProfissoes(),   criar: (d) => AuxiliaresService.criarProfissao(d),   editar: (id, d) => AuxiliaresService.editarProfissao(id, d),   excluir: (id) => AuxiliaresService.excluirProfissao(id) },
-  estadocivil: { label: 'Estado Civil', fieldLabel: 'Nome do Estado Civil', placeholder: 'Ex: União Estável',   listar: () => AuxiliaresService.listarEstadosCivis(), criar: (d) => AuxiliaresService.criarEstadoCivil(d), editar: (id, d) => AuxiliaresService.editarEstadoCivil(id, d), excluir: (id) => AuxiliaresService.excluirEstadoCivil(id) },
-  status:      { label: 'Status',       fieldLabel: 'Nome do Status',       placeholder: 'Ex: Em Análise',      listar: () => AuxiliaresService.listarStatusPessoa(), criar: (d) => AuxiliaresService.criarStatus(d),      editar: (id, d) => AuxiliaresService.editarStatus(id, d),      excluir: (id) => AuxiliaresService.excluirStatus(id) },
+  genero:      { label: 'Gênero',       icone: 'wc',           fieldLabel: 'Nome do Gênero',       placeholder: 'Ex: Não-binário',     listar: () => AuxiliaresService.listarGeneros(),      criar: (d) => AuxiliaresService.criarGenero(d),      editar: (id, d) => AuxiliaresService.editarGenero(id, d),      excluir: (id) => AuxiliaresService.excluirGenero(id) },
+  parentesco:  { label: 'Parentesco',   icone: 'account_tree', fieldLabel: 'Tipo de Parentesco',   placeholder: 'Ex: Sobrinho(a)',     listar: () => AuxiliaresService.listarParentescos(),  criar: (d) => AuxiliaresService.criarParentesco(d),  editar: (id, d) => AuxiliaresService.editarParentesco(id, d),  excluir: (id) => AuxiliaresService.excluirParentesco(id) },
+  profissao:   { label: 'Profissão',    icone: 'work',         fieldLabel: 'Nome da Profissão',    placeholder: 'Ex: Engenheiro(a)',   listar: () => AuxiliaresService.listarProfissoes(),   criar: (d) => AuxiliaresService.criarProfissao(d),   editar: (id, d) => AuxiliaresService.editarProfissao(id, d),   excluir: (id) => AuxiliaresService.excluirProfissao(id) },
+  estadocivil: { label: 'Estado Civil', icone: 'favorite',     fieldLabel: 'Nome do Estado Civil', placeholder: 'Ex: União Estável',   listar: () => AuxiliaresService.listarEstadosCivis(), criar: (d) => AuxiliaresService.criarEstadoCivil(d), editar: (id, d) => AuxiliaresService.editarEstadoCivil(id, d), excluir: (id) => AuxiliaresService.excluirEstadoCivil(id) },
+  status:      { label: 'Status',       icone: 'toggle_on',    fieldLabel: 'Nome do Status',       placeholder: 'Ex: Em Análise',      listar: () => AuxiliaresService.listarStatusPessoa(), criar: (d) => AuxiliaresService.criarStatus(d),      editar: (id, d) => AuxiliaresService.editarStatus(id, d),      excluir: (id) => AuxiliaresService.excluirStatus(id) },
 };
 
 const TabelasPage = {
@@ -24,11 +24,30 @@ const TabelasPage = {
     await this._carregarAba('genero');
   },
 
+  /* ── Topo dinâmico ── */
+  _atualizarTopo(chave, count) {
+    const cfg      = CONFIGS[chave];
+    const icone    = document.getElementById('tabaux-icone');
+    const titulo   = document.getElementById('tabaux-titulo');
+    const subtitulo = document.getElementById('tabaux-subtitulo');
+    const btnAdd   = document.getElementById('tabaux-btn-add');
+    const btnTexto = document.getElementById('tabaux-btn-texto');
+
+    if (icone)     icone.textContent    = cfg.icone;
+    if (titulo)    titulo.textContent   = cfg.label;
+    if (subtitulo) subtitulo.textContent = count !== undefined
+      ? `${count} ${count === 1 ? 'registro' : 'registros'} cadastrados`
+      : 'Carregando…';
+    if (btnAdd)    btnAdd.dataset.tabauxAdicionar = chave;
+    if (btnTexto)  btnTexto.textContent = `Adicionar ${cfg.label}`;
+  },
+
   /* ── Abas ── */
   _inicializarAbas() {
     document.querySelectorAll('[data-tabaux-aba]').forEach(aba => {
       aba.addEventListener('click', async () => {
         const chave = aba.dataset.tabauxAba;
+
         document.querySelectorAll('[data-tabaux-aba]').forEach(a => {
           a.classList.remove('tabaux__aba--ativa');
           a.setAttribute('aria-selected', 'false');
@@ -37,12 +56,20 @@ const TabelasPage = {
           p.classList.remove('tabaux__painel--ativo');
           p.hidden = true;
         });
+
         aba.classList.add('tabaux__aba--ativa');
         aba.setAttribute('aria-selected', 'true');
         const painel = document.getElementById(`tabaux-${chave}`);
         if (painel) { painel.classList.add('tabaux__painel--ativo'); painel.hidden = false; }
+
         this._abaAtual = chave;
-        if (!this._dados[chave]) await this._carregarAba(chave);
+
+        if (!this._dados[chave]) {
+          this._atualizarTopo(chave);
+          await this._carregarAba(chave);
+        } else {
+          this._atualizarTopo(chave, this._dados[chave].length);
+        }
       });
     });
   },
@@ -61,10 +88,11 @@ const TabelasPage = {
   /* ── Renderizar tabela ── */
   _renderTabela(chave, dados) {
     const tbody = document.getElementById(`tbody-${chave}`);
-    const sub   = document.getElementById(`sub-${chave}`);
     if (!tbody) return;
 
-    if (sub) sub.textContent = `${dados.length} ${dados.length === 1 ? 'registro' : 'registros'} cadastrados`;
+    if (chave === this._abaAtual) {
+      this._atualizarTopo(chave, dados.length);
+    }
 
     if (!dados.length) {
       tbody.innerHTML = `<tr><td colspan="3" class="gu-tabela__estado">Nenhum registro cadastrado.</td></tr>`;
@@ -98,7 +126,6 @@ const TabelasPage = {
 
   /* ── Eventos ── */
   _registrarEventos() {
-    /* Botões Adicionar (um por painel) */
     document.addEventListener('click', e => {
       const btnAdd = e.target.closest('[data-tabaux-adicionar]');
       if (btnAdd) { this._abrirModal(btnAdd.dataset.tabauxAdicionar); return; }
@@ -110,7 +137,6 @@ const TabelasPage = {
       if (acao === 'excluir') this._abrirConfirmar(chave, Number(id), desc);
     });
 
-    /* Modal adicionar/editar */
     document.getElementById('modal-tabaux-fechar')?.addEventListener('click',  () => this._fecharModal());
     document.getElementById('modal-tabaux-cancelar')?.addEventListener('click', () => this._fecharModal());
     document.getElementById('modal-tabaux-fundo')?.addEventListener('click',    () => this._fecharModal());
@@ -119,7 +145,6 @@ const TabelasPage = {
       if (e.key === 'Escape') this._fecharModal();
     });
 
-    /* Modal confirmação exclusão */
     document.getElementById('modal-confirmar-cancelar')?.addEventListener('click', () => this._fecharConfirmar());
     document.getElementById('modal-confirmar-fundo')?.addEventListener('click',    () => this._fecharConfirmar());
     document.getElementById('modal-confirmar-ok')?.addEventListener('click',       () => this._executarExclusao());
@@ -131,17 +156,17 @@ const TabelasPage = {
     this._editandoId    = id;
     this._modalModo     = id ? 'editar' : 'adicionar';
 
-    const cfg         = CONFIGS[chave];
-    const elTitulo    = document.getElementById('modal-tabaux-titulo');
-    const elIcone     = document.getElementById('modal-tabaux-icone');
-    const elLabel     = document.getElementById('tabaux-label');
-    const elCampo     = document.getElementById('tabaux-descricao');
+    const cfg      = CONFIGS[chave];
+    const elTitulo = document.getElementById('modal-tabaux-titulo');
+    const elIcone  = document.getElementById('modal-tabaux-icone');
+    const elLabel  = document.getElementById('tabaux-label');
+    const elCampo  = document.getElementById('tabaux-descricao');
 
-    if (elTitulo) elTitulo.textContent     = id ? `Editar ${cfg.label}` : `Adicionar ${cfg.label}`;
-    if (elIcone)  elIcone.textContent      = id ? 'edit' : 'add_circle';
-    if (elLabel)  elLabel.textContent      = `${cfg.fieldLabel} *`;
-    if (elCampo)  elCampo.placeholder      = cfg.placeholder;
-    if (elCampo)  elCampo.value            = desc;
+    if (elTitulo) elTitulo.textContent = id ? `Editar ${cfg.label}` : `Adicionar ${cfg.label}`;
+    if (elIcone)  elIcone.textContent  = id ? 'edit' : 'add_circle';
+    if (elLabel)  elLabel.textContent  = `${cfg.fieldLabel} *`;
+    if (elCampo)  elCampo.placeholder  = cfg.placeholder;
+    if (elCampo)  elCampo.value        = desc;
 
     document.getElementById('modal-tabaux').hidden = false;
     setTimeout(() => elCampo?.focus(), 50);

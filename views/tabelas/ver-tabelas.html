@@ -4,40 +4,44 @@
 ========================================================= -->
 <section class="view tabaux">
 
-  <!-- ABAS -->
-  <div class="tabaux__abas" role="tablist">
-    <button class="tabaux__aba tabaux__aba--ativa" role="tab" aria-selected="true"  data-tabaux-aba="genero"      aria-controls="tabaux-genero">
-      <span class="material-icons">wc</span> Gênero
-    </button>
-    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="parentesco"  aria-controls="tabaux-parentesco">
-      <span class="material-icons">account_tree</span> Parentesco
-    </button>
-    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="profissao"   aria-controls="tabaux-profissao">
-      <span class="material-icons">work</span> Profissão
-    </button>
-    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="estadocivil" aria-controls="tabaux-estadocivil">
-      <span class="material-icons">favorite</span> Estado Civil
-    </button>
-    <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="status"      aria-controls="tabaux-status">
-      <span class="material-icons">toggle_on</span> Status
-    </button>
-  </div>
+  <div class="gu-card">
 
-  <!-- ── GÊNERO ── -->
-  <div class="tabaux__painel tabaux__painel--ativo" id="tabaux-genero" role="tabpanel">
-    <div class="gu-card">
-      <div class="gu-card__topo">
-        <div class="gu-card__titulo-grupo">
-          <span class="material-icons gu-card__icone">wc</span>
-          <div>
-            <h2 class="gu-card__titulo">Gênero</h2>
-            <p class="gu-card__subtitulo" id="sub-genero">Carregando…</p>
-          </div>
+    <!-- Topo dinâmico — atualizado pelo JS ao trocar de aba -->
+    <div class="gu-card__topo">
+      <div class="gu-card__titulo-grupo">
+        <span class="material-icons gu-card__icone" id="tabaux-icone">wc</span>
+        <div>
+          <h2 class="gu-card__titulo" id="tabaux-titulo">Gênero</h2>
+          <p class="gu-card__subtitulo" id="tabaux-subtitulo">Carregando…</p>
         </div>
-        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="genero">
-          <span class="material-icons">add</span> Adicionar Gênero
-        </button>
       </div>
+      <button type="button" class="gu-btn gu-btn--primario" id="tabaux-btn-add" data-tabaux-adicionar="genero">
+        <span class="material-icons">add</span>
+        <span id="tabaux-btn-texto">Adicionar Gênero</span>
+      </button>
+    </div>
+
+    <!-- ABAS -->
+    <div class="tabaux__abas" role="tablist">
+      <button class="tabaux__aba tabaux__aba--ativa" role="tab" aria-selected="true"  data-tabaux-aba="genero"      aria-controls="tabaux-genero">
+        <span class="material-icons">wc</span> Gênero
+      </button>
+      <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="parentesco"  aria-controls="tabaux-parentesco">
+        <span class="material-icons">account_tree</span> Parentesco
+      </button>
+      <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="profissao"   aria-controls="tabaux-profissao">
+        <span class="material-icons">work</span> Profissão
+      </button>
+      <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="estadocivil" aria-controls="tabaux-estadocivil">
+        <span class="material-icons">favorite</span> Estado Civil
+      </button>
+      <button class="tabaux__aba" role="tab" aria-selected="false" data-tabaux-aba="status"      aria-controls="tabaux-status">
+        <span class="material-icons">toggle_on</span> Status
+      </button>
+    </div>
+
+    <!-- ── GÊNERO ── -->
+    <div class="tabaux__painel tabaux__painel--ativo" id="tabaux-genero" role="tabpanel">
       <div class="gu-tabela-wrapper">
         <table class="gu-tabela">
           <thead>
@@ -53,23 +57,9 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- ── PARENTESCO ── -->
-  <div class="tabaux__painel" id="tabaux-parentesco" role="tabpanel" hidden>
-    <div class="gu-card">
-      <div class="gu-card__topo">
-        <div class="gu-card__titulo-grupo">
-          <span class="material-icons gu-card__icone">account_tree</span>
-          <div>
-            <h2 class="gu-card__titulo">Parentesco</h2>
-            <p class="gu-card__subtitulo" id="sub-parentesco">Carregando…</p>
-          </div>
-        </div>
-        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="parentesco">
-          <span class="material-icons">add</span> Adicionar Parentesco
-        </button>
-      </div>
+    <!-- ── PARENTESCO ── -->
+    <div class="tabaux__painel" id="tabaux-parentesco" role="tabpanel" hidden>
       <div class="gu-tabela-wrapper">
         <table class="gu-tabela">
           <thead>
@@ -85,23 +75,9 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- ── PROFISSÃO ── -->
-  <div class="tabaux__painel" id="tabaux-profissao" role="tabpanel" hidden>
-    <div class="gu-card">
-      <div class="gu-card__topo">
-        <div class="gu-card__titulo-grupo">
-          <span class="material-icons gu-card__icone">work</span>
-          <div>
-            <h2 class="gu-card__titulo">Profissão</h2>
-            <p class="gu-card__subtitulo" id="sub-profissao">Carregando…</p>
-          </div>
-        </div>
-        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="profissao">
-          <span class="material-icons">add</span> Adicionar Profissão
-        </button>
-      </div>
+    <!-- ── PROFISSÃO ── -->
+    <div class="tabaux__painel" id="tabaux-profissao" role="tabpanel" hidden>
       <div class="gu-tabela-wrapper">
         <table class="gu-tabela">
           <thead>
@@ -117,23 +93,9 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- ── ESTADO CIVIL ── -->
-  <div class="tabaux__painel" id="tabaux-estadocivil" role="tabpanel" hidden>
-    <div class="gu-card">
-      <div class="gu-card__topo">
-        <div class="gu-card__titulo-grupo">
-          <span class="material-icons gu-card__icone">favorite</span>
-          <div>
-            <h2 class="gu-card__titulo">Estado Civil</h2>
-            <p class="gu-card__subtitulo" id="sub-estadocivil">Carregando…</p>
-          </div>
-        </div>
-        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="estadocivil">
-          <span class="material-icons">add</span> Adicionar Estado Civil
-        </button>
-      </div>
+    <!-- ── ESTADO CIVIL ── -->
+    <div class="tabaux__painel" id="tabaux-estadocivil" role="tabpanel" hidden>
       <div class="gu-tabela-wrapper">
         <table class="gu-tabela">
           <thead>
@@ -149,23 +111,9 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- ── STATUS ── -->
-  <div class="tabaux__painel" id="tabaux-status" role="tabpanel" hidden>
-    <div class="gu-card">
-      <div class="gu-card__topo">
-        <div class="gu-card__titulo-grupo">
-          <span class="material-icons gu-card__icone">toggle_on</span>
-          <div>
-            <h2 class="gu-card__titulo">Status</h2>
-            <p class="gu-card__subtitulo" id="sub-status">Carregando…</p>
-          </div>
-        </div>
-        <button type="button" class="gu-btn gu-btn--primario" data-tabaux-adicionar="status">
-          <span class="material-icons">add</span> Adicionar Status
-        </button>
-      </div>
+    <!-- ── STATUS ── -->
+    <div class="tabaux__painel" id="tabaux-status" role="tabpanel" hidden>
       <div class="gu-tabela-wrapper">
         <table class="gu-tabela">
           <thead>
@@ -181,6 +129,7 @@
         </table>
       </div>
     </div>
+
   </div>
 
 </section>
