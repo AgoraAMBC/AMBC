@@ -5,6 +5,7 @@ relacionamentos.js
 ========================================================= */
 
 import Toast from '../componentes/toast.js';
+import { API_BASE } from '../core/config.js';
 
 const refs = {};
 const estado = {
@@ -103,7 +104,7 @@ async function carregarDados() {
 
 async function carregarRelacionamentos() {
   try {
-    const response = await fetch('/backend/relacionamentos/listar.php');
+    const response = await fetch(`${API_BASE}/relacionamentos/listar.php`);
     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
     const resultado = await response.json();
@@ -173,7 +174,7 @@ function renderizarRelacionamentos() {
 
 async function carregarContasRegentes() {
   try {
-    const response = await fetch('/backend/financeiro/contas-regentes/listar.php');
+    const response = await fetch(`${API_BASE}/financeiro/contas-regentes/listar.php`);
     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
     const resultado = await response.json();
@@ -196,7 +197,7 @@ async function carregarSubordinadas() {
   }
 
   try {
-    const url = `/backend/financeiro/contas-subordinadas/listar.php?fk_conta_regente=${regenteId}`;
+    const url = `${API_BASE}/financeiro/contas-subordinadas/listar.php?fk_conta_regente=${regenteId}`;
     console.log('[Relacionamentos] Buscando subordinadas:', url);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
@@ -269,7 +270,7 @@ function abrirModal(id = null) {
 
 async function carregarRelacionamentoPara(id) {
   try {
-    const response = await fetch(`/backend/relacionamentos/obter.php?id=${id}`);
+    const response = await fetch(`${API_BASE}/relacionamentos/obter.php?id=${id}`);
     if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
     const resultado = await response.json();
@@ -325,8 +326,8 @@ async function salvarRelacionamento(e) {
 
   try {
     const endpoint = estado.editandoId
-      ? `/backend/relacionamentos/atualizar.php?id=${estado.editandoId}`
-      : '/backend/relacionamentos/criar.php';
+      ? `${API_BASE}/relacionamentos/atualizar.php?id=${estado.editandoId}`
+      : `${API_BASE}/relacionamentos/criar.php`;
 
     console.log('[Relacionamentos] Endpoint:', endpoint);
     const response = await fetch(endpoint, {
@@ -357,7 +358,7 @@ async function excluirRelacionamento(id) {
 
   try {
     console.log('[Relacionamentos] Excluindo relacionamento:', id);
-    const response = await fetch(`/backend/relacionamentos/deletar.php?id=${id}`, {
+    const response = await fetch(`${API_BASE}/relacionamentos/deletar.php?id=${id}`, {
       method: 'DELETE'
     });
 

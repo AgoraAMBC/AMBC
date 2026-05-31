@@ -16,11 +16,10 @@ if (!$id_dependente) jsonErro('ID do dependente é obrigatório', 400);
 try {
     $pdo = obterConexao();
 
-    $stmt = $pdo->prepare("DELETE FROM dependente WHERE id_dependente = :id RETURNING id_dependente");
+    $stmt = $pdo->prepare("DELETE FROM dependente WHERE id_dependente = :id");
     $stmt->execute([':id' => (int)$id_dependente]);
-    $resultado = $stmt->fetch();
 
-    if (!$resultado) jsonErro('Dependente não encontrado', 404);
+    if ($stmt->rowCount() === 0) jsonErro('Dependente não encontrado', 404);
 
     jsonResposta(['mensagem' => 'Dependente excluído com sucesso.']);
 

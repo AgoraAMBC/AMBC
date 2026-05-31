@@ -39,7 +39,6 @@ try {
     $stmt = $pdo->prepare('
         INSERT INTO usuario (nome, email, senha_hash, fk_perfil, fk_associado, primeiro_acesso)
         VALUES (:nome, :email, :senha_hash, :fk_perfil, :fk_associado, :primeiro_acesso)
-        RETURNING id_usuario
     ');
     $stmt->execute([
         ':nome'            => $nome,
@@ -47,9 +46,9 @@ try {
         ':senha_hash'      => $senhaHash,
         ':fk_perfil'       => $perfil,
         ':fk_associado'    => $fkAssociado,
-        ':primeiro_acesso' => $primeiroAcesso ? 'TRUE' : 'FALSE',
+        ':primeiro_acesso' => $primeiroAcesso ? 1 : 0,
     ]);
-    $idUsuario = (int)$stmt->fetchColumn();
+    $idUsuario = (int)$pdo->lastInsertId();
 
     $stmtPerm = $pdo->prepare('
         INSERT INTO permissao_usuario (fk_usuario, fk_modulo, pode_acessar, pode_editar)
@@ -59,8 +58,8 @@ try {
         $stmtPerm->execute([
             ':fk_usuario'   => $idUsuario,
             ':fk_modulo'    => (int)$perm['fk_modulo'],
-            ':pode_acessar' => ($perm['pode_acessar'] ?? false) ? 'TRUE' : 'FALSE',
-            ':pode_editar'  => ($perm['pode_editar'] ?? false) ? 'TRUE' : 'FALSE',
+            ':pode_acessar' => ($perm['pode_acessar'] ?? false) ? 1 : 0,
+            ':pode_editar'  => ($perm['pode_editar'] ?? false) ? 1 : 0,
         ]);
     }
 

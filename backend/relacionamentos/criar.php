@@ -34,16 +34,16 @@ try {
     $pdo = obterConexao();
 
     // Verificar ou criar o tipo de lançamento
-    $stmtTipo = $pdo->prepare("SELECT id_tipo_lancamento FROM tipo_lancamento WHERE descricao ILIKE :tipo");
+    $stmtTipo = $pdo->prepare("SELECT id_tipo_lancamento FROM tipo_lancamento WHERE descricao LIKE :tipo");
     $stmtTipo->execute([':tipo' => $tipo]);
     $tipoExistente = $stmtTipo->fetch(PDO::FETCH_ASSOC);
 
     if ($tipoExistente) {
         $fk_tipo_lancamento = $tipoExistente['id_tipo_lancamento'];
     } else {
-        $stmtInsertTipo = $pdo->prepare("INSERT INTO tipo_lancamento (descricao) VALUES (:tipo) RETURNING id_tipo_lancamento");
+        $stmtInsertTipo = $pdo->prepare("INSERT INTO tipo_lancamento (descricao) VALUES (:tipo)");
         $stmtInsertTipo->execute([':tipo' => $tipo]);
-        $fk_tipo_lancamento = $stmtInsertTipo->fetchColumn();
+        $fk_tipo_lancamento = $pdo->lastInsertId();
     }
 
     // Se está ativando um novo, desativar o anterior para este tipo
@@ -65,7 +65,6 @@ try {
             :tipo, :regente, :subordinada,
             :natureza, :modo, :ativo, :obs, NOW(), NOW()
         )
-        RETURNING id_relacionamento
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -75,14 +74,12 @@ try {
         ':subordinada' => $fk_conta_subordinada,
         ':natureza' => $natureza,
         ':modo' => $modo,
-        ':ativo' => $ativo ? 'true' : 'false',
+        ':ativo' => $ativo ? 1 : 0,
         ':obs' => $observacao
     ]);
 
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
     jsonResposta([
-        'data' => ['id_relacionamento' => (int)$row['id_relacionamento']],
+        'data' => ['id_relacionamento' => (int)$pdo->lastInsertId()],
         'message' => 'Relacionamento criado com sucesso.'
     ], 201);
 

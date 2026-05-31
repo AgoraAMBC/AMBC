@@ -59,8 +59,7 @@ if (!move_uploaded_file($arquivo['tmp_name'], $caminho)) {
 try {
     $stmt = $pdo->prepare(
         'INSERT INTO documento (assunto, versao, categoria, fk_tipo_documento, tipo_livre, arquivo_path, data_documento)
-         VALUES (:assunto, :versao, :categoria, :fk_tipo, :tipo_livre, :arquivo_path, CURRENT_DATE)
-         RETURNING id_documento, assunto, versao, data_documento, arquivo_path'
+         VALUES (:assunto, :versao, :categoria, :fk_tipo, :tipo_livre, :arquivo_path, CURRENT_DATE)'
     );
     $stmt->execute([
         ':assunto'      => $assunto,
@@ -70,7 +69,10 @@ try {
         ':tipo_livre'   => $tipoLivre,
         ':arquivo_path' => $nomeArquivo,
     ]);
-    jsonResposta($stmt->fetch(), 201);
+    $idDocumento = (int)$pdo->lastInsertId();
+    $stmtDoc = $pdo->prepare('SELECT id_documento, assunto, versao, data_documento, arquivo_path FROM documento WHERE id_documento = :id');
+    $stmtDoc->execute([':id' => $idDocumento]);
+    jsonResposta($stmtDoc->fetch(), 201);
 } catch (PDOException $e) {
     @unlink($caminho);
     jsonErro('Erro ao registrar documento: ' . $e->getMessage(), 500);

@@ -171,9 +171,8 @@ function criar(PDO $pdo, array $dados): void
             :cidade,
             :uf,
             NOW(),
-            TRUE
+            1
         )
-        RETURNING id_associado, matricula, nome, email
     ');
 
     try {
@@ -198,8 +197,8 @@ function criar(PDO $pdo, array $dados): void
             ':uf'                 => $dados['uf'] ?? null,
         ]);
 
-        $associado = $stmt->fetch();
-        jsonResposta(['data' => $associado], 201);
+        $idNovo = (int)$pdo->lastInsertId();
+        jsonResposta(['data' => ['id_associado' => $idNovo, 'matricula' => $matricula, 'nome' => $dados['nome'], 'email' => $dados['email'] ?? null]], 201);
     } catch (PDOException $e) {
         if (strpos($e->getMessage(), 'duplicate') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
             jsonErro('CPF já cadastrado para outro associado', 409);
@@ -251,10 +250,13 @@ function atualizar(PDO $pdo, int $id, array $dados): void
         jsonErro('Nenhum campo para atualizar', 400);
     }
 
-    $sql = 'UPDATE associado SET ' . implode(', ', $campos) . ' WHERE id_associado = :id RETURNING id_associado, matricula, nome';
+    $sql = 'UPDATE associado SET ' . implode(', ', $campos) . ' WHERE id_associado = :id';
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
-    $associado = $stmt->fetch();
+
+    $stmtGet = $pdo->prepare('SELECT id_associado, matricula, nome FROM associado WHERE id_associado = :id');
+    $stmtGet->execute([':id' => $id]);
+    $associado = $stmtGet->fetch();
 
     jsonResposta(['data' => $associado]);
 }
@@ -277,7 +279,7 @@ function gerarMatricula(PDO $pdo): string
     
     // Busca o maior número de matrícula do ano
     $stmt = $pdo->prepare('
-        SELECT MAX(CAST(SUBSTRING(matricula, 9) AS INTEGER)) as numero
+        SELECT MAX(CAST(SUBSTRING(matricula, 9) AS UNSIGNED)) as numero
         FROM associado
         WHERE matricula LIKE :ano
     ');

@@ -20,12 +20,15 @@ $where  = ['1=1'];
 $params = [];
 
 if ($busca !== '') {
-    $where[]          = "(p.nome_razao_social ILIKE :busca OR p.cpf_cnpj ILIKE :busca OR p.email ILIKE :busca)";
-    $params[':busca'] = "%{$busca}%";
+    $like = "%{$busca}%";
+    $where[]           = "(p.nome_razao_social LIKE :busca1 OR p.cpf_cnpj LIKE :busca2 OR p.email LIKE :busca3)";
+    $params[':busca1'] = $like;
+    $params[':busca2'] = $like;
+    $params[':busca3'] = $like;
 }
 
-if ($status === 'ativo')   { $where[] = 'p.ativo = TRUE';  }
-if ($status === 'inativo') { $where[] = 'p.ativo = FALSE'; }
+if ($status === 'ativo')   { $where[] = 'p.ativo = 1'; }
+if ($status === 'inativo') { $where[] = 'p.ativo = 0'; }
 
 $clausulaWhere = implode(' AND ', $where);
 
@@ -64,7 +67,12 @@ $sql = "
 ";
 
 $stmt = $pdo->prepare($sql);
-$stmt->execute(array_merge($params, [':limite' => $limite, ':offset' => $offset]));
+foreach ($params as $chave => $valor) {
+    $stmt->bindValue($chave, $valor);
+}
+$stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $parceiros = $stmt->fetchAll();
 
 jsonResposta([

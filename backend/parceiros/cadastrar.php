@@ -56,9 +56,8 @@ try {
             :tipo_pessoa, :tipo_servico,
             :logradouro, :numero, :complemento, :cep,
             :bairro, :cidade, :uf,
-            TRUE
+            1
         )
-        RETURNING id_parceiro
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -77,7 +76,7 @@ try {
         ':uf'                => trim($dados['uf']           ?? '') ?: null,
     ]);
 
-    $idParceiro = (int)$stmt->fetchColumn();
+    $idParceiro = (int)$pdo->lastInsertId();
 
     // Insere telefones (pode ter vários)
     if (!empty($dados['telefones']) && is_array($dados['telefones'])) {

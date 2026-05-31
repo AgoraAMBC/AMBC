@@ -43,7 +43,7 @@ try {
     $stmtVerifica->execute([':cpf' => $cpf_cnpj]);
     if ($stmtVerifica->fetch()) jsonErro('CPF/CNPJ já cadastrado', 409);
 
-    $stmtMatricula = $pdo->query("SELECT MAX(CAST(matricula AS INTEGER)) FROM associado WHERE matricula ~ '^[0-9]+$'");
+    $stmtMatricula = $pdo->query("SELECT MAX(CAST(matricula AS UNSIGNED)) FROM associado WHERE matricula REGEXP '^[0-9]+$'");
     $ultimaMatricula = $stmtMatricula->fetchColumn();
     $novaMatricula = str_pad((string)(($ultimaMatricula ?? 0) + 1), 4, '0', STR_PAD_LEFT);
 
@@ -59,7 +59,6 @@ try {
             :fk_genero, :fk_estadocivil, :fk_profissao, :fk_categoria, :fk_status,
             :logradouro, :numero, :complemento, :bairro, :cidade, :uf, :cep
         )
-        RETURNING id_associado, matricula
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -70,7 +69,7 @@ try {
         ':data_nascimento'=> $data_nascimento ?: null,
         ':email'          => $email,
         ':observacao'     => $observacao,
-        ':ativo'          => $ativo ? 'true' : 'false',
+        ':ativo'          => $ativo ? 1 : 0,
         ':criado_em'      => date('Y-m-d H:i:s'),
         ':data_entrada'   => $data_entrada ?: date('Y-m-d'),
         ':fk_genero'      => $fk_genero ?: null,
@@ -87,13 +86,11 @@ try {
         ':cep'             => $cep ?: null,
     ]);
 
-    $row = $stmt->fetch();
-
     jsonResposta([
         'mensagem'     => 'Associado cadastrado com sucesso.',
         'data' => [
-            'id_associado' => (int)$row['id_associado'],
-            'matricula'   => $row['matricula']
+            'id_associado' => (int)$pdo->lastInsertId(),
+            'matricula'   => $novaMatricula
         ]
     ], 201);
 

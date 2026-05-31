@@ -38,7 +38,6 @@ try {
             :fk_associado, :nome, :data_nascimento, :cpf,
             :fk_parentesco, :fk_genero, :observacao
         )
-        RETURNING id_dependente
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -52,11 +51,11 @@ try {
         ':observacao'      => $observacao,
     ]);
 
-    $row = $stmt->fetch();
+    $idDependente = (int)$pdo->lastInsertId();
 
     jsonResposta([
         'mensagem'      => 'Dependente cadastrado com sucesso.',
-        'id_dependente' => (int)$row['id_dependente']
+        'id_dependente' => $idDependente
     ], 201);
 
 } catch (PDOException $e) {

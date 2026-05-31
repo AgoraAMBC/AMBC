@@ -16,11 +16,10 @@ if (!$id_telefone) jsonErro('ID do telefone é obrigatório', 400);
 try {
     $pdo = obterConexao();
 
-    $stmt = $pdo->prepare("DELETE FROM telefone WHERE id_telefone = :id RETURNING id_telefone");
+    $stmt = $pdo->prepare("DELETE FROM telefone WHERE id_telefone = :id");
     $stmt->execute([':id' => (int)$id_telefone]);
-    $resultado = $stmt->fetch();
 
-    if (!$resultado) jsonErro('Telefone não encontrado', 404);
+    if ($stmt->rowCount() === 0) jsonErro('Telefone não encontrado', 404);
 
     jsonResposta(['mensagem' => 'Telefone excluído com sucesso.']);
 

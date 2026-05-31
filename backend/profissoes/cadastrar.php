@@ -18,11 +18,10 @@ try {
     $stmt->execute([':descricao' => $descricao]);
     if ($stmt->fetch()) jsonErro('Já existe uma profissão com esta descrição');
 
-    $stmt = $pdo->prepare('INSERT INTO profissao (descricao) VALUES (:descricao) RETURNING id_profissao AS id, descricao');
+    $stmt = $pdo->prepare('INSERT INTO profissao (descricao) VALUES (:descricao)');
     $stmt->execute([':descricao' => $descricao]);
-    $row = $stmt->fetch();
 
-    jsonResposta($row ?: ['mensagem' => 'Profissão cadastrada com sucesso'], 201);
+    jsonResposta(['id' => (int)$pdo->lastInsertId(), 'descricao' => $descricao], 201);
 } catch (PDOException $e) {
     jsonErro('Erro no banco: ' . $e->getMessage(), 500);
 }

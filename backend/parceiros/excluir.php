@@ -16,11 +16,10 @@ if (!$id_parceiro) jsonErro('ID do parceiro é obrigatório', 400);
 try {
     $pdo = obterConexao();
 
-    $stmt = $pdo->prepare("DELETE FROM parceiro WHERE id_parceiro = :id RETURNING id_parceiro");
+    $stmt = $pdo->prepare("DELETE FROM parceiro WHERE id_parceiro = :id");
     $stmt->execute([':id' => (int)$id_parceiro]);
-    $resultado = $stmt->fetch();
 
-    if (!$resultado) jsonErro('Parceiro não encontrado', 404);
+    if ($stmt->rowCount() === 0) jsonErro('Parceiro não encontrado', 404);
 
     jsonResposta(['mensagem' => 'Parceiro excluído com sucesso.']);
 

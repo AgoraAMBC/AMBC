@@ -26,8 +26,11 @@ $whereAssociados = ['1=1'];
 $paramsAssociados = [];
 
 if ($busca !== '') {
-    $whereAssociados[] = "(a.nome ILIKE :busca_a OR a.email ILIKE :busca_a OR a.cpf_cnpj ILIKE :busca_a)";
-    $paramsAssociados[':busca_a'] = "%{$busca}%";
+    $like = "%{$busca}%";
+    $whereAssociados[] = "(a.nome LIKE :ba1 OR a.email LIKE :ba2 OR a.cpf_cnpj LIKE :ba3)";
+    $paramsAssociados[':ba1'] = $like;
+    $paramsAssociados[':ba2'] = $like;
+    $paramsAssociados[':ba3'] = $like;
 }
 if ($status === 'ativo') $whereAssociados[] = 'a.ativo = TRUE';
 if ($status === 'inativo') $whereAssociados[] = 'a.ativo = FALSE';
@@ -57,7 +60,10 @@ if ($tipo === 'todos' || $tipo === 'associado') {
         LIMIT :limite OFFSET :offset
     ";
     $stmtAssoc = $pdo->prepare($sqlAssoc);
-    $stmtAssoc->execute(array_merge($paramsAssociados, [':limite' => $limite, ':offset' => $offset]));
+    foreach ($paramsAssociados as $k => $v) $stmtAssoc->bindValue($k, $v);
+    $stmtAssoc->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmtAssoc->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmtAssoc->execute();
     foreach ($stmtAssoc->fetchAll() as $a) {
         $a['ativo'] = (bool)$a['ativo'];
         $cadastros[] = $a;
@@ -71,8 +77,11 @@ $whereDependentes = ['1=1'];
 $paramsDependentes = [];
 
 if ($busca !== '') {
-    $whereDependentes[] = "(d.nome ILIKE :busca_d OR d.cpf ILIKE :busca_d OR a.nome ILIKE :busca_d)";
-    $paramsDependentes[':busca_d'] = "%{$busca}%";
+    $like = "%{$busca}%";
+    $whereDependentes[] = "(d.nome LIKE :bd1 OR d.cpf LIKE :bd2 OR a.nome LIKE :bd3)";
+    $paramsDependentes[':bd1'] = $like;
+    $paramsDependentes[':bd2'] = $like;
+    $paramsDependentes[':bd3'] = $like;
 }
 if ($status === 'ativo') $whereDependentes[] = 'a.ativo = TRUE';
 if ($status === 'inativo') $whereDependentes[] = 'a.ativo = FALSE';
@@ -110,7 +119,10 @@ if ($tipo === 'todos' || $tipo === 'dependente') {
         LIMIT :limite OFFSET :offset
     ";
     $stmtDep = $pdo->prepare($sqlDep);
-    $stmtDep->execute(array_merge($paramsDependentes, [':limite' => $limite, ':offset' => $offset]));
+    foreach ($paramsDependentes as $k => $v) $stmtDep->bindValue($k, $v);
+    $stmtDep->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmtDep->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmtDep->execute();
     foreach ($stmtDep->fetchAll() as $d) {
         $d['ativo'] = (bool)$d['ativo'];
         $cadastros[] = $d;
@@ -124,8 +136,11 @@ $whereParceiros = ['1=1'];
 $paramsParceiros = [];
 
 if ($busca !== '') {
-    $whereParceiros[] = "(p.nome_razao_social ILIKE :busca_p OR p.cpf_cnpj ILIKE :busca_p OR p.email ILIKE :busca_p)";
-    $paramsParceiros[':busca_p'] = "%{$busca}%";
+    $like = "%{$busca}%";
+    $whereParceiros[] = "(p.nome_razao_social LIKE :bp1 OR p.cpf_cnpj LIKE :bp2 OR p.email LIKE :bp3)";
+    $paramsParceiros[':bp1'] = $like;
+    $paramsParceiros[':bp2'] = $like;
+    $paramsParceiros[':bp3'] = $like;
 }
 if ($status === 'ativo') $whereParceiros[] = 'p.ativo = TRUE';
 if ($status === 'inativo') $whereParceiros[] = 'p.ativo = FALSE';
@@ -155,7 +170,10 @@ if ($tipo === 'todos' || $tipo === 'parceiro') {
         LIMIT :limite OFFSET :offset
     ";
     $stmtParc = $pdo->prepare($sqlParc);
-    $stmtParc->execute(array_merge($paramsParceiros, [':limite' => $limite, ':offset' => $offset]));
+    foreach ($paramsParceiros as $k => $v) $stmtParc->bindValue($k, $v);
+    $stmtParc->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmtParc->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmtParc->execute();
     foreach ($stmtParc->fetchAll() as $p) {
         $p['ativo'] = (bool)$p['ativo'];
         $cadastros[] = $p;

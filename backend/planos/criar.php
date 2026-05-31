@@ -26,8 +26,7 @@ try {
 
     $stmt = $pdo->prepare("
         INSERT INTO plano_associacao (nome, preco, periodo, beneficios, ativo, ordem)
-        VALUES (:nome, :preco, :periodo, :beneficios, TRUE, :ordem)
-        RETURNING id_plano
+        VALUES (:nome, :preco, :periodo, :beneficios, 1, :ordem)
     ");
     $stmt->execute([
         ':nome'       => $nome,
@@ -37,7 +36,7 @@ try {
         ':ordem'      => $ordem,
     ]);
 
-    $id = (int)$stmt->fetchColumn();
+    $id = (int)$pdo->lastInsertId();
     jsonResposta(['id_plano' => $id, 'mensagem' => 'Plano criado com sucesso.'], 201);
 
 } catch (PDOException $e) {

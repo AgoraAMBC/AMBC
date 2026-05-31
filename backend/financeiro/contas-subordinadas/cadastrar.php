@@ -22,7 +22,6 @@ if (!$stmt->fetch()) jsonErro('Conta regente não encontrada ou inativa');
 $stmt = $pdo->prepare('
     INSERT INTO conta_subordinada (fk_conta_regente, descricao, observacao)
     VALUES (:fk_conta_regente, :descricao, :observacao)
-    RETURNING id_conta_subordinada
 ');
 $stmt->execute([
     ':fk_conta_regente' => $fkRegente,
@@ -30,4 +29,4 @@ $stmt->execute([
     ':observacao'       => $observacao ?: null,
 ]);
 
-jsonResposta(['mensagem' => 'Conta subordinada cadastrada com sucesso', 'id' => (int)$stmt->fetchColumn()], 201);
+jsonResposta(['mensagem' => 'Conta subordinada cadastrada com sucesso', 'id' => (int)$pdo->lastInsertId()], 201);

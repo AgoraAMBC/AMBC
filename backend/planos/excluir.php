@@ -13,10 +13,10 @@ if ($id <= 0) jsonErro('ID inválido', 400);
 
 try {
     $pdo  = obterConexao();
-    $stmt = $pdo->prepare("DELETE FROM plano_associacao WHERE id_plano = :id RETURNING id_plano");
+    $stmt = $pdo->prepare("DELETE FROM plano_associacao WHERE id_plano = :id");
     $stmt->execute([':id' => $id]);
 
-    if (!$stmt->fetch()) jsonErro('Plano não encontrado.', 404);
+    if ($stmt->rowCount() === 0) jsonErro('Plano não encontrado.', 404);
 
     jsonResposta(['mensagem' => 'Plano excluído com sucesso.']);
 

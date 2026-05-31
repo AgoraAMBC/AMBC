@@ -221,11 +221,11 @@ async function salvarLogo(base64) {
         Toast.sucesso('Logo atualizado com sucesso!');
         renderizarPreviewLogo(base64);
         renderizarHistoricoLogos(historico);
+        atualizarLogoSidebar(base64);
     } catch (erro) {
         console.error('[Configuracoes] Erro ao salvar logo:', erro);
-        Toast.erro('Erro ao salvar. Tente novamente.');
+        Toast.erro('Erro ao salvar logo. Tente novamente.');
     }
-    atualizarLogoSidebar(base64);
 }
 
 function processarUploadLogo(event) {

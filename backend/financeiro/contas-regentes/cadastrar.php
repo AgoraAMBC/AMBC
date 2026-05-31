@@ -22,7 +22,6 @@ if ($stmt->fetch()) jsonErro('Já existe uma conta regente com esse nome');
 $stmt = $pdo->prepare('
     INSERT INTO conta_regente (descricao, tipo, observacao)
     VALUES (:descricao, :tipo, :observacao)
-    RETURNING id_conta_regente
 ');
 $stmt->execute([
     ':descricao'  => $descricao,
@@ -30,4 +29,4 @@ $stmt->execute([
     ':observacao' => $observacao ?: null,
 ]);
 
-jsonResposta(['mensagem' => 'Conta regente cadastrada com sucesso', 'id' => (int)$stmt->fetchColumn()], 201);
+jsonResposta(['mensagem' => 'Conta regente cadastrada com sucesso', 'id' => (int)$pdo->lastInsertId()], 201);

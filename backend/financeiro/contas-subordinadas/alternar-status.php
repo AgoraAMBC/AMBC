@@ -19,7 +19,7 @@ if (!$conta) jsonErro('Conta subordinada não encontrada', 404);
 
 $novoAtivo = !filter_var($conta['ativo'], FILTER_VALIDATE_BOOLEAN);
 $pdo->prepare('UPDATE conta_subordinada SET ativo = :ativo WHERE id_conta_subordinada = :id')
-    ->execute([':ativo' => $novoAtivo ? 'TRUE' : 'FALSE', ':id' => $id]);
+    ->execute([':ativo' => $novoAtivo ? 1 : 0, ':id' => $id]);
 
 $acao = $novoAtivo ? 'ativada' : 'inativada';
 jsonResposta(['mensagem' => "Conta subordinada $acao com sucesso", 'ativo' => $novoAtivo]);

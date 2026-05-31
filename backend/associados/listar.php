@@ -19,11 +19,14 @@ $where  = ['1=1'];
 $params = [];
 
 if ($busca !== '') {
-    $where[]          = '(a.nome ILIKE :busca OR a.email ILIKE :busca OR a.cpf_cnpj ILIKE :busca)';
-    $params[':busca'] = '%' . $busca . '%';
+    $like = '%' . $busca . '%';
+    $where[]           = '(a.nome LIKE :busca1 OR a.email LIKE :busca2 OR a.cpf_cnpj LIKE :busca3)';
+    $params[':busca1'] = $like;
+    $params[':busca2'] = $like;
+    $params[':busca3'] = $like;
 }
-if ($status === 'ativo')   $where[] = 'a.ativo = TRUE';
-if ($status === 'inativo') $where[] = 'a.ativo = FALSE';
+if ($status === 'ativo')   $where[] = 'a.ativo = 1';
+if ($status === 'inativo') $where[] = 'a.ativo = 0';
 
 $condicao = implode(' AND ', $where);
 

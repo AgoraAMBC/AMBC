@@ -19,8 +19,10 @@ if ($regente > 0) {
     $params[':regente'] = $regente;
 }
 if ($busca !== '') {
-    $where[] = '(cs.descricao ILIKE :busca OR cr.descricao ILIKE :busca)';
-    $params[':busca'] = '%' . $busca . '%';
+    $like = '%' . $busca . '%';
+    $where[]           = '(cs.descricao LIKE :busca1 OR cr.descricao LIKE :busca2)';
+    $params[':busca1'] = $like;
+    $params[':busca2'] = $like;
 }
 if ($ativos === '1') {
     $where[] = 'cs.ativo = TRUE';
@@ -41,7 +43,7 @@ $stmt = $pdo->prepare("
     JOIN  conta_regente cr ON cr.id_conta_regente = cs.fk_conta_regente
     LEFT JOIN lancamento l ON l.fk_conta_subordinada = cs.id_conta_subordinada
     WHERE $condicao
-    GROUP BY cs.id_conta_subordinada, cr.descricao
+    GROUP BY cs.id_conta_subordinada, cs.fk_conta_regente, cs.descricao, cs.observacao, cs.ativo, cr.descricao
     ORDER BY cr.descricao ASC, cs.descricao ASC
 ");
 $stmt->execute($params);

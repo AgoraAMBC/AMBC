@@ -18,11 +18,10 @@ try {
     $stmt->execute([':descricao' => $descricao]);
     if ($stmt->fetch()) jsonErro('Já existe um estado civil com esta descrição');
 
-    $stmt = $pdo->prepare('INSERT INTO estado_civil (descricao) VALUES (:descricao) RETURNING id_estadocivil AS id, descricao');
+    $stmt = $pdo->prepare('INSERT INTO estado_civil (descricao) VALUES (:descricao)');
     $stmt->execute([':descricao' => $descricao]);
-    $row = $stmt->fetch();
 
-    jsonResposta($row ?: ['mensagem' => 'Estado civil cadastrado com sucesso'], 201);
+    jsonResposta(['id' => (int)$pdo->lastInsertId(), 'descricao' => $descricao], 201);
 } catch (PDOException $e) {
     jsonErro('Erro no banco: ' . $e->getMessage(), 500);
 }

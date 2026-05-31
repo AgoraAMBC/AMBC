@@ -68,7 +68,6 @@ function salvarLancamentoParceiro(PDO $pdo, int $idParceiro, array $dados): int 
             :fk_forma_pagamento, :fk_status_conta, :descricao, :valor, :valor_pago,
             :data_lancamento, :data_vencimento, :data_pagamento, :observacao
         )
-        RETURNING id_lancamento
     ");
     $stmt->execute([
         ':fk_parceiro' => $idParceiro,
@@ -86,7 +85,7 @@ function salvarLancamentoParceiro(PDO $pdo, int $idParceiro, array $dados): int 
         ':observacao' => $l['observacao'],
     ]);
 
-    return (int)$stmt->fetchColumn();
+    return (int)$pdo->lastInsertId();
 }
 
 function atualizarLancamentoParceiro(PDO $pdo, int $idParceiro, int $idLancamento, array $dados): void {

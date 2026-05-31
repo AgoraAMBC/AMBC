@@ -44,7 +44,6 @@ try {
     $sql = "
         INSERT INTO telefone (fk_associado, ddd, numero, fk_tipo_telefone, observacao)
         VALUES (:fk_associado, :ddd, :numero, :fk_tipo_telefone, :observacao)
-        RETURNING id_telefone
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -56,11 +55,9 @@ try {
         ':observacao'       => $observacao,
     ]);
 
-    $row = $stmt->fetch();
-
     jsonResposta([
         'mensagem'    => 'Telefone cadastrado com sucesso.',
-        'id_telefone' => (int)$row['id_telefone']
+        'id_telefone' => (int)$pdo->lastInsertId()
     ], 201);
 
 } catch (PDOException $e) {

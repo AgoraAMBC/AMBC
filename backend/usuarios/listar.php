@@ -20,15 +20,17 @@ $where  = ['1=1'];
 $params = [];
 
 if ($busca !== '') {
-    $where[]          = '(u.nome ILIKE :busca OR u.email ILIKE :busca)';
-    $params[':busca'] = '%' . $busca . '%';
+    $like = '%' . $busca . '%';
+    $where[]           = '(u.nome LIKE :busca1 OR u.email LIKE :busca2)';
+    $params[':busca1'] = $like;
+    $params[':busca2'] = $like;
 }
 if ($perfil > 0) {
     $where[]           = 'u.fk_perfil = :perfil';
     $params[':perfil'] = $perfil;
 }
-if ($status === 'ativo')   $where[] = 'u.ativo = TRUE';
-if ($status === 'inativo') $where[] = 'u.ativo = FALSE';
+if ($status === 'ativo')   $where[] = 'u.ativo = 1';
+if ($status === 'inativo') $where[] = 'u.ativo = 0';
 
 $condicao = implode(' AND ', $where);
 

@@ -19,7 +19,7 @@ if (!$conta) jsonErro('Conta regente não encontrada', 404);
 
 $novoAtivo = !filter_var($conta['ativo'], FILTER_VALIDATE_BOOLEAN);
 $pdo->prepare('UPDATE conta_regente SET ativo = :ativo WHERE id_conta_regente = :id')
-    ->execute([':ativo' => $novoAtivo ? 'TRUE' : 'FALSE', ':id' => $id]);
+    ->execute([':ativo' => $novoAtivo ? 1 : 0, ':id' => $id]);
 
 $acao = $novoAtivo ? 'ativada' : 'inativada';
 jsonResposta(['mensagem' => "Conta regente $acao com sucesso", 'ativo' => $novoAtivo]);

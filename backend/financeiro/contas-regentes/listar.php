@@ -15,7 +15,7 @@ $where  = ['1=1'];
 $params = [];
 
 if ($busca !== '') {
-    $where[]          = 'cr.descricao ILIKE :busca';
+    $where[]          = 'cr.descricao LIKE :busca';
     $params[':busca'] = '%' . $busca . '%';
 }
 if (in_array($tipo, ['receita', 'despesa'], true)) {
@@ -39,7 +39,7 @@ $stmt = $pdo->prepare("
     FROM conta_regente cr
     LEFT JOIN conta_subordinada cs ON cs.fk_conta_regente = cr.id_conta_regente
     WHERE $condicao
-    GROUP BY cr.id_conta_regente
+    GROUP BY cr.id_conta_regente, cr.descricao, cr.tipo, cr.observacao, cr.ativo
     ORDER BY cr.descricao ASC
 ");
 $stmt->execute($params);

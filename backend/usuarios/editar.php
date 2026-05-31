@@ -76,8 +76,8 @@ try {
         $stmtPerm->execute([
             ':fk_usuario'   => $idUsuario,
             ':fk_modulo'    => (int)$perm['fk_modulo'],
-            ':pode_acessar' => ($perm['pode_acessar'] ?? false) ? 'TRUE' : 'FALSE',
-            ':pode_editar'  => ($perm['pode_editar'] ?? false) ? 'TRUE' : 'FALSE',
+            ':pode_acessar' => ($perm['pode_acessar'] ?? false) ? 1 : 0,
+            ':pode_editar'  => ($perm['pode_editar'] ?? false) ? 1 : 0,
         ]);
     }
 

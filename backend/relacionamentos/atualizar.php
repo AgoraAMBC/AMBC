@@ -32,16 +32,16 @@ try {
     if (isset($body['tipo'])) {
         $tipo = trim($body['tipo']);
         // Verificar ou criar o tipo de lançamento
-        $stmtTipo = $pdo->prepare("SELECT id_tipo_lancamento FROM tipo_lancamento WHERE descricao ILIKE :tipo");
+        $stmtTipo = $pdo->prepare("SELECT id_tipo_lancamento FROM tipo_lancamento WHERE descricao LIKE :tipo");
         $stmtTipo->execute([':tipo' => $tipo]);
         $tipoExistente = $stmtTipo->fetch(PDO::FETCH_ASSOC);
 
         if ($tipoExistente) {
             $fk_tipo_lancamento = $tipoExistente['id_tipo_lancamento'];
         } else {
-            $stmtInsertTipo = $pdo->prepare("INSERT INTO tipo_lancamento (descricao) VALUES (:tipo) RETURNING id_tipo_lancamento");
+            $stmtInsertTipo = $pdo->prepare("INSERT INTO tipo_lancamento (descricao) VALUES (:tipo)");
             $stmtInsertTipo->execute([':tipo' => $tipo]);
-            $fk_tipo_lancamento = $stmtInsertTipo->fetchColumn();
+            $fk_tipo_lancamento = $pdo->lastInsertId();
         }
         $campos[] = 'fk_tipo_lancamento = :tipo';
         $params[':tipo'] = $fk_tipo_lancamento;
@@ -70,7 +70,7 @@ try {
     }
     if (isset($body['ativo'])) {
         $campos[] = 'ativo = :ativo';
-        $params[':ativo'] = $body['ativo'] ? 'true' : 'false';
+        $params[':ativo'] = $body['ativo'] ? 1 : 0;
     }
     if (isset($body['observacao'])) {
         $campos[] = 'observacao = :obs';

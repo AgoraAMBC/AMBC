@@ -24,7 +24,7 @@ try {
     $stmt = $pdo->prepare("
         INSERT INTO configuracoes (chave, valor, atualizado_em)
         VALUES (:chave, :valor, NOW())
-        ON CONFLICT (chave) DO UPDATE SET valor = EXCLUDED.valor, atualizado_em = NOW()
+        ON DUPLICATE KEY UPDATE valor = VALUES(valor), atualizado_em = NOW()
     ");
 
     foreach ($input as $chave => $valor) {

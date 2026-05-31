@@ -8,7 +8,7 @@ header('Content-Type: text/plain; charset=utf-8');
 try {
     $pdo = obterConexao();
     
-    echo "✅ Conexão com PostgreSQL: OK\n";
+    echo "✅ Conexão com MySQL: OK\n";
     echo "📦 Banco: " . ($_ENV['DB_NAME'] ?? '?') . "\n";
     echo str_repeat('-', 50) . "\n\n";
     

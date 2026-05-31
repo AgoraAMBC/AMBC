@@ -20,7 +20,7 @@ try {
             t.ddd,
             t.numero,
             t.observacao,
-            COALESCE(tipo.descricao, t.fk_tipo_telefone::text) AS tipo
+            COALESCE(tipo.descricao, CAST(t.fk_tipo_telefone AS CHAR)) AS tipo
         FROM telefone t
         LEFT JOIN tipo_telefone tipo ON tipo.id_tipo_telefone = t.fk_tipo_telefone
         WHERE t.fk_associado = :id_associado

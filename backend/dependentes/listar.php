@@ -5,7 +5,7 @@ require_once __DIR__ . '/../helpers.php';
 
 configurarCors();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Método não permitido', 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Mï¿½todo nï¿½o permitido', 405);
 
 $pdo = obterConexao();
 
@@ -32,12 +32,15 @@ if ($idAssociado !== null) {
 }
 
 if ($busca !== '') {
-    $where[]          = '(d.nome ILIKE :busca OR a.nome ILIKE :busca OR d.cpf ILIKE :busca)';
-    $params[':busca'] = "%{$busca}%";
+    $like = "%{$busca}%";
+    $where[]           = '(d.nome LIKE :busca1 OR a.nome LIKE :busca2 OR d.cpf LIKE :busca3)';
+    $params[':busca1'] = $like;
+    $params[':busca2'] = $like;
+    $params[':busca3'] = $like;
 }
 
-if ($status === 'ativo')   { $where[] = 'd.ativo = TRUE';  }
-if ($status === 'inativo') { $where[] = 'd.ativo = FALSE'; }
+if ($status === 'ativo')   { $where[] = 'd.ativo = 1'; }
+if ($status === 'inativo') { $where[] = 'd.ativo = 0'; }
 
 if ($idParentesco > 0) {
     $where[]                  = 'd.fk_parentesco = :fk_parentesco';
@@ -50,17 +53,17 @@ if ($idGenero > 0) {
 }
 
 if ($idadeMin !== null) {
-    $where[]              = 'EXTRACT(YEAR FROM AGE(d.data_nascimento)) >= :idade_min';
+    $where[]              = 'TIMESTAMPDIFF(YEAR, d.data_nascimento, CURDATE()) >= :idade_min';
     $params[':idade_min'] = $idadeMin;
 }
 
 if ($idadeMax !== null) {
-    $where[]              = 'EXTRACT(YEAR FROM AGE(d.data_nascimento)) <= :idade_max';
+    $where[]              = 'TIMESTAMPDIFF(YEAR, d.data_nascimento, CURDATE()) <= :idade_max';
     $params[':idade_max'] = $idadeMax;
 }
 
 if ($logradouro !== '') {
-    $where[]               = 'a.logradouro ILIKE :logradouro';
+    $where[]               = 'a.logradouro LIKE :logradouro';
     $params[':logradouro'] = "%{$logradouro}%";
 }
 
@@ -104,10 +107,15 @@ if (!$semPaginacao) {
 
 $stmt = $pdo->prepare($sql);
 
+foreach ($params as $chave => $valor) {
+    $stmt->bindValue($chave, $valor);
+}
 if ($semPaginacao) {
-    $stmt->execute($params);
+    $stmt->execute();
 } else {
-    $stmt->execute(array_merge($params, [':limite' => $limite, ':offset' => $offset]));
+    $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
 }
 
 jsonResposta([

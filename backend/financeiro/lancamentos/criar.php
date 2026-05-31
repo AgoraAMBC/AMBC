@@ -37,7 +37,7 @@ try {
     $fk_conta_regente_id = $fk_conta_regente ? (int)$fk_conta_regente : null;
     if (!$fk_conta_regente_id) {
         $regenteDesc = $tipo === 'pagar' ? 'Contas a Pagar' : 'Contas a Receber';
-        $stmtReg = $pdo->prepare("SELECT id_conta_regente FROM conta_regente WHERE descricao ILIKE :desc LIMIT 1");
+        $stmtReg = $pdo->prepare("SELECT id_conta_regente FROM conta_regente WHERE descricao LIKE :desc LIMIT 1");
         $stmtReg->execute([':desc' => '%' . $regenteDesc . '%']);
         $regente = $stmtReg->fetch();
         $fk_conta_regente_id = $regente ? (int)$regente['id_conta_regente'] : null;
@@ -68,7 +68,6 @@ try {
             :fk_tipo, :fk_forma, :fk_status,
             :descricao, :valor, :data_lancamento, :vencimento, :pagamento
         )
-        RETURNING id_lancamento
     ";
 
     $stmt = $pdo->prepare($sql);
@@ -86,11 +85,9 @@ try {
         ':pagamento'           => $data_pagamento ?: null,
     ]);
 
-    $row = $stmt->fetch();
-
     jsonResposta([
         'mensagem'     => 'Lançamento criado com sucesso.',
-        'id_lancamento' => (int)$row['id_lancamento']
+        'id_lancamento' => (int)$pdo->lastInsertId()
     ], 201);
 
 } catch (Exception $e) {

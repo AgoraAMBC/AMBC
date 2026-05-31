@@ -22,7 +22,7 @@ if (!$usuario) jsonErro('Usuário não encontrado', 404);
 $novoStatus = !(bool)$usuario['ativo'];
 
 $pdo->prepare('UPDATE usuario SET ativo = :ativo, atualizado_em = NOW() WHERE id_usuario = :id')
-    ->execute([':ativo' => $novoStatus ? 'TRUE' : 'FALSE', ':id' => $id]);
+    ->execute([':ativo' => $novoStatus ? 1 : 0, ':id' => $id]);
 
 jsonResposta([
     'mensagem' => 'Usuário ' . ($novoStatus ? 'ativado' : 'desativado') . ' com sucesso',

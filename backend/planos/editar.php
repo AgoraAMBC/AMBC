@@ -32,7 +32,6 @@ try {
         SET nome = :nome, preco = :preco, periodo = :periodo,
             beneficios = :beneficios, ordem = :ordem
         WHERE id_plano = :id
-        RETURNING id_plano
     ");
     $stmt->execute([
         ':nome'       => $nome,
@@ -43,7 +42,7 @@ try {
         ':id'         => $id,
     ]);
 
-    if (!$stmt->fetch()) jsonErro('Plano não encontrado.', 404);
+    if ($stmt->rowCount() === 0) jsonErro('Plano não encontrado.', 404);
 
     jsonResposta(['mensagem' => 'Plano atualizado com sucesso.']);
 

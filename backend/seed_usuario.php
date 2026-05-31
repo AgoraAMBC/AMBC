@@ -5,7 +5,7 @@ require_once __DIR__ . '/config/database.php';
 $pdo = obterConexao();
 
 // busca o id do perfil Administrador
-$perfil = $pdo->query("SELECT id_perfil FROM perfil_usuario WHERE descricao ILIKE 'Administrador' LIMIT 1")->fetch();
+$perfil = $pdo->query("SELECT id_perfil FROM perfil_usuario WHERE descricao LIKE 'Administrador' LIMIT 1")->fetch();
 if (!$perfil) {
     echo "Perfil 'Administrador' não encontrado. Verifique a tabela perfil_usuario.\n";
     exit(1);
@@ -15,9 +15,8 @@ $senhaHash = password_hash('Ambc@2026', PASSWORD_BCRYPT, ['cost' => 10]);
 
 $stmt = $pdo->prepare("
     INSERT INTO usuario (nome, email, senha_hash, fk_perfil, ativo, primeiro_acesso)
-    VALUES (:nome, :email, :senha_hash, :fk_perfil, TRUE, FALSE)
-    ON CONFLICT (email) DO NOTHING
-    RETURNING id_usuario
+    VALUES (:nome, :email, :senha_hash, :fk_perfil, 1, 0)
+    ON DUPLICATE KEY UPDATE email = email
 ");
 $stmt->execute([
     ':nome'      => 'Fabio Administrador',
@@ -25,21 +24,19 @@ $stmt->execute([
     ':senha_hash'=> $senhaHash,
     ':fk_perfil' => $perfil['id_perfil'],
 ]);
-$row = $stmt->fetch();
 
-if (!$row) {
+if ($stmt->rowCount() === 0) {
     echo "Usuário já existia (e-mail duplicado) — nenhuma alteração feita.\n";
     exit(0);
 }
 
-$idUsuario = $row['id_usuario'];
+$idUsuario = (int)$pdo->lastInsertId();
 
 // insere permissões para todos os módulos
 $modulos = $pdo->query('SELECT id_modulo FROM modulo_sistema')->fetchAll();
 $stmtPerm = $pdo->prepare("
-    INSERT INTO permissao_usuario (fk_usuario, fk_modulo, pode_acessar, pode_editar)
-    VALUES (:id, :modulo, TRUE, TRUE)
-    ON CONFLICT DO NOTHING
+    INSERT IGNORE INTO permissao_usuario (fk_usuario, fk_modulo, pode_acessar, pode_editar)
+    VALUES (:id, :modulo, 1, 1)
 ");
 foreach ($modulos as $m) {
     $stmtPerm->execute([':id' => $idUsuario, ':modulo' => $m['id_modulo']]);
