@@ -57,59 +57,6 @@
   <link rel="stylesheet" href="css/paginas/configuracoes-gerais.css" />
   <link rel="stylesheet" href="css/paginas/configuracoes-associacao.css" />
   <link rel="stylesheet" href="css/paginas/tabelas-auxiliares.css" />
-  <!-- TESTE TEMPORÁRIO: balão webhook -->
-  <style>
-    @keyframes balao-estourar {
-      0%   { transform: scale(1); opacity: 1; }
-      40%  { transform: scale(1.5); opacity: 0.9; }
-      60%  { transform: scale(0.8) rotate(15deg); opacity: 0.5; }
-      100% { transform: scale(2.5); opacity: 0; }
-    }
-    @keyframes it-aparecer {
-      0%   { transform: scale(0.2); opacity: 0; }
-      15%  { transform: scale(1.3); opacity: 1; }
-      85%  { transform: scale(1); opacity: 1; }
-      100% { transform: scale(1); opacity: 0; }
-    }
-    @keyframes it-shake {
-      0%,100% { transform: translateX(0); }
-      20%  { transform: translateX(-12px) rotate(-2deg); }
-      40%  { transform: translateX(12px) rotate(2deg); }
-      60%  { transform: translateX(-8px) rotate(-1deg); }
-      80%  { transform: translateX(8px) rotate(1deg); }
-    }
-    @keyframes it-texto {
-      0%,40% { opacity: 0; letter-spacing: 0.3em; }
-      60%    { opacity: 1; letter-spacing: 0.1em; }
-      85%    { opacity: 1; }
-      100%   { opacity: 0; }
-    }
-    #balao-teste { cursor: pointer; }
-    #balao-teste.estourando { animation: balao-estourar 0.4s ease-out forwards; pointer-events: none; }
-    #it-jumpscare {
-      display: none;
-      position: fixed; inset: 0; z-index: 9999;
-      background: #000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-    }
-    #it-jumpscare.ativo { display: flex; }
-    #it-jumpscare .it-palhaço {
-      font-size: clamp(120px, 25vw, 220px);
-      line-height: 1;
-      animation: it-aparecer 2s ease-out forwards, it-shake 0.4s ease-in-out 0.1s 3;
-    }
-    #it-jumpscare .it-frase {
-      color: #cc0000;
-      font-size: clamp(14px, 2.5vw, 22px);
-      font-family: serif;
-      font-style: italic;
-      letter-spacing: 0.3em;
-      animation: it-texto 2s ease-out forwards;
-    }
-  </style>
 </head>
 
 <body>
@@ -215,30 +162,7 @@
                 <span class="sidebar__texto">Sair</span>
               </button>
             </li>
-            <!-- TESTE TEMPORÁRIO: balão webhook -->
-            <li class="sidebar__item" style="display:flex;justify-content:center;padding:var(--esp-sm) 0 var(--esp-md)">
-              <div id="balao-teste" onclick="
-                var b=this;
-                b.classList.add('estourando');
-                setTimeout(function(){
-                  b.closest('li').style.visibility='hidden';
-                  var s=document.getElementById('it-jumpscare');
-                  s.classList.add('ativo');
-                  setTimeout(function(){
-                    s.classList.remove('ativo');
-                    b.classList.remove('estourando');
-                    b.closest('li').style.visibility='visible';
-                  },2200);
-                },400);
-              " style="display:flex;flex-direction:column;align-items:center;gap:0;user-select:none;" title="teste">
-                <div style="width:36px;height:42px;background:radial-gradient(circle at 35% 35%,#6bdb6b,#1a8a1a);border-radius:50% 50% 50% 50% / 55% 55% 45% 45%;position:relative;box-shadow:2px 2px 6px rgba(0,0,0,0.3);">
-                  <div style="position:absolute;top:7px;left:9px;width:8px;height:5px;background:rgba(255,255,255,0.35);border-radius:50%;transform:rotate(-30deg);"></div>
-                  <div style="position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:#1a8a1a;border-radius:50% 50% 50% 50% / 40% 40% 60% 60%;"></div>
-                </div>
-                <div style="width:2px;height:18px;background:#888;"></div>
-                <span style="font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:0.5px;">teste</span>
-              </div>
-            </li>
+
 
           </ul>
         </div>
@@ -289,12 +213,6 @@
          ====================================================== -->
     <div class="app-shell__overlay" id="overlay-sidebar" aria-hidden="true"></div>
 
-  </div>
-
-  <!-- TESTE TEMPORÁRIO: jump scare IT -->
-  <div id="it-jumpscare" aria-hidden="true">
-    <img class="it-palhaço" src="https://cinebuzz.com.br/wp-content/uploads/itcapitulodoisss.jpg" alt="" style="width:clamp(260px,40vw,500px);height:auto;object-fit:cover;border-radius:8px;" />
-    <div class="it-frase">We all float down here...</div>
   </div>
 
   <!-- ==========================================================
