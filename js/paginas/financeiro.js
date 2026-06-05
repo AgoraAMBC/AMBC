@@ -340,6 +340,34 @@ function iniciarNovoLancamento() {
     cleanup.push(() => contaSelect.removeEventListener('change', handler));
   }
 
+  const tipoSelectEl = document.getElementById('lancamento-tipo');
+  if (tipoSelectEl) {
+    const handler = async () => {
+      const tipoId = tipoSelectEl.value;
+      if (!tipoId) {
+        preencherSelectsNovoLancamento();
+        return;
+      }
+      try {
+        const response = await api.get(`/relacionamentos/obter-por-tipo.php?fk_tipo_lancamento=${tipoId}`);
+        const regra = response.data;
+        if (regra?.fk_conta_regente) {
+          if (contaSelect) contaSelect.value = regra.fk_conta_regente;
+          atualizarSubcontasNovoLancamento();
+          const subSelect = document.getElementById('lancamento-subconta');
+          if (regra.fk_conta_subordinada && subSelect) {
+            subSelect.value = regra.fk_conta_subordinada;
+          }
+        }
+      } catch (erro) {
+        console.error('[Financeiro] Erro ao carregar regra do tipo:', erro);
+        preencherSelectsNovoLancamento();
+      }
+    };
+    tipoSelectEl.addEventListener('change', handler);
+    cleanup.push(() => tipoSelectEl.removeEventListener('change', handler));
+  }
+
 const submit = async (evento) => {
   evento.preventDefault();
 
