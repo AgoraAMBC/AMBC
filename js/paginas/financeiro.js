@@ -495,6 +495,7 @@ function iniciarNovoLancamento() {
       const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
 
       document.getElementById('liquidar-lancamento-id').value = id;
+      document.getElementById('liquidar-valor-total').value = valor;
       document.getElementById('resumo-nome').textContent = descricao;
       document.getElementById('resumo-tipo').textContent = tipoLancamento;
       document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
@@ -502,7 +503,7 @@ function iniciarNovoLancamento() {
       document.getElementById('resumo-conta').textContent = conta || '-';
       document.getElementById('resumo-subconta').textContent = subconta || '-';
       document.getElementById('resumo-status').textContent = 'Aberto';
-      document.getElementById('lancamento-valor-recebido').value = valor;
+      document.getElementById('lancamento-valor-pago').value = valor;
       if (!document.getElementById('lancamento-pagamento').value) {
         document.getElementById('lancamento-pagamento').value = hojeISO;
       }
@@ -517,9 +518,12 @@ function iniciarNovoLancamento() {
   const handlerLiquidar = async () => {
     const idExistente = document.getElementById('liquidar-lancamento-id')?.value;
     if (idExistente) {
-      const valorRecebido = parseFloat(document.getElementById('lancamento-valor-recebido')?.value || 0);
+      const valorRecebido = parseFloat(document.getElementById('lancamento-valor-pago')?.value || 0);
       const dataPagamento = document.getElementById('lancamento-pagamento')?.value;
-      if (!valorRecebido || valorRecebido <= 0) { Toast.alerta('Informe o valor recebido.'); return; }
+      if (!valorRecebido || valorRecebido <= 0) { Toast.alerta('Informe o valor pago.'); return; }
+      const valorTotal = parseFloat(document.getElementById('liquidar-valor-total')?.value || 0);
+      const saldo = Math.round((valorTotal - valorRecebido) * 100) / 100;
+      if (saldo > 0) { Toast.alerta(`Saldo pendente de ${formatarMoeda(saldo)}. O lançamento só pode ser liquidado com saldo zerado.`); return; }
       if (!dataPagamento) { Toast.alerta('Informe a data de pagamento.'); return; }
       try {
         const resp = await api.post('/financeiro/lancamentos/liquidar.php', {
@@ -537,7 +541,7 @@ function iniciarNovoLancamento() {
         document.getElementById('resumo-conta').textContent = '-';
         document.getElementById('resumo-subconta').textContent = '-';
         document.getElementById('resumo-status').textContent = 'Aberto';
-        document.getElementById('lancamento-valor-recebido').value = '';
+        document.getElementById('lancamento-valor-pago').value = '';
         document.getElementById('lancamento-pagamento').value = '';
         carregarListaLancamentos();
       } catch (err) {
@@ -571,7 +575,7 @@ async function carregarListaLancamentos() {
     const dados = resposta.dados || resposta.lancamentos || [];
 
     if (!dados.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="financeiro__estado-tabela">Nenhum lançamento encontrado.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="financeiro__estado-tabela">Nenhum lançamento encontrado.</td></tr>';
       return;
     }
 
@@ -594,20 +598,25 @@ async function carregarListaLancamentos() {
       const subconta = item.conta_subordinada || item.subconta || '';
       const tipoLancamento = item.tipo_lancamento || '';
 
+      const valorPago = Number(item.valor_pago || 0);
+      const saldo = Math.round((valor - valorPago) * 100) / 100;
+
       return `<tr ${isAberto ? `style="cursor:pointer" data-liquidar-id="${item.id_lancamento || item.id}"
         data-valor="${valor}" data-vencimento="${vencimento}"
         data-descricao="${escaparHtml(item.descricao || '')}"
         data-tipo-lancamento="${escaparHtml(tipoLancamento)}"
         data-conta="${escaparHtml(conta)}" data-subconta="${escaparHtml(subconta)}"` : ''}>
         <td>${escaparHtml(item.descricao || '')}</td>
-        <td>${formatarMoeda(valor)}</td>
+        <td class="tabela__num">${formatarMoeda(valor)}</td>
+        <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
+        <td class="tabela__num ${saldo > 0 ? 'financeiro__valor-despesa' : 'financeiro__valor-receita'}">${formatarMoeda(saldo)}</td>
         <td>${vencFormatado}</td>
         <td><span class="badge badge-pilula ${badgeCls}">${statusLabel}</span></td>
         <td>${tipo ? (tipo === 'receita' ? 'Receita' : 'Despesa') : '-'}</td>
       </tr>`;
     }).join('');
   } catch (erro) {
-    tbody.innerHTML = `<tr><td colspan="5" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
   }
 }
 
