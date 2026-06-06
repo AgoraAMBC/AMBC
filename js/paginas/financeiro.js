@@ -190,7 +190,6 @@ async function carregarTiposLancamento() {
 async function preencherSelectsNovoLancamento() {
   try {
     const dominios = await carregarDominiosFinanceiros();
-    preencherSelect('lancamento-status', dominios.status || [], 'id_status_conta', 'descricao');
     preencherSelect('lancamento-forma-pagamento', dominios.formas_pagamento || [], 'id_forma_pagamento', 'descricao');
     preencherSelect('lancamento-conta', dominios.contas_regentes || [], 'id_conta_regente', 'descricao');
     atualizarSubcontasNovoLancamento();
@@ -226,22 +225,19 @@ function iniciarNovoLancamento() {
 
   carregarTiposLancamento();
   preencherSelectsNovoLancamento();
-
-  const campos = ['lancamento-tipo', 'lancamento-status', 'lancamento-valor', 'lancamento-vencimento', 'lancamento-primeira-parcela', 'lancamento-pagamento-modo']
-    .map((id) => document.getElementById(id))
-    .filter(Boolean);
-
-  const pagamentoModoSelect = document.getElementById('lancamento-pagamento-modo');
-  const totalParcelasInput = document.getElementById('lancamento-total-parcelas');
-  const valorParcelaInput = document.getElementById('lancamento-valor-parcela');
-  const primeiraParcelaInput = document.getElementById('lancamento-primeira-parcela');
-  const parcelamentoPanel = document.getElementById('parcelamento-panel');
+  carregarListaLancamentos();
 
   const formatarDataISO = (data) => {
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
     const dia = String(data.getDate()).padStart(2, '0');
     return `${ano}-${mes}-${dia}`;
+  };
+
+  const formatarDataLocal = (iso) => {
+    if (!iso) return '-';
+    const [ano, mes, dia] = iso.split('-');
+    return `${dia}/${mes}/${ano}`;
   };
 
   const criarDataLocal = (iso) => {
@@ -273,6 +269,12 @@ function iniciarNovoLancamento() {
     return parcelas;
   };
 
+  const pagamentoModoSelect = document.getElementById('lancamento-pagamento-modo');
+  const totalParcelasInput = document.getElementById('lancamento-total-parcelas');
+  const valorParcelaInput = document.getElementById('lancamento-valor-parcela');
+  const primeiraParcelaInput = document.getElementById('lancamento-primeira-parcela');
+  const parcelamentoPanel = document.getElementById('parcelamento-panel');
+
   const atualizarParcelamento = () => {
     const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
     const modo = pagamentoModoSelect?.value || 'avista';
@@ -291,40 +293,48 @@ function iniciarNovoLancamento() {
       if (totalParcelasInput) totalParcelasInput.value = '1';
       if (valorParcelaInput) valorParcelaInput.value = '';
     }
-
-    document.getElementById('resumo-parcelas').textContent = `${parcelado ? totalParcelas : 1}x`;
   };
 
-  const atualizar = () => {
+  const atualizarPreview = () => {
     const tipoSelect = document.getElementById('lancamento-tipo');
-    const tipoTexto = tipoSelect?.selectedOptions[0]?.textContent || 'Tipo';
-    const statusSelect = document.getElementById('lancamento-status');
-    const status = statusSelect?.selectedOptions[0]?.textContent || 'Pendente';
+    const tipoTexto = tipoSelect?.selectedOptions[0]?.textContent || '-';
     const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
+    const vencimento = document.getElementById('lancamento-vencimento')?.value || '';
+    const contaSelect = document.getElementById('lancamento-conta');
+    const contaTexto = contaSelect?.selectedOptions[0]?.textContent || '-';
+    const subSelect = document.getElementById('lancamento-subconta');
+    const subTexto = subSelect?.selectedOptions[0]?.textContent || '-';
 
     document.getElementById('resumo-tipo').textContent = tipoTexto;
-    document.getElementById('resumo-status').textContent = status;
     document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
+    document.getElementById('resumo-vencimento').textContent = formatarDataLocal(vencimento);
+    document.getElementById('resumo-conta').textContent = contaTexto;
+    document.getElementById('resumo-subconta').textContent = subTexto;
+    document.getElementById('resumo-status').textContent = 'Liquidado';
     atualizarParcelamento();
   };
 
-  campos.forEach((campo) => {
-    campo.addEventListener('input', atualizar);
-    campo.addEventListener('change', atualizar);
+  const camposPreview = ['lancamento-tipo', 'lancamento-valor', 'lancamento-vencimento', 'lancamento-conta', 'lancamento-subconta', 'lancamento-pagamento-modo', 'lancamento-primeira-parcela']
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  camposPreview.forEach((campo) => {
+    campo.addEventListener('input', atualizarPreview);
+    campo.addEventListener('change', atualizarPreview);
     cleanup.push(() => {
-      campo.removeEventListener('input', atualizar);
-      campo.removeEventListener('change', atualizar);
+      campo.removeEventListener('input', atualizarPreview);
+      campo.removeEventListener('change', atualizarPreview);
     });
   });
 
   if (pagamentoModoSelect) {
-    const handler = () => atualizar();
+    const handler = () => atualizarPreview();
     pagamentoModoSelect.addEventListener('change', handler);
     cleanup.push(() => pagamentoModoSelect.removeEventListener('change', handler));
   }
 
   if (totalParcelasInput) {
-    const handler = () => atualizar();
+    const handler = () => atualizarPreview();
     totalParcelasInput.addEventListener('input', handler);
     totalParcelasInput.addEventListener('change', handler);
     cleanup.push(() => {
@@ -335,15 +345,26 @@ function iniciarNovoLancamento() {
 
   const contaSelect = document.getElementById('lancamento-conta');
   if (contaSelect) {
-    const handler = () => atualizarSubcontasNovoLancamento();
+    const handler = () => {
+      atualizarSubcontasNovoLancamento();
+      atualizarPreview();
+    };
     contaSelect.addEventListener('change', handler);
     cleanup.push(() => contaSelect.removeEventListener('change', handler));
+  }
+
+  const subSelect = document.getElementById('lancamento-subconta');
+  if (subSelect) {
+    const handler = () => atualizarPreview();
+    subSelect.addEventListener('change', handler);
+    cleanup.push(() => subSelect.removeEventListener('change', handler));
   }
 
   const tipoSelectEl = document.getElementById('lancamento-tipo');
   if (tipoSelectEl) {
     const handler = async () => {
       const tipoId = tipoSelectEl.value;
+      atualizarPreview();
       if (!tipoId) {
         preencherSelectsNovoLancamento();
         return;
@@ -354,10 +375,10 @@ function iniciarNovoLancamento() {
         if (regra?.fk_conta_regente) {
           if (contaSelect) contaSelect.value = regra.fk_conta_regente;
           atualizarSubcontasNovoLancamento();
-          const subSelect = document.getElementById('lancamento-subconta');
           if (regra.fk_conta_subordinada && subSelect) {
             subSelect.value = regra.fk_conta_subordinada;
           }
+          atualizarPreview();
         }
       } catch (erro) {
         console.error('[Financeiro] Erro ao carregar regra do tipo:', erro);
@@ -368,95 +389,141 @@ function iniciarNovoLancamento() {
     cleanup.push(() => tipoSelectEl.removeEventListener('change', handler));
   }
 
-const submit = async (evento) => {
-  evento.preventDefault();
+  const montarPayload = (modo) => {
+    const statusConta = modo === 'liquidar' ? 2 : 1;
+    const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
+    const pagamentoModo = document.getElementById('lancamento-pagamento-modo')?.value || 'avista';
+    const valorTotal = Number(document.getElementById('lancamento-valor')?.value || 0);
+    const dataVencimento = document.getElementById('lancamento-vencimento')?.value;
+    const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value || dataVencimento;
+    const dataPagamento = modo === 'liquidar'
+      ? document.getElementById('lancamento-pagamento')?.value || formatarDataISO(new Date())
+      : null;
 
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
+    const payload = {
+      fk_tipo_lancamento: parseInt(document.getElementById('lancamento-tipo')?.value) || null,
+      fk_status_conta: statusConta,
+      fk_forma_pagamento: parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
+      valor: valorTotal,
+      descricao: document.getElementById('lancamento-descricao')?.value,
+      pessoa: document.getElementById('lancamento-pessoa')?.value,
+      observacao: document.getElementById('lancamento-observacao')?.value,
+      fk_conta_regente: document.getElementById('lancamento-conta')?.value || null,
+      fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
+      dataLancamento: formatarDataISO(new Date()),
+      data_pagamento: dataPagamento,
+      valor_pago: dataPagamento ? valorTotal : null,
+      data_vencimento: pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
+      modo_pagamento: pagamentoModo,
+    };
 
-  const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
-  const pagamentoModo = document.getElementById('lancamento-pagamento-modo')?.value || 'avista';
-  const valorTotal = Number(document.getElementById('lancamento-valor')?.value || 0);
-  const dataVencimento = document.getElementById('lancamento-vencimento')?.value;
-  const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value || dataVencimento;
-  const statusConta = parseInt(document.getElementById('lancamento-status')?.value);
-  const dataPagamento = statusConta === 2
-    ? document.getElementById('lancamento-pagamento')?.value || formatarDataISO(new Date())
-    : null;
+    if (pagamentoModo === 'parcelado' && totalParcelas > 1) {
+      payload.total_parcelas = totalParcelas;
+      payload.parcelas = calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
+    }
 
-  const payload = {
-    fk_tipo_lancamento:
-      parseInt(document.getElementById('lancamento-tipo')?.value) || null,
-
-    fk_status_conta:
-      statusConta,
-
-    fk_forma_pagamento:
-      parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
-
-    valor: valorTotal,
-
-    descricao:
-      document.getElementById('lancamento-descricao')?.value,
-
-    pessoa:
-      document.getElementById('lancamento-pessoa')?.value,
-
-    observacao:
-      document.getElementById('lancamento-observacao')?.value,
-
-    fk_conta_regente:
-      document.getElementById('lancamento-conta')?.value || null,
-
-    fk_conta_subordinada:
-      document.getElementById('lancamento-subconta')?.value || null,
-
-    dataLancamento:
-      formatarDataISO(new Date()),
-
-    data_pagamento:
-      dataPagamento,
-
-    valor_pago:
-      dataPagamento ? valorTotal : null,
-
-    data_vencimento:
-      pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
-    modo_pagamento: pagamentoModo,
+    return payload;
   };
 
-  if (pagamentoModo === 'parcelado' && totalParcelas > 1) {
-    payload.total_parcelas = totalParcelas;
-    payload.parcelas = calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
-
-    if (payload.parcelas.length !== totalParcelas) {
-      Toast.erro('Preencha corretamente a data da primeira parcela e o número de parcelas.');
+  const salvarLancamento = async (modo) => {
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
-  }
+
+    const payload = montarPayload(modo);
+    const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
+    const pagamentoModo = document.getElementById('lancamento-pagamento-modo')?.value || 'avista';
+
+    if (pagamentoModo === 'parcelado' && totalParcelas > 1) {
+      if (!payload.parcelas || payload.parcelas.length !== totalParcelas) {
+        Toast.erro('Preencha corretamente a data da primeira parcela e o número de parcelas.');
+        return;
+      }
+    }
+
+    try {
+      await api.post('/financeiro/lancamentos/cadastrar.php', payload);
+
+      const mensagem = modo === 'liquidar'
+        ? 'Lançamento cadastrado e liquidado com sucesso!'
+        : 'Lançamento salvo em aberto com sucesso!';
+      Toast.sucesso(mensagem);
+
+      form.reset();
+      atualizarPreview();
+      carregarListaLancamentos();
+    } catch (err) {
+      Toast.erro(err.message);
+    }
+  };
+
+  const btnAberto = document.getElementById('btn-salvar-aberto');
+  const handlerAberto = () => salvarLancamento('aberto');
+  btnAberto?.addEventListener('click', handlerAberto);
+  cleanup.push(() => btnAberto?.removeEventListener('click', handlerAberto));
+
+  const btnSalvarLiquidar = document.getElementById('btn-salvar-liquidar');
+  const handlerSalvarLiquidar = () => salvarLancamento('liquidar');
+  btnSalvarLiquidar?.addEventListener('click', handlerSalvarLiquidar);
+  cleanup.push(() => btnSalvarLiquidar?.removeEventListener('click', handlerSalvarLiquidar));
+
+  const btnLiquidar = document.getElementById('btn-liquidar');
+  const handlerLiquidar = () => salvarLancamento('liquidar');
+  btnLiquidar?.addEventListener('click', handlerLiquidar);
+  cleanup.push(() => btnLiquidar?.removeEventListener('click', handlerLiquidar));
+
+  const btnLimpar = document.getElementById('btn-limpar');
+  const handlerLimpar = () => {
+    form.reset();
+    document.getElementById('lancamento-pagamento').value = '';
+    atualizarPreview();
+  };
+  btnLimpar?.addEventListener('click', handlerLimpar);
+  cleanup.push(() => btnLimpar?.removeEventListener('click', handlerLimpar));
+
+  atualizarPreview();
+}
+
+async function carregarListaLancamentos() {
+  const tbody = document.getElementById('lancamentos-listagem-tbody');
+  if (!tbody) return;
 
   try {
+    const resposta = await api.get('/financeiro/lancamentos/listar.php?limite=50');
+    const dados = resposta.dados || resposta.lancamentos || [];
 
-    await api.post('/financeiro/lancamentos/cadastrar.php', payload);
+    if (!dados.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="financeiro__estado-tabela">Nenhum lançamento encontrado.</td></tr>';
+      return;
+    }
 
-    Toast.sucesso('Lançamento cadastrado com sucesso!');
+    tbody.innerHTML = dados.map((item) => {
+      const valor = Number(item.valor || 0);
+      const vencimento = item.data_vencimento || item.vencimento || '';
+      const [ano, mes, dia] = vencimento.split('-');
+      const vencFormatado = vencimento ? `${dia}/${mes}/${ano}` : '-';
+      const status = item.status_conta || item.status || '';
+      const statusLower = String(status).toLowerCase();
+      const badgeCls = statusLower.includes('liquidado') || statusLower.includes('pago') ? 'badge-verde'
+        : statusLower.includes('cancelado') ? 'badge-vermelho'
+        : 'badge-amarelo';
+      const statusLabel = (statusLower.includes('liquidado') || statusLower.includes('pago')) ? 'Liquidado'
+        : statusLower.includes('cancelado') ? 'Cancelado'
+        : 'Aberto';
+      const tipo = item.tipo || '';
 
-    form.reset();
-
-    atualizar();
-
-  } catch (err) {
-
-    Toast.erro(err.message);
-
+      return `<tr>
+        <td>${escaparHtml(item.descricao || '')}</td>
+        <td>${formatarMoeda(valor)}</td>
+        <td>${vencFormatado}</td>
+        <td><span class="badge badge-pilula ${badgeCls}">${statusLabel}</span></td>
+        <td>${tipo ? (tipo === 'receita' ? 'Receita' : 'Despesa') : '-'}</td>
+      </tr>`;
+    }).join('');
+  } catch (erro) {
+    tbody.innerHTML = `<tr><td colspan="5" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
   }
-};
-
-  form.addEventListener('submit', submit);
-  cleanup.push(() => form.removeEventListener('submit', submit));
-  atualizar();
 }
 
 async function iniciarRelatorios() {

@@ -210,14 +210,54 @@
   color: var(--cor-erro);
 }
 
-.financeiro__formulario {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: var(--esp-lg);
-  align-items: start;
+/* ── Grid 50/50 para Novo Lançamento ─── */
+[data-financeiro-view="novo-lancamento"] .gu-card__topo {
+  margin-bottom: var(--esp-lg);
 }
 
-.financeiro__formulario .form-grid,
+.financeiro__grid-50 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-lg);
+  padding: 0 var(--esp-lg);
+}
+
+.financeiro__grid-50 .financeiro__painel {
+  border: 1px solid var(--cor-cinza-300);
+  border-radius: var(--raio-md);
+}
+
+.financeiro__painel--liquidacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-md);
+}
+
+.financeiro__painel--liquidacao .btn {
+  margin-top: auto;
+}
+
+.financeiro__acoes-painel {
+  display: flex;
+  flex-direction: row;
+  gap: var(--esp-sm);
+  margin-top: var(--esp-lg);
+  padding-top: var(--esp-md);
+  border-top: 1px solid var(--cor-cinza-200);
+}
+
+.financeiro__acoes-painel .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+.financeiro__painel--lista-lancamentos {
+  margin-top: var(--esp-lg);
+  border: 1px solid var(--cor-cinza-300);
+  border-radius: var(--raio-md);
+}
+
+.financeiro__grid-50 .form-grid,
 .financeiro__grid-gestao .financeiro__painel form,
 .financeiro__grid-gestao .financeiro__painel {
   min-width: 0;
@@ -351,7 +391,7 @@
     grid-template-columns: repeat(2, minmax(180px, 1fr));
   }
 
-  .financeiro__formulario,
+  .financeiro__grid-50,
   .financeiro__grid-2,
   .financeiro__grid-gestao {
     grid-template-columns: 1fr;

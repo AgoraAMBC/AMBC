@@ -14,9 +14,10 @@
     </a>
   </header>
 
-  <form class="financeiro__formulario" id="form-lancamento">
+  <div class="financeiro__grid-50" id="form-lancamento-wrapper">
     <section class="financeiro__painel financeiro__painel--form">
-      <h2 class="financeiro__secao-titulo">Dados do lan&ccedil;amento</h2>
+      <h2 class="financeiro__secao-titulo">Novo Lan&ccedil;amento</h2>
+      <form id="form-lancamento">
       <div class="form-grid">
         <div class="campo form-col-6">
           <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Nome do lançamento</label>
@@ -27,18 +28,18 @@
           <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Associado, parceiro ou fornecedor" />
         </div>
 
-        <div class="campo form-col-3">
+        <div class="campo form-col-4">
           <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
           <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
         </div>
-        <div class="campo form-col-3">
+        <div class="campo form-col-4">
           <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
           <select class="form-input" id="lancamento-pagamento-modo" required>
             <option value="avista">À vista</option>
             <option value="parcelado">Parcelado</option>
           </select>
         </div>
-        <div class="campo form-col-3">
+        <div class="campo form-col-4">
           <label class="form-label form-label-obrigatorio" for="lancamento-forma-pagamento">Forma de pagamento</label>
           <select class="form-input" id="lancamento-forma-pagamento" required>
             <option value="1">PIX</option>
@@ -47,14 +48,6 @@
             <option value="4">Cartão de débito</option>
             <option value="5">Dinheiro</option>
             <option value="6">Transferência bancária</option>
-          </select>
-        </div>
-        <div class="campo form-col-3">
-          <label class="form-label form-label-obrigatorio" for="lancamento-status">Status</label>
-          <select class="form-input" id="lancamento-status" required>
-            <option value="1">Aberto</option>
-            <option value="2">Liquidado</option>
-            <option value="3">Cancelado</option>
           </select>
         </div>
 
@@ -83,15 +76,11 @@
           </select>
         </div>
 
-        <div class="campo form-col-4">
-          <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
-          <input class="form-input" id="lancamento-pagamento" type="date" />
-        </div>
-        <div class="campo form-col-4">
+        <div class="campo form-col-6">
           <label class="form-label" for="lancamento-vencimento">Data de vencimento</label>
           <input class="form-input" id="lancamento-vencimento" type="date" required />
         </div>
-        <div class="campo form-col-4">
+        <div class="campo form-col-6">
           <label class="form-label" for="lancamento-competencia">Compet&ecirc;ncia</label>
           <input class="form-input" id="lancamento-competencia" type="month" />
         </div>
@@ -116,28 +105,68 @@
 
         <div class="campo form-col-12">
           <label class="form-label" for="lancamento-observacao">Descrição</label>
-          <textarea class="form-input" id="lancamento-observacao" rows="4" placeholder="Detalhes internos do lançamento"></textarea>
+          <textarea class="form-input" id="lancamento-observacao" rows="2" placeholder="Detalhes internos do lançamento"></textarea>
         </div>
       </div>
+
+      <div class="financeiro__acoes-painel">
+        <button type="button" class="btn btn-secundario" id="btn-salvar-aberto">
+          <span class="material-icons">lock_open</span>
+          Salvar em aberto
+        </button>
+        <button type="button" class="btn btn-primario" id="btn-salvar-liquidar">
+          <span class="material-icons">check_circle</span>
+          Salvar Liquidar
+        </button>
+        <button type="button" class="btn btn-terciario" id="btn-limpar">
+          <span class="material-icons">restart_alt</span>
+          Limpar campos
+        </button>
+      </div>
+      </form>
     </section>
 
-    <aside class="financeiro__resumo-form">
-      <h2 class="financeiro__secao-titulo">Resumo</h2>
+    <aside class="financeiro__painel financeiro__painel--liquidacao">
+      <h2 class="financeiro__secao-titulo">Liquida&ccedil;&atilde;o</h2>
       <dl class="financeiro__dl">
-        <div><dt>Tipo</dt><dd id="resumo-tipo">Receita</dd></div>
-        <div><dt>Status</dt><dd id="resumo-status">Pendente</dd></div>
-        <div><dt>Parcelas</dt><dd id="resumo-parcelas">1x</dd></div>
+        <div><dt>Tipo</dt><dd id="resumo-tipo">-</dd></div>
         <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+        <div><dt>Vencimento</dt><dd id="resumo-vencimento">-</dd></div>
+        <div><dt>Conta</dt><dd id="resumo-conta">-</dd></div>
+        <div><dt>Subconta</dt><dd id="resumo-subconta">-</dd></div>
+        <div><dt>Status</dt><dd id="resumo-status">Aberto</dd></div>
       </dl>
-      <button type="submit" class="btn btn-primario btn-bloco">
-        <span class="material-icons">save</span>
-        Salvar lan&ccedil;amento
-      </button>
-      <button type="reset" class="btn btn-secundario btn-bloco">
-        <span class="material-icons">restart_alt</span>
-        Limpar campos
+
+      <div class="campo">
+        <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
+        <input class="form-input" id="lancamento-pagamento" type="date" />
+      </div>
+
+      <button type="button" class="btn btn-primario" id="btn-liquidar">
+        <span class="material-icons">check_circle</span>
+        Liquidar
       </button>
     </aside>
-  </form>
+  </div>
+
+  <section class="financeiro__painel financeiro__painel--lista-lancamentos">
+    <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos</h2>
+    <div class="tabela-responsiva">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Vencimento</th>
+            <th>Status</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody id="lancamentos-listagem-tbody">
+          <tr><td colspan="5" class="financeiro__estado-tabela">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
   </div><!-- /.gu-card -->
 </section>
