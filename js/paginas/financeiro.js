@@ -297,6 +297,11 @@ function iniciarNovoLancamento() {
   };
 
   const atualizarPreview = () => {
+    const setText = (id, texto) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = texto;
+    };
+
     const tipoSelect = document.getElementById('lancamento-tipo');
     const tipoTexto = tipoSelect?.selectedOptions[0]?.textContent || '-';
     const valor = Number(document.getElementById('lancamento-valor')?.value || 0);
@@ -306,12 +311,12 @@ function iniciarNovoLancamento() {
     const subSelect = document.getElementById('lancamento-subconta');
     const subTexto = subSelect?.selectedOptions[0]?.textContent || '-';
 
-    document.getElementById('resumo-tipo').textContent = tipoTexto;
-    document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
-    document.getElementById('resumo-vencimento').textContent = formatarDataLocal(vencimento);
-    document.getElementById('resumo-conta').textContent = contaTexto;
-    document.getElementById('resumo-subconta').textContent = subTexto;
-    document.getElementById('resumo-status').textContent = 'Liquidado';
+    setText('resumo-tipo', tipoTexto);
+    setText('resumo-valor', formatarMoeda(valor));
+    setText('resumo-vencimento', formatarDataLocal(vencimento));
+    setText('resumo-conta', contaTexto);
+    setText('resumo-subconta', subTexto);
+    setText('resumo-status', 'Liquidado');
     atualizarParcelamento();
   };
 
