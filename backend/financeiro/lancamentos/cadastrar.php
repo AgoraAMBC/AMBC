@@ -24,11 +24,14 @@ function parseDecimal($valor) {
 
 $descricao            = trim($dados['descricao'] ?? '');
 $valor                = parseDecimal($dados['valor'] ?? null);
+$id_lancamento        = isset($dados['id']) ? (int)$dados['id'] : null;
 $fk_conta_regente     = $dados['fk_conta_regente'] ?? null;
 $fk_conta_subordinada = $dados['fk_conta_subordinada'] ?? null;
 $fk_tipo_lancamento   = $dados['fk_tipo_lancamento'] ?? null;
 $fk_forma_pagamento   = $dados['fk_forma_pagamento'] ?? null;
 $fk_status_conta      = $dados['fk_status_conta'] ?? null;
+$fk_associado         = $dados['fk_associado'] ?? null;
+$fk_parceiro          = $dados['fk_parceiro'] ?? null;
 $data_lancamento      = $dados['dataLancamento'] ?? ($dados['data_lancamento'] ?? date('Y-m-d'));
 $data_vencimento      = $dados['data_vencimento'] ?? null;
 $data_pagamento       = $dados['data_pagamento'] ?? null;
@@ -108,92 +111,123 @@ try {
         }
     }
 
-    $sql = "
-        INSERT INTO lancamento (
-            fk_conta_regente,
-            fk_conta_subordinada,
-            fk_tipo_lancamento,
-            fk_forma_pagamento,
-            fk_status_conta,
-            descricao,
-            valor,
-            valor_pago,
-            data_lancamento,
-            data_vencimento,
-            data_pagamento,
-            observacao
-        ) VALUES (
-            :fk_conta_regente,
-            :fk_conta_subordinada,
-            :fk_tipo_lancamento,
-            :fk_forma_pagamento,
-            :fk_status_conta,
-            :descricao,
-            :valor,
-            :valor_pago,
-            :data_lancamento,
-            :data_vencimento,
-            :data_pagamento,
-            :observacao
-        )
-    ";
+    $params = [
+        ':fk_conta_regente'     => $fk_conta_regente ?: null,
+        ':fk_conta_subordinada' => $fk_conta_subordinada ?: null,
+        ':fk_tipo_lancamento'   => $fk_tipo_lancamento,
+        ':fk_forma_pagamento'   => $fk_forma_pagamento ?: null,
+        ':fk_status_conta'      => $fk_status_conta,
+        ':fk_associado'         => $fk_associado ?: null,
+        ':fk_parceiro'          => $fk_parceiro ?: null,
+        ':descricao'            => $descricao,
+        ':valor'                => $valor,
+        ':valor_pago'           => $valor_pago ?: null,
+        ':data_lancamento'      => $data_lancamento ?: null,
+        ':data_vencimento'      => $data_vencimento ?: null,
+        ':data_pagamento'       => $data_pagamento ?: null,
+        ':observacao'           => $observacao ?: null
+    ];
 
-    $stmt = $pdo->prepare($sql);
+    if ($id_lancamento) {
+        $sql = "
+            UPDATE lancamento SET
+                fk_conta_regente     = :fk_conta_regente,
+                fk_conta_subordinada = :fk_conta_subordinada,
+                fk_tipo_lancamento   = :fk_tipo_lancamento,
+                fk_forma_pagamento   = :fk_forma_pagamento,
+                fk_status_conta      = :fk_status_conta,
+                fk_associado         = :fk_associado,
+                fk_parceiro          = :fk_parceiro,
+                descricao            = :descricao,
+                valor                = :valor,
+                valor_pago           = :valor_pago,
+                data_lancamento      = :data_lancamento,
+                data_vencimento      = :data_vencimento,
+                data_pagamento       = :data_pagamento,
+                observacao           = :observacao
+            WHERE id_lancamento = :id_lancamento
+        ";
+        $params[':id_lancamento'] = $id_lancamento;
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $mensagem = 'Lançamento atualizado com sucesso';
+    } else {
+        if ($isParcelado && (!is_array($parcelas) || count($parcelas) !== $total_parcelas)) {
+            throw new Exception('Número de parcelas inválido ou dados de parcelamento incompletos.');
+        }
 
-    if ($isParcelado) {
-        $somaParcelas = 0;
-        foreach ($parcelas as $parcela) {
-            $parcelaValor = parseDecimal($parcela['valor'] ?? null);
-            $parcelaVencimento = $parcela['data_vencimento'] ?? null;
+        $sql = "
+            INSERT INTO lancamento (
+                fk_conta_regente,
+                fk_conta_subordinada,
+                fk_tipo_lancamento,
+                fk_forma_pagamento,
+                fk_status_conta,
+                fk_associado,
+                fk_parceiro,
+                descricao,
+                valor,
+                valor_pago,
+                data_lancamento,
+                data_vencimento,
+                data_pagamento,
+                observacao
+            ) VALUES (
+                :fk_conta_regente,
+                :fk_conta_subordinada,
+                :fk_tipo_lancamento,
+                :fk_forma_pagamento,
+                :fk_status_conta,
+                :fk_associado,
+                :fk_parceiro,
+                :descricao,
+                :valor,
+                :valor_pago,
+                :data_lancamento,
+                :data_vencimento,
+                :data_pagamento,
+                :observacao
+            )
+        ";
 
-            if (!$parcelaValor || !$parcelaVencimento) {
-                throw new Exception('Cada parcela deve ter valor e data de vencimento.');
+        if ($isParcelado) {
+            $somaParcelas = 0;
+            foreach ($parcelas as $parcela) {
+                $parcelaValor = parseDecimal($parcela['valor'] ?? null);
+                $parcelaVencimento = $parcela['data_vencimento'] ?? null;
+
+                if (!$parcelaValor || !$parcelaVencimento) {
+                    throw new Exception('Cada parcela deve ter valor e data de vencimento.');
+                }
+
+                $somaParcelas += $parcelaValor;
+                $descricaoParcela = sprintf('%s (Parcela %d/%d)', $descricao, (int)$parcela['numero_parcela'], $total_parcelas);
+
+                $params[':descricao'] = $descricaoParcela;
+                $params[':valor'] = $parcelaValor;
+                $params[':valor_pago'] = $data_pagamento ? $parcelaValor : null;
+                $params[':data_vencimento'] = $parcelaVencimento;
+
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
             }
 
-            $somaParcelas += $parcelaValor;
-            $descricaoParcela = sprintf('%s (Parcela %d/%d)', $descricao, (int)$parcela['numero_parcela'], $total_parcelas);
-
-            $stmt->execute([
-                ':fk_conta_regente'     => $fk_conta_regente ?: null,
-                ':fk_conta_subordinada' => $fk_conta_subordinada ?: null,
-                ':fk_tipo_lancamento'   => $fk_tipo_lancamento,
-                ':fk_forma_pagamento'   => $fk_forma_pagamento ?: null,
-                ':fk_status_conta'      => $fk_status_conta,
-                ':descricao'            => $descricaoParcela,
-                ':valor'                => $parcelaValor,
-                ':valor_pago'           => $data_pagamento ? $parcelaValor : null,
-                ':data_lancamento'      => $data_lancamento ?: null,
-                ':data_vencimento'      => $parcelaVencimento,
-                ':data_pagamento'       => $data_pagamento ?: null,
-                ':observacao'           => $observacao ?: null
-            ]);
+            if (round($somaParcelas, 2) !== round($valor, 2)) {
+                throw new Exception('A soma das parcelas deve ser igual ao valor total.');
+            }
+        } else {
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
         }
 
-        if (round($somaParcelas, 2) !== round($valor, 2)) {
-            throw new Exception('A soma das parcelas deve ser igual ao valor total.');
-        }
-    } else {
-        $stmt->execute([
-            ':fk_conta_regente'     => $fk_conta_regente ?: null,
-            ':fk_conta_subordinada' => $fk_conta_subordinada ?: null,
-            ':fk_tipo_lancamento'   => $fk_tipo_lancamento,
-            ':fk_forma_pagamento'   => $fk_forma_pagamento ?: null,
-            ':fk_status_conta'      => $fk_status_conta,
-            ':descricao'            => $descricao,
-            ':valor'                => $valor,
-            ':valor_pago'           => $valor_pago ?: null,
-            ':data_lancamento'      => $data_lancamento ?: null,
-            ':data_vencimento'      => $data_vencimento ?: null,
-            ':data_pagamento'       => $data_pagamento ?: null,
-            ':observacao'           => $observacao ?: null
-        ]);
+        $mensagem = 'Lançamento cadastrado com sucesso';
     }
 
     $pdo->commit();
 
     echo json_encode([
         "sucesso" => true,
-        "mensagem" => "Lançamento cadastrado com sucesso"
+        "mensagem" => $mensagem
     ]);
 } catch (Exception $e) {
     if ($pdo->inTransaction()) {

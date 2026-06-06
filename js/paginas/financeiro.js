@@ -6,7 +6,10 @@
 
 import Toast from '../componentes/toast.js';
 import Modal from '../componentes/modal.js';
+import { criarAutocomplete } from '../componentes/autocomplete.js';
 import { api } from '../services/api.js';
+
+const sortState = { coluna: null, direcao: 'asc' };
 
 const lancamentos = [
   { id: 1, descricao: 'Mensalidade - Maria Oliveira', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'pago', vencimento: '2026-04-05', valor: 85.00, pessoa: 'Maria Oliveira' },
@@ -228,6 +231,21 @@ function iniciarNovoLancamento() {
   preencherSelectsNovoLancamento();
   carregarListaLancamentos();
 
+  const inputPessoa = document.getElementById('lancamento-pessoa');
+  let autocompletePessoa = null;
+  if (inputPessoa) {
+    autocompletePessoa = criarAutocomplete(inputPessoa, {
+      buscar: async (termo) => {
+        const resp = await api.get(`/pessoas/buscar.php?busca=${encodeURIComponent(termo)}&limite=15`);
+        return resp.dados || [];
+      },
+      aoSelecionar: (item) => {},
+      minimoCaracteres: 2,
+      delay: 300,
+    });
+    cleanup.push(() => autocompletePessoa.destruir());
+  }
+
   const formatarDataISO = (data) => {
     const ano = data.getFullYear();
     const mes = String(data.getMonth() + 1).padStart(2, '0');
@@ -410,13 +428,20 @@ function iniciarNovoLancamento() {
       ? document.getElementById('lancamento-pagamento')?.value || formatarDataISO(new Date())
       : null;
 
+    const inputPessoa = document.getElementById('lancamento-pessoa');
+    const pessoaId = inputPessoa?.dataset?.autocompleteId;
+    const pessoaTipo = inputPessoa?.dataset?.autocompleteTipo;
+
     const payload = {
+      id: parseInt(document.getElementById('lancamento-id-editando')?.value) || null,
       fk_tipo_lancamento: parseInt(document.getElementById('lancamento-tipo')?.value) || null,
       fk_status_conta: statusConta,
       fk_forma_pagamento: parseInt(document.getElementById('lancamento-forma-pagamento')?.value),
+      fk_associado: pessoaTipo === 'associado' ? parseInt(pessoaId) : null,
+      fk_parceiro: pessoaTipo === 'parceiro' ? parseInt(pessoaId) : null,
       valor: valorTotal,
       descricao: document.getElementById('lancamento-descricao')?.value,
-      pessoa: document.getElementById('lancamento-pessoa')?.value,
+      pessoa: inputPessoa?.value,
       observacao: document.getElementById('lancamento-observacao')?.value,
       fk_conta_regente: document.getElementById('lancamento-conta')?.value || null,
       fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
@@ -453,15 +478,14 @@ function iniciarNovoLancamento() {
     }
 
     try {
-      await api.post('/financeiro/lancamentos/cadastrar.php', payload);
+      const resp = await api.post('/financeiro/lancamentos/cadastrar.php', payload);
 
-      const mensagem = modo === 'liquidar'
-        ? 'Lançamento cadastrado e liquidado com sucesso!'
-        : 'Lançamento salvo em aberto com sucesso!';
+      const mensagem = payload.id
+        ? (modo === 'liquidar' ? 'Lançamento atualizado e liquidado!' : 'Lançamento atualizado!')
+        : (modo === 'liquidar' ? 'Lançamento cadastrado e liquidado com sucesso!' : 'Lançamento salvo em aberto com sucesso!');
       Toast.sucesso(mensagem);
 
-      form.reset();
-      atualizarPreview();
+      limparFormulario();
       carregarListaLancamentos();
     } catch (err) {
       Toast.erro(err.message);
@@ -478,42 +502,39 @@ function iniciarNovoLancamento() {
   btnSalvarLiquidar?.addEventListener('click', handlerSalvarLiquidar);
   cleanup.push(() => btnSalvarLiquidar?.removeEventListener('click', handlerSalvarLiquidar));
 
-  const tabelaListagem = document.getElementById('lancamentos-listagem-tbody');
-  if (tabelaListagem) {
-    const handlerCliqueLinha = (e) => {
-      const tr = e.target.closest('tr[data-liquidar-id]');
-      if (!tr) return;
-
-      const id = tr.dataset.liquidarId;
-      const valor = parseFloat(tr.dataset.valor || 0);
-      const vencimento = tr.dataset.vencimento || '';
-      const descricao = tr.dataset.descricao || '-';
-      const tipoLancamento = tr.dataset.tipoLancamento || tr.dataset.tipo || '-';
-      const conta = tr.dataset.conta || '-';
-      const subconta = tr.dataset.subconta || '-';
-      const hoje = new Date();
-      const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
-
-      document.getElementById('liquidar-lancamento-id').value = id;
-      document.getElementById('liquidar-valor-total').value = valor;
-      document.getElementById('resumo-nome').textContent = descricao;
-      document.getElementById('resumo-tipo').textContent = tipoLancamento;
-      document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
-      document.getElementById('resumo-vencimento').textContent = formatarData(vencimento);
-      document.getElementById('resumo-conta').textContent = conta || '-';
-      document.getElementById('resumo-subconta').textContent = subconta || '-';
-      document.getElementById('resumo-status').textContent = 'Aberto';
-      document.getElementById('lancamento-valor-pago').value = valor;
-      if (!document.getElementById('lancamento-pagamento').value) {
-        document.getElementById('lancamento-pagamento').value = hojeISO;
-      }
-
-      document.querySelector('.financeiro__painel--liquidacao')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    };
-    tabelaListagem.addEventListener('click', handlerCliqueLinha);
-    cleanup.push(() => tabelaListagem.removeEventListener('click', handlerCliqueLinha));
+  // ── Busca na lista ──
+  const buscaInput = document.getElementById('lancamentos-busca');
+  if (buscaInput) {
+    const handlerBusca = () => carregarListaLancamentos(buscaInput.value);
+    buscaInput.addEventListener('input', handlerBusca);
+    cleanup.push(() => buscaInput.removeEventListener('input', handlerBusca));
   }
 
+  // ── Ordenação por coluna ──
+  // Usamos delegação no thead para capturar cliques nos cabeçalhos ordenáveis
+  const tabela = document.querySelector('.financeiro__painel--lista-lancamentos .tabela');
+  const handlerSort = (e) => {
+    const th = e.target.closest('th.ordenavel');
+    if (!th) return;
+    const coluna = th.dataset.coluna;
+    if (!coluna) return;
+
+    // Remove classe de ordem de todos os headers
+    tabela.querySelectorAll('thead th.ordenavel').forEach(h => h.classList.remove('ordem-asc', 'ordem-desc'));
+
+    if (sortState.coluna === coluna) {
+      sortState.direcao = sortState.direcao === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortState.coluna = coluna;
+      sortState.direcao = 'asc';
+    }
+    th.classList.add(`ordem-${sortState.direcao}`);
+    carregarListaLancamentos(buscaInput?.value || '');
+  };
+  tabela?.addEventListener('click', handlerSort);
+  cleanup.push(() => tabela?.removeEventListener('click', handlerSort));
+
+  // ── Liquidar (painel direito) ──
   const btnLiquidar = document.getElementById('btn-liquidar');
   const handlerLiquidar = async () => {
     const idExistente = document.getElementById('liquidar-lancamento-id')?.value;
@@ -551,70 +572,241 @@ function iniciarNovoLancamento() {
   btnLiquidar?.addEventListener('click', handlerLiquidar);
   cleanup.push(() => btnLiquidar?.removeEventListener('click', handlerLiquidar));
 
-  const btnLimpar = document.getElementById('btn-limpar');
-  const handlerLimpar = () => {
+  // ── Double-click na lista carrega dados nos painéis ──
+  const tbody = document.getElementById('lancamentos-listagem-tbody');
+  if (tbody) {
+    const handlerDblClick = (e) => {
+      const tr = e.target.closest('tr[data-lancamento]');
+      if (!tr) return;
+      const dados = JSON.parse(decodeURIComponent(tr.dataset.lancamento));
+      carregarLancamentoNosPaineis(dados);
+    };
+    tbody.addEventListener('dblclick', handlerDblClick);
+    cleanup.push(() => tbody.removeEventListener('dblclick', handlerDblClick));
+  }
+
+  // ── Botão Excluir ──
+  const btnExcluir = document.getElementById('btn-excluir');
+  if (btnExcluir) {
+    const handlerExcluir = () => {
+      const idEditando = document.getElementById('lancamento-id-editando')?.value;
+      if (!idEditando) { Toast.alerta('Clique duas vezes em um lançamento para carregá-lo antes de excluir.'); return; }
+      Modal.confirmar({
+        titulo: 'Excluir lançamento?',
+        mensagem: 'Esta ação não pode ser desfeita.',
+        icone: 'warning',
+        variante: 'alerta',
+        textoConfirmar: 'Excluir',
+        estiloConfirmar: 'perigo',
+        aoConfirmar: async () => {
+          try {
+            await api.post('/financeiro/lancamentos/excluir.php', { id: Number(idEditando) });
+            Toast.sucesso('Lançamento excluído com sucesso.');
+            limparFormulario();
+            carregarListaLancamentos();
+          } catch (err) {
+            Toast.erro(err.message);
+          }
+        },
+      });
+    };
+    btnExcluir.addEventListener('click', handlerExcluir);
+    cleanup.push(() => btnExcluir.removeEventListener('click', handlerExcluir));
+  }
+
+  const limparFormulario = () => {
     form.reset();
     document.getElementById('lancamento-pagamento').value = '';
+    document.getElementById('lancamento-id-editando').value = '';
+    document.getElementById('liquidar-lancamento-id').value = '';
+    document.getElementById('liquidar-valor-total').value = '';
+    document.getElementById('resumo-nome').textContent = '-';
+    document.getElementById('resumo-tipo').textContent = '-';
+    document.getElementById('resumo-valor').textContent = 'R$ 0,00';
+    document.getElementById('resumo-vencimento').textContent = '-';
+    document.getElementById('resumo-conta').textContent = '-';
+    document.getElementById('resumo-subconta').textContent = '-';
+    document.getElementById('resumo-status').textContent = 'Aberto';
+    document.getElementById('lancamento-valor-pago').value = '';
+    if (autocompletePessoa) autocompletePessoa.limpar();
     atualizarPreview();
   };
+
+  const btnLimpar = document.getElementById('btn-limpar');
+  const handlerLimpar = () => limparFormulario();
   btnLimpar?.addEventListener('click', handlerLimpar);
   cleanup.push(() => btnLimpar?.removeEventListener('click', handlerLimpar));
 
   atualizarPreview();
 }
 
-async function carregarListaLancamentos() {
+function carregarLancamentoNosPaineis(dados) {
+  const idEditando = document.getElementById('lancamento-id-editando');
+  if (idEditando) idEditando.value = dados.id || '';
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  };
+
+  setVal('lancamento-descricao', dados.descricao || '');
+  setVal('lancamento-valor', dados.valor || '');
+  setVal('lancamento-vencimento', dados.data_vencimento || '');
+
+  const tipoSelect = document.getElementById('lancamento-tipo');
+  if (tipoSelect && dados.fk_tipo_lancamento) {
+    tipoSelect.value = dados.fk_tipo_lancamento;
+    tipoSelect.dispatchEvent(new Event('change'));
+  }
+
+  const modoSelect = document.getElementById('lancamento-pagamento-modo');
+  if (modoSelect) modoSelect.value = 'avista';
+
+  setVal('lancamento-conta', dados.fk_conta_regente || '');
+  if (dados.fk_conta_regente) {
+    const contaSelect = document.getElementById('lancamento-conta');
+    if (contaSelect) {
+      contaSelect.value = dados.fk_conta_regente;
+      contaSelect.dispatchEvent(new Event('change'));
+    }
+  }
+
+  setVal('lancamento-subconta', dados.fk_conta_subordinada || '');
+  setVal('lancamento-forma-pagamento', dados.fk_forma_pagamento || '');
+  setVal('lancamento-observacao', dados.observacao || '');
+
+  const inputPessoa = document.getElementById('lancamento-pessoa');
+  if (inputPessoa) {
+    inputPessoa.value = dados.pessoa_nome || '';
+    inputPessoa.dataset.autocompleteId = dados.fk_associado || dados.fk_parceiro || '';
+    inputPessoa.dataset.autocompleteTipo = dados.pessoa_tipo || '';
+  }
+
+  document.getElementById('liquidar-lancamento-id').value = dados.id || '';
+  document.getElementById('liquidar-valor-total').value = dados.valor || '';
+  document.getElementById('resumo-nome').textContent = dados.descricao || '-';
+  document.getElementById('resumo-tipo').textContent = dados.tipo || '-';
+  document.getElementById('resumo-valor').textContent = formatarMoeda(dados.valor || 0);
+  const venc = dados.data_vencimento || '';
+  document.getElementById('resumo-vencimento').textContent = venc ? formatarData(venc) : '-';
+  document.getElementById('resumo-conta').textContent = dados.conta_regente || '-';
+  document.getElementById('resumo-subconta').textContent = dados.conta_subordinada || '-';
+  document.getElementById('resumo-status').textContent = 'Carregado';
+  document.getElementById('lancamento-valor-pago').value = dados.valor || '';
+  if (!document.getElementById('lancamento-pagamento').value) {
+    const hoje = new Date();
+    document.getElementById('lancamento-pagamento').value =
+      `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+  }
+
+  atualizarPreview();
+}
+
+async function carregarListaLancamentos(filtro) {
   const tbody = document.getElementById('lancamentos-listagem-tbody');
   if (!tbody) return;
 
-  try {
-    const resposta = await api.get('/financeiro/lancamentos/listar.php?limite=50');
-    const dados = resposta.dados || resposta.lancamentos || [];
-
-    if (!dados.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="financeiro__estado-tabela">Nenhum lançamento encontrado.</td></tr>';
-      return;
+  if (filtro === undefined) {
+      try {
+        const resposta = await api.get('/financeiro/lancamentos/listar.php?limite=50');
+        window._lancamentosData = resposta.dados || resposta.lancamentos || [];
+      } catch (erro) {
+        tbody.innerHTML = `<tr><td colspan="7" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
+        return;
+      }
     }
 
-    tbody.innerHTML = dados.map((item) => {
-      const valor = Number(item.valor || 0);
-      const vencimento = item.data_vencimento || item.vencimento || '';
-      const [ano, mes, dia] = vencimento.split('-');
-      const vencFormatado = vencimento ? `${dia}/${mes}/${ano}` : '-';
-      const status = item.status_conta || item.status || '';
-      const statusLower = String(status).toLowerCase();
-      const isAberto = !statusLower.includes('liquidado') && !statusLower.includes('pago') && !statusLower.includes('cancelado');
-      const badgeCls = statusLower.includes('liquidado') || statusLower.includes('pago') ? 'badge-verde'
-        : statusLower.includes('cancelado') ? 'badge-vermelho'
-        : 'badge-amarelo';
-      const statusLabel = (statusLower.includes('liquidado') || statusLower.includes('pago')) ? 'Liquidado'
-        : statusLower.includes('cancelado') ? 'Cancelado'
-        : 'Aberto';
-      const tipo = item.tipo || '';
-      const conta = item.conta_regente || item.conta || '';
-      const subconta = item.conta_subordinada || item.subconta || '';
-      const tipoLancamento = item.tipo_lancamento || '';
+  const dados = window._lancamentosData || [];
+  const busca = (filtro || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-      const valorPago = Number(item.valor_pago || 0);
-      const saldo = Math.round((valor - valorPago) * 100) / 100;
+  const filtrados = busca
+    ? dados.filter((item) => (item.descricao || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(busca))
+    : dados;
 
-      return `<tr ${isAberto ? `style="cursor:pointer" data-liquidar-id="${item.id_lancamento || item.id}"
-        data-valor="${valor}" data-vencimento="${vencimento}"
-        data-descricao="${escaparHtml(item.descricao || '')}"
-        data-tipo-lancamento="${escaparHtml(tipoLancamento)}"
-        data-conta="${escaparHtml(conta)}" data-subconta="${escaparHtml(subconta)}"` : ''}>
-        <td>${escaparHtml(item.descricao || '')}</td>
-        <td class="tabela__num">${formatarMoeda(valor)}</td>
-        <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
-        <td class="tabela__num ${saldo > 0 ? 'financeiro__valor-despesa' : 'financeiro__valor-receita'}">${formatarMoeda(saldo)}</td>
-        <td>${vencFormatado}</td>
-        <td><span class="badge badge-pilula ${badgeCls}">${statusLabel}</span></td>
-        <td>${tipo ? (tipo === 'receita' ? 'Receita' : 'Despesa') : '-'}</td>
-      </tr>`;
-    }).join('');
-  } catch (erro) {
-    tbody.innerHTML = `<tr><td colspan="7" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
+  // Aplica ordenação por coluna
+  if (sortState.coluna) {
+    filtrados.sort((a, b) => {
+      let valA, valB;
+      if (sortState.coluna === 'saldo') {
+        valA = (Number(a.valor || 0) - Number(a.valor_pago || 0));
+        valB = (Number(b.valor || 0) - Number(b.valor_pago || 0));
+      } else if (sortState.coluna === 'valor' || sortState.coluna === 'valor_pago') {
+        valA = Number(a[sortState.coluna] || 0);
+        valB = Number(b[sortState.coluna] || 0);
+      } else if (sortState.coluna === 'data_vencimento') {
+        valA = a[sortState.coluna] || '';
+        valB = b[sortState.coluna] || '';
+      } else {
+        valA = (a[sortState.coluna] || '').toString().toLowerCase();
+        valB = (b[sortState.coluna] || '').toString().toLowerCase();
+      }
+
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return sortState.direcao === 'asc' ? valA - valB : valB - valA;
+      }
+      if (valA < valB) return sortState.direcao === 'asc' ? -1 : 1;
+      if (valA > valB) return sortState.direcao === 'asc' ? 1 : -1;
+      return 0;
+    });
   }
+
+  if (!filtrados.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="financeiro__estado-tabela">${busca ? 'Nenhum lançamento encontrado para esta busca.' : 'Nenhum lançamento encontrado.'}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtrados.map((item) => {
+    const id = item.id_lancamento || item.id;
+    const valor = Number(item.valor || 0);
+    const vencimento = item.data_vencimento || item.vencimento || '';
+    const [ano, mes, dia] = vencimento.split('-');
+    const vencFormatado = vencimento ? `${dia}/${mes}/${ano}` : '-';
+    const status = item.status_conta || item.status || '';
+    const statusLower = String(status).toLowerCase();
+    const isAberto = !statusLower.includes('liquidado') && !statusLower.includes('pago') && !statusLower.includes('cancelado');
+    const badgeCls = statusLower.includes('liquidado') || statusLower.includes('pago') ? 'badge-verde'
+      : statusLower.includes('cancelado') ? 'badge-vermelho'
+      : 'badge-amarelo';
+    const statusLabel = (statusLower.includes('liquidado') || statusLower.includes('pago')) ? 'Liquidado'
+      : statusLower.includes('cancelado') ? 'Cancelado'
+      : 'Aberto';
+    const tipo = item.tipo || '';
+    const conta = item.conta_regente || item.conta || '';
+    const subconta = item.conta_subordinada || item.subconta || '';
+    const tipoLancamento = item.tipo_lancamento || '';
+
+    const valorPago = Number(item.valor_pago || 0);
+    const saldo = Math.round((valor - valorPago) * 100) / 100;
+
+    const dados = {
+      id: item.id_lancamento || item.id,
+      descricao: item.descricao || '',
+      valor,
+      valor_pago: valorPago,
+      data_vencimento: vencimento,
+      data_pagamento: item.data_pagamento || '',
+      fk_tipo_lancamento: item.fk_tipo_lancamento || '',
+      fk_conta_regente: item.fk_conta_regente || '',
+      fk_conta_subordinada: item.fk_conta_subordinada || '',
+      fk_forma_pagamento: item.fk_forma_pagamento || '',
+      fk_associado: item.fk_associado || '',
+      fk_parceiro: item.fk_parceiro || '',
+      pessoa_nome: item.pessoa_nome || item.pessoa || '',
+      pessoa_tipo: item.pessoa_tipo || '',
+      observacao: item.observacao || '',
+      tipo,
+    };
+
+    return `<tr style="cursor:pointer" data-lancamento="${encodeURIComponent(JSON.stringify(dados))}">
+      <td>${escaparHtml(item.descricao || '')}</td>
+      <td class="tabela__num tabela__centro">${formatarMoeda(valor)}</td>
+      <td class="tabela__num tabela__centro">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
+      <td class="tabela__num tabela__centro ${saldo > 0 ? 'financeiro__valor-despesa' : 'financeiro__valor-receita'}">${formatarMoeda(saldo)}</td>
+      <td class="tabela__centro">${vencFormatado}</td>
+      <td class="tabela__centro"><span class="badge badge-pilula ${badgeCls}">${statusLabel}</span></td>
+      <td class="tabela__centro ${tipo === 'receita' ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">${tipo ? (tipo === 'receita' ? 'Receita' : 'Despesa') : '-'}</td>
+    </tr>`;
+  }).join('');
 }
 
 async function preencherSelectsRegistrarLancamento() {

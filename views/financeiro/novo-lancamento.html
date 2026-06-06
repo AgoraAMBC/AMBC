@@ -18,6 +18,7 @@
     <section class="financeiro__painel financeiro__painel--form">
       <h2 class="financeiro__secao-titulo">Novo Lan&ccedil;amento</h2>
       <form id="form-lancamento">
+      <input type="hidden" id="lancamento-id-editando" value="" />
       <div class="form-grid">
         <div class="campo form-col-6">
           <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Nome do lançamento</label>
@@ -110,7 +111,7 @@
       </div>
 
       <div class="financeiro__acoes-painel">
-        <button type="button" class="btn btn-secundario" id="btn-salvar-aberto">
+        <button type="button" class="btn btn-sucesso" id="btn-salvar-aberto">
           <span class="material-icons">lock_open</span>
           Salvar em aberto
         </button>
@@ -118,7 +119,11 @@
           <span class="material-icons">check_circle</span>
           Salvar Liquidar
         </button>
-        <button type="button" class="btn btn-terciario" id="btn-limpar">
+        <button type="button" class="btn btn-perigo" id="btn-excluir">
+          <span class="material-icons">delete</span>
+          Excluir
+        </button>
+        <button type="button" class="btn btn-atencao" id="btn-limpar">
           <span class="material-icons">restart_alt</span>
           Limpar campos
         </button>
@@ -158,22 +163,27 @@
   </div>
 
   <section class="financeiro__painel financeiro__painel--lista-lancamentos">
-    <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos</h2>
+    <div class="financeiro__painel-lista-header">
+      <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos</h2>
+      <div class="financeiro__busca-lista">
+        <input class="form-input" id="lancamentos-busca" type="text" placeholder="Buscar por descri&ccedil;&atilde;o..." />
+      </div>
+    </div>
     <div class="tabela-responsiva">
       <table class="tabela">
         <thead>
           <tr>
-            <th>Descrição</th>
-            <th class="tabela__num">Valor Total</th>
-            <th class="tabela__num">Valor Pago</th>
-            <th class="tabela__num">Saldo</th>
-            <th>Vencimento</th>
-            <th>Status</th>
-            <th>Tipo</th>
+            <th class="ordenavel" data-coluna="descricao">Descrição</th>
+            <th class="tabela__centro ordenavel" data-coluna="valor">Valor Total</th>
+            <th class="tabela__centro ordenavel" data-coluna="valor_pago">Valor Pago</th>
+            <th class="tabela__centro ordenavel" data-coluna="saldo">Saldo</th>
+            <th class="tabela__centro ordenavel" data-coluna="data_vencimento">Vencimento</th>
+            <th class="tabela__centro ordenavel" data-coluna="status_conta">Status</th>
+            <th class="tabela__centro ordenavel" data-coluna="tipo">Tipo</th>
           </tr>
         </thead>
         <tbody id="lancamentos-listagem-tbody">
-          <tr><td colspan="5" class="financeiro__estado-tabela">Carregando...</td></tr>
+          <tr><td colspan="7" class="financeiro__estado-tabela">Carregando...</td></tr>
         </tbody>
       </table>
     </div>

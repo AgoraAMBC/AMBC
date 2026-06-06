@@ -253,8 +253,36 @@
 
 .financeiro__painel--lista-lancamentos {
   margin-top: var(--esp-lg);
-  border: 1px solid var(--cor-cinza-300);
-  border-radius: var(--raio-md);
+  padding: 0 var(--esp-lg);
+}
+
+.financeiro__painel-lista-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-md);
+  margin-bottom: var(--esp-md);
+}
+
+.financeiro__painel-lista-header .financeiro__secao-titulo {
+  margin-bottom: 0;
+}
+
+/* Força a cor do tipo no tbody (especificidade maior que .tabela tbody td) */
+.financeiro__painel--lista-lancamentos tbody td.financeiro__valor-receita {
+  color: var(--cor-sucesso);
+}
+.financeiro__painel--lista-lancamentos tbody td.financeiro__valor-despesa {
+  color: var(--cor-erro);
+}
+
+.financeiro__busca-lista .form-input {
+  max-width: 360px;
+}
+
+.tabela__sel {
+  width: 40px;
+  text-align: center;
 }
 
 .financeiro__grid-50 .form-grid,
@@ -479,4 +507,64 @@
   .financeiro__barra > strong {
     grid-column: 1 / -1;
   }
+}
+
+/* ── Autocomplete ── */
+.autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete .form-input {
+  width: 100%;
+}
+
+.autocomplete__lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 2px 0 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--superficie, #fff);
+  border: 1px solid var(--borda, #d1d5db);
+  border-radius: var(--borda-raio, 6px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  max-height: 240px;
+  overflow-y: auto;
+  display: none;
+}
+
+.autocomplete__lista--aberta {
+  display: block;
+}
+
+.autocomplete__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.autocomplete__item--destacado,
+.autocomplete__item:hover {
+  background: var(--realce, #f3f4f6);
+}
+
+.autocomplete__item-nome {
+  font-size: var(--fs-b, 14px);
+  color: var(--texto-principal, #111827);
+  line-height: 1.3;
+}
+
+.autocomplete__item-tipo {
+  font-size: var(--fs-xs, 11px);
+  color: var(--texto-terciario, #9ca3af);
+  white-space: nowrap;
+  flex-shrink: 0;
 }

@@ -77,13 +77,22 @@ try {
             l.fk_forma_pagamento,
             l.fk_conta_regente,
             l.fk_conta_subordinada,
-            l.criado_em
+            l.fk_associado,
+            l.fk_parceiro,
+            l.observacao,
+            l.criado_em,
+            COALESCE(a.nome, p.nome_razao_social, '') AS pessoa_nome,
+            CASE WHEN a.id_associado IS NOT NULL THEN 'associado'
+                 WHEN p.id_parceiro IS NOT NULL THEN 'parceiro'
+                 ELSE '' END AS pessoa_tipo
         FROM lancamento l
         LEFT JOIN conta_regente cr ON cr.id_conta_regente = l.fk_conta_regente
         LEFT JOIN conta_subordinada cs ON cs.id_conta_subordinada = l.fk_conta_subordinada
         LEFT JOIN tipo_lancamento tl ON tl.id_tipo_lancamento = l.fk_tipo_lancamento
         LEFT JOIN status_conta sc ON sc.id_status_conta = l.fk_status_conta
         LEFT JOIN forma_pagamento fp ON fp.id_forma_pagamento = l.fk_forma_pagamento
+        LEFT JOIN associado a ON a.id_associado = l.fk_associado
+        LEFT JOIN parceiro p ON p.id_parceiro = l.fk_parceiro
         WHERE $condicao
         ORDER BY COALESCE(l.data_vencimento, l.data_lancamento) DESC, l.id_lancamento DESC
         LIMIT $limite
@@ -101,7 +110,8 @@ try {
         $lancamento['conta'] = $lancamento['conta_regente'];
         $lancamento['subconta'] = $lancamento['conta_subordinada'];
         $lancamento['vencimento'] = $vencimento;
-        $lancamento['pessoa'] = '';
+        $lancamento['pessoa'] = $lancamento['pessoa_nome'] ?? '';
+        $lancamento['pessoa_tipo'] = $lancamento['pessoa_tipo'] ?? '';
         $lancamento['status'] = match (true) {
             str_contains($statusNormalizado, 'liquidado'), str_contains($statusNormalizado, 'pago') => 'pago',
             str_contains($statusNormalizado, 'cancelado') => 'cancelado',

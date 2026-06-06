@@ -73,29 +73,8 @@
   background: var(--cor-primaria-palida);
 }
 
-.tabela thead th.ordenavel::after {
-  content: 'unfold_more';
-  font-family: 'Material Icons';
-  font-size: 14px;
-  vertical-align: middle;
-  margin-left: 4px;
-  opacity: 0.4;
-  transition: opacity var(--transicao-rapida);
-}
-
-.tabela thead th.ordenavel:hover::after {
-  opacity: 1;
-}
-
-.tabela thead th.ordem-asc::after {
-  content: 'arrow_upward';
-  opacity: 1;
-  color: var(--cor-primaria);
-}
-
-.tabela thead th.ordem-desc::after {
-  content: 'arrow_downward';
-  opacity: 1;
+.tabela thead th.ordem-asc,
+.tabela thead th.ordem-desc {
   color: var(--cor-primaria);
 }
 

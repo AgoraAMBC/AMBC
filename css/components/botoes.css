@@ -91,6 +91,15 @@
   background: var(--cor-sucesso-escura);
 }
 
+/* Atenção — ação de atenção (amarelo) */
+.btn-atencao {
+  background: var(--cor-alerta);
+  color: #fff;
+}
+.btn-atencao:hover:not(:disabled) {
+  background: var(--cor-alerta-escura);
+}
+
 /* Fantasma — sem fundo, mais discreto */
 .btn-fantasma {
   background: transparent;
