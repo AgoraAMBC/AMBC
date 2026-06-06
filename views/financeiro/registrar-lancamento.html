@@ -1,0 +1,197 @@
+<section class="view financeiro" data-financeiro-view="registrar-lancamento">
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">playlist_add</span>
+      <div>
+        <h2 class="gu-card__titulo">Registrar Lançamento</h2>
+        <p class="gu-card__subtitulo">Registre cobranças e lançamentos recorrentes. Liquide depois, quando o pagamento for recebido.</p>
+      </div>
+    </div>
+    <a href="#/financeiro/visao-geral" class="btn btn-secundario">
+      <span class="material-icons">arrow_back</span>
+      Voltar
+    </a>
+  </header>
+
+  <form class="financeiro__formulario" id="form-registrar-lancamento">
+    <section class="financeiro__painel financeiro__painel--form">
+      <h2 class="financeiro__secao-titulo">Dados do lançamento</h2>
+      <div class="form-grid">
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-descricao">Nome do lançamento</label>
+          <input class="form-input" id="lancamento-descricao" type="text" placeholder="Ex.: Anuidade 2026 — João Silva" required />
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-pessoa">Nome relacionado</label>
+          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Associado, parceiro ou fornecedor" />
+        </div>
+
+        <div class="campo form-col-4">
+          <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
+          <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
+          <select class="form-input" id="lancamento-pagamento-modo" required>
+            <option value="avista">À vista</option>
+            <option value="parcelado">Parcelado</option>
+          </select>
+        </div>
+        <div class="campo form-col-4">
+          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo do lançamento</label>
+          <select class="form-input" id="lancamento-tipo" required>
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-conta">Conta regente</label>
+          <select class="form-input" id="lancamento-conta">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-subconta">Conta subordinada</label>
+          <select class="form-input" id="lancamento-subconta">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-vencimento">Data de vencimento</label>
+          <input class="form-input" id="lancamento-vencimento" type="date" required />
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-competencia">Competência</label>
+          <input class="form-input" id="lancamento-competencia" type="month" />
+        </div>
+
+        <div class="campo form-col-12">
+          <div class="financeiro__parcelamento-panel" id="parcelamento-panel" hidden>
+            <div class="form-grid">
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-total-parcelas">Número de parcelas</label>
+                <input class="form-input" id="lancamento-total-parcelas" type="number" min="1" max="24" value="1" />
+              </div>
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-valor-parcela">Valor da parcela</label>
+                <input class="form-input" id="lancamento-valor-parcela" type="text" readonly />
+              </div>
+              <div class="campo form-col-4">
+                <label class="form-label" for="lancamento-primeira-parcela">1ª parcela</label>
+                <input class="form-input" id="lancamento-primeira-parcela" type="date" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="campo form-col-12">
+          <label class="form-label" for="lancamento-observacao">Observação</label>
+          <textarea class="form-input" id="lancamento-observacao" rows="3" placeholder="Detalhes internos do lançamento"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <aside class="financeiro__resumo-form">
+      <h2 class="financeiro__secao-titulo">Resumo</h2>
+      <dl class="financeiro__dl">
+        <div><dt>Tipo</dt><dd id="resumo-tipo">—</dd></div>
+        <div><dt>Status</dt><dd><span class="badge badge-pilula badge-amarelo">Em aberto</span></dd></div>
+        <div><dt>Parcelas</dt><dd id="resumo-parcelas">1x</dd></div>
+        <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+      </dl>
+      <button type="submit" class="btn btn-primario btn-bloco">
+        <span class="material-icons">save</span>
+        Salvar em aberto
+      </button>
+      <button type="reset" class="btn btn-secundario btn-bloco">
+        <span class="material-icons">restart_alt</span>
+        Limpar campos
+      </button>
+    </aside>
+  </form>
+  </div><!-- /.gu-card -->
+
+  <!-- Tabela de lançamentos em aberto -->
+  <div class="gu-card" style="margin-top:var(--esp-lg)">
+    <div class="financeiro__painel-cabecalho financeiro__painel-cabecalho--card">
+      <div>
+        <h2 class="financeiro__secao-titulo">Lançamentos em aberto</h2>
+        <p class="financeiro__secao-texto">Clique em um lançamento para registrar o pagamento.</p>
+      </div>
+    </div>
+    <div class="tabela-responsiva">
+      <table class="tabela financeiro__tabela">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Pessoa</th>
+            <th>Vencimento</th>
+            <th>Status</th>
+            <th class="tabela__num">Valor</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="abertos-tbody"></tbody>
+      </table>
+      <div class="tabela-vazia" id="abertos-vazio" hidden>
+        <span class="material-icons tabela-vazia__icone">check_circle</span>
+        <h3 class="tabela-vazia__titulo">Nenhum lançamento em aberto</h3>
+        <p class="tabela-vazia__mensagem">Todos os lançamentos estão liquidados ou cancelados.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de liquidação -->
+  <div class="modal-fundo" id="modal-liquidar-fundo" hidden></div>
+  <div class="modal" id="modal-liquidar" hidden role="dialog" aria-modal="true" aria-labelledby="modal-liquidar-titulo">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo" id="modal-liquidar-titulo">Liquidar Lançamento</h3>
+      <button type="button" class="modal__fechar" id="modal-liquidar-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal__corpo">
+      <input type="hidden" id="liquidar-id" />
+      <dl class="financeiro__dl" style="margin-bottom:var(--esp-md)">
+        <div><dt>Descrição</dt><dd id="liquidar-descricao">—</dd></div>
+        <div><dt>Pessoa</dt><dd id="liquidar-pessoa">—</dd></div>
+        <div><dt>Vencimento</dt><dd id="liquidar-vencimento">—</dd></div>
+        <div><dt>Valor</dt><dd id="liquidar-valor">—</dd></div>
+      </dl>
+      <div class="form-grid">
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="liquidar-valor-pago">Valor recebido</label>
+          <input class="form-input" id="liquidar-valor-pago" type="number" min="0.01" step="0.01" required />
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="liquidar-data-pagamento">Data do pagamento</label>
+          <input class="form-input" id="liquidar-data-pagamento" type="date" required />
+        </div>
+        <div class="campo form-col-12">
+          <label class="form-label form-label-obrigatorio" for="liquidar-forma-pagamento">Forma de pagamento</label>
+          <select class="form-input" id="liquidar-forma-pagamento" required>
+            <option value="1">PIX</option>
+            <option value="2">Boleto</option>
+            <option value="3">Cartão de crédito</option>
+            <option value="4">Cartão de débito</option>
+            <option value="5">Dinheiro</option>
+            <option value="6">Transferência bancária</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal__rodape">
+      <button type="button" class="btn btn-secundario btn-icone-texto" id="modal-liquidar-cancelar-lancamento">
+        <span class="material-icons">cancel</span>
+        Cancelar lançamento
+      </button>
+      <button type="button" class="btn btn-primario" id="modal-liquidar-confirmar">
+        <span class="material-icons">check_circle</span>
+        Liquidar
+      </button>
+    </div>
+  </div>
+
+</section>
