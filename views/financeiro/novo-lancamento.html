@@ -128,14 +128,20 @@
 
     <aside class="financeiro__painel financeiro__painel--liquidacao">
       <h2 class="financeiro__secao-titulo">Liquida&ccedil;&atilde;o</h2>
+      <input type="hidden" id="liquidar-lancamento-id" value="" />
       <dl class="financeiro__dl">
         <div><dt>Tipo</dt><dd id="resumo-tipo">-</dd></div>
-        <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+        <div><dt>Valor Total</dt><dd id="resumo-valor">R$ 0,00</dd></div>
         <div><dt>Vencimento</dt><dd id="resumo-vencimento">-</dd></div>
         <div><dt>Conta</dt><dd id="resumo-conta">-</dd></div>
         <div><dt>Subconta</dt><dd id="resumo-subconta">-</dd></div>
         <div><dt>Status</dt><dd id="resumo-status">Aberto</dd></div>
       </dl>
+
+      <div class="campo">
+        <label class="form-label" for="lancamento-valor-recebido">Valor recebido</label>
+        <input class="form-input" id="lancamento-valor-recebido" type="number" min="0" step="0.01" placeholder="0,00" />
+      </div>
 
       <div class="campo">
         <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>

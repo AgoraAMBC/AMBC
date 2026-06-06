@@ -474,8 +474,73 @@ function iniciarNovoLancamento() {
   btnSalvarLiquidar?.addEventListener('click', handlerSalvarLiquidar);
   cleanup.push(() => btnSalvarLiquidar?.removeEventListener('click', handlerSalvarLiquidar));
 
+  const tabelaListagem = document.getElementById('lancamentos-listagem-tbody');
+  if (tabelaListagem) {
+    const handlerCliqueLinha = (e) => {
+      const tr = e.target.closest('tr[data-liquidar-id]');
+      if (!tr) return;
+
+      const id = tr.dataset.liquidarId;
+      const valor = parseFloat(tr.dataset.valor || 0);
+      const vencimento = tr.dataset.vencimento || '';
+      const tipo = tr.dataset.tipo || '-';
+      const conta = tr.dataset.conta || '-';
+      const subconta = tr.dataset.subconta || '-';
+      const hoje = new Date();
+      const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+
+      document.getElementById('liquidar-lancamento-id').value = id;
+      document.getElementById('resumo-tipo').textContent = tipo || '-';
+      document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
+      document.getElementById('resumo-vencimento').textContent = formatarData(vencimento);
+      document.getElementById('resumo-conta').textContent = conta || '-';
+      document.getElementById('resumo-subconta').textContent = subconta || '-';
+      document.getElementById('resumo-status').textContent = 'Aberto';
+      document.getElementById('lancamento-valor-recebido').value = valor;
+      if (!document.getElementById('lancamento-pagamento').value) {
+        document.getElementById('lancamento-pagamento').value = hojeISO;
+      }
+
+      document.querySelector('.financeiro__painel--liquidacao')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+    tabelaListagem.addEventListener('click', handlerCliqueLinha);
+    cleanup.push(() => tabelaListagem.removeEventListener('click', handlerCliqueLinha));
+  }
+
   const btnLiquidar = document.getElementById('btn-liquidar');
-  const handlerLiquidar = () => salvarLancamento('liquidar');
+  const handlerLiquidar = async () => {
+    const idExistente = document.getElementById('liquidar-lancamento-id')?.value;
+    if (idExistente) {
+      const valorRecebido = parseFloat(document.getElementById('lancamento-valor-recebido')?.value || 0);
+      const dataPagamento = document.getElementById('lancamento-pagamento')?.value;
+      if (!valorRecebido || valorRecebido <= 0) { Toast.alerta('Informe o valor recebido.'); return; }
+      if (!dataPagamento) { Toast.alerta('Informe a data de pagamento.'); return; }
+      try {
+        const resp = await api.post('/financeiro/lancamentos/liquidar.php', {
+          id_lancamento: parseInt(idExistente),
+          acao: 'liquidar',
+          valor_pago: valorRecebido,
+          data_pagamento: dataPagamento,
+          fk_forma_pagamento: parseInt(document.getElementById('lancamento-forma-pagamento')?.value) || 1,
+        });
+        Toast.sucesso(resp.mensagem || 'Lançamento liquidado com sucesso!');
+        document.getElementById('liquidar-lancamento-id').value = '';
+        document.getElementById('resumo-tipo').textContent = '-';
+        document.getElementById('resumo-valor').textContent = 'R$ 0,00';
+        document.getElementById('resumo-vencimento').textContent = '-';
+        document.getElementById('resumo-conta').textContent = '-';
+        document.getElementById('resumo-subconta').textContent = '-';
+        document.getElementById('resumo-status').textContent = 'Aberto';
+        document.getElementById('lancamento-valor-recebido').value = '';
+        document.getElementById('lancamento-pagamento').value = '';
+        carregarListaLancamentos();
+      } catch (err) {
+        Toast.erro(err.message);
+      }
+    } else {
+      salvarLancamento('liquidar');
+    }
+  };
   btnLiquidar?.addEventListener('click', handlerLiquidar);
   cleanup.push(() => btnLiquidar?.removeEventListener('click', handlerLiquidar));
 
@@ -511,6 +576,7 @@ async function carregarListaLancamentos() {
       const vencFormatado = vencimento ? `${dia}/${mes}/${ano}` : '-';
       const status = item.status_conta || item.status || '';
       const statusLower = String(status).toLowerCase();
+      const isAberto = !statusLower.includes('liquidado') && !statusLower.includes('pago') && !statusLower.includes('cancelado');
       const badgeCls = statusLower.includes('liquidado') || statusLower.includes('pago') ? 'badge-verde'
         : statusLower.includes('cancelado') ? 'badge-vermelho'
         : 'badge-amarelo';
@@ -518,8 +584,13 @@ async function carregarListaLancamentos() {
         : statusLower.includes('cancelado') ? 'Cancelado'
         : 'Aberto';
       const tipo = item.tipo || '';
+      const conta = item.conta_regente || item.conta || '';
+      const subconta = item.conta_subordinada || item.subconta || '';
 
-      return `<tr>
+      return `<tr ${isAberto ? `style="cursor:pointer" data-liquidar-id="${item.id_lancamento || item.id}"
+        data-valor="${valor}" data-vencimento="${vencimento}"
+        data-tipo="${escaparHtml(tipo)}" data-conta="${escaparHtml(conta)}"
+        data-subconta="${escaparHtml(subconta)}"` : ''}>
         <td>${escaparHtml(item.descricao || '')}</td>
         <td>${formatarMoeda(valor)}</td>
         <td>${vencFormatado}</td>
