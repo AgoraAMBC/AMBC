@@ -487,14 +487,16 @@ function iniciarNovoLancamento() {
       const id = tr.dataset.liquidarId;
       const valor = parseFloat(tr.dataset.valor || 0);
       const vencimento = tr.dataset.vencimento || '';
-      const tipo = tr.dataset.tipo || '-';
+      const descricao = tr.dataset.descricao || '-';
+      const tipoLancamento = tr.dataset.tipoLancamento || tr.dataset.tipo || '-';
       const conta = tr.dataset.conta || '-';
       const subconta = tr.dataset.subconta || '-';
       const hoje = new Date();
       const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
 
       document.getElementById('liquidar-lancamento-id').value = id;
-      document.getElementById('resumo-tipo').textContent = tipo || '-';
+      document.getElementById('resumo-nome').textContent = descricao;
+      document.getElementById('resumo-tipo').textContent = tipoLancamento;
       document.getElementById('resumo-valor').textContent = formatarMoeda(valor);
       document.getElementById('resumo-vencimento').textContent = formatarData(vencimento);
       document.getElementById('resumo-conta').textContent = conta || '-';
@@ -590,11 +592,13 @@ async function carregarListaLancamentos() {
       const tipo = item.tipo || '';
       const conta = item.conta_regente || item.conta || '';
       const subconta = item.conta_subordinada || item.subconta || '';
+      const tipoLancamento = item.tipo_lancamento || '';
 
       return `<tr ${isAberto ? `style="cursor:pointer" data-liquidar-id="${item.id_lancamento || item.id}"
         data-valor="${valor}" data-vencimento="${vencimento}"
-        data-tipo="${escaparHtml(tipo)}" data-conta="${escaparHtml(conta)}"
-        data-subconta="${escaparHtml(subconta)}"` : ''}>
+        data-descricao="${escaparHtml(item.descricao || '')}"
+        data-tipo-lancamento="${escaparHtml(tipoLancamento)}"
+        data-conta="${escaparHtml(conta)}" data-subconta="${escaparHtml(subconta)}"` : ''}>
         <td>${escaparHtml(item.descricao || '')}</td>
         <td>${formatarMoeda(valor)}</td>
         <td>${vencFormatado}</td>
