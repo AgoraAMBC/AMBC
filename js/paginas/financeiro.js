@@ -521,9 +521,6 @@ function iniciarNovoLancamento() {
       const valorRecebido = parseFloat(document.getElementById('lancamento-valor-pago')?.value || 0);
       const dataPagamento = document.getElementById('lancamento-pagamento')?.value;
       if (!valorRecebido || valorRecebido <= 0) { Toast.alerta('Informe o valor pago.'); return; }
-      const valorTotal = parseFloat(document.getElementById('liquidar-valor-total')?.value || 0);
-      const saldo = Math.round((valorTotal - valorRecebido) * 100) / 100;
-      if (saldo > 0) { Toast.alerta(`Saldo pendente de ${formatarMoeda(saldo)}. O lançamento só pode ser liquidado com saldo zerado.`); return; }
       if (!dataPagamento) { Toast.alerta('Informe a data de pagamento.'); return; }
       try {
         const resp = await api.post('/financeiro/lancamentos/liquidar.php', {

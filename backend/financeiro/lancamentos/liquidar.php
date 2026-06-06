@@ -78,22 +78,30 @@ try {
         exit;
     }
 
+    $stmt = $pdo->prepare('SELECT valor FROM lancamento WHERE id_lancamento = :id LIMIT 1');
+    $stmt->execute([':id' => $id_lancamento]);
+    $valor_total = (float)$stmt->fetchColumn();
+
+    $novo_status = ($valor_pago >= $valor_total) ? 2 : 1;
+    $mensagem    = ($novo_status === 2) ? 'Lançamento liquidado com sucesso' : 'Pagamento parcial registrado. Lançamento permanece em aberto';
+
     $pdo->prepare('
         UPDATE lancamento
-        SET fk_status_conta    = 2,
+        SET fk_status_conta    = :status,
             valor_pago         = :valor_pago,
             data_pagamento     = :data_pagamento,
             fk_forma_pagamento = :fk_forma_pagamento,
             atualizado_em      = NOW()
         WHERE id_lancamento = :id
     ')->execute([
+        ':status'             => $novo_status,
         ':valor_pago'         => $valor_pago,
         ':data_pagamento'     => $data_pagamento,
         ':fk_forma_pagamento' => $fk_forma_pagamento,
         ':id'                 => $id_lancamento,
     ]);
 
-    echo json_encode(['sucesso' => true, 'mensagem' => 'Lançamento liquidado com sucesso']);
+    echo json_encode(['sucesso' => true, 'mensagem' => $mensagem]);
 
 } catch (Exception $e) {
     http_response_code(500);
