@@ -317,6 +317,10 @@ function iniciarNovoLancamento() {
     setText('resumo-conta', contaTexto);
     setText('resumo-subconta', subTexto);
     setText('resumo-status', 'Liquidado');
+    if (vencimento) {
+      const competencia = document.getElementById('lancamento-competencia');
+      if (competencia) competencia.value = vencimento.slice(0, 7);
+    }
     atualizarParcelamento();
   };
 
@@ -784,6 +788,11 @@ async function iniciarRegistrarLancamento() {
     const resumoValor = document.getElementById('resumo-valor');
     if (resumoTipo)  resumoTipo.textContent  = tipoTexto;
     if (resumoValor) resumoValor.textContent = formatarMoeda(valor);
+    const vencimentoVal = document.getElementById('lancamento-vencimento')?.value;
+    if (vencimentoVal) {
+      const competencia = document.getElementById('lancamento-competencia');
+      if (competencia) competencia.value = vencimentoVal.slice(0, 7);
+    }
     atualizarParcelamento();
   };
 
