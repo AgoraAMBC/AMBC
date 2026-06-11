@@ -1,6 +1,19 @@
 <?php
 declare(strict_types=1);
 
+function iniciarSessao(): void {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+}
+
+function verificarAutenticacao(): void {
+    iniciarSessao();
+    if (empty($_SESSION['id_usuario'])) {
+        jsonErro('Não autenticado', 401);
+    }
+}
+
 function configurarCors(): void {
     header('Content-Type: application/json; charset=UTF-8');
     header('Access-Control-Allow-Origin: *');

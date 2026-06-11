@@ -42,4 +42,8 @@ $pdo->prepare('UPDATE usuario SET ultimo_acesso = NOW() WHERE id_usuario = :id')
 
 unset($usuario['senha_hash']);
 
+iniciarSessao();
+$_SESSION['id_usuario'] = $usuario['id_usuario'];
+$_SESSION['fk_perfil']  = $usuario['fk_perfil'];
+
 jsonResposta(['usuario' => $usuario]);

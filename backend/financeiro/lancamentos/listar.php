@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../helpers.php';
 
 configurarCors();
+verificarAutenticacao();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') jsonErro('Metodo nao permitido', 405);
 
@@ -95,7 +96,7 @@ try {
         LEFT JOIN parceiro p ON p.id_parceiro = l.fk_parceiro
         WHERE $condicao
         ORDER BY COALESCE(l.data_vencimento, l.data_lancamento) DESC, l.id_lancamento DESC
-        LIMIT $limite
+        LIMIT " . (int)$limite . "
     ");
     $stmt->execute($params);
     $lancamentos = $stmt->fetchAll();

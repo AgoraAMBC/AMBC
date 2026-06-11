@@ -11,35 +11,39 @@ import { api } from '../services/api.js';
 
 const sortState = { coluna: null, direcao: 'asc' };
 
-const lancamentos = [
-  { id: 1, descricao: 'Mensalidade - Maria Oliveira', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'pago', vencimento: '2026-04-05', valor: 85.00, pessoa: 'Maria Oliveira' },
-  { id: 2, descricao: 'Reserva do salão comunitário', conta: 'Eventos e reservas', subconta: 'Reserva de espaço', tipo: 'receita', status: 'pendente', vencimento: '2026-04-18', valor: 260.00, pessoa: 'Carlos Mendes' },
-  { id: 3, descricao: 'Conta de energia da sede', conta: 'Despesas administrativas', subconta: 'Contas de consumo', tipo: 'despesa', status: 'pago', vencimento: '2026-04-12', valor: 418.72, pessoa: 'Companhia de energia' },
-  { id: 4, descricao: 'Compra de material de limpeza', conta: 'Manutenção e obras', subconta: 'Material de consumo', tipo: 'despesa', status: 'pago', vencimento: '2026-04-14', valor: 173.35, pessoa: 'Mercado Central' },
-  { id: 5, descricao: 'Mensalidade - João Souza', conta: 'Receitas associativas', subconta: 'Mensalidades', tipo: 'receita', status: 'atrasado', vencimento: '2026-04-10', valor: 85.00, pessoa: 'João Souza' },
-  { id: 6, descricao: 'Serviço de pintura da quadra', conta: 'Manutenção e obras', subconta: 'Serviços contratados', tipo: 'despesa', status: 'pendente', vencimento: '2026-04-25', valor: 980.00, pessoa: 'Pinturas Alfa' },
-];
-
-const contasRegentes = [
-  { id: 1, nome: 'Receitas associativas', tipo: 'receita', subcontas: 2, status: 'ativo' },
-  { id: 2, nome: 'Eventos e reservas', tipo: 'receita', subcontas: 2, status: 'ativo' },
-  { id: 3, nome: 'Despesas administrativas', tipo: 'despesa', subcontas: 3, status: 'ativo' },
-  { id: 4, nome: 'Manutenção e obras', tipo: 'despesa', subcontas: 4, status: 'ativo' },
-];
-
-const contasSubordinadas = [
-  { id: 1, nome: 'Mensalidades', regente: 'Receitas associativas', movimentos: 38, status: 'ativo' },
-  { id: 2, nome: 'Taxas extraordinárias', regente: 'Receitas associativas', movimentos: 7, status: 'ativo' },
-  { id: 3, nome: 'Reserva de espaço', regente: 'Eventos e reservas', movimentos: 12, status: 'ativo' },
-  { id: 4, nome: 'Contas de consumo', regente: 'Despesas administrativas', movimentos: 9, status: 'ativo' },
-  { id: 5, nome: 'Material de consumo', regente: 'Manutenção e obras', movimentos: 16, status: 'ativo' },
-  { id: 6, nome: 'Serviços contratados', regente: 'Manutenção e obras', movimentos: 5, status: 'ativo' },
-];
-
-lancamentos.splice(0, lancamentos.length);
-
+const lancamentos = [];
+let _lancamentosData = [];
 let cleanup = [];
 let dominiosFinanceiros = null;
+
+function _formatarDataISO(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const dia = String(data.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function _criarDataLocal(iso) {
+  const [ano, mes, dia] = String(iso || '').split('-').map(Number);
+  if (!ano || !mes || !dia) return null;
+  return new Date(ano, mes - 1, dia);
+}
+
+function _calcularParcelas(valorTotal, primeiroVencimento, totalParcelas) {
+  if (!valorTotal || totalParcelas <= 1 || !primeiroVencimento) return [];
+  const base = Math.floor((valorTotal / totalParcelas) * 100) / 100;
+  const resto = Number((valorTotal - base * totalParcelas).toFixed(2));
+  const parcelas = [];
+  const dataBase = _criarDataLocal(primeiroVencimento);
+  if (!dataBase || Number.isNaN(dataBase.getTime())) return [];
+  for (let i = 1; i <= totalParcelas; i += 1) {
+    const valorParcela = i === totalParcelas ? Number((base + resto).toFixed(2)) : Number(base.toFixed(2));
+    const data = new Date(dataBase);
+    data.setMonth(data.getMonth() + (i - 1));
+    parcelas.push({ numero_parcela: i, valor: valorParcela, data_vencimento: _formatarDataISO(data) });
+  }
+  return parcelas;
+}
 
 function init() {
   cleanup = [];
@@ -143,7 +147,7 @@ function normalizarLancamentos(lista) {
     conta: item.conta || item.conta_regente || '',
     subconta: item.subconta || item.conta_subordinada || '',
     tipo: normalizarTipo(item.tipo),
-    status: normalizarStatus(item.status || item.status_conta, item.vencimento || item.data_vencimento),
+    status: normalizarStatus(item.status || item.status_conta),
     vencimento: item.vencimento || item.data_vencimento || item.data_lancamento || '',
     valor: Number(item.valor || 0),
     pessoa: item.pessoa || '',
@@ -155,12 +159,11 @@ function normalizarTipo(tipo) {
   return texto === 'despesa' ? 'despesa' : 'receita';
 }
 
-function normalizarStatus(status, vencimento = '') {
+function normalizarStatus(status) {
   const texto = String(status || '').toLowerCase();
-  if (texto.includes('liquidado') || texto.includes('pago')) return 'pago';
-  if (texto.includes('cancelado')) return 'cancelado';
-  if (texto.includes('atrasado')) return 'atrasado';
-  if (vencimento && vencimento < new Date().toISOString().slice(0, 10)) return 'atrasado';
+  if (texto === 'pago' || texto === 'liquidado') return 'pago';
+  if (texto === 'cancelado') return 'cancelado';
+  if (texto === 'atrasado') return 'atrasado';
   return 'pendente';
 }
 
@@ -246,46 +249,10 @@ function iniciarNovoLancamento() {
     cleanup.push(() => autocompletePessoa.destruir());
   }
 
-  const formatarDataISO = (data) => {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  };
-
   const formatarDataLocal = (iso) => {
     if (!iso) return '-';
     const [ano, mes, dia] = iso.split('-');
     return `${dia}/${mes}/${ano}`;
-  };
-
-  const criarDataLocal = (iso) => {
-    const [ano, mes, dia] = String(iso || '').split('-').map(Number);
-    if (!ano || !mes || !dia) return null;
-    return new Date(ano, mes - 1, dia);
-  };
-
-  const calcularParcelas = (valorTotal, primeiroVencimento, totalParcelas) => {
-    if (!valorTotal || totalParcelas <= 1 || !primeiroVencimento) return [];
-
-    const base = Math.floor((valorTotal / totalParcelas) * 100) / 100;
-    const resto = Number((valorTotal - base * totalParcelas).toFixed(2));
-    const parcelas = [];
-    const dataBase = criarDataLocal(primeiroVencimento);
-    if (!dataBase || Number.isNaN(dataBase.getTime())) return [];
-
-    for (let i = 1; i <= totalParcelas; i += 1) {
-      const valorParcela = i === totalParcelas ? Number((base + resto).toFixed(2)) : Number(base.toFixed(2));
-      const data = new Date(dataBase);
-      data.setMonth(data.getMonth() + (i - 1));
-      parcelas.push({
-        numero_parcela: i,
-        valor: valorParcela,
-        data_vencimento: formatarDataISO(data),
-      });
-    }
-
-    return parcelas;
   };
 
   const pagamentoModoSelect = document.getElementById('lancamento-pagamento-modo');
@@ -304,7 +271,7 @@ function iniciarNovoLancamento() {
     if (parcelado) {
       parcelamentoPanel?.removeAttribute('hidden');
       if (totalParcelasInput) totalParcelasInput.disabled = false;
-      const parcelas = calcularParcelas(valor, primeiraParcela, totalParcelas);
+      const parcelas = _calcularParcelas(valor, primeiraParcela, totalParcelas);
       valorParcelaInput.value = parcelas.length > 0 ? formatarMoeda(parcelas[0].valor) : '';
     } else {
       parcelamentoPanel?.setAttribute('hidden', '');
@@ -425,7 +392,7 @@ function iniciarNovoLancamento() {
     const dataVencimento = document.getElementById('lancamento-vencimento')?.value;
     const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value || dataVencimento;
     const dataPagamento = modo === 'liquidar'
-      ? document.getElementById('lancamento-pagamento')?.value || formatarDataISO(new Date())
+      ? document.getElementById('lancamento-pagamento')?.value || _formatarDataISO(new Date())
       : null;
 
     const inputPessoa = document.getElementById('lancamento-pessoa');
@@ -445,7 +412,7 @@ function iniciarNovoLancamento() {
       observacao: document.getElementById('lancamento-observacao')?.value,
       fk_conta_regente: document.getElementById('lancamento-conta')?.value || null,
       fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
-      dataLancamento: formatarDataISO(new Date()),
+      dataLancamento: _formatarDataISO(new Date()),
       data_pagamento: dataPagamento,
       valor_pago: dataPagamento ? valorTotal : null,
       data_vencimento: pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
@@ -454,7 +421,7 @@ function iniciarNovoLancamento() {
 
     if (pagamentoModo === 'parcelado' && totalParcelas > 1) {
       payload.total_parcelas = totalParcelas;
-      payload.parcelas = calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
+      payload.parcelas = _calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
     }
 
     return payload;
@@ -709,14 +676,14 @@ async function carregarListaLancamentos(filtro) {
   if (filtro === undefined) {
       try {
         const resposta = await api.get('/financeiro/lancamentos/listar.php?limite=50');
-        window._lancamentosData = resposta.dados || resposta.lancamentos || [];
+        _lancamentosData = resposta.dados || resposta.lancamentos || [];
       } catch (erro) {
         tbody.innerHTML = `<tr><td colspan="7" class="financeiro__estado-tabela financeiro__estado-tabela--erro">${escaparHtml(erro.message)}</td></tr>`;
         return;
       }
     }
 
-  const dados = window._lancamentosData || [];
+  const dados = _lancamentosData;
   const busca = (filtro || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   const filtrados = busca
@@ -931,35 +898,6 @@ async function iniciarRegistrarLancamento() {
   const primeiraParcelaInput = document.getElementById('lancamento-primeira-parcela');
   const parcelamentoPanel    = document.getElementById('parcelamento-panel');
 
-  const formatarDataISO = (data) => {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const dia = String(data.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
-  };
-
-  const criarDataLocal = (iso) => {
-    const [ano, mes, dia] = String(iso || '').split('-').map(Number);
-    if (!ano || !mes || !dia) return null;
-    return new Date(ano, mes - 1, dia);
-  };
-
-  const calcularParcelas = (valorTotal, primeiroVencimento, totalParcelas) => {
-    if (!valorTotal || totalParcelas <= 1 || !primeiroVencimento) return [];
-    const base = Math.floor((valorTotal / totalParcelas) * 100) / 100;
-    const resto = Number((valorTotal - base * totalParcelas).toFixed(2));
-    const parcelas = [];
-    const dataBase = criarDataLocal(primeiroVencimento);
-    if (!dataBase || Number.isNaN(dataBase.getTime())) return [];
-    for (let i = 1; i <= totalParcelas; i += 1) {
-      const valorParcela = i === totalParcelas ? Number((base + resto).toFixed(2)) : Number(base.toFixed(2));
-      const data = new Date(dataBase);
-      data.setMonth(data.getMonth() + (i - 1));
-      parcelas.push({ numero_parcela: i, valor: valorParcela, data_vencimento: formatarDataISO(data) });
-    }
-    return parcelas;
-  };
-
   const atualizarParcelamento = () => {
     const valor        = Number(document.getElementById('lancamento-valor')?.value || 0);
     const modo         = pagamentoModoSelect?.value || 'avista';
@@ -970,7 +908,7 @@ async function iniciarRegistrarLancamento() {
     if (parcelado) {
       parcelamentoPanel?.removeAttribute('hidden');
       if (totalParcelasInput) totalParcelasInput.disabled = false;
-      const parcelas = calcularParcelas(valor, primeiraParcela, totalParcelas);
+      const parcelas = _calcularParcelas(valor, primeiraParcela, totalParcelas);
       if (valorParcelaInput) valorParcelaInput.value = parcelas.length > 0 ? formatarMoeda(parcelas[0].valor) : '';
     } else {
       parcelamentoPanel?.setAttribute('hidden', '');
@@ -1068,7 +1006,7 @@ async function iniciarRegistrarLancamento() {
       observacao:          document.getElementById('lancamento-observacao')?.value,
       fk_conta_regente:    document.getElementById('lancamento-conta')?.value || null,
       fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
-      dataLancamento:      formatarDataISO(new Date()),
+      dataLancamento:      _formatarDataISO(new Date()),
       data_pagamento:      null,
       valor_pago:          null,
       data_vencimento:     pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
@@ -1079,7 +1017,7 @@ async function iniciarRegistrarLancamento() {
       const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
       if (totalParcelas > 1) {
         payload.total_parcelas = totalParcelas;
-        payload.parcelas = calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
+        payload.parcelas = _calcularParcelas(valorTotal, primeiraParcela, totalParcelas);
         if (payload.parcelas.length !== totalParcelas) {
           Toast.erro('Preencha corretamente a data da primeira parcela e o número de parcelas.');
           return;
@@ -1693,7 +1631,7 @@ async function renderizarContasSubordinadas() {
 function calcularResumo(lista) {
   const receitas = somar(lista.filter((item) => item.tipo === 'receita'), 'valor');
   const despesas = somar(lista.filter((item) => item.tipo === 'despesa'), 'valor');
-  const pendentes = somar(lista.filter((item) => item.status !== 'pago'), 'valor');
+  const pendentes = somar(lista.filter((item) => item.status === 'pendente' || item.status === 'atrasado'), 'valor');
   return { receitas, despesas, saldo: receitas - despesas, pendentes };
 }
 

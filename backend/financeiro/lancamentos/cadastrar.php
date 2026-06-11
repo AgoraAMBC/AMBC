@@ -1,21 +1,17 @@
 <?php
+declare(strict_types=1);
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../helpers.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+configurarCors();
+verificarAutenticacao();
 
-require_once '../../config/database.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonErro('Método não permitido', 405);
 
-$pdo = obterConexao();
-$dados = json_decode(file_get_contents("php://input"), true);
+$dados = corpoJson();
 
-function parseDecimal($valor) {
+function parseDecimal(mixed $valor): ?float {
     if ($valor === null || $valor === '') return null;
     $valor = preg_replace('/[^\d,\.]/', '', (string)$valor);
     $valor = str_replace(',', '.', $valor);
@@ -42,34 +38,13 @@ $parcelas             = $dados['parcelas'] ?? [];
 $isParcelado          = $total_parcelas > 1;
 
 if ($isParcelado && (!is_array($parcelas) || count($parcelas) !== $total_parcelas)) {
-    http_response_code(422);
-    echo json_encode(["sucesso" => false, "erro" => "Número de parcelas inválido ou dados de parcelamento incompletos."]);
-    exit;
+    jsonErro('Número de parcelas inválido ou dados de parcelamento incompletos.', 422);
 }
 
-if (!$descricao) {
-    http_response_code(422);
-    echo json_encode(["sucesso" => false, "erro" => "Descrição é obrigatória."]);
-    exit;
-}
-
-if (!$valor || $valor <= 0) {
-    http_response_code(422);
-    echo json_encode(["sucesso" => false, "erro" => "Valor inválido."]);
-    exit;
-}
-
-if (!$fk_tipo_lancamento) {
-    http_response_code(422);
-    echo json_encode(["sucesso" => false, "erro" => "Tipo de lançamento é obrigatório."]);
-    exit;
-}
-
-if (!$fk_status_conta) {
-    http_response_code(422);
-    echo json_encode(["sucesso" => false, "erro" => "Status do lançamento é obrigatório."]);
-    exit;
-}
+if (!$descricao) jsonErro('Descrição é obrigatória.', 422);
+if (!$valor || $valor <= 0) jsonErro('Valor inválido.', 422);
+if (!$fk_tipo_lancamento) jsonErro('Tipo de lançamento é obrigatório.', 422);
+if (!$fk_status_conta) jsonErro('Status do lançamento é obrigatório.', 422);
 
 if ((int)$fk_status_conta === 2) {
     $data_pagamento = $data_pagamento ?: date('Y-m-d');
@@ -80,13 +55,14 @@ if ((int)$fk_status_conta === 2) {
 }
 
 try {
+    $pdo = obterConexao();
     $pdo->beginTransaction();
 
     if ($fk_conta_regente) {
         $stmtConta = $pdo->prepare('SELECT id_conta_regente FROM conta_regente WHERE id_conta_regente = :id AND ativo = TRUE');
         $stmtConta->execute([':id' => $fk_conta_regente]);
         if (!$stmtConta->fetch()) {
-            throw new Exception('Conta regente nÃ£o encontrada ou inativa.');
+            throw new Exception('Conta regente não encontrada ou inativa.');
         }
     }
 
@@ -107,7 +83,7 @@ try {
         $stmtSubconta = $pdo->prepare($sqlSubconta);
         $stmtSubconta->execute($paramsSubconta);
         if (!$stmtSubconta->fetch()) {
-            throw new Exception('Conta subordinada nÃ£o encontrada, inativa ou incompatÃ­vel com a conta regente.');
+            throw new Exception('Conta subordinada não encontrada, inativa ou incompatível com a conta regente.');
         }
     }
 
@@ -125,11 +101,11 @@ try {
         ':data_lancamento'      => $data_lancamento ?: null,
         ':data_vencimento'      => $data_vencimento ?: null,
         ':data_pagamento'       => $data_pagamento ?: null,
-        ':observacao'           => $observacao ?: null
+        ':observacao'           => $observacao ?: null,
     ];
 
     if ($id_lancamento) {
-        $sql = "
+        $sql = '
             UPDATE lancamento SET
                 fk_conta_regente     = :fk_conta_regente,
                 fk_conta_subordinada = :fk_conta_subordinada,
@@ -146,54 +122,30 @@ try {
                 data_pagamento       = :data_pagamento,
                 observacao           = :observacao
             WHERE id_lancamento = :id_lancamento
-        ";
+        ';
         $params[':id_lancamento'] = $id_lancamento;
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $mensagem = 'Lançamento atualizado com sucesso';
     } else {
-        if ($isParcelado && (!is_array($parcelas) || count($parcelas) !== $total_parcelas)) {
-            throw new Exception('Número de parcelas inválido ou dados de parcelamento incompletos.');
-        }
-
-        $sql = "
+        $sql = '
             INSERT INTO lancamento (
-                fk_conta_regente,
-                fk_conta_subordinada,
-                fk_tipo_lancamento,
-                fk_forma_pagamento,
-                fk_status_conta,
-                fk_associado,
-                fk_parceiro,
-                descricao,
-                valor,
-                valor_pago,
-                data_lancamento,
-                data_vencimento,
-                data_pagamento,
-                observacao
+                fk_conta_regente, fk_conta_subordinada, fk_tipo_lancamento,
+                fk_forma_pagamento, fk_status_conta, fk_associado, fk_parceiro,
+                descricao, valor, valor_pago, data_lancamento,
+                data_vencimento, data_pagamento, observacao
             ) VALUES (
-                :fk_conta_regente,
-                :fk_conta_subordinada,
-                :fk_tipo_lancamento,
-                :fk_forma_pagamento,
-                :fk_status_conta,
-                :fk_associado,
-                :fk_parceiro,
-                :descricao,
-                :valor,
-                :valor_pago,
-                :data_lancamento,
-                :data_vencimento,
-                :data_pagamento,
-                :observacao
+                :fk_conta_regente, :fk_conta_subordinada, :fk_tipo_lancamento,
+                :fk_forma_pagamento, :fk_status_conta, :fk_associado, :fk_parceiro,
+                :descricao, :valor, :valor_pago, :data_lancamento,
+                :data_vencimento, :data_pagamento, :observacao
             )
-        ";
+        ';
 
         if ($isParcelado) {
             $somaParcelas = 0;
             foreach ($parcelas as $parcela) {
-                $parcelaValor = parseDecimal($parcela['valor'] ?? null);
+                $parcelaValor     = parseDecimal($parcela['valor'] ?? null);
                 $parcelaVencimento = $parcela['data_vencimento'] ?? null;
 
                 if (!$parcelaValor || !$parcelaVencimento) {
@@ -201,42 +153,30 @@ try {
                 }
 
                 $somaParcelas += $parcelaValor;
-                $descricaoParcela = sprintf('%s (Parcela %d/%d)', $descricao, (int)$parcela['numero_parcela'], $total_parcelas);
-
-                $params[':descricao'] = $descricaoParcela;
-                $params[':valor'] = $parcelaValor;
-                $params[':valor_pago'] = $data_pagamento ? $parcelaValor : null;
+                $params[':descricao']     = sprintf('%s (Parcela %d/%d)', $descricao, (int)$parcela['numero_parcela'], $total_parcelas);
+                $params[':valor']         = $parcelaValor;
+                $params[':valor_pago']    = $data_pagamento ? $parcelaValor : null;
                 $params[':data_vencimento'] = $parcelaVencimento;
 
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute($params);
+                $pdo->prepare($sql)->execute($params);
             }
 
             if (round($somaParcelas, 2) !== round($valor, 2)) {
                 throw new Exception('A soma das parcelas deve ser igual ao valor total.');
             }
         } else {
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute($params);
+            $pdo->prepare($sql)->execute($params);
         }
 
         $mensagem = 'Lançamento cadastrado com sucesso';
     }
 
     $pdo->commit();
+    jsonResposta(['sucesso' => true, 'mensagem' => $mensagem]);
 
-    echo json_encode([
-        "sucesso" => true,
-        "mensagem" => $mensagem
-    ]);
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) {
+    if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
-
-    http_response_code(500);
-    echo json_encode([
-        "sucesso" => false,
-        "erro" => $e->getMessage()
-    ]);
+    jsonErro($e->getMessage(), 500);
 }

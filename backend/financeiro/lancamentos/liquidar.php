@@ -1,54 +1,28 @@
 <?php
 declare(strict_types=1);
 
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Content-Type: application/json');
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../helpers.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
+configurarCors();
+verificarAutenticacao();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['erro' => 'Método não permitido']);
-    exit;
-}
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonErro('Método não permitido', 405);
 
-require_once '../../config/database.php';
+$dados = corpoJson();
+if (!$dados) jsonErro('Payload inválido', 400);
 
-$dados = json_decode(file_get_contents('php://input'), true);
-if (!$dados || !is_array($dados)) {
-    http_response_code(400);
-    echo json_encode(['erro' => 'Payload inválido']);
-    exit;
-}
+$id_lancamento      = isset($dados['id_lancamento'])      ? (int)$dados['id_lancamento']      : 0;
+$acao               = $dados['acao']                      ?? 'liquidar';
+$valor_pago         = isset($dados['valor_pago'])         ? (float)$dados['valor_pago']        : null;
+$data_pagamento     = $dados['data_pagamento']            ?? null;
+$fk_forma_pagamento = isset($dados['fk_forma_pagamento']) ? (int)$dados['fk_forma_pagamento']  : null;
 
-$id_lancamento       = isset($dados['id_lancamento'])       ? (int)$dados['id_lancamento']       : 0;
-$acao                = $dados['acao']                       ?? 'liquidar'; // 'liquidar' | 'cancelar'
-$valor_pago          = isset($dados['valor_pago'])          ? (float)$dados['valor_pago']         : null;
-$data_pagamento      = $dados['data_pagamento']             ?? null;
-$fk_forma_pagamento  = isset($dados['fk_forma_pagamento'])  ? (int)$dados['fk_forma_pagamento']   : null;
-
-if ($id_lancamento <= 0) {
-    http_response_code(422);
-    echo json_encode(['erro' => 'ID do lançamento inválido']);
-    exit;
-}
+if ($id_lancamento <= 0) jsonErro('ID do lançamento inválido', 422);
 
 if ($acao === 'liquidar') {
-    if (!$valor_pago || $valor_pago <= 0) {
-        http_response_code(422);
-        echo json_encode(['erro' => 'Valor recebido deve ser maior que zero']);
-        exit;
-    }
-    if (!$data_pagamento) {
-        http_response_code(422);
-        echo json_encode(['erro' => 'Data do pagamento é obrigatória']);
-        exit;
-    }
+    if (!$valor_pago || $valor_pago <= 0) jsonErro('Valor recebido deve ser maior que zero', 422);
+    if (!$data_pagamento) jsonErro('Data do pagamento é obrigatória', 422);
 }
 
 try {
@@ -58,24 +32,16 @@ try {
     $stmt->execute([':id' => $id_lancamento]);
     $lancamento = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$lancamento) {
-        http_response_code(404);
-        echo json_encode(['erro' => 'Lançamento não encontrado']);
-        exit;
-    }
+    if (!$lancamento) jsonErro('Lançamento não encontrado', 404);
 
     if ((int)$lancamento['fk_status_conta'] !== 1) {
-        http_response_code(409);
-        echo json_encode(['erro' => 'Somente lançamentos em aberto podem ser alterados']);
-        exit;
+        jsonErro('Somente lançamentos em aberto podem ser alterados', 409);
     }
 
     if ($acao === 'cancelar') {
         $pdo->prepare('UPDATE lancamento SET fk_status_conta = 3, atualizado_em = NOW() WHERE id_lancamento = :id')
             ->execute([':id' => $id_lancamento]);
-
-        echo json_encode(['sucesso' => true, 'mensagem' => 'Lançamento cancelado com sucesso']);
-        exit;
+        jsonResposta(['sucesso' => true, 'mensagem' => 'Lançamento cancelado com sucesso']);
     }
 
     $stmt = $pdo->prepare('SELECT valor FROM lancamento WHERE id_lancamento = :id LIMIT 1');
@@ -83,7 +49,9 @@ try {
     $valor_total = (float)$stmt->fetchColumn();
 
     $novo_status = ($valor_pago >= $valor_total) ? 2 : 1;
-    $mensagem    = ($novo_status === 2) ? 'Lançamento liquidado com sucesso' : 'Pagamento parcial registrado. Lançamento permanece em aberto';
+    $mensagem    = ($novo_status === 2)
+        ? 'Lançamento liquidado com sucesso'
+        : 'Pagamento parcial registrado. Lançamento permanece em aberto';
 
     $pdo->prepare('
         UPDATE lancamento
@@ -101,9 +69,8 @@ try {
         ':id'                 => $id_lancamento,
     ]);
 
-    echo json_encode(['sucesso' => true, 'mensagem' => $mensagem]);
+    jsonResposta(['sucesso' => true, 'mensagem' => $mensagem]);
 
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['erro' => 'Erro ao processar lançamento: ' . $e->getMessage()]);
+    jsonErro('Erro ao processar lançamento: ' . $e->getMessage(), 500);
 }
