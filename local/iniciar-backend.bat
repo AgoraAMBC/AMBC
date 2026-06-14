@@ -1,6 +1,6 @@
 @echo off
 title AMBC — Backend PHP
-cd /d C:\Projetos\AMBCV3\ambc\ambc
+cd /d C:\ambc
 echo.
 echo  ========================================
 echo   AMBC V2 — Backend rodando em :8080
