@@ -43,6 +43,13 @@ const config = {
         // Tenta parsear JSON mesmo em caso de erro (backend pode retornar { error: ... })
         const data = await response.json().catch(() => null);
 
+        if (response.status === 401) {
+            localStorage.removeItem('ambc_sessao');
+            sessionStorage.removeItem('ambc_sessao');
+            window.location.replace(new URL('login.html', window.location.href).href);
+            throw new Error('Sessão expirada');
+        }
+
         if (!response.ok) {
             const erro = new Error(data?.erro || data?.error || data?.mensagem || `Erro HTTP ${response.status}`);
             erro.status  = response.status;
