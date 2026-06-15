@@ -30,22 +30,36 @@
           <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Buscar associado ou parceiro..." autocomplete="off" />
         </div>
 
-        <div class="campo form-col-4">
-          <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor</label>
+        <div class="campo form-col-6">
+          <label class="form-label" for="lancamento-plano">Plano de associação</label>
+          <select class="form-input" id="lancamento-plano">
+            <option value="">Sem plano vinculado</option>
+          </select>
+        </div>
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo do lançamento</label>
+          <select class="form-input" id="lancamento-tipo" required>
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+
+        <div class="campo form-col-6">
+          <label class="form-label form-label-obrigatorio" for="lancamento-valor">Valor total a cobrar</label>
           <input class="form-input" id="lancamento-valor" type="number" min="0" step="0.01" placeholder="0,00" required />
         </div>
-        <div class="campo form-col-4">
+        <div class="campo form-col-6" id="campo-pagamento-modo">
           <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
           <select class="form-input" id="lancamento-pagamento-modo" required>
             <option value="avista">À vista</option>
             <option value="parcelado">Parcelado</option>
           </select>
         </div>
-        <div class="campo form-col-4">
-          <label class="form-label form-label-obrigatorio" for="lancamento-tipo">Tipo do lançamento</label>
-          <select class="form-input" id="lancamento-tipo" required>
-            <option value="">Selecione...</option>
-          </select>
+
+        <div class="campo form-col-12" id="plano-info-panel" hidden>
+          <div style="background:var(--cor-superficie-2,#f0f4ff);border:1px solid var(--cor-borda);border-radius:var(--raio-md);padding:var(--esp-sm) var(--esp-md);font-size:0.9em;color:var(--cor-texto-secundario)">
+            <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">info</span>
+            <span id="plano-info-texto"></span>
+          </div>
         </div>
 
         <div class="campo form-col-6">

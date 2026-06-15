@@ -1108,6 +1108,105 @@ async function iniciarRegistrarLancamento() {
   carregarTiposLancamento();
   preencherSelectsRegistrarLancamento();
 
+  // ── Carregar planos de associação ──
+  let _planosCache = null;
+  const carregarPlanos = async () => {
+    if (_planosCache) return _planosCache;
+    try {
+      const { dados } = await api.get('/planos/listar.php');
+      _planosCache = (dados || []).filter((p) => p.ativo);
+      return _planosCache;
+    } catch (e) {
+      console.warn('[Financeiro] Não foi possível carregar planos:', e.message);
+      return [];
+    }
+  };
+
+  const planoSelect = document.getElementById('lancamento-plano');
+  if (planoSelect) {
+    carregarPlanos().then((planos) => {
+      planos.forEach((p) => {
+        const opt = document.createElement('option');
+        opt.value = p.id_plano;
+        opt.textContent = `${p.nome} — R$ ${Number(p.preco).toFixed(2).replace('.', ',')}/${p.periodo}`;
+        opt.dataset.preco   = p.preco;
+        opt.dataset.periodo = p.periodo;
+        planoSelect.appendChild(opt);
+      });
+    });
+
+    const hPlano = async () => {
+      const opt     = planoSelect.selectedOptions[0];
+      const painel  = document.getElementById('plano-info-panel');
+      const infoTxt = document.getElementById('plano-info-texto');
+      const campoModo = document.getElementById('campo-pagamento-modo');
+
+      if (!opt?.value) {
+        if (painel)    painel.hidden  = true;
+        if (campoModo) campoModo.hidden = false;
+        return;
+      }
+
+      const preco   = parseFloat(opt.dataset.preco || 0);
+      const periodo = opt.dataset.periodo || '';
+
+      // Auto-selecionar tipo correspondente ao período do plano
+      const tipoSelectLocal = document.getElementById('lancamento-tipo');
+      if (tipoSelectLocal) {
+        const opcoes = [...tipoSelectLocal.options];
+        const match  = opcoes.find((o) => o.textContent.toLowerCase().includes(periodo.toLowerCase()));
+        if (match) {
+          tipoSelectLocal.value = match.value;
+          tipoSelectLocal.dispatchEvent(new Event('change'));
+        }
+      }
+
+      if (periodo === 'anuidade') {
+        const agora           = new Date();
+        const mesAtual        = agora.getMonth() + 1; // 1–12
+        const mesesRestantes  = 13 - mesAtual;        // mês atual até dezembro inclusive
+        const mensalidade     = preco / 12;
+        const totalDevido     = parseFloat((mensalidade * mesesRestantes).toFixed(2));
+
+        // Preencher campos
+        const campoValor = document.getElementById('lancamento-valor');
+        if (campoValor) campoValor.value = totalDevido;
+
+        if (pagamentoModoSelect) pagamentoModoSelect.value = 'parcelado';
+        if (totalParcelasInput)  totalParcelasInput.value  = mesesRestantes;
+
+        const primParc = document.getElementById('lancamento-primeira-parcela');
+        if (primParc && !primParc.value) {
+          const mes = String(mesAtual).padStart(2, '0');
+          primParc.value = `${agora.getFullYear()}-${mes}-01`;
+        }
+
+        // Ocultar seletor de modo (sempre parcelado para anuidade)
+        if (campoModo) campoModo.hidden = true;
+
+        // Painel informativo
+        if (painel && infoTxt) {
+          const mesNome = agora.toLocaleString('pt-BR', { month: 'long' });
+          infoTxt.textContent =
+            `Plano anual: ${mesesRestantes} mensalidades de R$ ${mensalidade.toFixed(2).replace('.', ',')} ` +
+            `(de ${mesNome} a dezembro). Total a cobrar: R$ ${totalDevido.toFixed(2).replace('.', ',')}.`;
+          painel.hidden = false;
+        }
+      } else {
+        // Para outros períodos: valor direto, à vista por padrão
+        const campoValor = document.getElementById('lancamento-valor');
+        if (campoValor) campoValor.value = preco;
+        if (campoModo) campoModo.hidden = false;
+        if (painel)    painel.hidden     = true;
+      }
+
+      atualizar();
+    };
+
+    planoSelect.addEventListener('change', hPlano);
+    cleanup.push(() => planoSelect.removeEventListener('change', hPlano));
+  }
+
   const pagamentoModoSelect  = document.getElementById('lancamento-pagamento-modo');
   const totalParcelasInput   = document.getElementById('lancamento-total-parcelas');
   const valorParcelaInput    = document.getElementById('lancamento-valor-parcela');
@@ -1190,49 +1289,11 @@ async function iniciarRegistrarLancamento() {
   const tipoSelectElR = document.getElementById('lancamento-tipo');
   if (tipoSelectElR) {
     const h = async () => {
-      const tipoId   = tipoSelectElR.value;
-      const tipoNome = (tipoSelectElR.selectedOptions[0]?.textContent || '').toLowerCase().trim();
-
+      const tipoId = tipoSelectElR.value;
       if (!tipoId) {
         preencherSelectsRegistrarLancamento();
         return;
       }
-
-      // Auto-preenche valor e parcelas com base no plano de associação
-      const periodoMap = { anuidade: 'anuidade', mensalidade: 'mensalidade', semestral: 'semestral' };
-      const periodoChave = Object.keys(periodoMap).find((k) => tipoNome.includes(k));
-      if (periodoChave) {
-        try {
-          const { dados: planos } = await api.get('/planos/listar.php');
-          const plano = (planos || []).find((p) => p.ativo && p.periodo === periodoMap[periodoChave]);
-          if (plano) {
-            const campoValor = document.getElementById('lancamento-valor');
-            if (campoValor && !campoValor.value) campoValor.value = plano.preco;
-
-            // Para anuidade: parcelas automáticas do mês atual até dezembro
-            if (periodoChave === 'anuidade') {
-              const agora = new Date();
-              const mesesRestantes = 13 - (agora.getMonth() + 1); // mês atual até dez inclusive
-              const modoSelect = document.getElementById('lancamento-pagamento-modo');
-              if (modoSelect) modoSelect.value = 'parcelado';
-
-              const totalParc = document.getElementById('lancamento-total-parcelas');
-              if (totalParc) totalParc.value = mesesRestantes;
-
-              // Primeiro vencimento = dia 1 do mês atual
-              const primParc = document.getElementById('lancamento-primeira-parcela');
-              if (primParc && !primParc.value) {
-                const mes = String(agora.getMonth() + 1).padStart(2, '0');
-                primParc.value = `${agora.getFullYear()}-${mes}-01`;
-              }
-            }
-            atualizar();
-          }
-        } catch (e) {
-          console.warn('[Financeiro] Não foi possível carregar planos:', e.message);
-        }
-      }
-
       // Auto-preenche conta/subconta via relacionamento
       try {
         const response = await api.get(`/relacionamentos/obter-por-tipo.php?fk_tipo_lancamento=${tipoId}`);
@@ -1432,7 +1493,15 @@ async function iniciarRegistrarLancamento() {
 
   const btnLimpar = document.getElementById('btn-limpar');
   if (btnLimpar) {
-    const h = () => { form.reset(); limparAside(); atualizar(); };
+    const h = () => {
+      form.reset();
+      limparAside();
+      const painel    = document.getElementById('plano-info-panel');
+      const campoModo = document.getElementById('campo-pagamento-modo');
+      if (painel)    painel.hidden    = true;
+      if (campoModo) campoModo.hidden = false;
+      atualizar();
+    };
     btnLimpar.addEventListener('click', h);
     cleanup.push(() => btnLimpar.removeEventListener('click', h));
   }
