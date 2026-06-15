@@ -1342,6 +1342,8 @@ async function iniciarRegistrarLancamento() {
               ? `${pagos} ${pagos === 1 ? 'mês pago' : 'meses pagos'} • ${aCobrar} a cobrar = R$ ${emAberto.toFixed(2).replace('.', ',')} em aberto`
               : 'Todos os meses marcados como pagos.';
             atualizar();
+            const elResumoValor = document.getElementById('resumo-valor');
+            if (elResumoValor) elResumoValor.textContent = formatarMoeda(emAberto);
           };
           grid.addEventListener('change', atualizarMeses);
           atualizarMeses();
@@ -1411,9 +1413,10 @@ async function iniciarRegistrarLancamento() {
       const vencimentoVal = document.getElementById('lancamento-vencimento')?.value;
 
       const el = (id) => document.getElementById(id);
+      const mesesAtivo = !document.getElementById('parcelamento-meses')?.hidden;
       if (el('resumo-nome'))       el('resumo-nome').textContent      = descricao;
       if (el('resumo-tipo'))       el('resumo-tipo').textContent      = tipoTexto;
-      if (el('resumo-valor'))      el('resumo-valor').textContent     = formatarMoeda(valor);
+      if (el('resumo-valor') && !mesesAtivo) el('resumo-valor').textContent = formatarMoeda(valor);
       if (el('resumo-vencimento')) el('resumo-vencimento').textContent = vencimentoVal ? formatarData(vencimentoVal) : '—';
       if (el('resumo-conta'))      el('resumo-conta').textContent     = contaSelect?.selectedOptions[0]?.textContent || '—';
       if (el('resumo-subconta'))   el('resumo-subconta').textContent  = subcontaSelect?.selectedOptions[0]?.textContent || '—';
@@ -1869,11 +1872,22 @@ async function iniciarRegistrarLancamento() {
       const row = e.target.closest('tr[data-id]');
       if (!row) return;
 
+      const _grupoId = row.dataset.grupoFilho ? parseInt(row.dataset.grupoFilho) : null;
+      let _valorEmAberto;
+      if (_grupoId) {
+        _valorEmAberto = _abertosData
+          .filter((p) => p.fk_parcelamento === _grupoId && p.status !== 'pago' && p.status !== 'cancelado')
+          .reduce((s, p) => s + Math.max(0, p.valor - (p.valor_pago || 0)), 0);
+      } else {
+        const _vp = parseFloat(row.dataset.valorPago || 0);
+        _valorEmAberto = Math.max(0, parseFloat(row.dataset.valor) - _vp);
+      }
+
       document.getElementById('liquidar-lancamento-id').value  = row.dataset.id;
       document.getElementById('liquidar-valor-total').value    = row.dataset.valor;
       document.getElementById('resumo-nome').textContent       = row.dataset.descricao || '—';
       document.getElementById('resumo-tipo').textContent       = row.dataset.tipoNome   || '—';
-      document.getElementById('resumo-valor').textContent      = formatarMoeda(parseFloat(row.dataset.valor));
+      document.getElementById('resumo-valor').textContent      = formatarMoeda(_valorEmAberto);
       document.getElementById('resumo-vencimento').textContent = formatarData(row.dataset.vencimento);
       document.getElementById('resumo-conta').textContent      = row.dataset.conta    || '—';
       document.getElementById('resumo-subconta').textContent   = row.dataset.subconta || '—';
