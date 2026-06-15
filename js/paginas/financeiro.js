@@ -794,7 +794,7 @@ async function preencherSelectsRegistrarLancamento() {
 
 let _abertosData = [];
 
-async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 'todos') {
+async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 'todos', paginaAtual = 1, itensPorPagina = 30) {
   const tbody = document.getElementById('abertos-tbody');
   const vazio = document.getElementById('abertos-vazio');
   if (!tbody) return;
@@ -884,14 +884,31 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
   if (!gruposFiltrados.length && !avulsosFiltrados.length) {
     tbody.innerHTML = '';
     if (vazio) vazio.hidden = false;
+    _atualizarPaginacao(0, 0, 0, 1, 1);
     return;
   }
   if (vazio) vazio.hidden = true;
 
+  // Paginação sobre a lista combinada (grupos primeiro, depois avulsos)
+  const todosItens = [
+    ...gruposFiltrados.map((g) => ({ tipo: 'grupo',   dado: g })),
+    ...avulsosFiltrados.map((a) => ({ tipo: 'avulso', dado: a })),
+  ];
+  const totalItens   = todosItens.length;
+  const totalPaginas = Math.max(1, Math.ceil(totalItens / itensPorPagina));
+  const paginaNorm   = Math.min(Math.max(1, paginaAtual), totalPaginas);
+  const inicio       = (paginaNorm - 1) * itensPorPagina;
+  const itensPagina  = todosItens.slice(inicio, inicio + itensPorPagina);
+
+  const gruposPagina  = itensPagina.filter((i) => i.tipo === 'grupo').map((i) => i.dado);
+  const avulsosPagina = itensPagina.filter((i) => i.tipo === 'avulso').map((i) => i.dado);
+
+  _atualizarPaginacao(totalItens, inicio, Math.min(inicio + itensPorPagina, totalItens), paginaNorm, totalPaginas);
+
   const linhas = [];
 
   // Renderizar grupos (sempre primeiro)
-  for (const { grupoId, parcelas, statusGrupo, vencimentoGrupo } of gruposFiltrados) {
+  for (const { grupoId, parcelas, statusGrupo, vencimentoGrupo } of gruposPagina) {
     const ref         = parcelas[0];
     const valorTotal  = parcelas.reduce((s, p) => s + p.valor, 0);
     const valorPago   = parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0);
@@ -951,7 +968,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
   }
 
   // Renderizar avulsos
-  for (const item of avulsosFiltrados) {
+  for (const item of avulsosPagina) {
     const saldo = Math.max(0, item.valor - (item.valor_pago || 0));
     linhas.push(`
     <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
@@ -979,6 +996,20 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
 
 function _resetAbertosCache() {
   _abertosData = [];
+}
+
+function _atualizarPaginacao(totalItens, inicio, fim, paginaAtual, totalPaginas) {
+  const pagEl  = document.getElementById('abertos-paginacao');
+  const infoEl = document.getElementById('abertos-pag-info');
+  const btnAnt = document.getElementById('abertos-pag-anterior');
+  const btnProx = document.getElementById('abertos-pag-proxima');
+  if (!pagEl) return;
+  pagEl.hidden = totalItens === 0;
+  if (infoEl)  infoEl.textContent = totalItens > 0
+    ? `${inicio + 1}–${fim} de ${totalItens} itens • Página ${paginaAtual} de ${totalPaginas}`
+    : '';
+  if (btnAnt)  btnAnt.disabled  = paginaAtual <= 1;
+  if (btnProx) btnProx.disabled = paginaAtual >= totalPaginas;
 }
 
 function _hojeISO() {
@@ -1064,7 +1095,7 @@ async function executarLiquidacaoLote(recarregar) {
 }
 
 // ── Modal simples ───────────────────────────────────────────────────
-function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor) {
+function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelamento = null) {
   const hoje = new Date();
   const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
 
@@ -1076,6 +1107,43 @@ function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor) {
   document.getElementById('liquidar-valor-pago').value       = valor;
   document.getElementById('liquidar-data-pagamento').value   = hojeISO;
   document.getElementById('liquidar-forma-pagamento').value  = '1';
+
+  const outrasEl = document.getElementById('liquidar-outras-parcelas');
+  const listaEl  = document.getElementById('liquidar-outras-parcelas-lista');
+  if (outrasEl && listaEl) {
+    const outras = fkParcelamento
+      ? _abertosData.filter((p) => p.fk_parcelamento === fkParcelamento && p.id !== id)
+      : [];
+    if (outras.length) {
+      listaEl.innerHTML = [...outras]
+        .sort((a, b) => (a.numero_parcela || 0) - (b.numero_parcela || 0))
+        .map((p) => `
+          <label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--cor-superficie-2,#f8f9fa);border-radius:4px;font-size:0.85rem;cursor:pointer">
+            <input type="checkbox" data-parcela-id="${p.id}" data-parcela-valor="${p.valor}" style="flex-shrink:0" />
+            <span style="flex:1">${escaparHtml(p.descricao)}</span>
+            <span style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+              <span style="color:var(--cor-texto-secundario)">${formatarData(p.vencimento)}</span>
+              ${badgeStatus(p.status)}
+              <span style="font-weight:600">${formatarMoeda(p.valor)}</span>
+            </span>
+          </label>`)
+        .join('');
+      const atualizarTotal = () => {
+        const extras   = [...listaEl.querySelectorAll('input[type=checkbox]:checked')]
+          .reduce((s, cb) => s + parseFloat(cb.dataset.parcelaValor || 0), 0);
+        const total    = valor + extras;
+        const campoEl  = document.getElementById('liquidar-valor-pago');
+        const totalEl  = document.getElementById('liquidar-total-selecionado');
+        if (campoEl)  campoEl.value         = total.toFixed(2);
+        if (totalEl)  totalEl.textContent   = formatarMoeda(total);
+      };
+      listaEl.addEventListener('change', atualizarTotal);
+      atualizarTotal();
+      outrasEl.hidden = false;
+    } else {
+      outrasEl.hidden = true;
+    }
+  }
 
   document.getElementById('modal-liquidar-fundo').hidden = false;
   document.getElementById('modal-liquidar').hidden       = false;
@@ -1107,13 +1175,30 @@ async function executarLiquidacao(acao) {
   if (btn) btn.disabled = true;
 
   try {
-    const resp = await api.post('/financeiro/lancamentos/liquidar.php', {
-      id_lancamento:      id,
-      acao,
-      valor_pago:         acao === 'liquidar' ? valorPago : undefined,
-      data_pagamento:     acao === 'liquidar' ? dataPagamento : undefined,
-      fk_forma_pagamento: acao === 'liquidar' ? formasPagamento : undefined,
-    });
+    const checkboxesMarcadas = acao === 'liquidar'
+      ? [...document.querySelectorAll('#liquidar-outras-parcelas-lista input[type=checkbox]:checked')]
+      : [];
+
+    let resp;
+    if (checkboxesMarcadas.length > 0) {
+      const liquidacoes = [
+        { id, valor_pago: valorPago },
+        ...checkboxesMarcadas.map((cb) => ({ id: parseInt(cb.dataset.parcelaId), valor_pago: parseFloat(cb.dataset.parcelaValor) })),
+      ];
+      resp = await api.post('/financeiro/lancamentos/liquidar-lote.php', {
+        liquidacoes,
+        data_pagamento:     dataPagamento,
+        fk_forma_pagamento: formasPagamento,
+      });
+    } else {
+      resp = await api.post('/financeiro/lancamentos/liquidar.php', {
+        id_lancamento:      id,
+        acao,
+        valor_pago:         acao === 'liquidar' ? valorPago : undefined,
+        data_pagamento:     acao === 'liquidar' ? dataPagamento : undefined,
+        fk_forma_pagamento: acao === 'liquidar' ? formasPagamento : undefined,
+      });
+    }
     Toast.sucesso(resp.mensagem);
     fecharModalLiquidar();
     const asideId = document.getElementById('liquidar-lancamento-id');
@@ -1412,10 +1497,12 @@ async function iniciarRegistrarLancamento() {
   // ── Sort state local para tabela de abertos ──
   const sortAbertos = { coluna: null, direcao: 'asc' };
   let termoBuscaAbertos = '';
-  let filtroStatus = 'todos';
+  let filtroStatus    = 'todos';
+  let paginaAtual     = 1;
+  let itensPorPagina  = 30;
 
   const recarregarAbertos = async () => {
-    await carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus);
+    await carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus, paginaAtual, itensPorPagina);
     atualizarIndicadorSort();
   };
 
@@ -1453,6 +1540,7 @@ async function iniciarRegistrarLancamento() {
   if (filtrosStatusEl) {
     const hFiltro = () => {
       filtroStatus = filtrosStatusEl.value;
+      paginaAtual  = 1;
       recarregarAbertos();
     };
     filtrosStatusEl.addEventListener('change', hFiltro);
@@ -1463,11 +1551,50 @@ async function iniciarRegistrarLancamento() {
   if (buscaAbertos) {
     const hBusca = () => {
       termoBuscaAbertos = buscaAbertos.value;
-      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus);
+      paginaAtual = 1;
+      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus, paginaAtual, itensPorPagina);
     };
     buscaAbertos.addEventListener('input', hBusca);
     cleanup.push(() => buscaAbertos.removeEventListener('input', hBusca));
   }
+
+  const ordenarEl = document.getElementById('abertos-ordenar');
+  if (ordenarEl) {
+    const hOrdenar = () => {
+      const val = ordenarEl.value;
+      if (!val) {
+        sortAbertos.coluna  = null;
+        sortAbertos.direcao = 'asc';
+      } else {
+        const partes = val.split('-');
+        sortAbertos.direcao = partes.pop();
+        sortAbertos.coluna  = partes.join('-');
+      }
+      paginaAtual = 1;
+      recarregarAbertos();
+    };
+    ordenarEl.addEventListener('change', hOrdenar);
+    cleanup.push(() => ordenarEl.removeEventListener('change', hOrdenar));
+  }
+
+  const porPaginaEl = document.getElementById('abertos-por-pagina');
+  if (porPaginaEl) {
+    const hPorPagina = () => {
+      itensPorPagina = parseInt(porPaginaEl.value);
+      paginaAtual = 1;
+      recarregarAbertos();
+    };
+    porPaginaEl.addEventListener('change', hPorPagina);
+    cleanup.push(() => porPaginaEl.removeEventListener('change', hPorPagina));
+  }
+
+  document.getElementById('abertos-pag-anterior')?.addEventListener('click', () => {
+    if (paginaAtual > 1) { paginaAtual--; recarregarAbertos(); }
+  });
+  document.getElementById('abertos-pag-proxima')?.addEventListener('click', () => {
+    paginaAtual++;
+    recarregarAbertos();
+  });
 
   const salvarAberto = async (btnEl) => {
     if (!form.checkValidity()) { form.reportValidity(); return; }
@@ -1602,6 +1729,7 @@ async function iniciarRegistrarLancamento() {
             row.dataset.pessoa,
             row.dataset.vencimento,
             parseFloat(row.dataset.valor),
+            row.dataset.grupoFilho ? parseInt(row.dataset.grupoFilho) : null,
           );
         }
         return;
@@ -1663,6 +1791,7 @@ async function iniciarRegistrarLancamento() {
         row.dataset.pessoa,
         row.dataset.vencimento,
         parseFloat(row.dataset.valor),
+        row.dataset.grupoFilho ? parseInt(row.dataset.grupoFilho) : null,
       );
     };
     tbody.addEventListener('click', tbodyHandler);

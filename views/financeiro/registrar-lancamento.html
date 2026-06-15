@@ -163,13 +163,35 @@
         <p class="financeiro__secao-texto">Clique em um lançamento pendente para registrar o pagamento.</p>
       </div>
       <div style="display:flex;gap:var(--esp-sm);align-items:center;flex-wrap:wrap">
-        <select class="form-input" id="filtros-status" style="width:auto">
-          <option value="todos">Status: Todos</option>
-          <option value="pendente">Pendente</option>
-          <option value="atrasado">Atrasado</option>
-          <option value="pago">Pago</option>
-        </select>
-        <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar..." style="width:400px" />
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap">
+          Status
+          <select class="form-input" id="filtros-status" style="width:auto">
+            <option value="todos">Todos</option>
+            <option value="pendente">Pendente</option>
+            <option value="atrasado">Atrasado</option>
+            <option value="pago">Pago</option>
+          </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap">
+          Ordenar por
+          <select class="form-input" id="abertos-ordenar" style="width:auto">
+            <option value="">Padrão</option>
+            <option value="vencimento-asc">Vencimento ↑</option>
+            <option value="vencimento-desc">Vencimento ↓</option>
+            <option value="valor-desc">Valor ↓</option>
+            <option value="valor-asc">Valor ↑</option>
+            <option value="descricao-asc">Descrição A-Z</option>
+          </select>
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap">
+          Exibir
+          <select class="form-input" id="abertos-por-pagina" style="width:auto">
+            <option value="30" selected>30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar..." style="width:250px" />
       </div>
     </div>
     <div class="tabela-responsiva">
@@ -194,6 +216,19 @@
         <p class="tabela-vazia__mensagem">Nenhum registro corresponde ao filtro selecionado.</p>
       </div>
     </div>
+    <div id="abertos-paginacao" hidden style="display:flex;justify-content:space-between;align-items:center;padding:var(--esp-sm) var(--esp-md);border-top:1px solid var(--cor-borda)">
+      <span id="abertos-pag-info" style="font-size:0.875rem;color:var(--cor-texto-secundario)"></span>
+      <div style="display:flex;gap:var(--esp-xs)">
+        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-anterior">
+          <span class="material-icons" style="font-size:16px">chevron_left</span>
+          Anterior
+        </button>
+        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-proxima">
+          Próxima
+          <span class="material-icons" style="font-size:16px">chevron_right</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Modal de liquidação simples -->
@@ -215,6 +250,13 @@
           <div><dt>Vencimento</dt><dd id="liquidar-vencimento">—</dd></div>
           <div><dt>Valor</dt><dd id="liquidar-valor">—</dd></div>
         </dl>
+        <div id="liquidar-outras-parcelas" hidden style="margin-bottom:var(--esp-md)">
+          <p style="font-weight:600;font-size:0.8rem;color:var(--cor-texto-secundario);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:var(--esp-xs)">Outras parcelas do grupo</p>
+          <div id="liquidar-outras-parcelas-lista" style="display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto"></div>
+          <div style="text-align:right;padding:6px 4px 0;font-size:0.875rem">
+            Total selecionado: <strong id="liquidar-total-selecionado">—</strong>
+          </div>
+        </div>
         <div class="form-grid">
           <div class="campo form-col-6">
             <label class="form-label form-label-obrigatorio" for="liquidar-valor-pago">Valor recebido</label>
