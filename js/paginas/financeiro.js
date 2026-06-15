@@ -1190,11 +1190,50 @@ async function iniciarRegistrarLancamento() {
   const tipoSelectElR = document.getElementById('lancamento-tipo');
   if (tipoSelectElR) {
     const h = async () => {
-      const tipoId = tipoSelectElR.value;
+      const tipoId   = tipoSelectElR.value;
+      const tipoNome = (tipoSelectElR.selectedOptions[0]?.textContent || '').toLowerCase().trim();
+
       if (!tipoId) {
         preencherSelectsRegistrarLancamento();
         return;
       }
+
+      // Auto-preenche valor e parcelas com base no plano de associação
+      const periodoMap = { anuidade: 'anuidade', mensalidade: 'mensalidade', semestral: 'semestral' };
+      const periodoChave = Object.keys(periodoMap).find((k) => tipoNome.includes(k));
+      if (periodoChave) {
+        try {
+          const { dados: planos } = await api.get('/planos/listar.php');
+          const plano = (planos || []).find((p) => p.ativo && p.periodo === periodoMap[periodoChave]);
+          if (plano) {
+            const campoValor = document.getElementById('lancamento-valor');
+            if (campoValor && !campoValor.value) campoValor.value = plano.preco;
+
+            // Para anuidade: parcelas automáticas do mês atual até dezembro
+            if (periodoChave === 'anuidade') {
+              const agora = new Date();
+              const mesesRestantes = 13 - (agora.getMonth() + 1); // mês atual até dez inclusive
+              const modoSelect = document.getElementById('lancamento-pagamento-modo');
+              if (modoSelect) modoSelect.value = 'parcelado';
+
+              const totalParc = document.getElementById('lancamento-total-parcelas');
+              if (totalParc) totalParc.value = mesesRestantes;
+
+              // Primeiro vencimento = dia 1 do mês atual
+              const primParc = document.getElementById('lancamento-primeira-parcela');
+              if (primParc && !primParc.value) {
+                const mes = String(agora.getMonth() + 1).padStart(2, '0');
+                primParc.value = `${agora.getFullYear()}-${mes}-01`;
+              }
+            }
+            atualizar();
+          }
+        } catch (e) {
+          console.warn('[Financeiro] Não foi possível carregar planos:', e.message);
+        }
+      }
+
+      // Auto-preenche conta/subconta via relacionamento
       try {
         const response = await api.get(`/relacionamentos/obter-por-tipo.php?fk_tipo_lancamento=${tipoId}`);
         const regra = response.data;
@@ -1202,9 +1241,7 @@ async function iniciarRegistrarLancamento() {
           if (contaSelect) contaSelect.value = regra.fk_conta_regente;
           atualizarSubcontasNovoLancamento();
           const subSelect = document.getElementById('lancamento-subconta');
-          if (regra.fk_conta_subordinada && subSelect) {
-            subSelect.value = regra.fk_conta_subordinada;
-          }
+          if (regra.fk_conta_subordinada && subSelect) subSelect.value = regra.fk_conta_subordinada;
         }
       } catch (erro) {
         console.error('[Financeiro] Erro ao carregar regra do tipo:', erro);
