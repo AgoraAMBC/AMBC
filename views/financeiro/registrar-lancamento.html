@@ -15,6 +15,8 @@
   </header>
 
   <form id="form-registrar-lancamento">
+  <input type="hidden" id="lancamento-fk-associado" />
+  <input type="hidden" id="lancamento-fk-parceiro" />
   <div class="financeiro__grid-50">
     <section class="financeiro__painel financeiro__painel--form">
       <h2 class="financeiro__secao-titulo">Dados do lançamento</h2>
@@ -25,7 +27,7 @@
         </div>
         <div class="campo form-col-6">
           <label class="form-label" for="lancamento-pessoa">Nome relacionado</label>
-          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Associado, parceiro ou fornecedor" />
+          <input class="form-input" id="lancamento-pessoa" type="text" placeholder="Buscar associado ou parceiro..." autocomplete="off" />
         </div>
 
         <div class="campo form-col-4">
@@ -92,23 +94,47 @@
           <textarea class="form-input" id="lancamento-observacao" rows="3" placeholder="Detalhes internos do lançamento"></textarea>
         </div>
       </div>
+      <div class="financeiro__acoes-painel">
+        <button type="button" class="btn btn-sucesso" id="btn-salvar-aberto">
+          <span class="material-icons">lock_open</span>
+          Salvar em aberto
+        </button>
+        <button type="button" class="btn btn-primario" id="btn-salvar-liquidar">
+          <span class="material-icons">check_circle</span>
+          Salvar e Liquidar
+        </button>
+        <button type="button" class="btn btn-atencao" id="btn-limpar">
+          <span class="material-icons">restart_alt</span>
+          Limpar campos
+        </button>
+      </div>
     </section>
 
-    <aside class="financeiro__resumo-form financeiro__painel">
-      <h2 class="financeiro__secao-titulo">Resumo</h2>
+    <aside class="financeiro__painel financeiro__painel--liquidacao">
+      <h2 class="financeiro__secao-titulo">Liquidação</h2>
+      <input type="hidden" id="liquidar-lancamento-id" value="" />
+      <input type="hidden" id="liquidar-valor-total" value="" />
       <dl class="financeiro__dl">
-        <div><dt>Tipo</dt><dd id="resumo-tipo">—</dd></div>
-        <div><dt>Status</dt><dd><span class="badge badge-pilula badge-amarelo">Em aberto</span></dd></div>
+        <div><dt>Nome</dt><dd id="resumo-nome">-</dd></div>
+        <div><dt>Tipo</dt><dd id="resumo-tipo">-</dd></div>
+        <div><dt>Valor Total</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+        <div><dt>Vencimento</dt><dd id="resumo-vencimento">-</dd></div>
+        <div><dt>Conta</dt><dd id="resumo-conta">-</dd></div>
+        <div><dt>Subconta</dt><dd id="resumo-subconta">-</dd></div>
         <div><dt>Parcelas</dt><dd id="resumo-parcelas">1x</dd></div>
-        <div><dt>Valor</dt><dd id="resumo-valor">R$ 0,00</dd></div>
+        <div><dt>Status</dt><dd id="resumo-status">Aberto</dd></div>
       </dl>
-      <button type="submit" class="btn btn-primario btn-bloco">
-        <span class="material-icons">save</span>
-        Salvar em aberto
-      </button>
-      <button type="reset" class="btn btn-secundario btn-bloco">
-        <span class="material-icons">restart_alt</span>
-        Limpar campos
+      <div class="campo">
+        <label class="form-label" for="lancamento-valor-pago">Valor pago</label>
+        <input class="form-input" id="lancamento-valor-pago" type="number" min="0" step="0.01" placeholder="0,00" />
+      </div>
+      <div class="campo">
+        <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
+        <input class="form-input" id="lancamento-pagamento" type="date" />
+      </div>
+      <button type="button" class="btn btn-primario btn-bloco" id="btn-liquidar">
+        <span class="material-icons">check_circle</span>
+        Liquidar
       </button>
     </aside>
   </div><!-- /.financeiro__grid-50 -->
@@ -122,17 +148,20 @@
         <h2 class="financeiro__secao-titulo">Lançamentos em aberto</h2>
         <p class="financeiro__secao-texto">Clique em um lançamento para registrar o pagamento.</p>
       </div>
+      <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar por descrição ou pessoa..." style="max-width:280px" />
     </div>
     <div class="tabela-responsiva">
-      <table class="tabela financeiro__tabela">
+      <table class="tabela financeiro__tabela" id="abertos-tabela">
         <thead>
           <tr>
-            <th>Descrição</th>
-            <th>Pessoa</th>
-            <th>Vencimento</th>
-            <th>Status</th>
-            <th class="tabela__num">Valor</th>
-            <th></th>
+            <th class="ordenavel" data-coluna="descricao">Descrição</th>
+            <th class="ordenavel" data-coluna="pessoa">Pessoa</th>
+            <th class="ordenavel" data-coluna="vencimento">Vencimento</th>
+            <th class="ordenavel" data-coluna="status">Status</th>
+            <th class="tabela__num ordenavel" data-coluna="valor">Valor Total</th>
+            <th class="tabela__num ordenavel" data-coluna="valor_pago">Valor Pago</th>
+            <th class="tabela__num ordenavel" data-coluna="saldo">Saldo</th>
+            <th>Ação</th>
           </tr>
         </thead>
         <tbody id="abertos-tbody"></tbody>
@@ -145,7 +174,7 @@
     </div>
   </div>
 
-  <!-- Modal de liquidação -->
+  <!-- Modal de liquidação simples -->
   <div class="modal-fundo" id="modal-liquidar-fundo" hidden></div>
   <div class="modal" id="modal-liquidar" hidden role="dialog" aria-modal="true" aria-labelledby="modal-liquidar-titulo">
     <div class="modal__cabecalho">
@@ -154,26 +183,94 @@
         <span class="material-icons">close</span>
       </button>
     </div>
+    <!-- Painel principal de liquidação -->
+    <div id="modal-liquidar-painel-principal">
+      <div class="modal__corpo">
+        <input type="hidden" id="liquidar-id" />
+        <dl class="financeiro__dl" style="margin-bottom:var(--esp-md)">
+          <div><dt>Descrição</dt><dd id="liquidar-descricao">—</dd></div>
+          <div><dt>Pessoa</dt><dd id="liquidar-pessoa">—</dd></div>
+          <div><dt>Vencimento</dt><dd id="liquidar-vencimento">—</dd></div>
+          <div><dt>Valor</dt><dd id="liquidar-valor">—</dd></div>
+        </dl>
+        <div class="form-grid">
+          <div class="campo form-col-6">
+            <label class="form-label form-label-obrigatorio" for="liquidar-valor-pago">Valor recebido</label>
+            <input class="form-input" id="liquidar-valor-pago" type="number" min="0.01" step="0.01" required />
+          </div>
+          <div class="campo form-col-6">
+            <label class="form-label form-label-obrigatorio" for="liquidar-data-pagamento">Data do pagamento</label>
+            <input class="form-input" id="liquidar-data-pagamento" type="date" required />
+          </div>
+          <div class="campo form-col-12">
+            <label class="form-label form-label-obrigatorio" for="liquidar-forma-pagamento">Forma de pagamento</label>
+            <select class="form-input" id="liquidar-forma-pagamento">
+              <option value="1">PIX</option>
+              <option value="2">Boleto</option>
+              <option value="3">Cartão de crédito</option>
+              <option value="4">Cartão de débito</option>
+              <option value="5">Dinheiro</option>
+              <option value="6">Transferência bancária</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal__rodape">
+        <button type="button" class="btn btn-secundario" id="modal-liquidar-voltar">
+          <span class="material-icons">arrow_back</span>
+          Voltar
+        </button>
+        <button type="button" class="btn btn-perigo btn-outline" id="modal-liquidar-cancelar-lancamento">
+          <span class="material-icons">cancel</span>
+          Cancelar lançamento
+        </button>
+        <button type="button" class="btn btn-primario" id="modal-liquidar-confirmar">
+          <span class="material-icons">check_circle</span>
+          Liquidar
+        </button>
+      </div>
+    </div>
+    <!-- Painel de confirmação para cancelar -->
+    <div id="modal-liquidar-painel-confirmacao" hidden>
+      <div class="modal__corpo">
+        <p style="font-size:1rem;margin:var(--esp-md) 0">
+          <strong>Tem certeza que deseja cancelar este lançamento?</strong><br/>
+          Essa ação não pode ser desfeita.
+        </p>
+      </div>
+      <div class="modal__rodape">
+        <button type="button" class="btn btn-secundario" id="modal-cancelar-nao">
+          <span class="material-icons">arrow_back</span>
+          Não, voltar
+        </button>
+        <button type="button" class="btn btn-perigo" id="modal-cancelar-sim">
+          <span class="material-icons">cancel</span>
+          Sim, cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de liquidação em lote -->
+  <div class="modal-fundo" id="modal-lote-fundo" hidden></div>
+  <div class="modal modal--largo" id="modal-lote" hidden role="dialog" aria-modal="true" aria-labelledby="modal-lote-titulo">
+    <div class="modal__cabecalho">
+      <h3 class="modal__titulo" id="modal-lote-titulo">Liquidar em Lote</h3>
+      <button type="button" class="modal__fechar" id="modal-lote-fechar" aria-label="Fechar">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
     <div class="modal__corpo">
-      <input type="hidden" id="liquidar-id" />
-      <dl class="financeiro__dl" style="margin-bottom:var(--esp-md)">
-        <div><dt>Descrição</dt><dd id="liquidar-descricao">—</dd></div>
-        <div><dt>Pessoa</dt><dd id="liquidar-pessoa">—</dd></div>
-        <div><dt>Vencimento</dt><dd id="liquidar-vencimento">—</dd></div>
-        <div><dt>Valor</dt><dd id="liquidar-valor">—</dd></div>
-      </dl>
+      <p class="financeiro__secao-texto" id="modal-lote-subtitulo" style="margin-bottom:var(--esp-md)"></p>
+      <div id="modal-lote-lista" style="max-height:300px;overflow-y:auto;margin-bottom:var(--esp-md)"></div>
       <div class="form-grid">
         <div class="campo form-col-6">
-          <label class="form-label form-label-obrigatorio" for="liquidar-valor-pago">Valor recebido</label>
-          <input class="form-input" id="liquidar-valor-pago" type="number" min="0.01" step="0.01" required />
+          <label class="form-label form-label-obrigatorio" for="lote-data-pagamento">Data do pagamento</label>
+          <input class="form-input" id="lote-data-pagamento" type="date" required />
         </div>
         <div class="campo form-col-6">
-          <label class="form-label form-label-obrigatorio" for="liquidar-data-pagamento">Data do pagamento</label>
-          <input class="form-input" id="liquidar-data-pagamento" type="date" required />
-        </div>
-        <div class="campo form-col-12">
-          <label class="form-label form-label-obrigatorio" for="liquidar-forma-pagamento">Forma de pagamento</label>
-          <select class="form-input" id="liquidar-forma-pagamento" required>
+          <label class="form-label form-label-obrigatorio" for="lote-forma-pagamento">Forma de pagamento</label>
+          <select class="form-input" id="lote-forma-pagamento">
             <option value="1">PIX</option>
             <option value="2">Boleto</option>
             <option value="3">Cartão de crédito</option>
@@ -183,15 +280,18 @@
           </select>
         </div>
       </div>
+      <p style="margin-top:var(--esp-sm)">
+        Total selecionado: <strong id="lote-total">R$ 0,00</strong>
+      </p>
     </div>
     <div class="modal__rodape">
-      <button type="button" class="btn btn-secundario btn-icone-texto" id="modal-liquidar-cancelar-lancamento">
-        <span class="material-icons">cancel</span>
-        Cancelar lançamento
+      <button type="button" class="btn btn-secundario" id="modal-lote-cancelar">
+        <span class="material-icons">arrow_back</span>
+        Voltar
       </button>
-      <button type="button" class="btn btn-primario" id="modal-liquidar-confirmar">
+      <button type="button" class="btn btn-primario" id="modal-lote-confirmar">
         <span class="material-icons">check_circle</span>
-        Liquidar
+        Liquidar Selecionados
       </button>
     </div>
   </div>
