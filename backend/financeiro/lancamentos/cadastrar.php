@@ -143,22 +143,53 @@ try {
         ';
 
         if ($isParcelado) {
-            $somaParcelas = 0;
-            foreach ($parcelas as $parcela) {
+            $sqlParcelado = '
+                INSERT INTO lancamento (
+                    fk_conta_regente, fk_conta_subordinada, fk_tipo_lancamento,
+                    fk_forma_pagamento, fk_status_conta, fk_associado, fk_parceiro,
+                    fk_parcelamento, numero_parcela, total_parcelas,
+                    descricao, valor, valor_pago, data_lancamento,
+                    data_vencimento, data_pagamento, observacao
+                ) VALUES (
+                    :fk_conta_regente, :fk_conta_subordinada, :fk_tipo_lancamento,
+                    :fk_forma_pagamento, :fk_status_conta, :fk_associado, :fk_parceiro,
+                    :fk_parcelamento, :numero_parcela, :total_parcelas,
+                    :descricao, :valor, :valor_pago, :data_lancamento,
+                    :data_vencimento, :data_pagamento, :observacao
+                )
+            ';
+            $stmtParcelado = $pdo->prepare($sqlParcelado);
+
+            $somaParcelas   = 0;
+            $fkParcelamento = null;
+
+            foreach ($parcelas as $i => $parcela) {
                 $parcelaValor     = parseDecimal($parcela['valor'] ?? null);
                 $parcelaVencimento = $parcela['data_vencimento'] ?? null;
+                $numeroParcela     = (int)($parcela['numero_parcela'] ?? ($i + 1));
 
                 if (!$parcelaValor || !$parcelaVencimento) {
                     throw new Exception('Cada parcela deve ter valor e data de vencimento.');
                 }
 
                 $somaParcelas += $parcelaValor;
-                $params[':descricao']     = sprintf('%s (Parcela %d/%d)', $descricao, (int)$parcela['numero_parcela'], $total_parcelas);
-                $params[':valor']         = $parcelaValor;
-                $params[':valor_pago']    = $data_pagamento ? $parcelaValor : null;
+
+                $params[':fk_parcelamento'] = $fkParcelamento;
+                $params[':numero_parcela']  = $numeroParcela;
+                $params[':total_parcelas']  = $total_parcelas;
+                $params[':descricao']       = sprintf('%s (Parcela %d/%d)', $descricao, $numeroParcela, $total_parcelas);
+                $params[':valor']           = $parcelaValor;
+                $params[':valor_pago']      = $data_pagamento ? $parcelaValor : null;
                 $params[':data_vencimento'] = $parcelaVencimento;
 
-                $pdo->prepare($sql)->execute($params);
+                $stmtParcelado->execute($params);
+
+                // Após a primeira inserção: usar o próprio ID como fk_parcelamento
+                if ($fkParcelamento === null) {
+                    $fkParcelamento = (int)$pdo->lastInsertId();
+                    $pdo->prepare('UPDATE lancamento SET fk_parcelamento = :fp WHERE id_lancamento = :id')
+                        ->execute([':fp' => $fkParcelamento, ':id' => $fkParcelamento]);
+                }
             }
 
             if (round($somaParcelas, 2) !== round($valor, 2)) {
