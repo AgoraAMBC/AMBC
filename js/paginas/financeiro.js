@@ -919,6 +919,9 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
     linhas.push(`
     <tr class="financeiro__grupo-mae" style="cursor:pointer;font-weight:600"
         data-grupo="${grupoId}" data-grupo-aberto="false">
+      <td onclick="event.stopPropagation()">
+        <input type="checkbox" class="abertos-check-grupo" data-grupo="${grupoId}" />
+      </td>
       <td>
         <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">chevron_right</span>
         ${escaparHtml(ref.descricao.replace(/\s*[—–-]\s*Parcela.*$/i, ''))}
@@ -949,6 +952,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
           data-valor="${p.valor}" data-valor-pago="${p.valor_pago || 0}"
           data-tipo-nome="${escaparHtml(p.tipo_nome)}"
           data-conta="${escaparHtml(p.conta)}" data-subconta="${escaparHtml(p.subconta)}">
+        <td></td>
         <td style="padding-left:2rem">
           <span class="financeiro__linha-principal" style="font-size:0.9em">${escaparHtml(p.descricao)}</span>
         </td>
@@ -976,6 +980,10 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
         data-valor="${item.valor}" data-valor-pago="${item.valor_pago || 0}"
         data-tipo-nome="${escaparHtml(item.tipo_nome)}"
         data-conta="${escaparHtml(item.conta)}" data-subconta="${escaparHtml(item.subconta)}">
+      <td onclick="event.stopPropagation()">
+        <input type="checkbox" class="abertos-check" data-id="${item.id}" data-valor="${item.valor}"
+               data-descricao="${escaparHtml(item.descricao)}" data-vencimento="${item.vencimento || ''}" />
+      </td>
       <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
       <td>${escaparHtml(item.pessoa) || '—'}</td>
       <td>${formatarData(item.vencimento)}</td>
@@ -992,24 +1000,45 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
   }
 
   tbody.innerHTML = linhas.join('');
+
+  // Resetar seleção após re-renderizar
+  ['btn-liquidar-selecionados', 'btn-liquidar-selecionados-topo'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = true;
+  });
+  const checkTodosEl = document.getElementById('abertos-selecionar-todos');
+  if (checkTodosEl) { checkTodosEl.checked = false; checkTodosEl.indeterminate = false; }
 }
 
 function _resetAbertosCache() {
   _abertosData = [];
 }
 
+function _gerarPaginas(atual, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (atual <= 4) return [1, 2, 3, 4, 5, '...', total];
+  if (atual >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+  return [1, '...', atual - 1, atual, atual + 1, '...', total];
+}
+
 function _atualizarPaginacao(totalItens, inicio, fim, paginaAtual, totalPaginas) {
-  const pagEl  = document.getElementById('abertos-paginacao');
-  const infoEl = document.getElementById('abertos-pag-info');
-  const btnAnt = document.getElementById('abertos-pag-anterior');
+  const pagEl   = document.getElementById('abertos-paginacao');
+  const infoEl  = document.getElementById('abertos-pag-info');
+  const btnAnt  = document.getElementById('abertos-pag-anterior');
   const btnProx = document.getElementById('abertos-pag-proxima');
+  const numEl   = document.getElementById('abertos-pag-numeros');
   if (!pagEl) return;
   pagEl.hidden = totalItens === 0;
-  if (infoEl)  infoEl.textContent = totalItens > 0
-    ? `${inicio + 1}–${fim} de ${totalItens} itens • Página ${paginaAtual} de ${totalPaginas}`
-    : '';
+  if (infoEl)  infoEl.textContent = totalItens > 0 ? `${inicio + 1}–${fim} de ${totalItens}` : '';
   if (btnAnt)  btnAnt.disabled  = paginaAtual <= 1;
   if (btnProx) btnProx.disabled = paginaAtual >= totalPaginas;
+  if (numEl) {
+    numEl.innerHTML = _gerarPaginas(paginaAtual, totalPaginas).map((p) =>
+      p === '...'
+        ? `<span style="padding:0 2px;align-self:center;color:var(--cor-texto-secundario)">…</span>`
+        : `<button type="button" class="btn btn-sm ${p === paginaAtual ? 'btn-primario' : 'btn-secundario'}" data-pagina="${p}">${p}</button>`
+    ).join('');
+  }
 }
 
 function _hojeISO() {
@@ -1592,7 +1621,12 @@ async function iniciarRegistrarLancamento() {
     if (paginaAtual > 1) { paginaAtual--; recarregarAbertos(); }
   });
   document.getElementById('abertos-pag-proxima')?.addEventListener('click', () => {
-    paginaAtual++;
+    paginaAtual++; recarregarAbertos();
+  });
+  document.getElementById('abertos-pag-numeros')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-pagina]');
+    if (!btn) return;
+    paginaAtual = parseInt(btn.dataset.pagina);
     recarregarAbertos();
   });
 
@@ -1796,6 +1830,68 @@ async function iniciarRegistrarLancamento() {
     };
     tbody.addEventListener('click', tbodyHandler);
     cleanup.push(() => tbody.removeEventListener('click', tbodyHandler));
+
+    // ── Seleção em lote ──
+    const atualizarSelecionados = () => {
+      const checks = [...tbody.querySelectorAll('.abertos-check, .abertos-check-grupo')];
+      const marcados = checks.filter((c) => c.checked).length;
+      [
+        { btn: 'btn-liquidar-selecionados',      count: 'btn-sel-count'      },
+        { btn: 'btn-liquidar-selecionados-topo', count: 'btn-sel-count-topo' },
+      ].forEach(({ btn, count }) => {
+        const el = document.getElementById(btn);
+        if (el) {
+          el.hidden = marcados === 0;
+          const countEl = document.getElementById(count);
+          if (countEl) countEl.textContent = marcados;
+        }
+      });
+      const checkTodosEl = document.getElementById('abertos-selecionar-todos');
+      if (checkTodosEl) {
+        checkTodosEl.checked       = checks.length > 0 && marcados === checks.length;
+        checkTodosEl.indeterminate = marcados > 0 && marcados < checks.length;
+      }
+    };
+
+    const hCheckChange = (e) => {
+      if (e.target.classList.contains('abertos-check') || e.target.classList.contains('abertos-check-grupo')) {
+        atualizarSelecionados();
+      }
+    };
+    tbody.addEventListener('change', hCheckChange);
+    cleanup.push(() => tbody.removeEventListener('change', hCheckChange));
+
+    const checkTodosEl = document.getElementById('abertos-selecionar-todos');
+    if (checkTodosEl) {
+      const hTodos = () => {
+        tbody.querySelectorAll('.abertos-check, .abertos-check-grupo').forEach((cb) => {
+          cb.checked = checkTodosEl.checked;
+        });
+        atualizarSelecionados();
+      };
+      checkTodosEl.addEventListener('change', hTodos);
+      cleanup.push(() => checkTodosEl.removeEventListener('change', hTodos));
+    }
+
+    const abrirLoteSelecionados = () => {
+      const parcelas = [];
+      tbody.querySelectorAll('.abertos-check:checked').forEach((cb) => {
+        parcelas.push({
+          id:         parseInt(cb.dataset.id),
+          descricao:  cb.dataset.descricao,
+          vencimento: cb.dataset.vencimento,
+          valor:      parseFloat(cb.dataset.valor),
+          status:     'pendente',
+        });
+      });
+      tbody.querySelectorAll('.abertos-check-grupo:checked').forEach((cb) => {
+        const grupoId = parseInt(cb.dataset.grupo);
+        _abertosData.filter((p) => p.fk_parcelamento === grupoId).forEach((p) => parcelas.push(p));
+      });
+      abrirModalLote(parcelas, `Lançamentos selecionados (${parcelas.length})`);
+    };
+    document.getElementById('btn-liquidar-selecionados')?.addEventListener('click', abrirLoteSelecionados);
+    document.getElementById('btn-liquidar-selecionados-topo')?.addEventListener('click', abrirLoteSelecionados);
   }
 
   // ── Modal de liquidação simples — handlers ──

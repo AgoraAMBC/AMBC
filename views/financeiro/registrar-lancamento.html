@@ -162,7 +162,11 @@
         <h2 class="financeiro__secao-titulo">Lançamentos</h2>
         <p class="financeiro__secao-texto">Clique em um lançamento pendente para registrar o pagamento.</p>
       </div>
-      <div style="display:flex;gap:var(--esp-sm);align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:var(--esp-sm);align-items:center;flex-wrap:nowrap">
+        <button type="button" class="btn btn-primario btn-sm" id="btn-liquidar-selecionados-topo" hidden>
+          <span class="material-icons" style="font-size:16px">playlist_add_check</span>
+          Liquidar selecionados (<span id="btn-sel-count-topo">0</span>)
+        </button>
         <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap">
           Status
           <select class="form-input" id="filtros-status" style="width:auto">
@@ -183,14 +187,6 @@
             <option value="descricao-asc">Descrição A-Z</option>
           </select>
         </label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap">
-          Exibir
-          <select class="form-input" id="abertos-por-pagina" style="width:auto">
-            <option value="30" selected>30</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </label>
         <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar..." style="width:250px" />
       </div>
     </div>
@@ -198,6 +194,7 @@
       <table class="tabela financeiro__tabela" id="abertos-tabela">
         <thead>
           <tr>
+            <th style="width:36px"><input type="checkbox" id="abertos-selecionar-todos" title="Selecionar todos" /></th>
             <th class="ordenavel" data-coluna="descricao">Descrição</th>
             <th class="ordenavel" data-coluna="pessoa">Pessoa</th>
             <th class="ordenavel" data-coluna="vencimento">Vencimento</th>
@@ -216,15 +213,28 @@
         <p class="tabela-vazia__mensagem">Nenhum registro corresponde ao filtro selecionado.</p>
       </div>
     </div>
-    <div id="abertos-paginacao" hidden style="display:flex;justify-content:space-between;align-items:center;padding:var(--esp-sm) var(--esp-md);border-top:1px solid var(--cor-borda)">
-      <span id="abertos-pag-info" style="font-size:0.875rem;color:var(--cor-texto-secundario)"></span>
-      <div style="display:flex;gap:var(--esp-xs)">
-        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-anterior">
-          <span class="material-icons" style="font-size:16px">chevron_left</span>
-          Anterior
+    <div id="abertos-paginacao" hidden style="display:flex;justify-content:space-between;align-items:center;gap:var(--esp-sm);padding:var(--esp-sm) var(--esp-md);border-top:1px solid var(--cor-borda);flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:var(--esp-sm)">
+        <button type="button" class="btn btn-primario btn-sm" id="btn-liquidar-selecionados" hidden>
+          <span class="material-icons" style="font-size:16px">playlist_add_check</span>
+          Liquidar selecionados (<span id="btn-sel-count">0</span>)
         </button>
-        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-proxima">
-          Próxima
+        <span id="abertos-pag-info" style="font-size:0.875rem;color:var(--cor-texto-secundario)"></span>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center">
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap;margin-right:var(--esp-xs)">
+          Exibir
+          <select class="form-input" id="abertos-por-pagina" style="width:auto">
+            <option value="30" selected>30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-anterior" title="Anterior">
+          <span class="material-icons" style="font-size:16px">chevron_left</span>
+        </button>
+        <div id="abertos-pag-numeros" style="display:flex;gap:4px"></div>
+        <button type="button" class="btn btn-secundario btn-sm" id="abertos-pag-proxima" title="Próxima">
           <span class="material-icons" style="font-size:16px">chevron_right</span>
         </button>
       </div>
