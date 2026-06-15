@@ -1280,9 +1280,14 @@ async function iniciarRegistrarLancamento() {
       const infoTxt = document.getElementById('plano-info-texto');
       const campoModo = document.getElementById('campo-pagamento-modo');
 
+      const painelMeses  = document.getElementById('parcelamento-meses');
+      const painelManual = document.getElementById('parcelamento-manual');
+
       if (!opt?.value) {
-        if (painel)    painel.hidden  = true;
-        if (campoModo) campoModo.hidden = false;
+        if (painel)      painel.hidden      = true;
+        if (campoModo)   campoModo.hidden   = false;
+        if (painelMeses) painelMeses.hidden = true;
+        if (painelManual) painelManual.hidden = false;
         return;
       }
 
@@ -1301,38 +1306,58 @@ async function iniciarRegistrarLancamento() {
       }
 
       if (periodo === 'anuidade') {
-        const agora           = new Date();
-        const mesAtual        = agora.getMonth() + 1; // 1–12
-        const mesesRestantes  = 13 - mesAtual;        // mês atual até dezembro inclusive
-        const mensalidade     = preco / 12;
-        const totalDevido     = parseFloat((mensalidade * mesesRestantes).toFixed(2));
+        const agora       = new Date();
+        const mesAtual    = agora.getMonth() + 1;
+        const anoAtual    = agora.getFullYear();
+        const mensalidade = parseFloat((preco / 12).toFixed(2));
+        const nomesMeses  = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-        // Preencher campos
-        const campoValor = document.getElementById('lancamento-valor');
-        if (campoValor) campoValor.value = totalDevido;
-
-        if (pagamentoModoSelect) pagamentoModoSelect.value = 'parcelado';
-        if (totalParcelasInput)  totalParcelasInput.value  = mesesRestantes;
-
-        const primParc = document.getElementById('lancamento-primeira-parcela');
-        if (primParc && !primParc.value) {
-          const mes = String(mesAtual).padStart(2, '0');
-          primParc.value = `${agora.getFullYear()}-${mes}-01`;
-        }
-
-        // Ocultar seletor de modo (sempre parcelado para anuidade)
+        // Mostrar grade de meses, ocultar manual
+        if (painelManual) painelManual.hidden = true;
+        if (painelMeses)  painelMeses.hidden  = false;
+        if (parcelamentoPanel) parcelamentoPanel.removeAttribute('hidden');
         if (campoModo) campoModo.hidden = true;
+
+        // Gerar checkboxes dos 12 meses
+        const grid = document.getElementById('meses-anuidade-grid');
+        if (grid) {
+          grid.innerHTML = nomesMeses.map((nome, i) => {
+            const mes     = i + 1;
+            const passado = mes < mesAtual;
+            return `<label style="display:flex;align-items:center;gap:4px;padding:6px 4px;border:1px solid var(--cor-borda);border-radius:var(--raio-sm);cursor:pointer;font-size:0.85rem;justify-content:center;${passado ? 'background:var(--cor-superficie-2)' : ''}">
+              <input type="checkbox" class="mes-anuidade-check" data-mes="${mes}" data-ano="${anoAtual}" ${passado ? 'checked' : ''} style="margin:0" />
+              ${nome}
+            </label>`;
+          }).join('');
+
+          const totalAnual = parseFloat((12 * mensalidade).toFixed(2));
+          const atualizarMeses = () => {
+            const pagos   = [...grid.querySelectorAll('input:checked')].length;
+            const aCobrar = 12 - pagos;
+            const emAberto = parseFloat((aCobrar * mensalidade).toFixed(2));
+            const campoValor = document.getElementById('lancamento-valor');
+            if (campoValor) campoValor.value = totalAnual;
+            const resumo = document.getElementById('meses-anuidade-resumo');
+            if (resumo) resumo.textContent = aCobrar > 0
+              ? `${pagos} ${pagos === 1 ? 'mês pago' : 'meses pagos'} • ${aCobrar} a cobrar = R$ ${emAberto.toFixed(2).replace('.', ',')} em aberto`
+              : 'Todos os meses marcados como pagos.';
+            atualizar();
+          };
+          grid.addEventListener('change', atualizarMeses);
+          atualizarMeses();
+        }
 
         // Painel informativo
         if (painel && infoTxt) {
-          const mesNome = agora.toLocaleString('pt-BR', { month: 'long' });
-          infoTxt.textContent =
-            `Plano anual: ${mesesRestantes} mensalidades de R$ ${mensalidade.toFixed(2).replace('.', ',')} ` +
-            `(de ${mesNome} a dezembro). Total a cobrar: R$ ${totalDevido.toFixed(2).replace('.', ',')}.`;
+          const jaPagei = mesAtual - 1;
+          infoTxt.textContent = `Plano anual: R$ ${mensalidade.toFixed(2).replace('.', ',')} por mês.`
+            + (jaPagei > 0 ? ` ${jaPagei} ${jaPagei === 1 ? 'mês já pago' : 'meses já pagos'} pré-marcados.` : ' Nenhum mês pago ainda.');
           painel.hidden = false;
         }
       } else {
         // Para outros períodos: valor direto, à vista por padrão
+        if (painelMeses)  painelMeses.hidden  = true;
+        if (painelManual) painelManual.hidden  = false;
         const campoValor = document.getElementById('lancamento-valor');
         if (campoValor) campoValor.value = preco;
         if (campoModo) campoModo.hidden = false;
@@ -1489,13 +1514,49 @@ async function iniciarRegistrarLancamento() {
       fk_conta_regente:     document.getElementById('lancamento-conta')?.value || null,
       fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
       dataLancamento:       _formatarDataISO(new Date()),
-      data_pagamento:       null,
-      valor_pago:           null,
+      data_pagamento:       status === 2 ? (document.getElementById('lancamento-pagamento')?.value || _hojeISO()) : null,
+      valor_pago:           status === 2 ? (parseFloat(document.getElementById('lancamento-valor-pago')?.value || 0) || null) : null,
       data_vencimento:      pagamentoModo === 'parcelado' ? primeiraParcela || dataVencimento : dataVencimento,
       modo_pagamento:       pagamentoModo,
     };
 
-    if (pagamentoModo === 'parcelado') {
+    const painelMesesAtivo = document.getElementById('parcelamento-meses') && !document.getElementById('parcelamento-meses').hidden;
+    if (painelMesesAtivo) {
+      const grid    = document.getElementById('meses-anuidade-grid');
+      const preco   = parseFloat(document.getElementById('lancamento-plano')?.selectedOptions[0]?.dataset.preco || 0);
+      const valMes  = parseFloat((preco / 12).toFixed(2));
+      const valorPagoAside     = parseFloat(document.getElementById('lancamento-valor-pago')?.value || 0) || 0;
+      const dataPagamentoAside = document.getElementById('lancamento-pagamento')?.value || _hojeISO();
+      const todosMeses = [...(grid?.querySelectorAll('input[type=checkbox]') || [])]
+        .sort((a, b) => parseInt(a.dataset.mes) - parseInt(b.dataset.mes));
+      if (todosMeses.length > 0) {
+        payload.fk_status_conta = 1;
+        payload.total_parcelas  = todosMeses.length;
+        payload.data_vencimento = `${todosMeses[0].dataset.ano}-${String(todosMeses[0].dataset.mes).padStart(2,'0')}-10`;
+        let saldo = valorPagoAside;
+        payload.parcelas = todosMeses.map((cb, i) => {
+          const jaPago = cb.checked;
+          const parcela = {
+            numero_parcela:  i + 1,
+            valor:           valMes,
+            data_vencimento: `${cb.dataset.ano}-${String(cb.dataset.mes).padStart(2,'0')}-10`,
+          };
+          if (jaPago) {
+            parcela.fk_status_conta = 2;
+            parcela.valor_pago      = valMes;
+            parcela.data_pagamento  = dataPagamentoAside;
+          } else if (saldo >= valMes - 0.001) {
+            parcela.fk_status_conta = 2;
+            parcela.valor_pago      = valMes;
+            parcela.data_pagamento  = dataPagamentoAside;
+            saldo -= valMes;
+          } else {
+            parcela.fk_status_conta = 1;
+          }
+          return parcela;
+        });
+      }
+    } else if (pagamentoModo === 'parcelado') {
       const totalParcelas = Number(document.getElementById('lancamento-total-parcelas')?.value || 1);
       if (totalParcelas > 1) {
         payload.total_parcelas = totalParcelas;

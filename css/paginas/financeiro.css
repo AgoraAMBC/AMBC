@@ -183,6 +183,12 @@
 }
 
 .financeiro__tabela td:first-child {
+  width: 36px;
+  min-width: 36px;
+  white-space: nowrap;
+}
+
+.financeiro__tabela td:nth-child(2) {
   min-width: 220px;
   white-space: normal;
 }

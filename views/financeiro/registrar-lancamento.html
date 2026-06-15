@@ -51,7 +51,7 @@
           <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
           <select class="form-input" id="lancamento-pagamento-modo" required>
             <option value="avista">À vista</option>
-            <option value="parcelado">Parcelado</option>
+            <option value="parcelado" selected>Parcelado</option>
           </select>
         </div>
 
@@ -86,19 +86,18 @@
 
         <div class="campo form-col-12">
           <div class="financeiro__parcelamento-panel" id="parcelamento-panel" hidden>
-            <div class="form-grid">
-              <div class="campo form-col-4">
-                <label class="form-label" for="lancamento-total-parcelas">Número de parcelas</label>
-                <input class="form-input" id="lancamento-total-parcelas" type="number" min="1" max="24" value="1" />
-              </div>
-              <div class="campo form-col-4">
-                <label class="form-label" for="lancamento-valor-parcela">Valor da parcela</label>
-                <input class="form-input" id="lancamento-valor-parcela" type="text" readonly />
-              </div>
-              <div class="campo form-col-4">
-                <label class="form-label" for="lancamento-primeira-parcela">1ª parcela</label>
+            <!-- Parcelamento manual (modo parcelado sem plano) -->
+            <div id="parcelamento-manual" class="form-grid">
+              <div class="campo form-col-12">
+                <label class="form-label" for="lancamento-primeira-parcela">Data da parcela</label>
                 <input class="form-input" id="lancamento-primeira-parcela" type="date" />
               </div>
+            </div>
+            <!-- Grade de meses (plano anuidade) -->
+            <div id="parcelamento-meses" hidden>
+              <p class="form-label" style="margin-bottom:var(--esp-xs)">Meses pagos</p>
+              <div id="meses-anuidade-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:var(--esp-xs)"></div>
+              <p id="meses-anuidade-resumo" style="font-size:0.85rem;color:var(--cor-texto-secundario);margin:0"></p>
             </div>
           </div>
         </div>

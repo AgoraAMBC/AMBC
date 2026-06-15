@@ -174,12 +174,19 @@ try {
 
                 $somaParcelas += $parcelaValor;
 
+                // Status e pagamento podem ser definidos por parcela individualmente
+                $parcelaStatus    = isset($parcela['fk_status_conta']) ? (int)$parcela['fk_status_conta'] : (int)$fk_status_conta;
+                $parcelaVpago     = isset($parcela['valor_pago'])     ? parseDecimal($parcela['valor_pago'])    : ($parcelaStatus === 2 ? $parcelaValor : null);
+                $parcelaDataPag   = isset($parcela['data_pagamento']) ? $parcela['data_pagamento']              : ($parcelaStatus === 2 ? ($data_pagamento ?: date('Y-m-d')) : null);
+
+                $params[':fk_status_conta'] = $parcelaStatus;
                 $params[':fk_parcelamento'] = $fkParcelamento;
                 $params[':numero_parcela']  = $numeroParcela;
                 $params[':total_parcelas']  = $total_parcelas;
                 $params[':descricao']       = sprintf('%s (Parcela %d/%d)', $descricao, $numeroParcela, $total_parcelas);
                 $params[':valor']           = $parcelaValor;
-                $params[':valor_pago']      = $data_pagamento ? $parcelaValor : null;
+                $params[':valor_pago']      = $parcelaVpago;
+                $params[':data_pagamento']  = $parcelaDataPag;
                 $params[':data_vencimento'] = $parcelaVencimento;
 
                 $stmtParcelado->execute($params);
