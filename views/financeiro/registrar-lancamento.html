@@ -50,8 +50,8 @@
         <div class="campo form-col-6" id="campo-pagamento-modo">
           <label class="form-label form-label-obrigatorio" for="lancamento-pagamento-modo">Pagamento</label>
           <select class="form-input" id="lancamento-pagamento-modo" required>
-            <option value="avista">À vista</option>
-            <option value="parcelado" selected>Parcelado</option>
+            <option value="avista" selected>À vista</option>
+            <option value="parcelado">Parcelado</option>
           </select>
         </div>
 
@@ -108,17 +108,13 @@
         </div>
       </div>
       <div class="financeiro__acoes-painel">
-        <button type="button" class="btn btn-sucesso" id="btn-salvar-aberto">
-          <span class="material-icons">lock_open</span>
-          Salvar em aberto
-        </button>
-        <button type="button" class="btn btn-primario" id="btn-salvar-liquidar">
-          <span class="material-icons">check_circle</span>
-          Salvar e Liquidar
-        </button>
         <button type="button" class="btn btn-atencao" id="btn-limpar">
           <span class="material-icons">restart_alt</span>
           Limpar campos
+        </button>
+        <button type="button" class="btn btn-sucesso" id="btn-salvar-aberto">
+          <span class="material-icons">lock_open</span>
+          Salvar em aberto
         </button>
       </div>
     </section>
@@ -145,9 +141,13 @@
         <label class="form-label" for="lancamento-pagamento">Data de pagamento</label>
         <input class="form-input" id="lancamento-pagamento" type="date" />
       </div>
+      <div style="background:var(--cor-superficie-2,#f0f4ff);border:1px solid var(--cor-borda);border-radius:var(--raio-md);padding:var(--esp-sm) var(--esp-md);font-size:0.85em;color:var(--cor-texto-secundario);margin-bottom:var(--esp-sm)">
+        <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">info</span>
+        Pagamentos parciais são permitidos. O lançamento permanecerá em aberto até o saldo ser zerado.
+      </div>
       <button type="button" class="btn btn-primario btn-bloco" id="btn-liquidar">
         <span class="material-icons">check_circle</span>
-        Liquidar
+        Salvar e Liquidar
       </button>
     </aside>
   </div><!-- /.financeiro__grid-50 -->

@@ -574,3 +574,11 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+.financeiro__grupo-mae {
+  background-color: #dbeafe;
+}
+
+.financeiro__grupo-mae:hover {
+  background-color: #bfdbfe;
+}

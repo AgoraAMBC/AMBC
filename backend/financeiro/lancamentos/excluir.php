@@ -26,7 +26,6 @@ try {
         jsonErro('Lancamento nao encontrado', 404);
     }
 
-    $pdo->prepare('DELETE FROM parcela WHERE fk_lancamento = :id')->execute([':id' => $id]);
     $pdo->prepare('DELETE FROM lancamento WHERE id_lancamento = :id')->execute([':id' => $id]);
 
     $pdo->commit();

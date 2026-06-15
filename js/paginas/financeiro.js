@@ -889,10 +889,18 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
   }
   if (vazio) vazio.hidden = true;
 
-  // Paginação sobre a lista combinada (grupos primeiro, depois avulsos)
+  // Grupos pendentes/atrasados ficam no topo; grupos pagos misturam-se com avulsos
+  const gruposPrioritarios = gruposFiltrados.filter((g) => g.statusGrupo !== 'pago');
+  const gruposPagos        = gruposFiltrados.filter((g) => g.statusGrupo === 'pago');
+
+  const itensMisturados = [
+    ...gruposPagos.map((g) => ({ tipo: 'grupo', dado: g, _ord: statusPrioridade[g.statusGrupo] ?? 99, _vec: g.vencimentoGrupo })),
+    ...avulsosFiltrados.map((a) => ({ tipo: 'avulso', dado: a, _ord: statusPrioridade[a.status] ?? 99, _vec: a.vencimento })),
+  ].sort((a, b) => a._ord !== b._ord ? a._ord - b._ord : (b._vec || '').localeCompare(a._vec || ''));
+
   const todosItens = [
-    ...gruposFiltrados.map((g) => ({ tipo: 'grupo',   dado: g })),
-    ...avulsosFiltrados.map((a) => ({ tipo: 'avulso', dado: a })),
+    ...gruposPrioritarios.map((g) => ({ tipo: 'grupo',   dado: g })),
+    ...itensMisturados,
   ];
   const totalItens   = todosItens.length;
   const totalPaginas = Math.max(1, Math.ceil(totalItens / itensPorPagina));
@@ -900,103 +908,105 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
   const inicio       = (paginaNorm - 1) * itensPorPagina;
   const itensPagina  = todosItens.slice(inicio, inicio + itensPorPagina);
 
-  const gruposPagina  = itensPagina.filter((i) => i.tipo === 'grupo').map((i) => i.dado);
-  const avulsosPagina = itensPagina.filter((i) => i.tipo === 'avulso').map((i) => i.dado);
-
   _atualizarPaginacao(totalItens, inicio, Math.min(inicio + itensPorPagina, totalItens), paginaNorm, totalPaginas);
 
   const linhas = [];
 
-  // Renderizar grupos (sempre primeiro)
-  for (const { grupoId, parcelas, statusGrupo, vencimentoGrupo } of gruposPagina) {
-    const ref         = parcelas[0];
-    const valorTotal  = parcelas.reduce((s, p) => s + p.valor, 0);
-    const valorPago   = parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0);
-    const saldoTotal  = Math.max(0, valorTotal - valorPago);
-    const totalParcelas = ref.total_parcelas || parcelas.length;
-    const pagas = parcelas.filter((p) => p.status === 'pago').length;
+  for (const entrada of itensPagina) {
+    if (entrada.tipo === 'grupo') {
+      const { grupoId, parcelas, statusGrupo, vencimentoGrupo } = entrada.dado;
+      const ref           = parcelas[0];
+      const valorTotal    = parcelas.reduce((s, p) => s + p.valor, 0);
+      const valorPago     = parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0);
+      const saldoTotal    = Math.max(0, valorTotal - valorPago);
+      const totalParcelas = ref.total_parcelas || parcelas.length;
+      const pagas         = parcelas.filter((p) => p.status === 'pago').length;
 
-    linhas.push(`
-    <tr class="financeiro__grupo-mae" style="cursor:pointer;font-weight:600"
-        data-grupo="${grupoId}" data-grupo-aberto="false">
-      <td onclick="event.stopPropagation()">
-        <input type="checkbox" class="abertos-check-grupo" data-grupo="${grupoId}" />
-      </td>
-      <td>
-        <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">chevron_right</span>
-        ${escaparHtml(ref.descricao.replace(/\s*[—–-]\s*Parcela.*$/i, ''))}
-        <span style="font-weight:400;color:var(--cor-texto-secundario);font-size:0.85em"> — ${pagas}/${totalParcelas} pagas</span>
-      </td>
-      <td>${escaparHtml(ref.pessoa) || '—'}</td>
-      <td>${formatarData(vencimentoGrupo)}</td>
-      <td>${badgeStatus(statusGrupo)}</td>
-      <td class="tabela__num">${formatarMoeda(valorTotal)}</td>
-      <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
-      <td class="tabela__num">${formatarMoeda(saldoTotal)}</td>
-      <td>
-        <button type="button" class="btn btn-primario btn-sm" data-acao-lote="${grupoId}" title="Liquidar parcelas em lote">
-          <span class="material-icons" style="font-size:16px">playlist_add_check</span>
-          Em lote
-        </button>
-      </td>
-    </tr>`);
-
-    // Linhas filhas (ocultas)
-    for (const p of parcelas) {
-      const saldo = Math.max(0, p.valor - (p.valor_pago || 0));
       linhas.push(`
-      <tr class="financeiro__grupo-filho" data-grupo-filho="${grupoId}" hidden
-          style="cursor:pointer;background:var(--cor-superficie-2,#f8f9fa)"
-          data-id="${p.id}" data-descricao="${escaparHtml(p.descricao)}"
-          data-pessoa="${escaparHtml(p.pessoa || '')}" data-vencimento="${p.vencimento}"
-          data-valor="${p.valor}" data-valor-pago="${p.valor_pago || 0}"
-          data-tipo-nome="${escaparHtml(p.tipo_nome)}"
-          data-conta="${escaparHtml(p.conta)}" data-subconta="${escaparHtml(p.subconta)}">
-        <td></td>
-        <td style="padding-left:2rem">
-          <span class="financeiro__linha-principal" style="font-size:0.9em">${escaparHtml(p.descricao)}</span>
+      <tr class="financeiro__grupo-mae" style="cursor:pointer;font-weight:600"
+          data-grupo="${grupoId}" data-grupo-aberto="false">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" class="abertos-check-grupo" data-grupo="${grupoId}" />
         </td>
-        <td>${escaparHtml(p.pessoa) || '—'}</td>
-        <td>${formatarData(p.vencimento)}</td>
-        <td>${badgeStatus(p.status)}</td>
-        <td class="tabela__num">${formatarMoeda(p.valor)}</td>
-        <td class="tabela__num">${p.valor_pago > 0 ? formatarMoeda(p.valor_pago) : '—'}</td>
-        <td class="tabela__num">${formatarMoeda(saldo)}</td>
         <td>
-          <button type="button" class="btn btn-secundario btn-sm" data-acao-rapida="${p.id}" title="Liquidar parcela">
+          <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">chevron_right</span>
+          ${escaparHtml(ref.descricao.replace(/\s*[—–-]\s*Parcela.*$/i, ''))}
+          <span style="font-weight:400;color:var(--cor-texto-secundario);font-size:0.85em"> — ${pagas}/${totalParcelas} pagas</span>
+        </td>
+        <td>${escaparHtml(ref.pessoa) || '—'}</td>
+        <td>${formatarData(vencimentoGrupo)}</td>
+        <td>${badgeStatus(statusGrupo)}</td>
+        <td class="tabela__num">${formatarMoeda(valorTotal)}</td>
+        <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
+        <td class="tabela__num">${formatarMoeda(saldoTotal)}</td>
+        <td>
+          <button type="button" class="btn btn-primario btn-sm" data-acao-lote="${grupoId}" title="Liquidar parcelas em lote">
+            <span class="material-icons" style="font-size:16px">playlist_add_check</span>
+            Em lote
+          </button>
+        </td>
+      </tr>`);
+
+      for (const p of parcelas) {
+        const saldo = Math.max(0, p.valor - (p.valor_pago || 0));
+        linhas.push(`
+        <tr class="financeiro__grupo-filho" data-grupo-filho="${grupoId}" hidden
+            style="cursor:pointer;background:var(--cor-superficie-2,#f8f9fa)"
+            data-id="${p.id}" data-descricao="${escaparHtml(p.descricao)}"
+            data-pessoa="${escaparHtml(p.pessoa || '')}" data-vencimento="${p.vencimento}"
+            data-valor="${p.valor}" data-valor-pago="${p.valor_pago || 0}"
+            data-tipo-nome="${escaparHtml(p.tipo_nome)}"
+            data-conta="${escaparHtml(p.conta)}" data-subconta="${escaparHtml(p.subconta)}">
+          <td></td>
+          <td style="padding-left:2rem">
+            <span class="financeiro__linha-principal" style="font-size:0.9em">${escaparHtml(p.descricao)}</span>
+          </td>
+          <td>${escaparHtml(p.pessoa) || '—'}</td>
+          <td>${formatarData(p.vencimento)}</td>
+          <td>${badgeStatus(p.status)}</td>
+          <td class="tabela__num">${formatarMoeda(p.valor)}</td>
+          <td class="tabela__num">${p.valor_pago > 0 ? formatarMoeda(p.valor_pago) : '—'}</td>
+          <td class="tabela__num">${formatarMoeda(saldo)}</td>
+          <td style="display:flex;gap:4px">
+            <button type="button" class="btn btn-secundario btn-sm" data-acao-rapida="${p.id}" title="Liquidar parcela">
+              <span class="material-icons" style="font-size:16px">bolt</span>
+            </button>
+            <button type="button" class="btn btn-perigo btn-sm" data-acao-excluir="${p.id}" title="Excluir lançamento">
+              <span class="material-icons" style="font-size:16px">delete</span>
+            </button>
+          </td>
+        </tr>`);
+      }
+    } else {
+      const item = entrada.dado;
+      const saldo = Math.max(0, item.valor - (item.valor_pago || 0));
+      linhas.push(`
+      <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
+          data-pessoa="${escaparHtml(item.pessoa || '')}" data-vencimento="${item.vencimento}"
+          data-valor="${item.valor}" data-valor-pago="${item.valor_pago || 0}"
+          data-tipo-nome="${escaparHtml(item.tipo_nome)}"
+          data-conta="${escaparHtml(item.conta)}" data-subconta="${escaparHtml(item.subconta)}">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" class="abertos-check" data-id="${item.id}" data-valor="${item.valor}"
+                 data-descricao="${escaparHtml(item.descricao)}" data-vencimento="${item.vencimento || ''}" />
+        </td>
+        <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
+        <td>${escaparHtml(item.pessoa) || '—'}</td>
+        <td>${formatarData(item.vencimento)}</td>
+        <td>${badgeStatus(item.status)}</td>
+        <td class="tabela__num">${formatarMoeda(item.valor)}</td>
+        <td class="tabela__num">${item.valor_pago > 0 ? formatarMoeda(item.valor_pago) : '—'}</td>
+        <td class="tabela__num">${formatarMoeda(saldo)}</td>
+        <td style="display:flex;gap:4px">
+          <button type="button" class="btn btn-secundario btn-sm" data-acao-rapida="${item.id}" title="Liquidar">
             <span class="material-icons" style="font-size:16px">bolt</span>
+          </button>
+          <button type="button" class="btn btn-perigo btn-sm" data-acao-excluir="${item.id}" title="Excluir lançamento">
+            <span class="material-icons" style="font-size:16px">delete</span>
           </button>
         </td>
       </tr>`);
     }
-  }
-
-  // Renderizar avulsos
-  for (const item of avulsosPagina) {
-    const saldo = Math.max(0, item.valor - (item.valor_pago || 0));
-    linhas.push(`
-    <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
-        data-pessoa="${escaparHtml(item.pessoa || '')}" data-vencimento="${item.vencimento}"
-        data-valor="${item.valor}" data-valor-pago="${item.valor_pago || 0}"
-        data-tipo-nome="${escaparHtml(item.tipo_nome)}"
-        data-conta="${escaparHtml(item.conta)}" data-subconta="${escaparHtml(item.subconta)}">
-      <td onclick="event.stopPropagation()">
-        <input type="checkbox" class="abertos-check" data-id="${item.id}" data-valor="${item.valor}"
-               data-descricao="${escaparHtml(item.descricao)}" data-vencimento="${item.vencimento || ''}" />
-      </td>
-      <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
-      <td>${escaparHtml(item.pessoa) || '—'}</td>
-      <td>${formatarData(item.vencimento)}</td>
-      <td>${badgeStatus(item.status)}</td>
-      <td class="tabela__num">${formatarMoeda(item.valor)}</td>
-      <td class="tabela__num">${item.valor_pago > 0 ? formatarMoeda(item.valor_pago) : '—'}</td>
-      <td class="tabela__num">${formatarMoeda(saldo)}</td>
-      <td>
-        <button type="button" class="btn btn-secundario btn-sm" data-acao-rapida="${item.id}" title="Liquidar">
-          <span class="material-icons" style="font-size:16px">bolt</span>
-        </button>
-      </td>
-    </tr>`);
   }
 
   tbody.innerHTML = linhas.join('');
@@ -1528,6 +1538,7 @@ async function iniciarRegistrarLancamento() {
       const grid    = document.getElementById('meses-anuidade-grid');
       const preco   = parseFloat(document.getElementById('lancamento-plano')?.selectedOptions[0]?.dataset.preco || 0);
       const valMes  = parseFloat((preco / 12).toFixed(2));
+      if (!valMes || valMes <= 0) { Toast.alerta('Selecione um plano válido antes de salvar.'); return null; }
       const valorPagoAside     = parseFloat(document.getElementById('lancamento-valor-pago')?.value || 0) || 0;
       const dataPagamentoAside = document.getElementById('lancamento-pagamento')?.value || _hojeISO();
       const todosMeses = [...(grid?.querySelectorAll('input[type=checkbox]') || [])]
@@ -1697,8 +1708,10 @@ async function iniciarRegistrarLancamento() {
   const salvarAberto = async (btnEl) => {
     if (!form.checkValidity()) { form.reportValidity(); return; }
     if (btnEl) btnEl.disabled = true;
+    const payload = montarPayload(1);
+    if (!payload) { if (btnEl) btnEl.disabled = false; return; }
     try {
-      await api.post('/financeiro/lancamentos/cadastrar.php', montarPayload(1));
+      await api.post('/financeiro/lancamentos/cadastrar.php', payload);
       Toast.sucesso('Lançamento registrado em aberto!');
       form.reset();
       limparAside();
@@ -1719,8 +1732,10 @@ async function iniciarRegistrarLancamento() {
     if (!valorPago || valorPago <= 0) { Toast.alerta('Informe o valor pago antes de liquidar.'); return; }
     if (!dataPagamento) { Toast.alerta('Informe a data de pagamento antes de liquidar.'); return; }
     if (btnEl) btnEl.disabled = true;
+    const payload = montarPayload(1);
+    if (!payload) { if (btnEl) btnEl.disabled = false; return; }
     try {
-      const resp = await api.post('/financeiro/lancamentos/cadastrar.php', montarPayload(1));
+      const resp = await api.post('/financeiro/lancamentos/cadastrar.php', payload);
       const novoId = resp.id || resp.id_lancamento;
       if (novoId) {
         await api.post('/financeiro/lancamentos/liquidar.php', {
@@ -1763,10 +1778,14 @@ async function iniciarRegistrarLancamento() {
     const h = () => {
       form.reset();
       limparAside();
-      const painel    = document.getElementById('plano-info-panel');
-      const campoModo = document.getElementById('campo-pagamento-modo');
-      if (painel)    painel.hidden    = true;
-      if (campoModo) campoModo.hidden = false;
+      const painel       = document.getElementById('plano-info-panel');
+      const campoModo    = document.getElementById('campo-pagamento-modo');
+      const painelMeses  = document.getElementById('parcelamento-meses');
+      const painelManual = document.getElementById('parcelamento-manual');
+      if (painel)       painel.hidden       = true;
+      if (campoModo)    campoModo.hidden    = false;
+      if (painelMeses)  painelMeses.hidden  = true;
+      if (painelManual) painelManual.hidden = false;
       atualizar();
     };
     btnLimpar.addEventListener('click', h);
@@ -1851,6 +1870,23 @@ async function iniciarRegistrarLancamento() {
         const mae = tbody.querySelector(`tr[data-grupo="${grupoId}"]`);
         const tituloGrupo = mae ? mae.querySelector('.financeiro__linha-principal, td:first-child')?.textContent?.trim() : '';
         abrirModalLote(parcelas, tituloGrupo);
+        return;
+      }
+
+      // Botão excluir
+      const btnExcluir = e.target.closest('[data-acao-excluir]');
+      if (btnExcluir) {
+        e.stopPropagation();
+        const id  = parseInt(btnExcluir.dataset.acaoExcluir);
+        const row = btnExcluir.closest('tr[data-id]');
+        document.getElementById('liquidar-id').value = id;
+        document.getElementById('liquidar-descricao').textContent = row?.dataset.descricao || '—';
+        document.getElementById('liquidar-pessoa').textContent    = row?.dataset.pessoa    || '—';
+        document.getElementById('liquidar-vencimento').textContent = formatarData(row?.dataset.vencimento);
+        document.getElementById('liquidar-valor').textContent     = formatarMoeda(parseFloat(row?.dataset.valor || 0));
+        document.getElementById('modal-liquidar-fundo').hidden = false;
+        document.getElementById('modal-liquidar').hidden       = false;
+        mostrarPainelConfirmacao(true, 'excluir');
         return;
       }
 
@@ -1982,23 +2018,47 @@ async function iniciarRegistrarLancamento() {
       executarLiquidacao('liquidar').then(() => recarregarAbertos());
     });
 
-  // Confirmação de dois passos para cancelar lançamento
-  const mostrarPainelConfirmacao = (mostrar) => {
+  // Confirmação de dois passos para cancelar/excluir lançamento
+  let _confirmacaoModo = 'cancelar';
+  const _textos = {
+    cancelar: { titulo: 'Tem certeza que deseja cancelar este lançamento?', btn: 'Sim, cancelar' },
+    excluir:  { titulo: 'Tem certeza que deseja excluir este lançamento?',  btn: 'Sim, excluir'  },
+  };
+  const mostrarPainelConfirmacao = (mostrar, modo = 'cancelar') => {
     const principal   = document.getElementById('modal-liquidar-painel-principal');
     const confirmacao = document.getElementById('modal-liquidar-painel-confirmacao');
     if (principal)   principal.hidden   = mostrar;
     if (confirmacao) confirmacao.hidden = !mostrar;
+    if (mostrar) {
+      _confirmacaoModo = modo;
+      const p    = confirmacao?.querySelector('strong');
+      const btn  = document.getElementById('modal-cancelar-sim');
+      const icone = modo === 'excluir' ? 'delete' : 'cancel';
+      if (p)   p.textContent = _textos[modo].titulo;
+      if (btn) btn.innerHTML  = `<span class="material-icons">${icone}</span> ${_textos[modo].btn}`;
+    }
   };
   document.getElementById('modal-liquidar-cancelar-lancamento')
-    ?.addEventListener('click', () => mostrarPainelConfirmacao(true));
+    ?.addEventListener('click', () => mostrarPainelConfirmacao(true, 'cancelar'));
   document.getElementById('modal-cancelar-nao')
     ?.addEventListener('click', () => mostrarPainelConfirmacao(false));
   document.getElementById('modal-cancelar-sim')
     ?.addEventListener('click', async () => {
+      const id = parseInt(document.getElementById('liquidar-id').value);
       mostrarPainelConfirmacao(false);
-      _resetAbertosCache();
-      await executarLiquidacao('cancelar');
-      await recarregarAbertos();
+      if (_confirmacaoModo === 'excluir') {
+        try {
+          const r = await api.post('/financeiro/lancamentos/excluir.php', { id });
+          Toast.sucesso(r.mensagem || 'Lançamento excluído.');
+          fecharModalLiquidar();
+          _resetAbertosCache();
+          await recarregarAbertos();
+        } catch (err) { Toast.erro(err.message); }
+      } else {
+        _resetAbertosCache();
+        await executarLiquidacao('cancelar');
+        await recarregarAbertos();
+      }
     });
 
   // ── Modal de lote — handlers ──
