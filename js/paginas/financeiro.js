@@ -1334,12 +1334,18 @@ async function iniciarRegistrarLancamento() {
     const dataVencimento  = document.getElementById('lancamento-vencimento')?.value;
     const primeiraParcela = document.getElementById('lancamento-primeira-parcela')?.value || dataVencimento;
 
+    const inputPessoa = document.getElementById('lancamento-pessoa');
+    const pessoaId    = inputPessoa?.dataset?.autocompleteId;
+    const pessoaTipo  = inputPessoa?.dataset?.autocompleteTipo;
+
     const payload = {
       fk_tipo_lancamento:   parseInt(document.getElementById('lancamento-tipo')?.value) || null,
       fk_status_conta:      status,
+      fk_associado:         pessoaTipo === 'associado' ? parseInt(pessoaId) || null : null,
+      fk_parceiro:          pessoaTipo === 'parceiro'  ? parseInt(pessoaId) || null : null,
       valor:                valorTotal,
       descricao:            document.getElementById('lancamento-descricao')?.value,
-      pessoa:               document.getElementById('lancamento-pessoa')?.value,
+      pessoa:               inputPessoa?.value || '',
       observacao:           document.getElementById('lancamento-observacao')?.value,
       fk_conta_regente:     document.getElementById('lancamento-conta')?.value || null,
       fk_conta_subordinada: document.getElementById('lancamento-subconta')?.value || null,
