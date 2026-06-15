@@ -54,3 +54,4 @@ mock/db.json
 .claude/settings.json
 .claude/settings.local.json
 !.claude/settings.local.json
+Dump20260601_hostinger_v3.sql
