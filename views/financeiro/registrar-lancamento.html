@@ -155,14 +155,22 @@
   </form>
   </div><!-- /.gu-card -->
 
-  <!-- Tabela de lançamentos em aberto -->
+  <!-- Tabela de lançamentos -->
   <div class="gu-card" style="margin-top:var(--esp-lg)">
     <div class="financeiro__painel-cabecalho financeiro__painel-cabecalho--card">
       <div>
-        <h2 class="financeiro__secao-titulo">Lançamentos em aberto</h2>
-        <p class="financeiro__secao-texto">Clique em um lançamento para registrar o pagamento.</p>
+        <h2 class="financeiro__secao-titulo">Lançamentos</h2>
+        <p class="financeiro__secao-texto">Clique em um lançamento pendente para registrar o pagamento.</p>
       </div>
-      <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar por descrição ou pessoa..." style="max-width:280px" />
+      <div style="display:flex;gap:var(--esp-sm);align-items:center;flex-wrap:wrap">
+        <select class="form-input" id="filtros-status" style="width:auto">
+          <option value="todos">Status: Todos</option>
+          <option value="pendente">Pendente</option>
+          <option value="atrasado">Atrasado</option>
+          <option value="pago">Pago</option>
+        </select>
+        <input class="form-input" id="abertos-busca" type="text" placeholder="Buscar..." style="width:400px" />
+      </div>
     </div>
     <div class="tabela-responsiva">
       <table class="tabela financeiro__tabela" id="abertos-tabela">
@@ -181,9 +189,9 @@
         <tbody id="abertos-tbody"></tbody>
       </table>
       <div class="tabela-vazia" id="abertos-vazio" hidden>
-        <span class="material-icons tabela-vazia__icone">check_circle</span>
-        <h3 class="tabela-vazia__titulo">Nenhum lançamento em aberto</h3>
-        <p class="tabela-vazia__mensagem">Todos os lançamentos estão liquidados ou cancelados.</p>
+        <span class="material-icons tabela-vazia__icone">inbox</span>
+        <h3 class="tabela-vazia__titulo">Nenhum lançamento encontrado</h3>
+        <p class="tabela-vazia__mensagem">Nenhum registro corresponde ao filtro selecionado.</p>
       </div>
     </div>
   </div>

@@ -794,7 +794,7 @@ async function preencherSelectsRegistrarLancamento() {
 
 let _abertosData = [];
 
-async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
+async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 'todos') {
   const tbody = document.getElementById('abertos-tbody');
   const vazio = document.getElementById('abertos-vazio');
   if (!tbody) return;
@@ -803,57 +803,29 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
     tbody.innerHTML = linhaEstadoTabela('Carregando...');
     try {
       const resposta = await api.get('/financeiro/lancamentos/listar.php?limite=200');
-      const todos = normalizarLancamentos(resposta.dados || resposta.lancamentos || []);
-      _abertosData = todos.filter((item) => item.status === 'pendente' || item.status === 'atrasado');
+      _abertosData = normalizarLancamentos(resposta.dados || resposta.lancamentos || []);
     } catch (erro) {
       tbody.innerHTML = linhaEstadoTabela(erro.message, true);
       return;
     }
   }
 
-  let abertos = _abertosData;
+  let todos = _abertosData;
 
   // Busca local
   const busca = (termoBusca || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (busca) {
-    abertos = abertos.filter((item) => {
+    todos = todos.filter((item) => {
       const d = (item.descricao || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       const p = (item.pessoa || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       return d.includes(busca) || p.includes(busca);
     });
   }
 
-  // Ordenação
-  if (sortAbertos?.coluna) {
-    const { coluna, direcao } = sortAbertos;
-    abertos = [...abertos].sort((a, b) => {
-      let va, vb;
-      if (coluna === 'saldo') {
-        va = Math.max(0, a.valor - a.valor_pago);
-        vb = Math.max(0, b.valor - b.valor_pago);
-      } else if (['valor', 'valor_pago'].includes(coluna)) {
-        va = a[coluna]; vb = b[coluna];
-      } else {
-        va = String(a[coluna] || '').toLowerCase();
-        vb = String(b[coluna] || '').toLowerCase();
-      }
-      if (va < vb) return direcao === 'asc' ? -1 : 1;
-      if (va > vb) return direcao === 'asc' ?  1 : -1;
-      return 0;
-    });
-  }
-
-  if (!abertos.length) {
-    tbody.innerHTML = '';
-    if (vazio) vazio.hidden = false;
-    return;
-  }
-  if (vazio) vazio.hidden = true;
-
   // Separar parcelamentos de avulsos
   const grupos = new Map();
   const avulsos = [];
-  for (const item of abertos) {
+  for (const item of todos) {
     if (item.fk_parcelamento) {
       if (!grupos.has(item.fk_parcelamento)) grupos.set(item.fk_parcelamento, []);
       grupos.get(item.fk_parcelamento).push(item);
@@ -862,17 +834,70 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
     }
   }
 
+  const statusPrioridade = { atrasado: 0, pendente: 1, pago: 2 };
+
+  // Derivar status e vencimento de cada grupo
+  const gruposArray = [];
+  for (const [grupoId, parcelas] of grupos) {
+    const todasPagas    = parcelas.every((p) => p.status === 'pago');
+    const algumAtrasado = parcelas.some((p) => p.status === 'atrasado');
+    const statusGrupo   = todasPagas ? 'pago' : algumAtrasado ? 'atrasado' : 'pendente';
+    const vencimentoGrupo = parcelas.map((p) => p.vencimento).filter(Boolean).sort().at(-1) || null;
+    gruposArray.push({ grupoId, parcelas, statusGrupo, vencimentoGrupo });
+  }
+
+  // Filtrar por status
+  const gruposFiltrados  = filtroStatus === 'todos' ? gruposArray : gruposArray.filter((g) => g.statusGrupo === filtroStatus);
+  const avulsosFiltrados = filtroStatus === 'todos' ? avulsos     : avulsos.filter((a) => a.status === filtroStatus);
+
+  // Ordenação
+  if (sortAbertos?.coluna) {
+    const { coluna, direcao } = sortAbertos;
+    const cmp = (va, vb) => {
+      if (va < vb) return direcao === 'asc' ? -1 : 1;
+      if (va > vb) return direcao === 'asc' ?  1 : -1;
+      return 0;
+    };
+    gruposFiltrados.sort((a, b) => {
+      if (coluna === 'status')     return cmp(statusPrioridade[a.statusGrupo] ?? 99, statusPrioridade[b.statusGrupo] ?? 99);
+      if (coluna === 'vencimento') return cmp(a.vencimentoGrupo || '', b.vencimentoGrupo || '');
+      if (coluna === 'valor')      return cmp(a.parcelas.reduce((s, p) => s + p.valor, 0), b.parcelas.reduce((s, p) => s + p.valor, 0));
+      if (coluna === 'valor_pago') return cmp(a.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0), b.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0));
+      if (coluna === 'saldo')      return cmp(
+        Math.max(0, a.parcelas.reduce((s, p) => s + p.valor, 0) - a.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0)),
+        Math.max(0, b.parcelas.reduce((s, p) => s + p.valor, 0) - b.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0))
+      );
+      return cmp(String(a.parcelas[0]?.[coluna] || '').toLowerCase(), String(b.parcelas[0]?.[coluna] || '').toLowerCase());
+    });
+    avulsosFiltrados.sort((a, b) => {
+      if (coluna === 'saldo')  return cmp(Math.max(0, a.valor - (a.valor_pago || 0)), Math.max(0, b.valor - (b.valor_pago || 0)));
+      if (coluna === 'status') return cmp(statusPrioridade[a.status] ?? 99, statusPrioridade[b.status] ?? 99);
+      if (['valor', 'valor_pago'].includes(coluna)) return cmp(a[coluna] || 0, b[coluna] || 0);
+      return cmp(String(a[coluna] || '').toLowerCase(), String(b[coluna] || '').toLowerCase());
+    });
+  } else {
+    // Ordenação padrão: por prioridade de status (atrasado → pendente → pago)
+    gruposFiltrados.sort((a, b) => (statusPrioridade[a.statusGrupo] ?? 99) - (statusPrioridade[b.statusGrupo] ?? 99));
+    avulsosFiltrados.sort((a, b) => (statusPrioridade[a.status] ?? 99) - (statusPrioridade[b.status] ?? 99));
+  }
+
+  if (!gruposFiltrados.length && !avulsosFiltrados.length) {
+    tbody.innerHTML = '';
+    if (vazio) vazio.hidden = false;
+    return;
+  }
+  if (vazio) vazio.hidden = true;
+
   const linhas = [];
 
-  // Renderizar grupos
-  for (const [grupoId, parcelas] of grupos) {
-    const ref     = parcelas[0];
+  // Renderizar grupos (sempre primeiro)
+  for (const { grupoId, parcelas, statusGrupo, vencimentoGrupo } of gruposFiltrados) {
+    const ref         = parcelas[0];
     const valorTotal  = parcelas.reduce((s, p) => s + p.valor, 0);
-    const valorPago   = parcelas.reduce((s, p) => s + p.valor_pago, 0);
+    const valorPago   = parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0);
     const saldoTotal  = Math.max(0, valorTotal - valorPago);
     const totalParcelas = ref.total_parcelas || parcelas.length;
     const pagas = parcelas.filter((p) => p.status === 'pago').length;
-    const abertas = parcelas.filter((p) => p.status !== 'pago');
 
     linhas.push(`
     <tr class="financeiro__grupo-mae" style="cursor:pointer;font-weight:600"
@@ -883,8 +908,8 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
         <span style="font-weight:400;color:var(--cor-texto-secundario);font-size:0.85em"> — ${pagas}/${totalParcelas} pagas</span>
       </td>
       <td>${escaparHtml(ref.pessoa) || '—'}</td>
-      <td>—</td>
-      <td>—</td>
+      <td>${formatarData(vencimentoGrupo)}</td>
+      <td>${badgeStatus(statusGrupo)}</td>
       <td class="tabela__num">${formatarMoeda(valorTotal)}</td>
       <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
       <td class="tabela__num">${formatarMoeda(saldoTotal)}</td>
@@ -898,13 +923,13 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
 
     // Linhas filhas (ocultas)
     for (const p of parcelas) {
-      const saldo = Math.max(0, p.valor - p.valor_pago);
+      const saldo = Math.max(0, p.valor - (p.valor_pago || 0));
       linhas.push(`
       <tr class="financeiro__grupo-filho" data-grupo-filho="${grupoId}" hidden
           style="cursor:pointer;background:var(--cor-superficie-2,#f8f9fa)"
           data-id="${p.id}" data-descricao="${escaparHtml(p.descricao)}"
           data-pessoa="${escaparHtml(p.pessoa || '')}" data-vencimento="${p.vencimento}"
-          data-valor="${p.valor}" data-valor-pago="${p.valor_pago}"
+          data-valor="${p.valor}" data-valor-pago="${p.valor_pago || 0}"
           data-tipo-nome="${escaparHtml(p.tipo_nome)}"
           data-conta="${escaparHtml(p.conta)}" data-subconta="${escaparHtml(p.subconta)}">
         <td style="padding-left:2rem">
@@ -926,12 +951,12 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca) {
   }
 
   // Renderizar avulsos
-  for (const item of avulsos) {
-    const saldo = Math.max(0, item.valor - item.valor_pago);
+  for (const item of avulsosFiltrados) {
+    const saldo = Math.max(0, item.valor - (item.valor_pago || 0));
     linhas.push(`
     <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
         data-pessoa="${escaparHtml(item.pessoa || '')}" data-vencimento="${item.vencimento}"
-        data-valor="${item.valor}" data-valor-pago="${item.valor_pago}"
+        data-valor="${item.valor}" data-valor-pago="${item.valor_pago || 0}"
         data-tipo-nome="${escaparHtml(item.tipo_nome)}"
         data-conta="${escaparHtml(item.conta)}" data-subconta="${escaparHtml(item.subconta)}">
       <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
@@ -1387,9 +1412,10 @@ async function iniciarRegistrarLancamento() {
   // ── Sort state local para tabela de abertos ──
   const sortAbertos = { coluna: null, direcao: 'asc' };
   let termoBuscaAbertos = '';
+  let filtroStatus = 'todos';
 
   const recarregarAbertos = async () => {
-    await carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos);
+    await carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus);
     atualizarIndicadorSort();
   };
 
@@ -1416,18 +1442,28 @@ async function iniciarRegistrarLancamento() {
         sortAbertos.coluna  = col;
         sortAbertos.direcao = 'asc';
       }
-      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos);
+      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus);
       atualizarIndicadorSort();
     };
     tabela.querySelector('thead')?.addEventListener('click', thHandler);
     cleanup.push(() => tabela.querySelector('thead')?.removeEventListener('click', thHandler));
   }
 
+  const filtrosStatusEl = document.getElementById('filtros-status');
+  if (filtrosStatusEl) {
+    const hFiltro = () => {
+      filtroStatus = filtrosStatusEl.value;
+      recarregarAbertos();
+    };
+    filtrosStatusEl.addEventListener('change', hFiltro);
+    cleanup.push(() => filtrosStatusEl.removeEventListener('change', hFiltro));
+  }
+
   const buscaAbertos = document.getElementById('abertos-busca');
   if (buscaAbertos) {
     const hBusca = () => {
       termoBuscaAbertos = buscaAbertos.value;
-      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos);
+      carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus);
     };
     buscaAbertos.addEventListener('input', hBusca);
     cleanup.push(() => buscaAbertos.removeEventListener('input', hBusca));
