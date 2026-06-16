@@ -40,7 +40,7 @@ const TITULOS_ROTAS = {
   '#/cadastro/novo-parceiro': 'Cadastro — Novo Parceiro',
   '#/cadastro/dependentes': 'Cadastro — Dependentes',
   '#/financeiro/visao-geral': 'Financeiro — Visão Geral',
-  '#/financeiro/novo-lancamento': 'Financeiro — Novo Lançamento',
+  // '#/financeiro/novo-lancamento': 'Financeiro — Novo Lançamento',
   '#/financeiro/relatorios': 'Financeiro — Relatórios',
   '#/financeiro/contas-regentes': 'Financeiro — Contas Regentes',
   '#/financeiro/contas-subordinadas': 'Financeiro — Contas Subordinadas',

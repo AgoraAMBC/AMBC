@@ -260,7 +260,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--esp-lg);
-  padding: 0 var(--esp-lg);
+  padding: var(--esp-lg);
 }
 
 .financeiro__grid-50 .financeiro__painel {

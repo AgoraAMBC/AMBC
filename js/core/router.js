@@ -48,11 +48,11 @@ const rotas = {
     page: 'financeiro',
     titulo: 'Visão Geral'
   },
-  '#/financeiro/novo-lancamento': {
-    view: 'views/financeiro/novo-lancamento.html',
-    page: 'financeiro',
-    titulo: 'Novo Lançamento'
-  },
+  // '#/financeiro/novo-lancamento': {
+  //   view: 'views/financeiro/novo-lancamento.html',
+  //   page: 'financeiro',
+  //   titulo: 'Novo Lançamento'
+  // },
   '#/financeiro/registrar-lancamento': {
     view: 'views/financeiro/registrar-lancamento.html',
     page: 'financeiro',
