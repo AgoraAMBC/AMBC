@@ -128,6 +128,24 @@ try {
         $stmt->execute($params);
         $mensagem = 'Lançamento atualizado com sucesso';
     } else {
+        // Impede duplicata de anuidade (tipo 1) para o mesmo associado no mesmo ano
+        if ((int)$fk_tipo_lancamento === 1 && (int)$fk_associado > 0 && !empty($parcelas)) {
+            $anoAnu = (int)substr($parcelas[0]['data_vencimento'] ?? '', 0, 4);
+            if ($anoAnu > 0) {
+                $stmtDup = $pdo->prepare('
+                    SELECT COUNT(*) FROM lancamento
+                    WHERE fk_associado       = :a
+                      AND fk_tipo_lancamento = 1
+                      AND YEAR(data_vencimento) = :ano
+                      AND fk_status_conta   <> 3
+                ');
+                $stmtDup->execute([':a' => (int)$fk_associado, ':ano' => $anoAnu]);
+                if ($stmtDup->fetchColumn() > 0) {
+                    jsonErro("Já existe uma anuidade {$anoAnu} cadastrada para este associado.", 409);
+                }
+            }
+        }
+
         $sql = '
             INSERT INTO lancamento (
                 fk_conta_regente, fk_conta_subordinada, fk_tipo_lancamento,

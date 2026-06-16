@@ -176,14 +176,31 @@
 
 .financeiro__tabela thead th,
 .financeiro__tabela tbody td {
-  padding-left: var(--esp-sm);
-  padding-right: var(--esp-sm);
+  padding: var(--esp-md) var(--esp-sm);
 }
 
 /* Separadores verticais estilo planilha */
 .financeiro__tabela thead th + th,
 .financeiro__tabela tbody td + td {
   border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Modificador para tabelas sem checkbox na 1ª coluna (ex: visão geral) */
+.financeiro__tabela--sem-checkbox td:first-child,
+.financeiro__tabela--sem-checkbox th:first-child {
+  width: auto;
+  min-width: 280px;
+  padding-left: var(--esp-sm);
+  padding-right: var(--esp-sm);
+  white-space: normal;
+  text-align: left;
+}
+
+.financeiro__tabela--sem-checkbox td:nth-child(2),
+.financeiro__tabela--sem-checkbox th:nth-child(2) {
+  min-width: auto;
+  white-space: nowrap;
+  text-align: center;
 }
 
 /* Checkbox: colado à esquerda, sem quebra */

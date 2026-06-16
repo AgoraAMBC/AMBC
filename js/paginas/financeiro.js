@@ -69,20 +69,27 @@ async function iniciarVisaoGeral() {
   renderizarMetricas('financeiro-metricas', calcularResumo(lancamentos));
   renderizarLancamentos();
 
+  const atualizar = () => {
+    const filtrados = filtrarLancamentos();
+    renderizarMetricas('financeiro-metricas', calcularResumo(filtrados));
+    renderizarLancamentos();
+  };
+
   const filtros = [
     document.getElementById('filtro-tipo-lancamento'),
     document.getElementById('filtro-status-lancamento'),
   ].filter(Boolean);
 
   filtros.forEach((filtro) => {
-    const handler = () => {
-      const filtrados = filtrarLancamentos();
-      renderizarMetricas('financeiro-metricas', calcularResumo(filtrados));
-      renderizarLancamentos();
-    };
-    filtro.addEventListener('change', handler);
-    cleanup.push(() => filtro.removeEventListener('change', handler));
+    filtro.addEventListener('change', atualizar);
+    cleanup.push(() => filtro.removeEventListener('change', atualizar));
   });
+
+  const buscaInput = document.getElementById('filtro-busca-lancamento');
+  if (buscaInput) {
+    buscaInput.addEventListener('input', atualizar);
+    cleanup.push(() => buscaInput.removeEventListener('input', atualizar));
+  }
 }
 
 function renderizarLancamentos() {
@@ -94,10 +101,9 @@ function renderizarLancamentos() {
 
   tbody.innerHTML = filtrados.map((item) => `
     <tr>
-      <td>
-        <span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span>
-        <span class="financeiro__linha-secundaria">${escaparHtml(item.pessoa)}</span>
-      </td>
+      <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
+      <td>${escaparHtml(item.pessoa) || '—'}</td>
+      <td>${badgeTipo(item.tipo)}</td>
       <td>${escaparHtml(item.conta)}</td>
       <td>${formatarData(item.vencimento)}</td>
       <td>${badgeStatus(item.status)}</td>
@@ -129,12 +135,19 @@ async function carregarLancamentos(filtros = {}) {
 }
 
 function filtrarLancamentos() {
-  const tipo = document.getElementById('filtro-tipo-lancamento')?.value || 'todos';
+  const tipo   = document.getElementById('filtro-tipo-lancamento')?.value   || 'todos';
   const status = document.getElementById('filtro-status-lancamento')?.value || 'todos';
+  const busca  = (document.getElementById('filtro-busca-lancamento')?.value || '')
+    .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   return lancamentos.filter((item) => {
-    if (tipo !== 'todos' && item.tipo !== tipo) return false;
+    if (tipo   !== 'todos' && item.tipo   !== tipo)   return false;
     if (status !== 'todos' && item.status !== status) return false;
+    if (busca) {
+      const desc   = (item.descricao || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const pessoa = (item.pessoa    || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (!desc.includes(busca) && !pessoa.includes(busca)) return false;
+    }
     return true;
   });
 }
@@ -1276,6 +1289,35 @@ async function iniciarRegistrarLancamento() {
     }
   };
 
+  const limparAvisoAnuidade = () => {
+    const btnSalvar = document.getElementById('btn-salvar-aberto');
+    const btnLiq    = document.getElementById('btn-salvar-liquidar');
+    if (btnSalvar) btnSalvar.disabled = false;
+    if (btnLiq)    btnLiq.disabled    = false;
+  };
+
+  const verificarDuplicataAnuidade = async () => {
+    const inputP      = document.getElementById('lancamento-pessoa');
+    const fkAssociado = inputP?.dataset?.autocompleteId;
+    const pessoaTipo  = inputP?.dataset?.autocompleteTipo;
+    if (!fkAssociado || pessoaTipo !== 'associado') { limparAvisoAnuidade(); return; }
+    const ano = new Date().getFullYear();
+    try {
+      const resp = await api.get(`/financeiro/lancamentos/verificar-anuidade.php?fk_associado=${fkAssociado}&ano=${ano}`);
+      if (resp.existe) {
+        Toast.alerta(`Este associado já possui anuidade ${ano} cadastrada.`);
+        const btnSalvar = document.getElementById('btn-salvar-aberto');
+        const btnLiq    = document.getElementById('btn-salvar-liquidar');
+        if (btnSalvar) btnSalvar.disabled = true;
+        if (btnLiq)    btnLiq.disabled    = true;
+      } else {
+        limparAvisoAnuidade();
+      }
+    } catch (e) {
+      limparAvisoAnuidade();
+    }
+  };
+
   const planoSelect = document.getElementById('lancamento-plano');
   if (planoSelect) {
     carregarPlanos().then((planos) => {
@@ -1371,6 +1413,9 @@ async function iniciarRegistrarLancamento() {
             + (jaPagei > 0 ? ` ${jaPagei} ${jaPagei === 1 ? 'mês já pago' : 'meses já pagos'} pré-marcados.` : ' Nenhum mês pago ainda.');
           painel.hidden = false;
         }
+
+        // Verificar se já existe anuidade para este associado no ano atual
+        await verificarDuplicataAnuidade();
       } else {
         // Para outros períodos: valor direto, à vista por padrão
         if (painelMeses)  painelMeses.hidden  = true;
@@ -1379,6 +1424,7 @@ async function iniciarRegistrarLancamento() {
         if (campoValor) campoValor.value = preco;
         if (campoModo) campoModo.hidden = false;
         if (painel)    painel.hidden     = true;
+        limparAvisoAnuidade();
       }
 
       atualizar();
@@ -1601,11 +1647,19 @@ async function iniciarRegistrarLancamento() {
         const elPar = document.getElementById('lancamento-fk-parceiro');
         if (elAss) elAss.value = item.tipo === 'associado' ? item.id : '';
         if (elPar) elPar.value = item.tipo === 'parceiro'  ? item.id : '';
+        // Re-verificar duplicata se plano de anuidade já estiver selecionado
+        const planoOpt = document.getElementById('lancamento-plano')?.selectedOptions[0];
+        if (planoOpt?.dataset.periodo === 'anuidade') verificarDuplicataAnuidade();
       },
       minimoCaracteres: 2,
       delay: 300,
     });
     cleanup.push(() => ac.destruir());
+
+    // Reabilitar botões imediatamente quando o texto da pessoa for apagado/alterado
+    const hInputPessoa = () => limparAvisoAnuidade();
+    inputPessoa.addEventListener('input', hInputPessoa);
+    cleanup.push(() => inputPessoa.removeEventListener('input', hInputPessoa));
   }
 
   // ── Sort state local para tabela de abertos ──
@@ -1796,6 +1850,7 @@ async function iniciarRegistrarLancamento() {
       if (campoModo)    campoModo.hidden    = false;
       if (painelMeses)  painelMeses.hidden  = true;
       if (painelManual) painelManual.hidden = false;
+      limparAvisoAnuidade();
       atualizar();
     };
     btnLimpar.addEventListener('click', h);
