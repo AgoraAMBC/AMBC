@@ -867,6 +867,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
         Math.max(0, a.parcelas.reduce((s, p) => s + p.valor, 0) - a.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0)),
         Math.max(0, b.parcelas.reduce((s, p) => s + p.valor, 0) - b.parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0))
       );
+      if (coluna === 'tipo') return cmp(a.parcelas[0]?.tipo || '', b.parcelas[0]?.tipo || '');
       return cmp(String(a.parcelas[0]?.[coluna] || '').toLowerCase(), String(b.parcelas[0]?.[coluna] || '').toLowerCase());
     });
     avulsosFiltrados.sort((a, b) => {
@@ -936,6 +937,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
         <td>${escaparHtml(ref.pessoa) || '—'}</td>
         <td>${formatarData(vencimentoGrupo)}</td>
         <td>${badgeStatus(statusGrupo)}</td>
+        <td>${badgeTipo(ref.tipo)}</td>
         <td class="tabela__num">${formatarMoeda(valorTotal)}</td>
         <td class="tabela__num">${valorPago > 0 ? formatarMoeda(valorPago) : '—'}</td>
         <td class="tabela__num">${formatarMoeda(saldoTotal)}</td>
@@ -964,6 +966,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
           <td>${escaparHtml(p.pessoa) || '—'}</td>
           <td>${formatarData(p.vencimento)}</td>
           <td>${badgeStatus(p.status)}</td>
+          <td>${badgeTipo(p.tipo)}</td>
           <td class="tabela__num">${formatarMoeda(p.valor)}</td>
           <td class="tabela__num">${p.valor_pago > 0 ? formatarMoeda(p.valor_pago) : '—'}</td>
           <td class="tabela__num">${formatarMoeda(saldo)}</td>
@@ -994,6 +997,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
         <td>${escaparHtml(item.pessoa) || '—'}</td>
         <td>${formatarData(item.vencimento)}</td>
         <td>${badgeStatus(item.status)}</td>
+        <td>${badgeTipo(item.tipo)}</td>
         <td class="tabela__num">${formatarMoeda(item.valor)}</td>
         <td class="tabela__num">${item.valor_pago > 0 ? formatarMoeda(item.valor_pago) : '—'}</td>
         <td class="tabela__num">${formatarMoeda(saldo)}</td>
@@ -2670,7 +2674,8 @@ function badgeStatus(status) {
 }
 
 function badgeTipo(tipo) {
-  return `<span class="badge badge-pilula ${tipo === 'receita' ? 'badge-verde' : 'badge-vermelho'}">${capitalizar(tipo)}</span>`;
+  const label = tipo === 'receita' ? 'A Receber' : tipo === 'despesa' ? 'A Pagar' : (tipo || '—');
+  return `<span class="badge badge-pilula ${tipo === 'receita' ? 'badge-verde' : 'badge-vermelho'}">${label}</span>`;
 }
 
 

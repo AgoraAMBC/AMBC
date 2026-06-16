@@ -174,23 +174,58 @@
   color: var(--texto-principal);
 }
 
+.financeiro__tabela thead th,
+.financeiro__tabela tbody td {
+  padding-left: var(--esp-sm);
+  padding-right: var(--esp-sm);
+}
+
+/* Separadores verticais estilo planilha */
+.financeiro__tabela thead th + th,
+.financeiro__tabela tbody td + td {
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Checkbox: colado à esquerda, sem quebra */
+.financeiro__tabela td:first-child,
+.financeiro__tabela th:first-child {
+  width: 20px;
+  min-width: 20px;
+  padding-left: 8px;
+  padding-right: 4px;
+  white-space: nowrap;
+}
+
+/* Descrição: única coluna que pode quebrar linha */
+.financeiro__tabela td:nth-child(2),
+.financeiro__tabela th:nth-child(2) {
+  min-width: 160px;
+  white-space: normal;
+}
+
+/* Demais células: sem quebra, centralizadas */
 .financeiro__tabela td {
   white-space: nowrap;
+  text-align: center;
 }
 
+/* Headers: podem quebrar linha, alinhados pela base, centralizados */
 .financeiro__tabela th {
-  white-space: nowrap;
-}
-
-.financeiro__tabela td:first-child {
-  width: 36px;
-  min-width: 36px;
-  white-space: nowrap;
-}
-
-.financeiro__tabela td:nth-child(2) {
-  min-width: 220px;
   white-space: normal;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+/* Descrição fica à esquerda */
+.financeiro__tabela td:nth-child(2),
+.financeiro__tabela th:nth-child(2) {
+  text-align: left;
+}
+
+/* Colunas numéricas: centralizar junto com o restante */
+.financeiro__tabela td.tabela__num,
+.financeiro__tabela th.tabela__num {
+  text-align: center;
 }
 
 .financeiro__linha-principal {
