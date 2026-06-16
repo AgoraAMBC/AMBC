@@ -167,6 +167,7 @@ function normalizarTipo(tipo) {
 
 function normalizarStatus(status) {
   const texto = String(status || '').toLowerCase();
+  if (texto === 'isento') return 'isento';
   if (texto === 'pago' || texto === 'liquidado') return 'pago';
   if (texto === 'cancelado') return 'cancelado';
   if (texto === 'atrasado') return 'atrasado';
@@ -1339,7 +1340,7 @@ async function iniciarRegistrarLancamento() {
             const mes     = i + 1;
             const passado = mes < mesAtual;
             return `<label style="display:flex;align-items:center;gap:4px;padding:6px 4px;border:1px solid var(--cor-borda);border-radius:var(--raio-sm);cursor:pointer;font-size:0.85rem;justify-content:center;${passado ? 'background:var(--cor-superficie-2)' : ''}">
-              <input type="checkbox" class="mes-anuidade-check" data-mes="${mes}" data-ano="${anoAtual}" ${passado ? 'checked' : ''} style="margin:0" />
+              <input type="checkbox" class="mes-anuidade-check" data-mes="${mes}" data-ano="${anoAtual}" ${passado ? 'checked data-pre-marcado="true"' : ''} style="margin:0" />
               ${nome}
             </label>`;
           }).join('');
@@ -1553,13 +1554,18 @@ async function iniciarRegistrarLancamento() {
         payload.data_vencimento = `${todosMeses[0].dataset.ano}-${String(todosMeses[0].dataset.mes).padStart(2,'0')}-10`;
         let saldo = valorPagoAside;
         payload.parcelas = todosMeses.map((cb, i) => {
-          const jaPago = cb.checked;
+          const isIsento = cb.checked && cb.dataset.preMarcado === 'true';
+          const jaPago   = cb.checked && !isIsento;
           const parcela = {
             numero_parcela:  i + 1,
             valor:           valMes,
             data_vencimento: `${cb.dataset.ano}-${String(cb.dataset.mes).padStart(2,'0')}-10`,
           };
-          if (jaPago) {
+          if (isIsento) {
+            parcela.fk_status_conta = 4;
+            parcela.valor_pago      = valMes;
+            parcela.data_pagamento  = dataPagamentoAside;
+          } else if (jaPago) {
             parcela.fk_status_conta = 2;
             parcela.valor_pago      = valMes;
             parcela.data_pagamento  = dataPagamentoAside;
@@ -2669,6 +2675,7 @@ function badgeStatus(status) {
     pendente: 'badge-amarelo',
     atrasado: 'badge-vermelho',
     ativo: 'badge-verde',
+    isento: 'badge-azul',
   };
   return `<span class="badge badge-pilula ${classes[status] || 'badge-cinza'}">${capitalizar(status)}</span>`;
 }

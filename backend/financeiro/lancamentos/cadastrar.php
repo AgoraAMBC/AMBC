@@ -46,7 +46,7 @@ if (!$valor || $valor <= 0) jsonErro('Valor inválido.', 422);
 if (!$fk_tipo_lancamento) jsonErro('Tipo de lançamento é obrigatório.', 422);
 if (!$fk_status_conta) jsonErro('Status do lançamento é obrigatório.', 422);
 
-if ((int)$fk_status_conta === 2) {
+if ((int)$fk_status_conta === 2 || (int)$fk_status_conta === 4) {
     $data_pagamento = $data_pagamento ?: date('Y-m-d');
     $valor_pago = $valor_pago ?: $valor;
 } else {
@@ -176,8 +176,8 @@ try {
 
                 // Status e pagamento podem ser definidos por parcela individualmente
                 $parcelaStatus    = isset($parcela['fk_status_conta']) ? (int)$parcela['fk_status_conta'] : (int)$fk_status_conta;
-                $parcelaVpago     = isset($parcela['valor_pago'])     ? parseDecimal($parcela['valor_pago'])    : ($parcelaStatus === 2 ? $parcelaValor : null);
-                $parcelaDataPag   = isset($parcela['data_pagamento']) ? $parcela['data_pagamento']              : ($parcelaStatus === 2 ? ($data_pagamento ?: date('Y-m-d')) : null);
+                $parcelaVpago     = isset($parcela['valor_pago'])     ? parseDecimal($parcela['valor_pago'])    : (($parcelaStatus === 2 || $parcelaStatus === 4) ? $parcelaValor : null);
+                $parcelaDataPag   = isset($parcela['data_pagamento']) ? $parcela['data_pagamento']              : (($parcelaStatus === 2 || $parcelaStatus === 4) ? ($data_pagamento ?: date('Y-m-d')) : null);
 
                 $params[':fk_status_conta'] = $parcelaStatus;
                 $params[':fk_parcelamento'] = $fkParcelamento;

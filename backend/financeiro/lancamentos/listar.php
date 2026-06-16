@@ -117,6 +117,7 @@ try {
         $lancamento['pessoa'] = $lancamento['pessoa_nome'] ?? '';
         $lancamento['pessoa_tipo'] = $lancamento['pessoa_tipo'] ?? '';
         $lancamento['status'] = match (true) {
+            str_contains($statusNormalizado, 'isento') => 'isento',
             str_contains($statusNormalizado, 'liquidado'), str_contains($statusNormalizado, 'pago') => 'pago',
             str_contains($statusNormalizado, 'cancelado') => 'cancelado',
             $vencimento && $vencimento < date('Y-m-d') => 'atrasado',
