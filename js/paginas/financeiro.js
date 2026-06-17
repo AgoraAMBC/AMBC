@@ -2165,6 +2165,108 @@ async function iniciarRelatorios() {
     btn.addEventListener('click', handler);
     cleanup.push(() => btn.removeEventListener('click', handler));
   }
+
+  const btnPdf = document.getElementById('btn-exportar-pdf');
+  if (btnPdf) {
+    const handler = () => exportarRelatorioPDF();
+    btnPdf.addEventListener('click', handler);
+    cleanup.push(() => btnPdf.removeEventListener('click', handler));
+  }
+}
+
+function exportarRelatorioPDF() {
+  if (!lancamentos.length) { Toast.alerta('Nenhum dado para exportar.'); return; }
+
+  const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
+  const mesFim    = document.getElementById('relatorio-fim')?.value    || '';
+  const periodo   = [mesInicio, mesFim].filter(Boolean).map(formatarMes).join(' a ') || 'Todos os períodos';
+
+  const resumo = calcularResumo(lancamentos);
+  const meses  = agruparLancamentosPorMes(lancamentos);
+  const porConta = lancamentos.reduce((acc, item) => {
+    acc[item.conta] = (acc[item.conta] || 0) + (item.tipo === 'receita' ? item.valor : -item.valor);
+    return acc;
+  }, {});
+
+  const linhasTabela = lancamentos.map((l) => `
+    <tr>
+      <td>${l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—'}</td>
+      <td>${escaparHtml(l.descricao)}</td>
+      <td>${escaparHtml(l.pessoa) || '—'}</td>
+      <td>${l.tipo === 'receita' ? 'A Receber' : 'A Pagar'}</td>
+      <td>${escaparHtml(l.conta)}</td>
+      <td style="text-align:right;color:${l.tipo === 'receita' ? '#16a34a' : '#dc2626'}">${l.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(l.valor)}</td>
+      <td style="text-align:center">${escaparHtml(l.status)}</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8"/>
+  <title>Relatório Financeiro — AMBC</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; padding: 24px; }
+    h1 { font-size: 18px; margin-bottom: 4px; }
+    .sub { color: #64748b; font-size: 11px; margin-bottom: 20px; }
+    .metricas { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; }
+    .card span { font-size: 10px; color: #64748b; text-transform: uppercase; }
+    .card strong { display: block; font-size: 15px; margin-top: 4px; }
+    .verde { color: #16a34a; } .vermelho { color: #dc2626; }
+    .secao { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    h2 { font-size: 12px; text-transform: uppercase; color: #64748b; margin-bottom: 8px; letter-spacing:.5px; }
+    .barra-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 10px; }
+    .barra-row span { width: 55px; text-align: right; }
+    .barra-trilho { flex: 1; background: #f1f5f9; border-radius: 3px; height: 8px; }
+    .barra-fill { height: 8px; background: #3b82f6; border-radius: 3px; }
+    .barra-row strong { width: 70px; text-align: right; }
+    .conta-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f5f9; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    thead tr { background: #f8fafc; }
+    th { padding: 6px 8px; text-align: left; font-size: 9px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
+    td { padding: 5px 8px; border-bottom: 1px solid #f1f5f9; }
+    tr:last-child td { border-bottom: none; }
+    @media print { body { padding: 10px; } }
+  </style></head><body>
+  <h1>Relatório Financeiro — AMBC</h1>
+  <p class="sub">Período: ${periodo} &nbsp;|&nbsp; Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+
+  <div class="metricas">
+    <div class="card"><span>Receitas</span><strong class="verde">${formatarMoeda(resumo.receitas)}</strong></div>
+    <div class="card"><span>Despesas</span><strong class="vermelho">${formatarMoeda(resumo.despesas)}</strong></div>
+    <div class="card"><span>Saldo previsto</span><strong class="${resumo.saldo >= 0 ? 'verde' : 'vermelho'}">${formatarMoeda(resumo.saldo)}</strong></div>
+    <div class="card"><span>Em aberto</span><strong>${formatarMoeda(resumo.pendentes)}</strong></div>
+  </div>
+
+  <div class="secao">
+    <div>
+      <h2>Resultado mensal</h2>
+      ${(() => { const m = meses; const max = Math.max(1,...m.map(i=>Math.abs(i.valor))); return m.map(i=>`
+        <div class="barra-row">
+          <span>${i.mes}</span>
+          <div class="barra-trilho"><div class="barra-fill" style="width:${(Math.abs(i.valor)/max*100).toFixed(1)}%"></div></div>
+          <strong class="${i.valor>=0?'verde':'vermelho'}">${formatarMoeda(i.valor)}</strong>
+        </div>`).join(''); })()}
+    </div>
+    <div>
+      <h2>Resumo por conta</h2>
+      ${Object.entries(porConta).map(([c,v])=>`
+        <div class="conta-row"><span>${escaparHtml(c)}</span><strong class="${v>=0?'verde':'vermelho'}">${formatarMoeda(v)}</strong></div>`).join('')}
+    </div>
+  </div>
+
+  <h2>Lançamentos (${lancamentos.length})</h2>
+  <table>
+    <thead><tr><th>Vencimento</th><th>Descrição</th><th>Pessoa</th><th>Natureza</th><th>Conta</th><th style="text-align:right">Valor</th><th style="text-align:center">Status</th></tr></thead>
+    <tbody>${linhasTabela}</tbody>
+  </table>
+</body></html>`;
+
+  const janela = window.open('', '_blank', 'width=900,height=700');
+  if (!janela) { Toast.alerta('Permita pop-ups para gerar o PDF.'); return; }
+  janela.document.write(html);
+  janela.document.close();
+  janela.focus();
+  setTimeout(() => { janela.print(); }, 400);
 }
 
 function exportarRelatorioCSV() {
