@@ -2212,61 +2212,90 @@ async function exportarRelatorioPDF() {
 
   const maxBarra = Math.max(1, ...meses.map((i) => Math.abs(i.valor)));
 
+  // html2canvas não suporta CSS Grid nem Flexbox — usar apenas tabelas e estilos inline simples
+  const tdSec = 'padding:0 8px;vertical-align:top;width:50%';
+  const thSt  = 'padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0;background:#f8fafc';
+  const tdSt  = 'padding:5px 8px;border-bottom:1px solid #f1f5f9;font-size:10px';
+
   const conteudo = `
-    <div style="font-family:Arial,sans-serif;font-size:11px;color:#1e293b;width:780px">
-      <h1 style="font-size:18px;margin:0 0 4px">Relatório Financeiro — AMBC</h1>
-      <p style="color:#64748b;font-size:11px;margin:0 0 20px">Período: ${periodo} &nbsp;|&nbsp; Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#1e293b;width:750px;background:#fff">
+      <h1 style="font-size:18px;margin:0 0 4px 0">Relatório Financeiro — AMBC</h1>
+      <p style="color:#64748b;font-size:11px;margin:0 0 18px 0">Período: ${periodo} | Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
-        ${[
-          ['Receitas',      resumo.receitas,  '#16a34a'],
-          ['Despesas',      resumo.despesas,  '#dc2626'],
-          ['Saldo previsto',resumo.saldo,     resumo.saldo >= 0 ? '#16a34a' : '#dc2626'],
-          ['Em aberto',     resumo.pendentes, '#1e293b'],
-        ].map(([label, valor, cor]) => `
-          <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px">
-            <span style="font-size:10px;color:#64748b;text-transform:uppercase">${label}</span>
-            <strong style="display:block;font-size:14px;margin-top:4px;color:${cor}">${formatarMoeda(valor)}</strong>
-          </div>`).join('')}
-      </div>
+      <!-- Métricas: 4 células numa table -->
+      <table style="width:100%;border-collapse:separate;border-spacing:8px;margin-bottom:16px">
+        <tr>
+          ${[
+            ['Receitas',       resumo.receitas,  '#16a34a'],
+            ['Despesas',       resumo.despesas,  '#dc2626'],
+            ['Saldo previsto', resumo.saldo,     resumo.saldo >= 0 ? '#16a34a' : '#dc2626'],
+            ['Em aberto',      resumo.pendentes, '#475569'],
+          ].map(([label, valor, cor]) => `
+            <td style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;width:25%">
+              <span style="font-size:9px;color:#64748b;text-transform:uppercase">${label}</span><br>
+              <strong style="font-size:14px;color:${cor}">${formatarMoeda(valor)}</strong>
+            </td>`).join('')}
+        </tr>
+      </table>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-        <div>
-          <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Resultado mensal</h2>
-          ${meses.map((i) => `
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:10px">
-              <span style="width:55px;text-align:right">${i.mes}</span>
-              <div style="flex:1;background:#f1f5f9;border-radius:3px;height:8px">
-                <div style="width:${(Math.abs(i.valor)/maxBarra*100).toFixed(1)}%;height:8px;background:#3b82f6;border-radius:3px"></div>
-              </div>
-              <strong style="width:80px;text-align:right;color:${i.valor>=0?'#16a34a':'#dc2626'}">${formatarMoeda(i.valor)}</strong>
-            </div>`).join('')}
-        </div>
-        <div>
-          <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Resumo por conta</h2>
-          ${Object.entries(porConta).map(([c, v]) => `
-            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9">
-              <span>${escaparHtml(c)}</span>
-              <strong style="color:${v>=0?'#16a34a':'#dc2626'}">${formatarMoeda(v)}</strong>
-            </div>`).join('')}
-        </div>
-      </div>
+      <!-- Resultado mensal + Resumo por conta lado a lado -->
+      <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
+        <tr>
+          <td style="${tdSec}">
+            <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Resultado mensal</p>
+            ${meses.map((i) => {
+              const pct = (Math.abs(i.valor) / maxBarra * 100).toFixed(1);
+              const cor = i.valor >= 0 ? '#16a34a' : '#dc2626';
+              return `<table style="width:100%;border-collapse:collapse;margin-bottom:4px"><tr>
+                <td style="width:55px;text-align:right;font-size:10px;padding-right:6px">${i.mes}</td>
+                <td style="background:#f1f5f9;border-radius:3px;height:8px;padding:0">
+                  <div style="width:${pct}%;height:8px;background:#3b82f6;border-radius:3px"></div>
+                </td>
+                <td style="width:80px;text-align:right;font-size:10px;padding-left:6px;color:${cor}">${formatarMoeda(i.valor)}</td>
+              </tr></table>`;
+            }).join('')}
+          </td>
+          <td style="${tdSec}">
+            <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Resumo por conta</p>
+            <table style="width:100%;border-collapse:collapse">
+              ${Object.entries(porConta).map(([c, v]) => `
+                <tr>
+                  <td style="font-size:10px;padding:4px 0;border-bottom:1px solid #f1f5f9">${escaparHtml(c)}</td>
+                  <td style="font-size:10px;padding:4px 0;border-bottom:1px solid #f1f5f9;text-align:right;color:${v>=0?'#16a34a':'#dc2626'}">${formatarMoeda(v)}</td>
+                </tr>`).join('')}
+            </table>
+          </td>
+        </tr>
+      </table>
 
-      <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Lançamentos (${lancamentos.length})</h2>
-      <table style="width:100%;border-collapse:collapse;font-size:10px">
+      <!-- Tabela de lançamentos -->
+      <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Lançamentos (${lancamentos.length})</p>
+      <table style="width:100%;border-collapse:collapse">
         <thead>
-          <tr style="background:#f8fafc">
+          <tr>
             ${['Vencimento','Descrição','Pessoa','Natureza','Conta','Valor','Status'].map((h) =>
-              `<th style="padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0">${h}</th>`).join('')}
+              `<th style="${thSt}">${h}</th>`).join('')}
           </tr>
         </thead>
-        <tbody>${linhasTabela}</tbody>
+        <tbody>
+          ${lancamentos.map((l) => `
+            <tr>
+              <td style="${tdSt}">${l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—'}</td>
+              <td style="${tdSt}">${escaparHtml(l.descricao)}</td>
+              <td style="${tdSt}">${escaparHtml(l.pessoa) || '—'}</td>
+              <td style="${tdSt}">${l.tipo === 'receita' ? 'A Receber' : 'A Pagar'}</td>
+              <td style="${tdSt}">${escaparHtml(l.conta)}</td>
+              <td style="${tdSt};text-align:right;color:${l.tipo==='receita'?'#16a34a':'#dc2626'}">${l.tipo==='receita'?'+':'-'} ${formatarMoeda(l.valor)}</td>
+              <td style="${tdSt};text-transform:capitalize">${escaparHtml(l.status)}</td>
+            </tr>`).join('')}
+        </tbody>
       </table>
     </div>`;
 
   const el = document.createElement('div');
   el.innerHTML = conteudo;
-  el.style.cssText = 'position:fixed;left:-9999px;top:0;background:#fff;padding:20px';
+  // Visível mas fora da tela — html2canvas exige que o elemento esteja no viewport
+  el.style.cssText = 'position:absolute;top:0;left:0;z-index:-1;background:#fff;padding:20px;width:790px';
   document.body.appendChild(el);
 
   try {
