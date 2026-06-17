@@ -1173,7 +1173,7 @@ function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelam
   const listaEl  = document.getElementById('liquidar-outras-parcelas-lista');
   if (outrasEl && listaEl) {
     const outras = fkParcelamento
-      ? _abertosData.filter((p) => p.fk_parcelamento === fkParcelamento && p.id !== id)
+      ? _abertosData.filter((p) => p.fk_parcelamento === fkParcelamento && p.id !== id && ['pendente', 'atrasado'].includes(p.status))
       : [];
     if (outras.length) {
       listaEl.innerHTML = [...outras]
