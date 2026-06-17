@@ -183,6 +183,27 @@
 }
 
 /* ============================================
+   🔗 BOTÃO WORDPRESS ADMIN
+   ============================================ */
+.topbar__btn-wp {
+  display: flex;
+  align-items: center;
+  padding: var(--esp-xs);
+  border-radius: var(--raio-sm);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--cor-cinza-600);
+  text-decoration: none;
+  transition: background-color var(--transicao-rapida), color var(--transicao-rapida);
+  white-space: nowrap;
+}
+
+.topbar__btn-wp:hover {
+  background-color: var(--cor-cinza-100);
+  color: var(--cor-primaria);
+}
+
+/* ============================================
    👤 MENU DO USUÁRIO
    ============================================ */
 .topbar__usuario {
