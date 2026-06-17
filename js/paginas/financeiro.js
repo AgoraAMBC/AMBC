@@ -2174,15 +2174,26 @@ async function iniciarRelatorios() {
   }
 }
 
-function exportarRelatorioPDF() {
+async function exportarRelatorioPDF() {
   if (!lancamentos.length) { Toast.alerta('Nenhum dado para exportar.'); return; }
+
+  // Carrega html2pdf do CDN apenas na primeira vez
+  if (!window.html2pdf) {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
 
   const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
   const mesFim    = document.getElementById('relatorio-fim')?.value    || '';
   const periodo   = [mesInicio, mesFim].filter(Boolean).map(formatarMes).join(' a ') || 'Todos os períodos';
+  const nomeArq   = `relatorio_financeiro${mesInicio ? '_' + mesInicio : ''}${mesFim ? '_a_' + mesFim : ''}.pdf`;
 
-  const resumo = calcularResumo(lancamentos);
-  const meses  = agruparLancamentosPorMes(lancamentos);
+  const resumo   = calcularResumo(lancamentos);
+  const meses    = agruparLancamentosPorMes(lancamentos);
   const porConta = lancamentos.reduce((acc, item) => {
     acc[item.conta] = (acc[item.conta] || 0) + (item.tipo === 'receita' ? item.valor : -item.valor);
     return acc;
@@ -2196,77 +2207,79 @@ function exportarRelatorioPDF() {
       <td>${l.tipo === 'receita' ? 'A Receber' : 'A Pagar'}</td>
       <td>${escaparHtml(l.conta)}</td>
       <td style="text-align:right;color:${l.tipo === 'receita' ? '#16a34a' : '#dc2626'}">${l.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(l.valor)}</td>
-      <td style="text-align:center">${escaparHtml(l.status)}</td>
+      <td style="text-align:center;text-transform:capitalize">${escaparHtml(l.status)}</td>
     </tr>`).join('');
 
-  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
-  <meta charset="UTF-8"/>
-  <title>Relatório Financeiro — AMBC</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; font-size: 11px; color: #1e293b; padding: 24px; }
-    h1 { font-size: 18px; margin-bottom: 4px; }
-    .sub { color: #64748b; font-size: 11px; margin-bottom: 20px; }
-    .metricas { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
-    .card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; }
-    .card span { font-size: 10px; color: #64748b; text-transform: uppercase; }
-    .card strong { display: block; font-size: 15px; margin-top: 4px; }
-    .verde { color: #16a34a; } .vermelho { color: #dc2626; }
-    .secao { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    h2 { font-size: 12px; text-transform: uppercase; color: #64748b; margin-bottom: 8px; letter-spacing:.5px; }
-    .barra-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 10px; }
-    .barra-row span { width: 55px; text-align: right; }
-    .barra-trilho { flex: 1; background: #f1f5f9; border-radius: 3px; height: 8px; }
-    .barra-fill { height: 8px; background: #3b82f6; border-radius: 3px; }
-    .barra-row strong { width: 70px; text-align: right; }
-    .conta-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f5f9; font-size: 11px; }
-    table { width: 100%; border-collapse: collapse; font-size: 10px; }
-    thead tr { background: #f8fafc; }
-    th { padding: 6px 8px; text-align: left; font-size: 9px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #e2e8f0; }
-    td { padding: 5px 8px; border-bottom: 1px solid #f1f5f9; }
-    tr:last-child td { border-bottom: none; }
-    @media print { body { padding: 10px; } }
-  </style></head><body>
-  <h1>Relatório Financeiro — AMBC</h1>
-  <p class="sub">Período: ${periodo} &nbsp;|&nbsp; Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+  const maxBarra = Math.max(1, ...meses.map((i) => Math.abs(i.valor)));
 
-  <div class="metricas">
-    <div class="card"><span>Receitas</span><strong class="verde">${formatarMoeda(resumo.receitas)}</strong></div>
-    <div class="card"><span>Despesas</span><strong class="vermelho">${formatarMoeda(resumo.despesas)}</strong></div>
-    <div class="card"><span>Saldo previsto</span><strong class="${resumo.saldo >= 0 ? 'verde' : 'vermelho'}">${formatarMoeda(resumo.saldo)}</strong></div>
-    <div class="card"><span>Em aberto</span><strong>${formatarMoeda(resumo.pendentes)}</strong></div>
-  </div>
+  const conteudo = `
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#1e293b;width:780px">
+      <h1 style="font-size:18px;margin:0 0 4px">Relatório Financeiro — AMBC</h1>
+      <p style="color:#64748b;font-size:11px;margin:0 0 20px">Período: ${periodo} &nbsp;|&nbsp; Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
 
-  <div class="secao">
-    <div>
-      <h2>Resultado mensal</h2>
-      ${(() => { const m = meses; const max = Math.max(1,...m.map(i=>Math.abs(i.valor))); return m.map(i=>`
-        <div class="barra-row">
-          <span>${i.mes}</span>
-          <div class="barra-trilho"><div class="barra-fill" style="width:${(Math.abs(i.valor)/max*100).toFixed(1)}%"></div></div>
-          <strong class="${i.valor>=0?'verde':'vermelho'}">${formatarMoeda(i.valor)}</strong>
-        </div>`).join(''); })()}
-    </div>
-    <div>
-      <h2>Resumo por conta</h2>
-      ${Object.entries(porConta).map(([c,v])=>`
-        <div class="conta-row"><span>${escaparHtml(c)}</span><strong class="${v>=0?'verde':'vermelho'}">${formatarMoeda(v)}</strong></div>`).join('')}
-    </div>
-  </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+        ${[
+          ['Receitas',      resumo.receitas,  '#16a34a'],
+          ['Despesas',      resumo.despesas,  '#dc2626'],
+          ['Saldo previsto',resumo.saldo,     resumo.saldo >= 0 ? '#16a34a' : '#dc2626'],
+          ['Em aberto',     resumo.pendentes, '#1e293b'],
+        ].map(([label, valor, cor]) => `
+          <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px">
+            <span style="font-size:10px;color:#64748b;text-transform:uppercase">${label}</span>
+            <strong style="display:block;font-size:14px;margin-top:4px;color:${cor}">${formatarMoeda(valor)}</strong>
+          </div>`).join('')}
+      </div>
 
-  <h2>Lançamentos (${lancamentos.length})</h2>
-  <table>
-    <thead><tr><th>Vencimento</th><th>Descrição</th><th>Pessoa</th><th>Natureza</th><th>Conta</th><th style="text-align:right">Valor</th><th style="text-align:center">Status</th></tr></thead>
-    <tbody>${linhasTabela}</tbody>
-  </table>
-</body></html>`;
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div>
+          <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Resultado mensal</h2>
+          ${meses.map((i) => `
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:10px">
+              <span style="width:55px;text-align:right">${i.mes}</span>
+              <div style="flex:1;background:#f1f5f9;border-radius:3px;height:8px">
+                <div style="width:${(Math.abs(i.valor)/maxBarra*100).toFixed(1)}%;height:8px;background:#3b82f6;border-radius:3px"></div>
+              </div>
+              <strong style="width:80px;text-align:right;color:${i.valor>=0?'#16a34a':'#dc2626'}">${formatarMoeda(i.valor)}</strong>
+            </div>`).join('')}
+        </div>
+        <div>
+          <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Resumo por conta</h2>
+          ${Object.entries(porConta).map(([c, v]) => `
+            <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9">
+              <span>${escaparHtml(c)}</span>
+              <strong style="color:${v>=0?'#16a34a':'#dc2626'}">${formatarMoeda(v)}</strong>
+            </div>`).join('')}
+        </div>
+      </div>
 
-  const janela = window.open('', '_blank', 'width=900,height=700');
-  if (!janela) { Toast.alerta('Permita pop-ups para gerar o PDF.'); return; }
-  janela.document.write(html);
-  janela.document.close();
-  janela.focus();
-  setTimeout(() => { janela.print(); }, 400);
+      <h2 style="font-size:11px;text-transform:uppercase;color:#64748b;margin:0 0 8px;letter-spacing:.5px">Lançamentos (${lancamentos.length})</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:10px">
+        <thead>
+          <tr style="background:#f8fafc">
+            ${['Vencimento','Descrição','Pessoa','Natureza','Conta','Valor','Status'].map((h) =>
+              `<th style="padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0">${h}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>${linhasTabela}</tbody>
+      </table>
+    </div>`;
+
+  const el = document.createElement('div');
+  el.innerHTML = conteudo;
+  el.style.cssText = 'position:fixed;left:-9999px;top:0;background:#fff;padding:20px';
+  document.body.appendChild(el);
+
+  try {
+    await window.html2pdf().set({
+      margin: 10,
+      filename: nomeArq,
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    }).from(el).save();
+    Toast.sucesso('PDF exportado com sucesso.');
+  } finally {
+    document.body.removeChild(el);
+  }
 }
 
 function exportarRelatorioCSV() {
