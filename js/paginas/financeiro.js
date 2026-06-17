@@ -971,6 +971,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
             data-id="${p.id}" data-descricao="${escaparHtml(p.descricao)}"
             data-pessoa="${escaparHtml(p.pessoa || '')}" data-vencimento="${p.vencimento}"
             data-valor="${p.valor}" data-valor-pago="${p.valor_pago || 0}"
+            data-status="${p.status || ''}"
             data-tipo-nome="${escaparHtml(p.tipo_nome)}"
             data-conta="${escaparHtml(p.conta)}" data-subconta="${escaparHtml(p.subconta)}">
           <td></td>
@@ -1001,6 +1002,7 @@ async function carregarAbertosRegistrar(sortAbertos, termoBusca, filtroStatus = 
       <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
           data-pessoa="${escaparHtml(item.pessoa || '')}" data-vencimento="${item.vencimento}"
           data-valor="${item.valor}" data-valor-pago="${item.valor_pago || 0}"
+          data-status="${item.status || ''}"
           data-tipo-nome="${escaparHtml(item.tipo_nome)}"
           data-conta="${escaparHtml(item.conta)}" data-subconta="${escaparHtml(item.subconta)}">
         <td onclick="event.stopPropagation()">
@@ -1944,6 +1946,11 @@ async function iniciarRegistrarLancamento() {
         e.stopPropagation();
         const id  = parseInt(btnExcluir.dataset.acaoExcluir);
         const row = btnExcluir.closest('tr[data-id]');
+        const statusRow = row?.dataset.status || '';
+        if (statusRow === 'pago' || statusRow === 'isento') {
+          Toast.alerta('Lançamentos já pagos ou isentos não podem ser excluídos.');
+          return;
+        }
         document.getElementById('liquidar-id').value = id;
         document.getElementById('liquidar-descricao').textContent = row?.dataset.descricao || '—';
         document.getElementById('liquidar-pessoa').textContent    = row?.dataset.pessoa    || '—';

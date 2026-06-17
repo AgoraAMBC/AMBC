@@ -18,12 +18,18 @@ try {
     $pdo = obterConexao();
     $pdo->beginTransaction();
 
-    $stmt = $pdo->prepare('SELECT id_lancamento FROM lancamento WHERE id_lancamento = :id');
+    $stmt = $pdo->prepare('SELECT id_lancamento, fk_status_conta FROM lancamento WHERE id_lancamento = :id');
     $stmt->execute([':id' => $id]);
+    $row = $stmt->fetch();
 
-    if (!$stmt->fetch()) {
+    if (!$row) {
         $pdo->rollBack();
         jsonErro('Lancamento nao encontrado', 404);
+    }
+
+    if (in_array((int)$row['fk_status_conta'], [2, 4])) {
+        $pdo->rollBack();
+        jsonErro('Lancamentos ja pagos ou isentos nao podem ser excluidos.', 403);
     }
 
     $pdo->prepare('DELETE FROM lancamento WHERE id_lancamento = :id')->execute([':id' => $id]);
