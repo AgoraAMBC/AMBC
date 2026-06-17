@@ -2248,18 +2248,30 @@ async function exportarRelatorioPDF() {
   // ── Resultado mensal ──
   doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
   doc.text('RESULTADO MENSAL', marg, y); y += 4;
-  const barMaxW = 80;
-  const maxVal  = Math.max(1, ...meses.map((m) => Math.abs(m.valor)));
+  const barMaxW  = 70;
+  const maxValPdf = Math.max(1, ...meses.flatMap((m) => [m.receita, m.despesa]));
+  const verde = [22, 163, 74]; const vermelho = [220, 38, 38]; const cinza = [241, 245, 249];
   meses.forEach((m) => {
-    const pct = Math.abs(m.valor) / maxVal;
-    const cor = m.valor >= 0 ? [22, 163, 74] : [220, 38, 38];
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(30, 41, 59);
-    doc.text(m.mes, marg, y + 3.5);
-    doc.setFillColor(241, 245, 249); doc.rect(marg + 20, y, barMaxW, 5, 'F');
-    doc.setFillColor(...cor); doc.rect(marg + 20, y, barMaxW * pct, 5, 'F');
-    doc.setTextColor(...cor); doc.setFont('helvetica', 'bold');
-    doc.text(formatarMoeda(m.valor), marg + 20 + barMaxW + 3, y + 3.5);
-    y += 7;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(30, 41, 59);
+    doc.text(m.mesLabel, marg, y + 3);
+    // barra receita
+    doc.setFillColor(...cinza); doc.rect(marg + 18, y, barMaxW, 3.5, 'F');
+    doc.setFillColor(...verde); doc.rect(marg + 18, y, barMaxW * (m.receita / maxValPdf), 3.5, 'F');
+    doc.setTextColor(...verde); doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5);
+    doc.text(formatarMoeda(m.receita), marg + 18 + barMaxW + 2, y + 2.8);
+    y += 4.5;
+    // barra despesa
+    doc.setFillColor(...cinza); doc.rect(marg + 18, y, barMaxW, 3.5, 'F');
+    doc.setFillColor(...vermelho); doc.rect(marg + 18, y, barMaxW * (m.despesa / maxValPdf), 3.5, 'F');
+    doc.setTextColor(...vermelho); doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5);
+    doc.text(formatarMoeda(m.despesa), marg + 18 + barMaxW + 2, y + 2.8);
+    y += 4.5;
+    // saldo
+    const corSaldo = m.saldo >= 0 ? verde : vermelho;
+    const saldoStr = `Saldo: ${m.saldo >= 0 ? '+' : '-'} ${formatarMoeda(Math.abs(m.saldo))}`;
+    doc.setTextColor(...corSaldo); doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5);
+    doc.text(saldoStr, marg + 18 + barMaxW + 2, y + 1);
+    y += 5;
   });
   y += 4;
 
@@ -2371,34 +2383,64 @@ function renderizarBarrasRelatorio() {
   if (!container) return;
 
   const meses = agruparLancamentosPorMes(lancamentos);
-  const maior = Math.max(1, ...meses.map((m) => Math.abs(m.valor)));
+  const maiorValor = Math.max(1, ...meses.flatMap((m) => [m.receita, m.despesa]));
 
-  container.innerHTML = meses.map((item) => `
-    <div class="financeiro__barra">
-      <span>${item.mes}</span>
-      <div class="financeiro__barra-trilho">
-        <div class="financeiro__barra-valor" style="width: ${(Math.abs(item.valor) / maior) * 100}%"></div>
-      </div>
-      <strong>${formatarMoeda(item.valor)}</strong>
-    </div>
-  `).join('');
+  container.innerHTML = meses.map((item) => {
+    const pctR = (item.receita / maiorValor) * 100;
+    const pctD = (item.despesa / maiorValor) * 100;
+    const saldoCls = item.saldo >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa';
+    const saldoStr = `${item.saldo >= 0 ? '+' : '−'} ${formatarMoeda(Math.abs(item.saldo))}`;
+
+    return `
+      <div class="financeiro__barra-grupo">
+        <span class="financeiro__barra-mes-label">${item.mesLabel}</span>
+        <div class="financeiro__barra-linhas">
+          <div class="financeiro__barra">
+            <span class="financeiro__barra-tipo">Rec.</span>
+            <div class="financeiro__barra-trilho" title="Receita: ${formatarMoeda(item.receita)}">
+              <div class="financeiro__barra-fill financeiro__barra-fill--receita" style="width:${pctR}%"></div>
+            </div>
+            <span class="financeiro__barra-num financeiro__valor-receita">${formatarMoeda(item.receita)}</span>
+          </div>
+          <div class="financeiro__barra">
+            <span class="financeiro__barra-tipo">Desp.</span>
+            <div class="financeiro__barra-trilho" title="Despesa: ${formatarMoeda(item.despesa)}">
+              <div class="financeiro__barra-fill financeiro__barra-fill--despesa" style="width:${pctD}%"></div>
+            </div>
+            <span class="financeiro__barra-num financeiro__valor-despesa">${formatarMoeda(item.despesa)}</span>
+          </div>
+          <div class="financeiro__barra-saldo">
+            <span class="financeiro__barra-saldo-label">Saldo</span>
+            <span></span>
+            <strong class="${saldoCls}">${saldoStr}</strong>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function agruparLancamentosPorMes(lista) {
   const mapa = new Map();
 
   lista.filter((item) => item.status === 'pago').forEach((item) => {
-    const data = item.vencimento || item.data_lancamento || '';
-    const chave = data.slice(0, 7) || 'Sem data';
-    const valor = item.tipo === 'receita' ? item.valor : -item.valor;
-    mapa.set(chave, (mapa.get(chave) || 0) + valor);
+    const chave = (item.vencimento || item.data_lancamento || '').slice(0, 7) || 'Sem data';
+    if (!mapa.has(chave)) mapa.set(chave, { receita: 0, despesa: 0 });
+    const entry = mapa.get(chave);
+    if (item.tipo === 'receita') entry.receita += item.valor;
+    else entry.despesa += item.valor;
   });
 
   const itens = [...mapa.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([mes, valor]) => ({ mes: formatarMes(mes), valor }));
+    .map(([chave, { receita, despesa }]) => ({
+      mes: chave,
+      mesLabel: formatarMes(chave),
+      receita,
+      despesa,
+      saldo: receita - despesa,
+    }));
 
-  return itens.length ? itens : [{ mes: '-', valor: 0 }];
+  return itens.length ? itens : [{ mes: '-', mesLabel: '-', receita: 0, despesa: 0, saldo: 0 }];
 }
 
 function renderizarResumoContas() {

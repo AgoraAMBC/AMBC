@@ -417,30 +417,93 @@
 }
 
 .financeiro__barras {
-  display: grid;
-  gap: var(--esp-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   margin-top: var(--esp-lg);
+}
+
+.financeiro__barra-grupo {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 0 var(--esp-sm);
+  padding: var(--esp-sm) 0;
+  border-bottom: 1px solid var(--cor-cinza-100);
+}
+
+.financeiro__barra-grupo:last-child {
+  border-bottom: none;
+}
+
+.financeiro__barra-mes-label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--texto-secundario);
+  padding-top: 3px;
+}
+
+.financeiro__barra-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .financeiro__barra {
   display: grid;
-  grid-template-columns: 70px 1fr 110px;
+  grid-template-columns: 34px 1fr 96px;
   align-items: center;
-  gap: var(--esp-sm);
-  font-size: var(--fs-sm);
+  gap: var(--esp-xs);
+  font-size: var(--fs-xs);
+}
+
+.financeiro__barra-tipo {
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
 }
 
 .financeiro__barra-trilho {
-  height: 10px;
+  height: 8px;
   border-radius: var(--raio-full);
   background: var(--cor-cinza-100);
   overflow: hidden;
+  cursor: default;
 }
 
-.financeiro__barra-valor {
+.financeiro__barra-fill {
   height: 100%;
   border-radius: inherit;
-  background: var(--cor-primaria);
+  transition: width 0.35s ease;
+}
+
+.financeiro__barra-fill--receita { background: var(--cor-sucesso); }
+.financeiro__barra-fill--despesa { background: var(--cor-erro); }
+
+.financeiro__barra-num {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.financeiro__barra-saldo {
+  display: grid;
+  grid-template-columns: 34px 1fr 96px;
+  align-items: center;
+  gap: var(--esp-xs);
+  font-size: var(--fs-xs);
+  margin-top: 2px;
+  padding-top: 3px;
+  border-top: 1px solid var(--cor-cinza-100);
+}
+
+.financeiro__barra-saldo-label {
+  color: var(--texto-terciario);
+  font-style: italic;
+}
+
+.financeiro__barra-saldo strong {
+  text-align: right;
+  display: block;
 }
 
 .financeiro__lista-contas {
@@ -557,12 +620,17 @@
     width: 100%;
   }
 
-  .financeiro__barra {
-    grid-template-columns: 56px 1fr;
+  .financeiro__barra-grupo {
+    grid-template-columns: 40px 1fr;
   }
 
-  .financeiro__barra > strong {
-    grid-column: 1 / -1;
+  .financeiro__barra,
+  .financeiro__barra-saldo {
+    grid-template-columns: 30px 1fr 80px;
+  }
+
+  .financeiro__barra-num {
+    font-size: 10px;
   }
 }
 
