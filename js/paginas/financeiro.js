@@ -2209,7 +2209,7 @@ async function exportarRelatorioPDF() {
 
   const resumo   = calcularResumo(lancamentos);
   const meses    = agruparLancamentosPorMes(lancamentos);
-  const porConta = lancamentos.reduce((acc, item) => {
+  const porConta = lancamentos.filter((item) => item.status === 'pago').reduce((acc, item) => {
     acc[item.conta] = (acc[item.conta] || 0) + (item.tipo === 'receita' ? item.valor : -item.valor);
     return acc;
   }, {});
@@ -2387,7 +2387,7 @@ function renderizarBarrasRelatorio() {
 function agruparLancamentosPorMes(lista) {
   const mapa = new Map();
 
-  lista.forEach((item) => {
+  lista.filter((item) => item.status === 'pago').forEach((item) => {
     const data = item.vencimento || item.data_lancamento || '';
     const chave = data.slice(0, 7) || 'Sem data';
     const valor = item.tipo === 'receita' ? item.valor : -item.valor;
@@ -2405,7 +2405,7 @@ function renderizarResumoContas() {
   const container = document.getElementById('relatorio-contas');
   if (!container) return;
 
-  const porConta = lancamentos.reduce((acc, item) => {
+  const porConta = lancamentos.filter((item) => item.status === 'pago').reduce((acc, item) => {
     acc[item.conta] = (acc[item.conta] || 0) + (item.tipo === 'receita' ? item.valor : -item.valor);
     return acc;
   }, {});
