@@ -1,0 +1,59 @@
+<section class="view financeiro" data-financeiro-view="estorno-liquidacao">
+  <div class="gu-card">
+  <header class="gu-card__topo">
+    <div class="gu-card__titulo-grupo">
+      <span class="material-icons gu-card__icone">undo</span>
+      <div>
+        <h2 class="gu-card__titulo">Estorno de Liquidações</h2>
+        <p class="gu-card__subtitulo">Reverta pagamentos registrados incorretamente. Acesso restrito a administradores.</p>
+      </div>
+    </div>
+  </header>
+
+  <div id="estorno-acesso-negado" hidden>
+    <div style="padding:var(--esp-xl);text-align:center;color:var(--cor-erro)">
+      <span class="material-icons" style="font-size:48px;display:block;margin-bottom:var(--esp-sm)">lock</span>
+      <strong>Acesso restrito a administradores.</strong>
+    </div>
+  </div>
+
+  <div id="estorno-conteudo">
+    <div class="financeiro__painel-cabecalho financeiro__painel-cabecalho--card">
+      <div>
+        <h2 class="financeiro__secao-titulo">Lançamentos liquidados</h2>
+        <p class="financeiro__secao-texto">Somente lançamentos com status Pago ou Isento são exibidos.</p>
+      </div>
+      <div class="financeiro__filtros">
+        <input class="form-input" id="estorno-busca" type="text" placeholder="Buscar descrição ou pessoa..." style="width:220px" />
+        <select class="form-input" id="estorno-tipo" aria-label="Filtrar por tipo">
+          <option value="todos">Todos os tipos</option>
+          <option value="receita">Receitas</option>
+          <option value="despesa">Despesas</option>
+        </select>
+      </div>
+    </div>
+    <div class="tabela-responsiva">
+      <table class="tabela financeiro__tabela financeiro__tabela--sem-checkbox">
+        <thead>
+          <tr>
+            <th>Descri&ccedil;&atilde;o</th>
+            <th>Pessoa</th>
+            <th>Natureza</th>
+            <th>Conta</th>
+            <th>Vencimento</th>
+            <th>Status</th>
+            <th class="tabela__num">Valor</th>
+            <th class="tabela__th-acoes">A&ccedil;&otilde;es</th>
+          </tr>
+        </thead>
+        <tbody id="estorno-tbody"></tbody>
+      </table>
+      <div class="tabela-vazia" id="estorno-vazio" hidden>
+        <span class="material-icons tabela-vazia__icone">check_circle</span>
+        <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento liquidado encontrado</h3>
+        <p class="tabela-vazia__mensagem">N&atilde;o h&aacute; lan&ccedil;amentos pagos ou isentos para exibir com os filtros atuais.</p>
+      </div>
+    </div>
+  </div>
+  </div><!-- /.gu-card -->
+</section>

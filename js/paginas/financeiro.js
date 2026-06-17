@@ -8,6 +8,7 @@ import Toast from '../componentes/toast.js';
 import Modal from '../componentes/modal.js';
 import { criarAutocomplete } from '../componentes/autocomplete.js';
 import { api } from '../services/api.js';
+import Sessao from '../core/sessao.js';
 
 const sortState = { coluna: null, direcao: 'asc' };
 
@@ -55,6 +56,7 @@ function init() {
   if (view === 'relatorios') iniciarRelatorios();
   if (view === 'contas-regentes') iniciarContasRegentes();
   if (view === 'contas-subordinadas') iniciarContasSubordinadas();
+  if (view === 'estorno-liquidacao') iniciarEstornoLiquidacao();
 
   console.log(`[FinanceiroPage] Tela carregada: ${view}`);
 }
@@ -2956,6 +2958,119 @@ function escaparHtml(texto) {
   const div = document.createElement('div');
   div.textContent = String(texto ?? '');
   return div.innerHTML;
+}
+
+async function iniciarEstornoLiquidacao() {
+  const usuario = Sessao.obter();
+  if (usuario?.fk_perfil !== 1) {
+    document.getElementById('estorno-acesso-negado').hidden = false;
+    document.getElementById('estorno-conteudo').hidden = true;
+    return;
+  }
+
+  let todosLancamentos = [];
+
+  try {
+    const resposta = await api.get('/financeiro/lancamentos/listar.php?status=todos&limite=500');
+    const dados = normalizarLancamentos(resposta.dados || resposta.lancamentos || []);
+    todosLancamentos = dados.filter((l) => l.status === 'pago' || l.status === 'isento');
+  } catch (err) {
+    Toast.erro(err.message || 'Não foi possível carregar os lançamentos.');
+    return;
+  }
+
+  function filtrarEstorno() {
+    const tipo  = document.getElementById('estorno-tipo')?.value || 'todos';
+    const busca = (document.getElementById('estorno-busca')?.value || '')
+      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    return todosLancamentos.filter((item) => {
+      if (tipo !== 'todos' && item.tipo !== tipo) return false;
+      if (busca) {
+        const desc   = (item.descricao || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const pessoa = (item.pessoa    || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (!desc.includes(busca) && !pessoa.includes(busca)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderizarEstorno() {
+    const tbody = document.getElementById('estorno-tbody');
+    const vazio = document.getElementById('estorno-vazio');
+    if (!tbody) return;
+    const filtrados = filtrarEstorno();
+
+    tbody.innerHTML = filtrados.map((item) => `
+      <tr data-id="${item.id}">
+        <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
+        <td>${escaparHtml(item.pessoa) || '—'}</td>
+        <td>${badgeTipo(item.tipo)}</td>
+        <td>${escaparHtml(item.conta)}</td>
+        <td>${formatarData(item.vencimento)}</td>
+        <td>${badgeStatus(item.status)}</td>
+        <td class="tabela__num ${item.tipo === 'receita' ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">
+          ${item.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(item.valor)}
+        </td>
+        <td class="tabela__acoes">
+          <button type="button" class="btn btn-perigo btn-sm" data-acao-estornar="${item.id}" title="Estornar lançamento">
+            <span class="material-icons" style="font-size:16px">undo</span>
+            Estornar
+          </button>
+        </td>
+      </tr>
+    `).join('');
+
+    if (vazio) vazio.hidden = filtrados.length > 0;
+  }
+
+  renderizarEstorno();
+
+  ['estorno-tipo'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', renderizarEstorno);
+    cleanup.push(() => el.removeEventListener('change', renderizarEstorno));
+  });
+
+  const buscaEstorno = document.getElementById('estorno-busca');
+  if (buscaEstorno) {
+    buscaEstorno.addEventListener('input', renderizarEstorno);
+    cleanup.push(() => buscaEstorno.removeEventListener('input', renderizarEstorno));
+  }
+
+  const tbody = document.getElementById('estorno-tbody');
+  const hEstornar = (e) => {
+    const btn = e.target.closest('[data-acao-estornar]');
+    if (!btn) return;
+    const id   = Number(btn.dataset.acaoEstornar);
+    const item = todosLancamentos.find((l) => l.id === id);
+    if (!id || !item) return;
+
+    Modal.confirmar({
+      titulo: 'Estornar Lançamento',
+      mensagem: `Tem certeza que deseja estornar <strong>${escaparHtml(item.descricao)}</strong>?<br>O status voltará para <em>Aberto</em> e o valor será retirado dos totais.`,
+      icone: 'undo',
+      variante: 'alerta',
+      textoConfirmar: 'Estornar',
+      estiloConfirmar: 'perigo',
+      aoConfirmar: async () => {
+        try {
+          btn.disabled = true;
+          await api.post('/financeiro/lancamentos/estornar.php', { id });
+          Toast.sucesso('Lançamento estornado com sucesso.');
+          todosLancamentos = todosLancamentos.filter((l) => l.id !== id);
+          renderizarEstorno();
+        } catch (err) {
+          Toast.erro(err.message || 'Não foi possível estornar o lançamento.');
+          btn.disabled = false;
+        }
+      },
+    });
+  };
+
+  tbody?.addEventListener('click', hEstornar);
+  cleanup.push(() => tbody?.removeEventListener('click', hEstornar));
 }
 
 export default {

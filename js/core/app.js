@@ -67,6 +67,12 @@ async function iniciarApp() {
   Sidebar.iniciar();
   Topbar.iniciar();
 
+  // Oculta itens restritos a administradores para outros perfis
+  const perfil = Sessao.obter()?.fk_perfil;
+  document.querySelectorAll('[data-apenas-admin]').forEach((el) => {
+    el.hidden = perfil !== 1;
+  });
+
   // Roteador SPA
   Router.iniciar();
 
