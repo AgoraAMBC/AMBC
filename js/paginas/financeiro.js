@@ -2177,15 +2177,15 @@ async function iniciarRelatorios() {
 async function exportarRelatorioPDF() {
   if (!lancamentos.length) { Toast.alerta('Nenhum dado para exportar.'); return; }
 
-  // Carrega html2pdf do CDN apenas na primeira vez
-  if (!window.html2pdf) {
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-      s.onload = resolve; s.onerror = reject;
-      document.head.appendChild(s);
-    });
-  }
+  const carregarScript = (src) => new Promise((res, rej) => {
+    if (document.querySelector(`script[src="${src}"]`)) { res(); return; }
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+
+  await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+  await carregarScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js');
 
   const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
   const mesFim    = document.getElementById('relatorio-fim')?.value    || '';
@@ -2199,116 +2199,106 @@ async function exportarRelatorioPDF() {
     return acc;
   }, {});
 
-  const linhasTabela = lancamentos.map((l) => `
-    <tr>
-      <td>${l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—'}</td>
-      <td>${escaparHtml(l.descricao)}</td>
-      <td>${escaparHtml(l.pessoa) || '—'}</td>
-      <td>${l.tipo === 'receita' ? 'A Receber' : 'A Pagar'}</td>
-      <td>${escaparHtml(l.conta)}</td>
-      <td style="text-align:right;color:${l.tipo === 'receita' ? '#16a34a' : '#dc2626'}">${l.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(l.valor)}</td>
-      <td style="text-align:center;text-transform:capitalize">${escaparHtml(l.status)}</td>
-    </tr>`).join('');
+  const { jsPDF } = window.jspdf;
+  const doc  = new jsPDF('p', 'mm', 'a4');
+  const W    = doc.internal.pageSize.getWidth();
+  const marg = 14;
+  let y = 18;
 
-  const maxBarra = Math.max(1, ...meses.map((i) => Math.abs(i.valor)));
+  // ── Cabeçalho ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.setTextColor(30, 41, 59);
+  doc.text('Relatório Financeiro — AMBC', marg, y); y += 6;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+  doc.text(`Período: ${periodo}   |   Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, marg, y); y += 10;
 
-  // html2canvas não suporta CSS Grid nem Flexbox — usar apenas tabelas e estilos inline simples
-  const tdSec = 'padding:0 8px;vertical-align:top;width:50%';
-  const thSt  = 'padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0;background:#f8fafc';
-  const tdSt  = 'padding:5px 8px;border-bottom:1px solid #f1f5f9;font-size:10px';
+  // ── Métricas (4 cards em linha) ──
+  const cardW = (W - marg * 2 - 9) / 4;
+  const cards = [
+    { label: 'Receitas',       valor: resumo.receitas,  cor: [22, 163, 74]  },
+    { label: 'Despesas',       valor: resumo.despesas,  cor: [220, 38, 38]  },
+    { label: 'Saldo previsto', valor: resumo.saldo,     cor: resumo.saldo >= 0 ? [22, 163, 74] : [220, 38, 38] },
+    { label: 'Em aberto',      valor: resumo.pendentes, cor: [71, 85, 105]  },
+  ];
+  cards.forEach((c, i) => {
+    const x = marg + i * (cardW + 3);
+    doc.setDrawColor(226, 232, 240); doc.setFillColor(248, 250, 252);
+    doc.roundedRect(x, y, cardW, 16, 2, 2, 'FD');
+    doc.setFontSize(7); doc.setTextColor(100, 116, 139); doc.setFont('helvetica', 'normal');
+    doc.text(c.label.toUpperCase(), x + 3, y + 5);
+    doc.setFontSize(11); doc.setTextColor(...c.cor); doc.setFont('helvetica', 'bold');
+    doc.text(formatarMoeda(c.valor), x + 3, y + 13);
+  });
+  y += 22;
 
-  const conteudo = `
-    <div style="font-family:Arial,sans-serif;font-size:11px;color:#1e293b;width:750px;background:#fff">
-      <h1 style="font-size:18px;margin:0 0 4px 0">Relatório Financeiro — AMBC</h1>
-      <p style="color:#64748b;font-size:11px;margin:0 0 18px 0">Período: ${periodo} | Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+  // ── Resultado mensal ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+  doc.text('RESULTADO MENSAL', marg, y); y += 4;
+  const barMaxW = 80;
+  const maxVal  = Math.max(1, ...meses.map((m) => Math.abs(m.valor)));
+  meses.forEach((m) => {
+    const pct = Math.abs(m.valor) / maxVal;
+    const cor = m.valor >= 0 ? [22, 163, 74] : [220, 38, 38];
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(30, 41, 59);
+    doc.text(m.mes, marg, y + 3.5);
+    doc.setFillColor(241, 245, 249); doc.rect(marg + 20, y, barMaxW, 5, 'F');
+    doc.setFillColor(...cor); doc.rect(marg + 20, y, barMaxW * pct, 5, 'F');
+    doc.setTextColor(...cor); doc.setFont('helvetica', 'bold');
+    doc.text(formatarMoeda(m.valor), marg + 20 + barMaxW + 3, y + 3.5);
+    y += 7;
+  });
+  y += 4;
 
-      <!-- Métricas: 4 células numa table -->
-      <table style="width:100%;border-collapse:separate;border-spacing:8px;margin-bottom:16px">
-        <tr>
-          ${[
-            ['Receitas',       resumo.receitas,  '#16a34a'],
-            ['Despesas',       resumo.despesas,  '#dc2626'],
-            ['Saldo previsto', resumo.saldo,     resumo.saldo >= 0 ? '#16a34a' : '#dc2626'],
-            ['Em aberto',      resumo.pendentes, '#475569'],
-          ].map(([label, valor, cor]) => `
-            <td style="border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;width:25%">
-              <span style="font-size:9px;color:#64748b;text-transform:uppercase">${label}</span><br>
-              <strong style="font-size:14px;color:${cor}">${formatarMoeda(valor)}</strong>
-            </td>`).join('')}
-        </tr>
-      </table>
+  // ── Resumo por conta ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+  doc.text('RESUMO POR CONTA', marg, y); y += 2;
+  doc.autoTable({
+    startY: y,
+    head: [['Conta', 'Saldo']],
+    body: Object.entries(porConta).map(([c, v]) => [c, formatarMoeda(v)]),
+    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [248, 250, 252], textColor: [100, 116, 139], fontStyle: 'bold', lineWidth: 0.1 },
+    columnStyles: { 1: { halign: 'right' } },
+    margin: { left: marg, right: marg },
+    tableLineWidth: 0.1, tableLineColor: [226, 232, 240],
+  });
+  y = doc.lastAutoTable.finalY + 8;
 
-      <!-- Resultado mensal + Resumo por conta lado a lado -->
-      <table style="width:100%;border-collapse:collapse;margin-bottom:16px">
-        <tr>
-          <td style="${tdSec}">
-            <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Resultado mensal</p>
-            ${meses.map((i) => {
-              const pct = (Math.abs(i.valor) / maxBarra * 100).toFixed(1);
-              const cor = i.valor >= 0 ? '#16a34a' : '#dc2626';
-              return `<table style="width:100%;border-collapse:collapse;margin-bottom:4px"><tr>
-                <td style="width:55px;text-align:right;font-size:10px;padding-right:6px">${i.mes}</td>
-                <td style="background:#f1f5f9;border-radius:3px;height:8px;padding:0">
-                  <div style="width:${pct}%;height:8px;background:#3b82f6;border-radius:3px"></div>
-                </td>
-                <td style="width:80px;text-align:right;font-size:10px;padding-left:6px;color:${cor}">${formatarMoeda(i.valor)}</td>
-              </tr></table>`;
-            }).join('')}
-          </td>
-          <td style="${tdSec}">
-            <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Resumo por conta</p>
-            <table style="width:100%;border-collapse:collapse">
-              ${Object.entries(porConta).map(([c, v]) => `
-                <tr>
-                  <td style="font-size:10px;padding:4px 0;border-bottom:1px solid #f1f5f9">${escaparHtml(c)}</td>
-                  <td style="font-size:10px;padding:4px 0;border-bottom:1px solid #f1f5f9;text-align:right;color:${v>=0?'#16a34a':'#dc2626'}">${formatarMoeda(v)}</td>
-                </tr>`).join('')}
-            </table>
-          </td>
-        </tr>
-      </table>
+  // ── Tabela de lançamentos ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(100, 116, 139);
+  doc.text(`LANÇAMENTOS (${lancamentos.length})`, marg, y); y += 2;
+  doc.autoTable({
+    startY: y,
+    head: [['Vencimento', 'Descrição', 'Pessoa', 'Natureza', 'Conta', 'Valor', 'Status']],
+    body: lancamentos.map((l) => [
+      l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—',
+      l.descricao || '',
+      l.pessoa    || '—',
+      l.tipo === 'receita' ? 'A Receber' : 'A Pagar',
+      l.conta     || '',
+      (l.tipo === 'receita' ? '+ ' : '- ') + formatarMoeda(l.valor),
+      capitalizar(l.status || ''),
+    ]),
+    styles: { fontSize: 7.5, cellPadding: 2, overflow: 'ellipsize' },
+    headStyles: { fillColor: [248, 250, 252], textColor: [100, 116, 139], fontStyle: 'bold', lineWidth: 0.1 },
+    alternateRowStyles: { fillColor: [249, 250, 251] },
+    columnStyles: {
+      0: { cellWidth: 20 },
+      3: { cellWidth: 18 },
+      5: { halign: 'right', cellWidth: 22 },
+      6: { halign: 'center', cellWidth: 18 },
+    },
+    margin: { left: marg, right: marg },
+    tableLineWidth: 0.1, tableLineColor: [226, 232, 240],
+    didParseCell: (data) => {
+      if (data.section === 'body' && data.column.index === 5) {
+        const rec = data.row.raw[3] === 'A Receber';
+        data.cell.styles.textColor = rec ? [22, 163, 74] : [220, 38, 38];
+      }
+    },
+  });
 
-      <!-- Tabela de lançamentos -->
-      <p style="font-size:9px;text-transform:uppercase;color:#64748b;margin:0 0 6px 0;letter-spacing:.5px">Lançamentos (${lancamentos.length})</p>
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr>
-            ${['Vencimento','Descrição','Pessoa','Natureza','Conta','Valor','Status'].map((h) =>
-              `<th style="${thSt}">${h}</th>`).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${lancamentos.map((l) => `
-            <tr>
-              <td style="${tdSt}">${l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—'}</td>
-              <td style="${tdSt}">${escaparHtml(l.descricao)}</td>
-              <td style="${tdSt}">${escaparHtml(l.pessoa) || '—'}</td>
-              <td style="${tdSt}">${l.tipo === 'receita' ? 'A Receber' : 'A Pagar'}</td>
-              <td style="${tdSt}">${escaparHtml(l.conta)}</td>
-              <td style="${tdSt};text-align:right;color:${l.tipo==='receita'?'#16a34a':'#dc2626'}">${l.tipo==='receita'?'+':'-'} ${formatarMoeda(l.valor)}</td>
-              <td style="${tdSt};text-transform:capitalize">${escaparHtml(l.status)}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
-
-  const el = document.createElement('div');
-  el.innerHTML = conteudo;
-  // Visível mas fora da tela — html2canvas exige que o elemento esteja no viewport
-  el.style.cssText = 'position:absolute;top:0;left:0;z-index:-1;background:#fff;padding:20px;width:790px';
-  document.body.appendChild(el);
-
-  try {
-    await window.html2pdf().set({
-      margin: 10,
-      filename: nomeArq,
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    }).from(el).save();
-    Toast.sucesso('PDF exportado com sucesso.');
-  } finally {
-    document.body.removeChild(el);
-  }
+  doc.save(nomeArq);
+  Toast.sucesso('PDF exportado com sucesso.');
 }
 
 function exportarRelatorioCSV() {
