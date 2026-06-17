@@ -72,12 +72,12 @@ function buscarResumoConsolidado(PDO $pdo): array {
         fin AS (
             SELECT
                 SUM(CASE
-                    WHEN DATE_FORMAT(c.data_lancamento, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+                    WHEN DATE_FORMAT(COALESCE(c.data_vencimento, c.data_lancamento), '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
                     THEN CASE WHEN cr.tipo = 'receita' THEN c.valor WHEN cr.tipo = 'despesa' THEN -c.valor ELSE c.valor END
                     ELSE 0
                 END) AS resultado_mes,
                 SUM(CASE
-                    WHEN DATE_FORMAT(c.data_lancamento, '%Y-%m') = DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m')
+                    WHEN DATE_FORMAT(COALESCE(c.data_vencimento, c.data_lancamento), '%Y-%m') = DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m')
                     THEN CASE WHEN cr.tipo = 'receita' THEN c.valor WHEN cr.tipo = 'despesa' THEN -c.valor ELSE c.valor END
                     ELSE 0
                 END) AS resultado_mes_anterior
@@ -85,8 +85,8 @@ function buscarResumoConsolidado(PDO $pdo): array {
             LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
             LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
             WHERE c.fk_status_conta IN (2, 4)
-              AND c.data_lancamento >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
-              AND c.data_lancamento < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+              AND COALESCE(c.data_vencimento, c.data_lancamento) >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
+              AND COALESCE(c.data_vencimento, c.data_lancamento) < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
         ),
         grafico AS (
             SELECT JSON_ARRAYAGG(
@@ -94,14 +94,14 @@ function buscarResumoConsolidado(PDO $pdo): array {
             ) AS dados
             FROM (
                 SELECT
-                    DATE_FORMAT(c.data_lancamento, '%Y-%m') AS mes,
+                    DATE_FORMAT(COALESCE(c.data_vencimento, c.data_lancamento), '%Y-%m') AS mes,
                     COALESCE(SUM(CASE WHEN cr.tipo = 'receita' THEN c.valor ELSE 0 END), 0) AS receita,
                     COALESCE(SUM(CASE WHEN cr.tipo = 'despesa' THEN c.valor ELSE 0 END), 0) AS despesa
                 FROM lancamento c
                 LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
                 LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
                 WHERE c.fk_status_conta IN (2, 4)
-                  AND c.data_lancamento >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 5 MONTH), '%Y-%m-01')
+                  AND COALESCE(c.data_vencimento, c.data_lancamento) >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 5 MONTH), '%Y-%m-01')
                 GROUP BY DATE_FORMAT(c.data_lancamento, '%Y-%m')
                 ORDER BY mes
             ) g

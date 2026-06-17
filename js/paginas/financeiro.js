@@ -67,7 +67,9 @@ function destroy() {
 }
 
 async function iniciarVisaoGeral() {
-  await carregarLancamentos();
+  const hoje = new Date();
+  const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  await carregarLancamentos({ limite: 200, inicio: `${anoMes}-01`, fim: ultimoDiaMes(anoMes) });
   renderizarMetricas('financeiro-metricas', calcularResumo(lancamentos));
   renderizarLancamentos();
 
@@ -2149,10 +2151,14 @@ async function iniciarRegistrarLancamento() {
 }
 
 async function iniciarRelatorios() {
-  await carregarLancamentos({ limite: 200 });
-  renderizarMetricas('relatorio-metricas', calcularResumo(lancamentos));
-  renderizarBarrasRelatorio();
-  renderizarResumoContas();
+  const hoje = new Date();
+  const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  const inputInicio = document.getElementById('relatorio-inicio');
+  const inputFim    = document.getElementById('relatorio-fim');
+  if (inputInicio && !inputInicio.value) inputInicio.value = anoMes;
+  if (inputFim    && !inputFim.value)    inputFim.value    = anoMes;
+
+  await atualizarRelatorio();
 
   const filtros = [
     document.getElementById('relatorio-inicio'),
