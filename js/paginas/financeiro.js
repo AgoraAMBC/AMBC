@@ -2873,9 +2873,8 @@ async function renderizarContasSubordinadas() {
 }
 
 function calcularResumo(lista) {
-  const liquidados = (item) => item.status === 'pago' || item.status === 'isento';
-  const receitas  = somar(lista.filter((item) => item.tipo === 'receita'  && liquidados(item)), 'valor');
-  const despesas  = somar(lista.filter((item) => item.tipo === 'despesa'  && liquidados(item)), 'valor');
+  const receitas  = somar(lista.filter((item) => item.tipo === 'receita'  && item.status === 'pago'), 'valor');
+  const despesas  = somar(lista.filter((item) => item.tipo === 'despesa'  && item.status === 'pago'), 'valor');
   const pendentes = somar(lista.filter((item) => item.status === 'pendente' || item.status === 'atrasado'), 'valor');
   return { receitas, despesas, saldo: receitas - despesas, pendentes };
 }

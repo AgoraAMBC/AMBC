@@ -84,7 +84,7 @@ function buscarResumoConsolidado(PDO $pdo): array {
             FROM lancamento c
             LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
             LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-            WHERE c.fk_status_conta IN (2, 4)
+            WHERE c.fk_status_conta = 2
               AND COALESCE(c.data_vencimento, c.data_lancamento) >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
               AND COALESCE(c.data_vencimento, c.data_lancamento) < DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL 1 MONTH), '%Y-%m-01')
         ),
@@ -100,7 +100,7 @@ function buscarResumoConsolidado(PDO $pdo): array {
                 FROM lancamento c
                 LEFT JOIN conta_regente cr ON cr.id_conta_regente = c.fk_conta_regente
                 LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
-                WHERE c.fk_status_conta IN (2, 4)
+                WHERE c.fk_status_conta = 2
                   AND COALESCE(c.data_vencimento, c.data_lancamento) >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 5 MONTH), '%Y-%m-01')
                 GROUP BY DATE_FORMAT(c.data_lancamento, '%Y-%m')
                 ORDER BY mes
