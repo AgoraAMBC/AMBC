@@ -179,10 +179,9 @@
   padding: var(--esp-md) var(--esp-sm);
 }
 
-/* Separadores verticais estilo planilha */
-.financeiro__tabela thead th + th,
-.financeiro__tabela tbody td + td {
-  border-left: 1px solid rgba(0, 0, 0, 0.12);
+/* Separador horizontal preto entre linhas */
+.financeiro__tabela tbody tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 /* Modificador para tabelas sem checkbox na 1ª coluna (ex: visão geral) */
@@ -628,9 +627,9 @@
 }
 
 .financeiro__grupo-mae {
-  background-color: #dbeafe;
+  background-color: #f5f7fa;
 }
 
 .financeiro__grupo-mae:hover {
-  background-color: #bfdbfe;
+  background-color: #edf0f4;
 }
