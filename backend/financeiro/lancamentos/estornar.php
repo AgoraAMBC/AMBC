@@ -39,7 +39,7 @@ try {
     $pdo->prepare('
         UPDATE lancamento
         SET fk_status_conta = 1,
-            valor_pago      = 0,
+            valor_pago      = NULL,
             data_pagamento  = NULL
         WHERE id_lancamento = :id
     ')->execute([':id' => $id]);
