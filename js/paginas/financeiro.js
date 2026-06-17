@@ -2867,8 +2867,9 @@ async function renderizarContasSubordinadas() {
 }
 
 function calcularResumo(lista) {
-  const receitas = somar(lista.filter((item) => item.tipo === 'receita'), 'valor');
-  const despesas = somar(lista.filter((item) => item.tipo === 'despesa'), 'valor');
+  const liquidados = (item) => item.status === 'pago' || item.status === 'isento';
+  const receitas  = somar(lista.filter((item) => item.tipo === 'receita'  && liquidados(item)), 'valor');
+  const despesas  = somar(lista.filter((item) => item.tipo === 'despesa'  && liquidados(item)), 'valor');
   const pendentes = somar(lista.filter((item) => item.status === 'pendente' || item.status === 'atrasado'), 'valor');
   return { receitas, despesas, saldo: receitas - despesas, pendentes };
 }
@@ -2878,9 +2879,9 @@ function renderizarMetricas(id, resumo) {
   if (!container) return;
 
   const cards = [
-    { label: 'Receitas', valor: resumo.receitas, icone: 'trending_up', classe: 'card-stat__icone-sucesso', valorClasse: 'financeiro__valor-receita' },
-    { label: 'Despesas', valor: resumo.despesas, icone: 'trending_down', classe: 'card-stat__icone-erro', valorClasse: 'financeiro__valor-despesa' },
-    { label: 'Saldo previsto', valor: resumo.saldo, icone: 'account_balance', classe: 'card-stat__icone-info', valorClasse: resumo.saldo >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa' },
+    { label: 'Receitas recebidas', valor: resumo.receitas, icone: 'trending_up', classe: 'card-stat__icone-sucesso', valorClasse: 'financeiro__valor-receita' },
+    { label: 'Despesas pagas', valor: resumo.despesas, icone: 'trending_down', classe: 'card-stat__icone-erro', valorClasse: 'financeiro__valor-despesa' },
+    { label: 'Saldo real', valor: resumo.saldo, icone: 'account_balance', classe: 'card-stat__icone-info', valorClasse: resumo.saldo >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa' },
     { label: 'Em aberto', valor: resumo.pendentes, icone: 'pending_actions', classe: 'card-stat__icone-alerta', valorClasse: 'financeiro__valor-neutro' },
   ];
 
