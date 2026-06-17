@@ -2161,10 +2161,43 @@ async function iniciarRelatorios() {
 
   const btn = document.getElementById('btn-exportar-relatorio');
   if (btn) {
-    const handler = () => Toast.info('Exportação preparada para integração com o backend.');
+    const handler = () => exportarRelatorioCSV();
     btn.addEventListener('click', handler);
     cleanup.push(() => btn.removeEventListener('click', handler));
   }
+}
+
+function exportarRelatorioCSV() {
+  if (!lancamentos.length) { Toast.alerta('Nenhum dado para exportar.'); return; }
+
+  const cabecalho = ['Vencimento', 'Descrição', 'Pessoa', 'Natureza', 'Tipo', 'Conta', 'Subconta', 'Status', 'Valor', 'Valor Pago'];
+
+  const linhas = lancamentos.map((l) => [
+    l.vencimento   ? l.vencimento.split('-').reverse().join('/') : '',
+    l.descricao    || '',
+    l.pessoa       || '',
+    l.tipo === 'receita' ? 'A Receber' : l.tipo === 'despesa' ? 'A Pagar' : '',
+    l.tipo_lancamento || l.tipo_nome || '',
+    l.conta        || '',
+    l.subconta     || '',
+    l.status       || '',
+    String(l.valor).replace('.', ','),
+    l.valor_pago != null ? String(l.valor_pago).replace('.', ',') : '',
+  ].map((v) => `"${String(v).replace(/"/g, '""')}"`));
+
+  const csv = [cabecalho.map((c) => `"${c}"`).join(';'), ...linhas.map((r) => r.join(';'))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+
+  const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
+  const mesFim    = document.getElementById('relatorio-fim')?.value    || '';
+  const periodo   = mesInicio || mesFim ? `_${mesInicio || ''}${mesFim ? '_a_' + mesFim : ''}` : '';
+  const nomeArq   = `relatorio_financeiro${periodo}.csv`;
+
+  const a = document.createElement('a');
+  a.href = url; a.download = nomeArq; a.click();
+  URL.revokeObjectURL(url);
+  Toast.sucesso('Relatório exportado com sucesso.');
 }
 
 async function atualizarRelatorio() {
