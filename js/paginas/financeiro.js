@@ -74,7 +74,7 @@ async function iniciarVisaoGeral() {
   const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
 
   let paginaVG       = 1;
-  let itensPorPaginaVG = 30;
+  let itensPorPaginaVG = 15;
 
   function renderizarVG() {
     const tbody  = document.getElementById('financeiro-lancamentos-tbody');
@@ -1747,7 +1747,7 @@ async function iniciarRegistrarLancamento() {
   let termoBuscaAbertos = '';
   let filtroStatus    = 'todos';
   let paginaAtual     = 1;
-  let itensPorPagina  = 30;
+  let itensPorPagina  = 15;
 
   const recarregarAbertos = async () => {
     await carregarAbertosRegistrar(sortAbertos, termoBuscaAbertos, filtroStatus, paginaAtual, itensPorPagina);
