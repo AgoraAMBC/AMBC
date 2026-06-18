@@ -72,6 +72,11 @@ async function iniciarVisaoGeral() {
   const hoje     = new Date();
   const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
   const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
+  const calcularResumoVG = () => {
+    const resumo = calcularResumo(doMesAtual());
+    resumo.pendentes = somar(lancamentos.filter((l) => l.status === 'pendente' || l.status === 'atrasado'), 'valor');
+    return resumo;
+  };
 
   let paginaVG       = 1;
   let itensPorPaginaVG = 15;
@@ -121,12 +126,12 @@ async function iniciarVisaoGeral() {
     }
   }
 
-  renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
+  renderizarMetricas('financeiro-metricas', calcularResumoVG());
   renderizarVG();
 
   const atualizar = () => {
     paginaVG = 1;
-    renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
+    renderizarMetricas('financeiro-metricas', calcularResumoVG());
     renderizarVG();
   };
 
