@@ -74,7 +74,9 @@ async function iniciarVisaoGeral() {
   const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
   const calcularResumoVG = () => {
     const resumo = calcularResumo(doMesAtual());
-    resumo.pendentes = somar(lancamentos.filter((l) => l.status === 'pendente' || l.status === 'atrasado'), 'valor');
+    const abertos = (l) => l.status === 'pendente' || l.status === 'atrasado';
+    resumo.receitasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'receita' && abertos(l)), 'valor');
+    resumo.despesasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'despesa' && abertos(l)), 'valor');
     return resumo;
   };
 
@@ -2994,10 +2996,12 @@ async function renderizarContasSubordinadas() {
 }
 
 function calcularResumo(lista) {
-  const receitas  = somar(lista.filter((item) => item.tipo === 'receita'  && item.status === 'pago'), 'valor');
-  const despesas  = somar(lista.filter((item) => item.tipo === 'despesa'  && item.status === 'pago'), 'valor');
-  const pendentes = somar(lista.filter((item) => item.status === 'pendente' || item.status === 'atrasado'), 'valor');
-  return { receitas, despesas, saldo: receitas - despesas, pendentes };
+  const abertos = (item) => item.status === 'pendente' || item.status === 'atrasado';
+  const receitas          = somar(lista.filter((item) => item.tipo === 'receita' && item.status === 'pago'), 'valor');
+  const despesas          = somar(lista.filter((item) => item.tipo === 'despesa' && item.status === 'pago'), 'valor');
+  const receitasEmAberto  = somar(lista.filter((item) => item.tipo === 'receita' && abertos(item)), 'valor');
+  const despesasEmAberto  = somar(lista.filter((item) => item.tipo === 'despesa' && abertos(item)), 'valor');
+  return { receitas, despesas, saldo: receitas - despesas, receitasEmAberto, despesasEmAberto };
 }
 
 function renderizarMetricas(id, resumo) {
@@ -3005,10 +3009,11 @@ function renderizarMetricas(id, resumo) {
   if (!container) return;
 
   const cards = [
-    { label: 'Receitas recebidas', valor: resumo.receitas, icone: 'trending_up', classe: 'card-stat__icone-sucesso', valorClasse: 'financeiro__valor-receita' },
-    { label: 'Despesas pagas', valor: resumo.despesas, icone: 'trending_down', classe: 'card-stat__icone-erro', valorClasse: 'financeiro__valor-despesa' },
-    { label: 'Saldo real', valor: resumo.saldo, icone: 'account_balance', classe: 'card-stat__icone-info', valorClasse: resumo.saldo >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa' },
-    { label: 'Em aberto', valor: resumo.pendentes, icone: 'pending_actions', classe: 'card-stat__icone-alerta', valorClasse: 'financeiro__valor-neutro' },
+    { label: 'Receitas recebidas',  valor: resumo.receitas,         icone: 'trending_up',    classe: 'card-stat__icone-sucesso', valorClasse: 'financeiro__valor-receita' },
+    { label: 'Despesas pagas',      valor: resumo.despesas,         icone: 'trending_down',  classe: 'card-stat__icone-erro',    valorClasse: 'financeiro__valor-despesa' },
+    { label: 'Saldo real',          valor: resumo.saldo,            icone: 'account_balance',classe: 'card-stat__icone-info',    valorClasse: resumo.saldo >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa' },
+    { label: 'Receitas em aberto',  valor: resumo.receitasEmAberto, icone: 'schedule',        classe: 'card-stat__icone-alerta', valorClasse: 'financeiro__valor-receita' },
+    { label: 'Despesas em aberto',  valor: resumo.despesasEmAberto, icone: 'warning_amber',   classe: 'card-stat__icone-erro',   valorClasse: 'financeiro__valor-despesa' },
   ];
 
   container.innerHTML = cards.map((card) => `
