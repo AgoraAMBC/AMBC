@@ -67,15 +67,17 @@ function destroy() {
 }
 
 async function iniciarVisaoGeral() {
-  const hoje = new Date();
-  const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-  await carregarLancamentos({ limite: 200, inicio: `${anoMes}-01`, fim: ultimoDiaMes(anoMes) });
-  renderizarMetricas('financeiro-metricas', calcularResumo(lancamentos));
+  await carregarLancamentos({ limite: 200 });
+
+  const hoje  = new Date();
+  const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
+
+  renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
   renderizarLancamentos();
 
   const atualizar = () => {
-    const filtrados = filtrarLancamentos();
-    renderizarMetricas('financeiro-metricas', calcularResumo(filtrados));
+    renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
     renderizarLancamentos();
   };
 
