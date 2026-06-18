@@ -67,10 +67,38 @@ function destroy() {
 }
 
 async function iniciarVisaoGeral() {
-  const anoAtual = new Date().getFullYear();
-  await carregarLancamentos({ limite: 9999, inicio: `${anoAtual}-01-01`, fim: `${anoAtual}-12-31` });
+  const hoje     = new Date();
+  const anoAtual = hoje.getFullYear();
 
-  const calcularResumoVG = () => calcularResumo(lancamentos);
+  // popula o seletor de mês com os 12 meses do ano corrente
+  const mesSelect = document.getElementById('vg-mes-referencia');
+  if (mesSelect) {
+    const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    mesSelect.innerHTML = nomes.map((n, i) => {
+      const val = `${anoAtual}-${String(i + 1).padStart(2, '0')}`;
+      return `<option value="${val}">${n} ${anoAtual}</option>`;
+    }).join('');
+    mesSelect.value = `${anoAtual}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  const getMesSelecionado = () => mesSelect?.value || `${anoAtual}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+
+  const carregarMes = async () => {
+    const mes = getMesSelecionado();
+    const [ano, m] = mes.split('-').map(Number);
+    const ultimo = new Date(ano, m, 0).getDate();
+    await carregarLancamentos({ limite: 500, inicio: `${mes}-01`, fim: `${mes}-${String(ultimo).padStart(2, '0')}` });
+  };
+
+  await carregarMes();
+
+  const calcularResumoVG = () => {
+    const resumo = calcularResumo(lancamentos);
+    const abertos = (l) => l.status === 'pendente' || l.status === 'atrasado';
+    resumo.receitasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'receita' && abertos(l)), 'valor');
+    resumo.despesasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'despesa' && abertos(l)), 'valor');
+    return resumo;
+  };
 
   let paginaVG       = 1;
   let itensPorPaginaVG = 15;
@@ -128,6 +156,12 @@ async function iniciarVisaoGeral() {
     renderizarMetricas('financeiro-metricas', calcularResumoVG());
     renderizarVG();
   };
+
+  if (mesSelect) {
+    const hMes = async () => { await carregarMes(); paginaVG = 1; renderizarMetricas('financeiro-metricas', calcularResumoVG()); renderizarVG(); };
+    mesSelect.addEventListener('change', hMes);
+    cleanup.push(() => mesSelect.removeEventListener('change', hMes));
+  }
 
   const filtros = [
     document.getElementById('filtro-tipo-lancamento'),
