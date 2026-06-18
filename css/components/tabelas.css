@@ -208,6 +208,10 @@
 /* ============================================
    🔍 ESTADO VAZIO
    ============================================ */
+.tabela-vazia[hidden] {
+  display: none;
+}
+
 .tabela-vazia {
   display: flex;
   flex-direction: column;
