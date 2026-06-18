@@ -13,17 +13,27 @@ $id    = (int)($corpo['id_conta_subordinada'] ?? 0);
 
 if ($id <= 0) jsonErro('ID da conta subordinada é obrigatório', 400);
 
-$pdo = obterConexao();
+try {
+    $pdo = obterConexao();
 
-$stmtVerifica = $pdo->prepare('SELECT COUNT(*) FROM lancamento WHERE fk_conta_subordinada = :id');
-$stmtVerifica->execute([':id' => $id]);
-if ((int)$stmtVerifica->fetchColumn() > 0) {
-    jsonErro('Não é possível excluir uma subconta que possui movimentos financeiros vinculados', 409);
+    $stmtLanc = $pdo->prepare('SELECT COUNT(*) FROM lancamento WHERE fk_conta_subordinada = :id');
+    $stmtLanc->execute([':id' => $id]);
+    if ((int)$stmtLanc->fetchColumn() > 0) {
+        jsonErro('Não é possível excluir uma subconta que possui movimentos financeiros vinculados.', 409);
+    }
+
+    $stmtRel = $pdo->prepare('SELECT COUNT(*) FROM relacionamento_lancamento WHERE fk_conta_subordinada = :id');
+    $stmtRel->execute([':id' => $id]);
+    if ((int)$stmtRel->fetchColumn() > 0) {
+        jsonErro('Não é possível excluir uma subconta que possui relacionamentos de lançamento vinculados.', 409);
+    }
+
+    $stmt = $pdo->prepare('DELETE FROM conta_subordinada WHERE id_conta_subordinada = :id');
+    $stmt->execute([':id' => $id]);
+
+    if ($stmt->rowCount() === 0) jsonErro('Conta subordinada não encontrada.', 404);
+
+    jsonResposta(['mensagem' => 'Conta subordinada excluída com sucesso']);
+} catch (PDOException $e) {
+    jsonErro('Erro ao excluir subconta: ' . $e->getMessage(), 500);
 }
-
-$stmt = $pdo->prepare('DELETE FROM conta_subordinada WHERE id_conta_subordinada = :id');
-$stmt->execute([':id' => $id]);
-
-if ($stmt->rowCount() === 0) jsonErro('Conta subordinada não encontrada', 404);
-
-jsonResposta(['mensagem' => 'Conta subordinada excluída com sucesso']);
