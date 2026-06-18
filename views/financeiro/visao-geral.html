@@ -68,6 +68,26 @@
       <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento encontrado</h3>
       <p class="tabela-vazia__mensagem">Ajuste os filtros ou cadastre uma nova movimenta&ccedil;&atilde;o financeira.</p>
     </div>
+    <div id="vg-paginacao" hidden style="display:flex;justify-content:space-between;align-items:center;gap:var(--esp-sm);padding:var(--esp-sm) var(--esp-md);border-top:1px solid var(--cor-borda);flex-wrap:wrap">
+      <span id="vg-pag-info" style="font-size:0.875rem;color:var(--cor-texto-secundario)"></span>
+      <div style="display:flex;gap:4px;align-items:center">
+        <label style="display:flex;align-items:center;gap:4px;font-size:0.8rem;color:var(--cor-texto-secundario);white-space:nowrap;margin-right:var(--esp-xs)">
+          Exibir
+          <select class="form-input" id="vg-por-pagina" style="width:auto">
+            <option value="30" selected>30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <button type="button" class="btn btn-secundario btn-sm" id="vg-pag-anterior" title="Anterior">
+          <span class="material-icons" style="font-size:16px">chevron_left</span>
+        </button>
+        <div id="vg-pag-numeros" style="display:flex;gap:4px"></div>
+        <button type="button" class="btn btn-secundario btn-sm" id="vg-pag-proxima" title="Pr&oacute;xima">
+          <span class="material-icons" style="font-size:16px">chevron_right</span>
+        </button>
+      </div>
+    </div>
   </div>
   </div><!-- /.gu-card -->
 </section>

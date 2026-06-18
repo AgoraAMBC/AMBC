@@ -69,26 +69,74 @@ function destroy() {
 async function iniciarVisaoGeral() {
   await carregarLancamentos({ limite: 200 });
 
-  const hoje  = new Date();
+  const hoje     = new Date();
   const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
   const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
 
+  let paginaVG       = 1;
+  let itensPorPaginaVG = 30;
+
+  function renderizarVG() {
+    const tbody  = document.getElementById('financeiro-lancamentos-tbody');
+    const vazio  = document.getElementById('financeiro-lancamentos-vazio');
+    const pagEl  = document.getElementById('vg-paginacao');
+    const infoEl = document.getElementById('vg-pag-info');
+    const btnAnt = document.getElementById('vg-pag-anterior');
+    const btnProx= document.getElementById('vg-pag-proxima');
+    const numEl  = document.getElementById('vg-pag-numeros');
+    if (!tbody) return;
+
+    const filtrados   = filtrarLancamentos();
+    const totalPaginas = Math.max(1, Math.ceil(filtrados.length / itensPorPaginaVG));
+    paginaVG = Math.min(paginaVG, totalPaginas);
+    const inicio = (paginaVG - 1) * itensPorPaginaVG;
+    const fim    = Math.min(inicio + itensPorPaginaVG, filtrados.length);
+    const pagina = filtrados.slice(inicio, fim);
+
+    tbody.innerHTML = pagina.map((item) => `
+      <tr>
+        <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
+        <td>${escaparHtml(item.pessoa) || '—'}</td>
+        <td>${badgeTipo(item.tipo)}</td>
+        <td>${escaparHtml(item.conta)}</td>
+        <td>${formatarData(item.vencimento)}</td>
+        <td>${badgeStatus(item.status)}</td>
+        <td class="tabela__num ${item.tipo === 'receita' ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">
+          ${item.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(item.valor)}
+        </td>
+      </tr>
+    `).join('');
+
+    if (vazio)  vazio.hidden  = filtrados.length > 0;
+    if (pagEl)  pagEl.hidden  = filtrados.length === 0;
+    if (infoEl) infoEl.textContent = filtrados.length > 0 ? `${inicio + 1}–${fim} de ${filtrados.length}` : '';
+    if (btnAnt)  btnAnt.disabled  = paginaVG <= 1;
+    if (btnProx) btnProx.disabled = paginaVG >= totalPaginas;
+    if (numEl) {
+      numEl.innerHTML = _gerarPaginas(paginaVG, totalPaginas).map((p) =>
+        p === '...'
+          ? `<span style="padding:0 2px;align-self:center;color:var(--texto-secundario)">…</span>`
+          : `<button type="button" class="btn btn-sm ${p === paginaVG ? 'btn-primario' : 'btn-secundario'}" data-pagina-vg="${p}">${p}</button>`
+      ).join('');
+    }
+  }
+
   renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
-  renderizarLancamentos();
+  renderizarVG();
 
   const atualizar = () => {
+    paginaVG = 1;
     renderizarMetricas('financeiro-metricas', calcularResumo(doMesAtual()));
-    renderizarLancamentos();
+    renderizarVG();
   };
 
   const filtros = [
     document.getElementById('filtro-tipo-lancamento'),
     document.getElementById('filtro-status-lancamento'),
   ].filter(Boolean);
-
-  filtros.forEach((filtro) => {
-    filtro.addEventListener('change', atualizar);
-    cleanup.push(() => filtro.removeEventListener('change', atualizar));
+  filtros.forEach((el) => {
+    el.addEventListener('change', atualizar);
+    cleanup.push(() => el.removeEventListener('change', atualizar));
   });
 
   const buscaInput = document.getElementById('filtro-busca-lancamento');
@@ -96,6 +144,30 @@ async function iniciarVisaoGeral() {
     buscaInput.addEventListener('input', atualizar);
     cleanup.push(() => buscaInput.removeEventListener('input', atualizar));
   }
+
+  const porPaginaEl = document.getElementById('vg-por-pagina');
+  if (porPaginaEl) {
+    const hPorPagina = () => { itensPorPaginaVG = parseInt(porPaginaEl.value); paginaVG = 1; renderizarVG(); };
+    porPaginaEl.addEventListener('change', hPorPagina);
+    cleanup.push(() => porPaginaEl.removeEventListener('change', hPorPagina));
+  }
+
+  const btnAnt  = document.getElementById('vg-pag-anterior');
+  const btnProx = document.getElementById('vg-pag-proxima');
+  const numEl   = document.getElementById('vg-pag-numeros');
+
+  btnAnt?.addEventListener('click', () => { if (paginaVG > 1) { paginaVG--; renderizarVG(); } });
+  btnProx?.addEventListener('click', () => { paginaVG++; renderizarVG(); });
+  numEl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-pagina-vg]');
+    if (btn) { paginaVG = parseInt(btn.dataset.paginaVg); renderizarVG(); }
+  });
+
+  cleanup.push(() => {
+    btnAnt?.removeEventListener('click', () => {});
+    btnProx?.removeEventListener('click', () => {});
+    numEl?.removeEventListener('click', () => {});
+  });
 }
 
 function renderizarLancamentos() {
