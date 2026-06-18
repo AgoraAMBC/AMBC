@@ -22,11 +22,8 @@ try {
         jsonErro('Não é possível excluir uma subconta que possui movimentos financeiros vinculados.', 409);
     }
 
-    $stmtRel = $pdo->prepare('SELECT COUNT(*) FROM relacionamento_lancamento WHERE fk_conta_subordinada = :id');
-    $stmtRel->execute([':id' => $id]);
-    if ((int)$stmtRel->fetchColumn() > 0) {
-        jsonErro('Não é possível excluir uma subconta que possui relacionamentos de lançamento vinculados.', 409);
-    }
+    $pdo->prepare('DELETE FROM relacionamento_lancamento WHERE fk_conta_subordinada = :id')
+        ->execute([':id' => $id]);
 
     $stmt = $pdo->prepare('DELETE FROM conta_subordinada WHERE id_conta_subordinada = :id');
     $stmt->execute([':id' => $id]);
