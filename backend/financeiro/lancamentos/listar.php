@@ -17,7 +17,7 @@ try {
     $inicio = trim($_GET['inicio'] ?? '');
     $fim = trim($_GET['fim'] ?? '');
     $idAssociado = isset($_GET['id_associado']) ? (int)$_GET['id_associado'] : 0;
-    $limite = max(1, min(200, (int)($_GET['limite'] ?? 100)));
+    $limite = max(1, min(9999, (int)($_GET['limite'] ?? 100)));
 
     $where = ['1=1'];
     $params = [];

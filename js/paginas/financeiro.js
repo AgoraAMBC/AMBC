@@ -67,18 +67,10 @@ function destroy() {
 }
 
 async function iniciarVisaoGeral() {
-  await carregarLancamentos({ limite: 200 });
+  const anoAtual = new Date().getFullYear();
+  await carregarLancamentos({ limite: 9999, inicio: `${anoAtual}-01-01`, fim: `${anoAtual}-12-31` });
 
-  const hoje     = new Date();
-  const mesAtual = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-  const doMesAtual = () => lancamentos.filter((l) => (l.vencimento || '').startsWith(mesAtual));
-  const calcularResumoVG = () => {
-    const resumo = calcularResumo(doMesAtual());
-    const abertos = (l) => l.status === 'pendente' || l.status === 'atrasado';
-    resumo.receitasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'receita' && abertos(l)), 'valor');
-    resumo.despesasEmAberto = somar(lancamentos.filter((l) => l.tipo === 'despesa' && abertos(l)), 'valor');
-    return resumo;
-  };
+  const calcularResumoVG = () => calcularResumo(lancamentos);
 
   let paginaVG       = 1;
   let itensPorPaginaVG = 15;
