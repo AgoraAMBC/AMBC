@@ -63,6 +63,7 @@ const CAMPOS_TOGGLES = {
     'tog-inadimplencia': 'notif_inadimplencia',
     'tog-resumo':        'notif_resumo_semanal',
     'tog-cadastros':     'notif_novos_cadastros',
+    'tog-enviar-email':  'notif_enviar_email',
     'tog-sessao':        'seg_expirar_sessao',
 };
 

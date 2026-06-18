@@ -4,6 +4,7 @@ import { api } from '../services/api.js';
 import { AssociadosService } from '../services/associados-service.js?v=4';
 import { AuxiliaresService } from '../services/associados-auxiliares-service.js?v=4';
 import { ContasService } from '../services/contas-service.js';
+import { NotificacoesService } from '../services/notificacoes-service.js';
 
 const refs = {
   form: null,
@@ -792,6 +793,10 @@ async function aoEnviarFormulario(event) {
         await salvarTelefonesEDependentesTemporarios();
       }
       Toast.sucesso('Associado cadastrado com sucesso.');
+      NotificacoesService.notificarNovoCadastro({
+        nome: dados.nome,
+        matricula: resposta?.data?.matricula ?? '',
+      }).catch(() => {});
     }
     window.location.hash = '#/cadastro/listar';
   } catch (erro) {
