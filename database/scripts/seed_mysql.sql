@@ -73,9 +73,10 @@ INSERT IGNORE INTO `tipo_lancamento` (`id_tipo_lancamento`, `descricao`, `observ
 
 -- ─── PERFIL USUÁRIO ──────────────────────────────────────────
 INSERT IGNORE INTO `perfil_usuario` (`id_perfil`, `descricao`, `observacao`) VALUES
-(1,'Administrador','Acesso total ao sistema. Gerencia usuários e permissões.'),
-(2,'Gestor','Acesso operacional configurável pelo administrador.'),
-(3,'Visualizador','Somente leitura. Módulos visíveis configuráveis pelo administrador.');
+(1,'Administrador','Presidente e Vice. Acesso total ao sistema, incluindo usuários e configurações.'),
+(2,'Operacional','Secretários. Acesso ao cadastro de associados e gestão operacional.'),
+(3,'Conselho Fiscal','Apenas leitura. Acesso para visualização e fiscalização das informações.'),
+(4,'Financeiro','Tesoureiros. Acesso ao módulo financeiro e relatórios.');
 
 -- ─── MÓDULO SISTEMA ──────────────────────────────────────────
 INSERT IGNORE INTO `modulo_sistema` (`id_modulo`, `descricao`) VALUES
