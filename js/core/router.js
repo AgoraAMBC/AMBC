@@ -108,6 +108,13 @@ const rotas = {
     titulo: 'Configurações Gerais'
   },
 
+  // ----- AJUDA -----
+  '#/ajuda': {
+    view: 'views/ajuda/ajuda.html',
+    page: 'ajuda',
+    titulo: 'Ajuda'
+  },
+
   // ----- SHOWCASE (vitrine de componentes) -----
   '#/showcase': {
     view: 'views/showcase.html',
