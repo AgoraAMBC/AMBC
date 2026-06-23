@@ -44,10 +44,9 @@ const config = {
         const data = await response.json().catch(() => null);
 
         if (response.status === 401) {
-            localStorage.removeItem('ambc_sessao');
-            sessionStorage.removeItem('ambc_sessao');
-            window.location.replace(new URL('login.html', window.location.href).href);
-            throw new Error('Sessão expirada');
+            const erro = new Error(data?.erro || data?.error || 'Não autenticado');
+            erro.status = 401;
+            throw erro;
         }
 
         if (!response.ok) {

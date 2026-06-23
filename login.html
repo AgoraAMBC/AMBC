@@ -48,15 +48,10 @@
       <h2 class="login-card__titulo">Bem-vindo de volta</h2>
       <p class="login-card__subtitulo">Entre com suas credenciais para continuar</p>
 
-      <!-- Mensagem de erro -->
-      <div
-        id="login-erro"
-        class="login-erro"
-        role="alert"
-        hidden
-      >
-        <span class="material-icons">error_outline</span>
-        <span id="login-erro-texto">Mensagem de erro</span>
+      <!-- Mensagem de erro / sucesso -->
+      <div id="login-erro" class="login-erro" role="alert" hidden>
+        <span id="login-erro-icone" class="material-icons">error_outline</span>
+        <span id="login-erro-texto"></span>
       </div>
 
       <!-- Formulario -->
@@ -85,7 +80,6 @@
         <div class="login-form__grupo">
           <div class="login-form__label-linha">
             <label for="campo-senha" class="login-form__label">Senha</label>
-            <a href="#" class="login-form__esqueci">Esqueci minha senha</a>
           </div>
           <div class="login-form__campo">
             <span class="material-icons login-form__icone">lock</span>
@@ -136,7 +130,7 @@
 
     // Auto-detecta ambiente: Live Server (5500) usa PHP server separado, demais usam mesma origem
     const _liveServer = ['5500', '5501'].includes(window.location.port);
-    const API_LOGIN = (_liveServer ? 'http://localhost:8080' : '') + '/backend/auth/login.php';
+    const API_LOGIN = (_liveServer ? 'http://localhost:8081' : '') + '/backend/auth/login.php';
 
     // MODO MOCK — false = usa o backend PHP real
     const USAR_MOCK = false;
@@ -157,33 +151,47 @@
     }
 
     /* ---------------------------------------------------------
-       2. Pega elementos do formulario
+       2. Restaurar email do "Lembrar de mim"
+    --------------------------------------------------------- */
+    const emailSalvo = localStorage.getItem('ambc_email_lembrar');
+    if (emailSalvo) {
+      document.getElementById('campo-email').value = emailSalvo;
+      document.getElementById('lembrar-me').checked = true;
+    }
+
+    /* ---------------------------------------------------------
+       3. Pega elementos do formulario
     --------------------------------------------------------- */
     const form      = document.getElementById('form-login');
     const btnTexto  = document.getElementById('btn-entrar-texto');
     const btn       = document.getElementById('btn-entrar');
     const erroDiv   = document.getElementById('login-erro');
+    const erroIcone = document.getElementById('login-erro-icone');
     const erroTexto = document.getElementById('login-erro-texto');
 
     /* ---------------------------------------------------------
-       3. Verifica se todos os elementos existem no DOM
+       4. Verifica se todos os elementos existem no DOM
     --------------------------------------------------------- */
-    if (!form || !btn || !btnTexto || !erroDiv || !erroTexto) {
+    if (!form || !btn || !btnTexto || !erroDiv || !erroIcone || !erroTexto) {
       console.error('[Login] Elementos do formulario nao encontrados:', {
         form: !!form, btn: !!btn, btnTexto: !!btnTexto,
-        erroDiv: !!erroDiv, erroTexto: !!erroTexto
+        erroDiv: !!erroDiv, erroIcone: !!erroIcone, erroTexto: !!erroTexto
       });
       throw new Error('[Login] HTML do formulario incompleto — verifique os IDs');
     }
 
     /* ---------------------------------------------------------
-       4. Helpers de UI
+       5. Helpers de UI
     --------------------------------------------------------- */
     function mostrarErro(mensagem) {
+      erroDiv.className = 'login-erro';
+      erroIcone.textContent = 'error_outline';
       erroTexto.textContent = mensagem;
       erroDiv.hidden = false;
     }
     function ocultarErro() {
+      erroDiv.className = 'login-erro';
+      erroIcone.textContent = 'error_outline';
       erroDiv.hidden = true;
     }
     function setCarregando(ativo) {
@@ -192,7 +200,7 @@
     }
 
     /* ---------------------------------------------------------
-       5. Login MOCK (frontend-only)
+       6. Login MOCK (frontend-only)
     --------------------------------------------------------- */
     async function loginMock(login, senha) {
       await new Promise(r => setTimeout(r, 400));
@@ -208,7 +216,7 @@
     }
 
     /* ---------------------------------------------------------
-       6. Login REAL (backend PHP)
+       7. Login REAL (backend PHP)
     --------------------------------------------------------- */
     async function loginReal(login, senha) {
       const resp = await fetch(API_LOGIN, {
@@ -226,7 +234,7 @@
     }
 
     /* ---------------------------------------------------------
-       7. Listener do submit
+       8. Listener do submit
     --------------------------------------------------------- */
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -249,6 +257,11 @@
           : await loginReal(login, senha);
 
         Sessao.salvar(dados.usuario, lembrar);
+        if (lembrar) {
+          localStorage.setItem('ambc_email_lembrar', login);
+        } else {
+          localStorage.removeItem('ambc_email_lembrar');
+        }
         window.location.replace('index.html');
       } catch (err) {
         if (err.message === 'Failed to fetch' || err.name === 'TypeError') {

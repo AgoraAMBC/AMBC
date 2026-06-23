@@ -36,6 +36,7 @@ function init() {
     _bindTipoPessoa();
     _bindBuscarCep();
     _bindMascaras();
+    _bindNovoLancamento();
     _prepararModoEdicao();
 }
 
@@ -565,6 +566,20 @@ function _bindCancelamento() {
 
     btn.addEventListener('click', handler);
     cleanup.push(() => btn.removeEventListener('click', handler));
+}
+
+function _bindNovoLancamento() {
+  const btn = document.getElementById('btn-add-lancamento-parceiro');
+  if (!btn) return;
+  const handler = () => {
+    if (!idParceiro) {
+      Toast.alerta('Salve o parceiro primeiro para registrar lançamentos.');
+      return;
+    }
+    window.location.hash = `#/financeiro/registrar-lancamento?parceiro_id=${idParceiro}`;
+  };
+  btn.addEventListener('click', handler);
+  cleanup.push(() => btn.removeEventListener('click', handler));
 }
 
 function formatarMoeda(valor) {

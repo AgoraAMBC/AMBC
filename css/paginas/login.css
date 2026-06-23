@@ -104,11 +104,15 @@
   font-size: var(--fs-sm);
   margin-bottom: var(--esp-md);
 }
+.login-erro[hidden] {
+  display: none;
+}
 
 .login-erro .material-icons {
   font-size: 18px;
   flex-shrink: 0;
 }
+
 
 /* ---------------------------------------------------------
    Formulário

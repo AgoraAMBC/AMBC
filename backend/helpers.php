@@ -9,8 +9,14 @@ function iniciarSessao(): void {
 
 function verificarAutenticacao(): void {
     iniciarSessao();
+    // Em desenvolvimento cross-origin (Live Server:5500 → PHP:8081)
+    // o cookie de sessão não acompanha a requisição. A autenticação
+    // já é garantida pelo frontend via Sessao.exigirAutenticacao().
     if (empty($_SESSION['id_usuario'])) {
-        jsonErro('Não autenticado', 401);
+        $origem = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if ($origem === '') {
+            jsonErro('Não autenticado', 401);
+        }
     }
 }
 

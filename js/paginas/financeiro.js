@@ -1385,6 +1385,11 @@ async function iniciarRegistrarLancamento() {
   const form = document.getElementById('form-registrar-lancamento');
   if (!form) return;
 
+  // ── Pré-selecionar associado/parceiro vindo de URL ──
+  const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+  const associadoId = params.get('associado_id');
+  const parceiroId = params.get('parceiro_id');
+
   carregarTiposLancamento();
   preencherSelectsRegistrarLancamento();
 
@@ -1773,6 +1778,45 @@ async function iniciarRegistrarLancamento() {
     const hInputPessoa = () => limparAvisoAnuidade();
     inputPessoa.addEventListener('input', hInputPessoa);
     cleanup.push(() => inputPessoa.removeEventListener('input', hInputPessoa));
+  }
+
+  // ── Pré-selecionar associado vindo do cadastro (URL param) ──
+  if (associadoId) {
+    (async () => {
+      try {
+        const resp = await api.get(`/associados/buscar.php?id=${associadoId}`);
+        if (!resp?.data) return;
+        const a = resp.data;
+        const inputP = document.getElementById('lancamento-pessoa');
+        if (!inputP) return;
+        inputP.value = a.nome;
+        inputP.dataset.autocompleteId = String(a.id_associado);
+        inputP.dataset.autocompleteTipo = 'associado';
+        const elAss = document.getElementById('lancamento-fk-associado');
+        if (elAss) elAss.value = a.id_associado;
+      } catch (e) {
+        console.warn('[Financeiro] Erro ao carregar associado da URL:', e.message);
+      }
+    })();
+  }
+
+  // ── Pré-selecionar parceiro vindo do cadastro (URL param) ──
+  if (parceiroId) {
+    (async () => {
+      try {
+        const resp = await api.get(`/parceiros/buscar.php?id=${parceiroId}`);
+        if (!resp?.id_parceiro) return;
+        const inputP = document.getElementById('lancamento-pessoa');
+        if (!inputP) return;
+        inputP.value = resp.nome_razao_social;
+        inputP.dataset.autocompleteId = String(resp.id_parceiro);
+        inputP.dataset.autocompleteTipo = 'parceiro';
+        const elPar = document.getElementById('lancamento-fk-parceiro');
+        if (elPar) elPar.value = resp.id_parceiro;
+      } catch (e) {
+        console.warn('[Financeiro] Erro ao carregar parceiro da URL:', e.message);
+      }
+    })();
   }
 
   // ── Sort state local para tabela de abertos ──

@@ -102,7 +102,7 @@ function buscarResumoConsolidado(PDO $pdo): array {
                 LEFT JOIN status_conta sc ON sc.id_status_conta = c.fk_status_conta
                 WHERE c.fk_status_conta = 2
                   AND COALESCE(c.data_vencimento, c.data_lancamento) >= DATE_FORMAT(DATE_SUB(CURRENT_DATE, INTERVAL 5 MONTH), '%Y-%m-01')
-                GROUP BY DATE_FORMAT(c.data_lancamento, '%Y-%m')
+                GROUP BY DATE_FORMAT(COALESCE(c.data_vencimento, c.data_lancamento), '%Y-%m')
                 ORDER BY mes
             ) g
         ),

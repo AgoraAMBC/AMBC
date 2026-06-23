@@ -637,43 +637,7 @@ async function aoAbrirModalLancamento() {
     return;
   }
 
-  // Limpar selects
-  const selectCategoria = document.getElementById('lancamento-categoria');
-  const selectSubordinada = document.getElementById('lancamento-conta-subordinada');
-
-  // Carregar contas regentes
-  try {
-    const resp = await ContasService.listarRegentes({ ativos: '1' });
-    const regentes = resp?.dados || [];
-    selectCategoria.innerHTML = '<option value="">Selecione</option>' +
-      regentes.map(r => `<option value="${r.id_conta_regente}">${r.descricao}</option>`).join('');
-  } catch (e) {
-    console.error('[Lançamento] Erro ao carregar regentes:', e);
-    selectCategoria.innerHTML = '<option value="">Erro ao carregar</option>';
-  }
-
-  // Limpar subordinadas
-  selectSubordinada.innerHTML = '<option value="">— automático —</option>';
-
-  // Listener para carregar subordinadas ao selecionar regente
-  selectCategoria.onchange = async () => {
-    const fk_regente = selectCategoria.value;
-    if (!fk_regente) {
-      selectSubordinada.innerHTML = '<option value="">— automático —</option>';
-      return;
-    }
-    try {
-      const resp = await ContasService.listarSubordinadas(fk_regente);
-      const subordinadas = resp?.dados || [];
-      selectSubordinada.innerHTML = '<option value="">Selecione</option>' +
-        subordinadas.map(s => `<option value="${s.id_conta_subordinada}">${s.descricao}</option>`).join('');
-    } catch (e) {
-      console.error('[Lançamento] Erro ao carregar subordinadas:', e);
-      selectSubordinada.innerHTML = '<option value="">Erro ao carregar</option>';
-    }
-  };
-
-  refs.modalLancamento.hidden = false;
+  window.location.hash = `#/financeiro/registrar-lancamento?associado_id=${estado.idAssociado}`;
 }
 
 function aoFecharModalLancamento() {
