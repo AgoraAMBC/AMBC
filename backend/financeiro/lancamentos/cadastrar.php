@@ -222,13 +222,14 @@ try {
             }
         } else {
             $pdo->prepare($sql)->execute($params);
+            $id_lancamento = (int)$pdo->lastInsertId();
         }
 
         $mensagem = 'Lançamento cadastrado com sucesso';
     }
 
     $pdo->commit();
-    jsonResposta(['sucesso' => true, 'mensagem' => $mensagem]);
+    jsonResposta(['sucesso' => true, 'mensagem' => $mensagem, 'id_lancamento' => $id_lancamento]);
 
 } catch (Exception $e) {
     if (isset($pdo) && $pdo->inTransaction()) {

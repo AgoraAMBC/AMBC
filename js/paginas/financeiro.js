@@ -1957,17 +1957,19 @@ async function iniciarRegistrarLancamento() {
     if (!payload) { if (btnEl) btnEl.disabled = false; return; }
     try {
       const resp = await api.post('/financeiro/lancamentos/cadastrar.php', payload);
-      const novoId = resp.id || resp.id_lancamento;
+      const novoId = resp.id_lancamento;
       if (novoId) {
+        const valorTotal = parseFloat(document.getElementById('lancamento-valor')?.value || 0);
+        const acao = valorPago < valorTotal - 0.001 ? 'parcial' : 'liquidar';
         await api.post('/financeiro/lancamentos/liquidar.php', {
           id_lancamento:      novoId,
-          acao:               'liquidar',
+          acao,
           valor_pago:         valorPago,
           data_pagamento:     dataPagamento,
           fk_forma_pagamento: 1,
         });
       }
-      Toast.sucesso('Lançamento salvo e liquidado!');
+      Toast.sucesso(valorPago < valorTotal - 0.001 ? 'Lançamento salvo com pagamento parcial!' : 'Lançamento salvo e liquidado!');
       form.reset();
       limparAside();
       atualizar();
