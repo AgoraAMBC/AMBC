@@ -1507,15 +1507,15 @@ async function iniciarRegistrarLancamento() {
 
           const totalAnual = parseFloat((12 * mensalidade).toFixed(2));
           const atualizarMeses = () => {
-            const pagos   = [...grid.querySelectorAll('input:checked')].length;
-            const aCobrar = 12 - pagos;
+            const isentos  = [...grid.querySelectorAll('input:checked')].length;
+            const aCobrar  = 12 - isentos;
             const emAberto = parseFloat((aCobrar * mensalidade).toFixed(2));
             const campoValor = document.getElementById('lancamento-valor');
             if (campoValor) campoValor.value = totalAnual;
             const resumo = document.getElementById('meses-anuidade-resumo');
             if (resumo) resumo.textContent = aCobrar > 0
-              ? `${pagos} ${pagos === 1 ? 'mês pago' : 'meses pagos'} • ${aCobrar} a cobrar = R$ ${emAberto.toFixed(2).replace('.', ',')} em aberto`
-              : 'Todos os meses marcados como pagos.';
+              ? `${isentos} ${isentos === 1 ? 'mês isento' : 'meses isentos'} • ${aCobrar} a cobrar = R$ ${emAberto.toFixed(2).replace('.', ',')} em aberto`
+              : 'Todos os meses marcados como isentos.';
             atualizar();
             const elResumoValor = document.getElementById('resumo-valor');
             if (elResumoValor) elResumoValor.textContent = formatarMoeda(emAberto);
@@ -1528,7 +1528,7 @@ async function iniciarRegistrarLancamento() {
         if (painel && infoTxt) {
           const jaPagei = mesAtual - 1;
           infoTxt.textContent = `Plano anual: R$ ${mensalidade.toFixed(2).replace('.', ',')} por mês.`
-            + (jaPagei > 0 ? ` ${jaPagei} ${jaPagei === 1 ? 'mês já pago' : 'meses já pagos'} pré-marcados.` : ' Nenhum mês pago ainda.');
+            + (jaPagei > 0 ? ` ${jaPagei} ${jaPagei === 1 ? 'mês já isento' : 'meses já isentos'} pré-marcados.` : ' Nenhum mês isento ainda.');
           painel.hidden = false;
         }
 
