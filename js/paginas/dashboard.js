@@ -5,7 +5,6 @@
 
 import { DashboardService } from '../services/dashboard-service.js';
 import Toast from '../componentes/toast.js';
-import { formatarData } from '../core/formatadores.js';
 
 const DashboardPage = {
   _resizeHandler: null,
@@ -14,7 +13,10 @@ const DashboardPage = {
   async init() {
     this._atualizarMesAtual();
     this._registrarResize();
-    await this.carregarResumo();
+    await Promise.all([
+      this.carregarResumo(),
+      this.carregarAniversariantes(),
+    ]);
   },
 
   async carregarResumo() {
@@ -25,11 +27,9 @@ const DashboardPage = {
       this.renderizarCards(dados.cards || {});
       this.renderizarGrafico(this._grafico);
       this.renderizarDistribuicao(dados.distribuicao || {});
-      this.renderizarTransacoes(dados.ultimas_transacoes || []);
     } catch (erro) {
       console.error('[DashboardPage] Erro ao carregar resumo:', erro);
       Toast.erro('Não foi possível carregar o painel. Tente novamente.');
-      this._renderizarErroTabela();
     }
   },
 
@@ -155,38 +155,6 @@ const DashboardPage = {
       `conic-gradient(#1a73e8 0 ${p1}deg, #7c3aed ${p1}deg ${p2}deg, #ca8a04 ${p2}deg 360deg)`;
   },
 
-  renderizarTransacoes(transacoes) {
-    const tbody = document.querySelector('[data-tabela="ultimas-transacoes"] tbody');
-    if (!tbody) return;
-
-    if (!transacoes.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="tabela__vazio">Nenhuma transação registrada.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = transacoes.map(item => `
-      <tr>
-        <td>${formatarData(item.data_lancamento)}</td>
-        <td>
-          <span class="dashboard-tabela__principal">${this._escapar(item.descricao || '-')}</span>
-          ${item.associado ? `<span class="dashboard-tabela__secundario">${this._escapar(item.associado)}</span>` : ''}
-        </td>
-        <td>${this._escapar(item.categoria || '-')}</td>
-        <td class="tabela__num ${item.tipo === 'despesa' ? 'dashboard-tabela__valor--despesa' : 'dashboard-tabela__valor--receita'}">
-          ${this._formatarMoeda(Number(item.valor_total || 0))}
-        </td>
-        <td><span class="badge badge-pilula ${this._statusClasse(item.status)}">${this._escapar(item.status || '-')}</span></td>
-      </tr>
-    `).join('');
-  },
-
-  _renderizarErroTabela() {
-    const tbody = document.querySelector('[data-tabela="ultimas-transacoes"] tbody');
-    if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="5" class="tabela__vazio">Não foi possível carregar os dados.</td></tr>';
-    }
-  },
-
   _registrarResize() {
     this._resizeHandler = () => this.renderizarGrafico(this._grafico);
     window.addEventListener('resize', this._resizeHandler);
@@ -234,6 +202,46 @@ const DashboardPage = {
     const div = document.createElement('div');
     div.textContent = String(texto ?? '');
     return div.innerHTML;
+  },
+
+  async carregarAniversariantes() {
+    const container = document.getElementById('lista-aniversariantes');
+    const mesEl = document.getElementById('aniversariantes-mes');
+    if (!container) return;
+
+    if (mesEl) {
+      mesEl.textContent = new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    }
+
+    try {
+      const dados = await DashboardService.aniversariantes();
+      this.renderizarAniversariantes(dados, container);
+    } catch (erro) {
+      console.error('[DashboardPage] Erro ao carregar aniversariantes:', erro);
+      container.innerHTML = '<p class="dashboard-aniversariantes__vazio">Não foi possível carregar os aniversariantes.</p>';
+    }
+  },
+
+  renderizarAniversariantes(dados, container) {
+    if (!dados || !dados.length) {
+      container.innerHTML = '<p class="dashboard-aniversariantes__vazio">Nenhum aniversariante este mês.</p>';
+      return;
+    }
+    container.innerHTML = dados.map(item => {
+      const data = String(item.dia).padStart(2, '0') + '/' + String(item.mes).padStart(2, '0');
+      const sub = item.tipo === 'dependente'
+        ? `Dependente de ${this._escapar(item.associado_nome || '')}`
+        : 'Associado';
+      return `
+        <div class="aniversariante-item">
+          <span class="aniversariante-item__data">${data}</span>
+          <span class="aniversariante-item__sep">-</span>
+          <span class="aniversariante-item__nome">${this._escapar(item.nome)}</span>
+          <span class="aniversariante-item__sep">-</span>
+          <span class="aniversariante-item__subtipo">${sub}</span>
+        </div>
+      `;
+    }).join('');
   },
 
   destroy() {

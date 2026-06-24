@@ -16,6 +16,7 @@
   border-bottom: var(--borda-padrao);
   background-color: var(--cor-primaria);
   color: var(--cor-primaria-contraste);
+  text-decoration: none;
 }
 
 .sidebar__logo {

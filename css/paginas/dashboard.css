@@ -307,6 +307,59 @@
   font-weight: var(--fw-semibold);
 }
 
+.dashboard-aniversariantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-sm);
+}
+
+.aniversariante-item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-md);
+  padding: var(--esp-sm) var(--esp-md);
+  border-radius: var(--raio-sm);
+  background: var(--cor-cinza-50);
+}
+.aniversariante-item:hover {
+  background: var(--cor-cinza-100);
+}
+.aniversariante-item__data {
+  color: var(--cor-primaria);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+  min-width: 45px;
+}
+.aniversariante-item__nome {
+  color: var(--texto-principal);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.aniversariante-item__sep {
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+}
+.aniversariante-item__subtipo {
+  color: var(--texto-secundario);
+  font-size: var(--fs-xs);
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.dashboard-aniversariantes__vazio {
+  margin: 0;
+  padding: var(--esp-lg) 0;
+  color: var(--texto-secundario);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+
 @media (max-width: 1100px) {
   .dashboard__cards {
     grid-template-columns: repeat(2, minmax(180px, 1fr));

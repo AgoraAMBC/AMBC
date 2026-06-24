@@ -14,7 +14,7 @@
       </div>
       <div class="dashboard__acoes">
         <span class="dashboard__mes" id="dashboard-mes-atual" aria-live="polite">Mês atual</span>
-        <a class="btn btn-primario" href="#/financeiro/novo-lancamento">
+        <a class="btn btn-primario" href="#/financeiro/registrar-lancamento">
           <span class="material-icons" aria-hidden="true">add</span>
           Novo Lançamento
         </a>
@@ -109,32 +109,18 @@
     </article>
   </div>
 
-  <article class="card dashboard-panel">
+  <article class="card dashboard-panel" data-painel="aniversariantes">
     <div class="card__cabecalho">
       <h2 class="card__titulo">
-        <span class="material-icons" aria-hidden="true">receipt_long</span>
-        Últimas transações
+        <span class="material-icons" aria-hidden="true">celebration</span>
+        Aniversariantes do mês
       </h2>
-      <a class="btn btn-secundario btn-sm" href="#/financeiro/visao-geral">Ver todas</a>
+      <span class="dashboard__mes" id="aniversariantes-mes">Carregando...</span>
     </div>
-
-    <div class="tabela-wrapper">
-      <table class="tabela dashboard-tabela" data-tabela="ultimas-transacoes">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Descrição</th>
-            <th>Categoria</th>
-            <th class="tabela__num">Valor</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="5" class="tabela__vazio">Carregando...</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="dashboard-panel__corpo">
+      <div class="dashboard-aniversariantes" id="lista-aniversariantes">
+        <p class="dashboard-aniversariantes__vazio">Carregando...</p>
+      </div>
     </div>
   </article>
   </div><!-- /.dashboard__corpo -->
