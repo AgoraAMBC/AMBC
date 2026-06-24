@@ -7,6 +7,7 @@ import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
 import { CadastrosService } from '../services/cadastros-service.js';
 import { AssociadosService } from '../services/associados-service.js';
+import Sessao from '../core/sessao.js';
 
 const estado = {
   termoBusca: '',
@@ -97,6 +98,7 @@ async function buscarCadastros(filtros) {
 
 function renderizarLinhas(cadastros) {
   if (!refs.tbody) return;
+  const podeEditar = Sessao.temPermissao(2, 'pode_editar');
 
   if (cadastros.length === 0) {
     refs.tbody.innerHTML = '';
@@ -136,12 +138,13 @@ function renderizarLinhas(cadastros) {
             <button type="button" class="cadastro-listar__acao" data-acao="visualizar" data-id="${c.id}" data-tipo="${c.tipo}" aria-label="Visualizar">
               <span class="material-icons">visibility</span>
             </button>
+            ${podeEditar ? `
             <button type="button" class="cadastro-listar__acao" data-acao="editar" data-id="${c.id}" data-tipo="${c.tipo}" aria-label="Editar">
               <span class="material-icons">edit</span>
             </button>
-<button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="Excluir">
-  <span class="material-icons">delete</span>
-</button>
+            <button type="button" class="cadastro-listar__acao cadastro-listar__acao--excluir" data-acao="excluir" data-id="${c.id}" data-tipo="${c.tipo}" data-ativo="${c.ativo ? '1' : '0'}" data-nome="${escaparHtml(c.nome)}" aria-label="Excluir">
+              <span class="material-icons">delete</span>
+            </button>` : ''}
             ${c.tipo === 'dependente' ? `<button type="button" class="cadastro-listar__acao" data-acao="ver-associado" data-id="${c.id_associado_titular}" aria-label="Ver associado titular">
               <span class="material-icons">person</span>
             </button>` : ''}
