@@ -155,7 +155,7 @@ function renderizarRelacionamentos() {
           ${rel.conta_regente || '—'} <span class="cfg-rel__regra-seta"></span> ${rel.conta_subordinada || '—'}
         </div>
         <div class="cfg-rel__regra-descricao">
-          ${rel.natureza} / ${rel.modo}${rel.observacao ? ` • ${rel.observacao}` : ''}
+          ${{ RECEBER: 'Receita', PAGAR: 'Despesa' }[rel.natureza] || rel.natureza} / ${{ FIXO: 'Fixo', SUGERIDO: 'Sugerido' }[rel.modo] || rel.modo}${rel.observacao ? ` • ${rel.observacao}` : ''}
         </div>
       </div>
       <div class="cfg-rel__regra-acoes">
