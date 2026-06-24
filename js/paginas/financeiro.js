@@ -2460,7 +2460,7 @@ async function exportarRelatorioPDF() {
       l.vencimento ? l.vencimento.split('-').reverse().join('/') : '—',
       l.descricao || '',
       l.pessoa    || '—',
-      l.tipo === 'receita' ? 'A Receber' : 'A Pagar',
+      l.tipo === 'receita' ? 'Receita' : 'Despesa',
       l.conta     || '',
       (l.tipo === 'receita' ? '+ ' : '- ') + formatarMoeda(l.valor),
       capitalizar(l.status || ''),
@@ -2478,7 +2478,7 @@ async function exportarRelatorioPDF() {
     tableLineWidth: 0.1, tableLineColor: [226, 232, 240],
     didParseCell: (data) => {
       if (data.section === 'body' && data.column.index === 5) {
-        const rec = data.row.raw[3] === 'A Receber';
+        const rec = data.row.raw[3] === 'Receita';
         data.cell.styles.textColor = rec ? [22, 163, 74] : [220, 38, 38];
       }
     },
@@ -2497,7 +2497,7 @@ function exportarRelatorioCSV() {
     l.vencimento   ? l.vencimento.split('-').reverse().join('/') : '',
     l.descricao    || '',
     l.pessoa       || '',
-    l.tipo === 'receita' ? 'A Receber' : l.tipo === 'despesa' ? 'A Pagar' : '',
+    l.tipo === 'receita' ? 'Receita' : l.tipo === 'despesa' ? 'Despesa' : '',
     l.tipo_lancamento || l.tipo_nome || '',
     l.conta        || '',
     l.subconta     || '',
@@ -3123,7 +3123,7 @@ function badgeStatus(status) {
 }
 
 function badgeTipo(tipo) {
-  const label = tipo === 'receita' ? 'A Receber' : tipo === 'despesa' ? 'A Pagar' : (tipo || '—');
+  const label = tipo === 'receita' ? 'Receita' : tipo === 'despesa' ? 'Despesa' : (tipo || '—');
   return `<span class="badge badge-pilula ${tipo === 'receita' ? 'badge-verde' : 'badge-vermelho'}">${label}</span>`;
 }
 
