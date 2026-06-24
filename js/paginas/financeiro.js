@@ -1958,8 +1958,8 @@ async function iniciarRegistrarLancamento() {
     try {
       const resp = await api.post('/financeiro/lancamentos/cadastrar.php', payload);
       const novoId = resp.id_lancamento;
+      const valorTotal = parseFloat(document.getElementById('lancamento-valor')?.value || 0);
       if (novoId) {
-        const valorTotal = parseFloat(document.getElementById('lancamento-valor')?.value || 0);
         const acao = valorPago < valorTotal - 0.001 ? 'parcial' : 'liquidar';
         await api.post('/financeiro/lancamentos/liquidar.php', {
           id_lancamento:      novoId,
