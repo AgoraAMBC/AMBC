@@ -1493,6 +1493,13 @@ async function iniciarRegistrarLancamento() {
         if (parcelamentoPanel) parcelamentoPanel.removeAttribute('hidden');
         if (campoModo) campoModo.hidden = true;
 
+        // Forçar modo parcelado para exibir a caixa de pagamento
+        const modoSelectLocal = document.getElementById('lancamento-pagamento-modo');
+        if (modoSelectLocal && modoSelectLocal.value !== 'parcelado') {
+          modoSelectLocal.value = 'parcelado';
+          modoSelectLocal.dispatchEvent(new Event('change'));
+        }
+
         // Gerar checkboxes dos 12 meses
         const grid = document.getElementById('meses-anuidade-grid');
         if (grid) {
