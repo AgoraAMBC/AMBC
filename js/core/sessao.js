@@ -173,6 +173,20 @@ function pararTimerInatividade() {
 }
 
 /* ---------------------------------------------------------
+   Verifica permissão de acesso a um módulo
+   @param {number} moduloId  ID do módulo (tabela modulo_sistema)
+   @param {string} tipo      'pode_acessar' ou 'pode_editar'
+--------------------------------------------------------- */
+function temPermissao(moduloId, tipo = 'pode_acessar') {
+  const sessao = obter();
+  if (!sessao) return false;
+  if (sessao.fk_perfil === 1) return true; // Administrador tem acesso total
+  const perms = sessao.permissoes || [];
+  const perm = perms.find(p => Number(p.fk_modulo) === Number(moduloId));
+  return perm ? Boolean(Number(perm[tipo])) : false;
+}
+
+/* ---------------------------------------------------------
    Exporta API publica
 --------------------------------------------------------- */
 const Sessao = {
@@ -184,6 +198,7 @@ const Sessao = {
   obterIniciais,
   iniciarTimerInatividade,
   pararTimerInatividade,
+  temPermissao,
 };
 
 export default Sessao;

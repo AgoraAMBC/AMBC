@@ -3,6 +3,7 @@ import { DocumentosService }   from '../services/documentos-service.js';
 import { PlanosService }       from '../services/planos-service.js';
 import Toast from '../componentes/toast.js';
 import { formatarData } from '../core/formatadores.js';
+import { api } from '../services/api.js';
 
 /* =========================================================
    Dados Institucionais — mapeamento campo → chave no banco
@@ -784,6 +785,56 @@ async function inicializarDocumentos() {
 }
 
 /* =========================================================
+   Permissões por Perfil
+========================================================= */
+async function carregarPermissoesPerfil() {
+    try {
+        const perms = await api.get('/permissoes/perfil/obter.php');
+        document.querySelectorAll('.cfg-gerais__perm').forEach(btn => {
+            const perfil = Number(btn.dataset.perfil);
+            const modulo = Number(btn.dataset.modulo);
+            const p = perms.find(x => Number(x.fk_perfil) === perfil && Number(x.fk_modulo) === modulo);
+            const ativo = p ? Boolean(Number(p.pode_acessar)) : false;
+            btn.classList.toggle('cfg-gerais__perm--sim', ativo);
+            btn.classList.toggle('cfg-gerais__perm--nao', !ativo);
+            btn.setAttribute('aria-pressed', String(ativo));
+            btn.querySelector('.material-icons').textContent = ativo ? 'check_circle' : 'remove_circle';
+        });
+    } catch (e) {
+        Toast.erro('Erro ao carregar permissões: ' + e.message);
+    }
+}
+
+async function salvarPermissoesPerfil() {
+    const permissoes = [];
+    document.querySelectorAll('.cfg-gerais__perm').forEach(btn => {
+        const perfil  = Number(btn.dataset.perfil);
+        const modulo  = Number(btn.dataset.modulo);
+        const acessar = btn.classList.contains('cfg-gerais__perm--sim');
+        permissoes.push({
+            fk_perfil:    perfil,
+            fk_modulo:    modulo,
+            pode_acessar: acessar,
+            pode_editar:  perfil === 1 ? acessar : (modulo !== 10 && acessar && perfil !== 3),
+        });
+        if (modulo === 2) {
+            [3, 5].forEach(mod => permissoes.push({
+                fk_perfil:    perfil,
+                fk_modulo:    mod,
+                pode_acessar: acessar,
+                pode_editar:  perfil === 1 ? acessar : (acessar && perfil !== 3),
+            }));
+        }
+    });
+    try {
+        await api.post('/permissoes/perfil/salvar.php', { permissoes });
+        Toast.sucesso('Permissões salvas com sucesso.');
+    } catch (e) {
+        Toast.erro('Erro ao salvar permissões: ' + e.message);
+    }
+}
+
+/* =========================================================
    Init / Destroy
 ========================================================= */
 const ConfiguracoesPage = {
@@ -792,12 +843,16 @@ const ConfiguracoesPage = {
         inicializarToggles();
         inicializarPermissoes();
 
-        if (document.getElementById('btn-salvar-gerais')) {
+        if (document.getElementById('btn-salvar-gerais-prefs')) {
             await carregarPreferencias();
-            document.getElementById('btn-salvar-gerais')
-                ?.addEventListener('click', salvarPreferencias);
             document.getElementById('btn-salvar-gerais-prefs')
                 ?.addEventListener('click', salvarPreferencias);
+        }
+
+        if (document.getElementById('btn-salvar-permissoes')) {
+            await carregarPermissoesPerfil();
+            document.getElementById('btn-salvar-permissoes')
+                ?.addEventListener('click', salvarPermissoesPerfil);
         }
 
         if (document.getElementById('container-planos')) {

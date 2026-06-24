@@ -5,6 +5,8 @@
               Carrega views via fetch() e injeta no <main>.
 ========================================================= */
 
+import Sessao from './sessao.js?v=2';
+
 /* ---------------------------------------------------------
    1. TABELA DE ROTAS
    ---------------------------------------------------------
@@ -17,36 +19,42 @@ const rotas = {
   '#/dashboard': {
     view: 'views/dashboard/dashboard.html',
     page: 'dashboard',
-    titulo: 'Painel'
+    titulo: 'Painel',
+    modulo: 1
   },
 
   // ----- CADASTRO -----
   '#/cadastro/listar': {
     view: 'views/cadastro/listar.html',
     page: 'cadastro-listar',
-    titulo: 'Listar Todos'
+    titulo: 'Listar Todos',
+    modulo: 2
   },
   '#/cadastro/novo-associado': {
     view: 'views/cadastro/novo-associado.html',
     page: 'cadastro-novo-associado',
-    titulo: 'Novo Associado'
+    titulo: 'Novo Associado',
+    modulo: 2
   },
   '#/cadastro/novo-parceiro': {
     view: 'views/cadastro/novo-parceiro.html',
     page: 'cadastro-novo-parceiro',
-    titulo: 'Novo Parceiro'
+    titulo: 'Novo Parceiro',
+    modulo: 5
   },
   '#/cadastro/dependentes': {
     view: 'views/cadastro/dependentes.html',
     page: 'cadastro-dependentes',
-    titulo: 'Dependentes'
+    titulo: 'Dependentes',
+    modulo: 2
   },
 
   // ----- FINANCEIRO -----
   '#/financeiro/visao-geral': {
     view: 'views/financeiro/visao-geral.html',
     page: 'financeiro',
-    titulo: 'Visão Geral'
+    titulo: 'Visão Geral',
+    modulo: 4
   },
   // '#/financeiro/novo-lancamento': {
   //   view: 'views/financeiro/novo-lancamento.html',
@@ -56,70 +64,82 @@ const rotas = {
   '#/financeiro/registrar-lancamento': {
     view: 'views/financeiro/registrar-lancamento.html',
     page: 'financeiro',
-    titulo: 'Registrar Lançamento'
+    titulo: 'Registrar Lançamento',
+    modulo: 4
   },
   '#/financeiro/relatorios': {
     view: 'views/financeiro/relatorios.html',
     page: 'financeiro',
-    titulo: 'Relatórios'
+    titulo: 'Relatórios',
+    modulo: 9
   },
   '#/financeiro/contas-regentes': {
     view: 'views/financeiro/contas-regentes.html',
     page: 'financeiro',
-    titulo: 'Contas Regentes'
+    titulo: 'Contas Regentes',
+    modulo: 4
   },
   '#/financeiro/contas-subordinadas': {
     view: 'views/financeiro/contas-subordinadas.html',
     page: 'financeiro',
-    titulo: 'Contas Subordinadas'
+    titulo: 'Contas Subordinadas',
+    modulo: 4
   },
   '#/financeiro/estorno-liquidacao': {
     view: 'views/financeiro/estorno-liquidacao.html',
     page: 'financeiro',
-    titulo: 'Estorno de Liquidações'
+    titulo: 'Estorno de Liquidações',
+    modulo: 4
   },
 
   // ----- TABELAS -----
   '#/tabelas/ver': {
     view: 'views/tabelas/ver-tabelas.html',
     page: 'tabelas',
-    titulo: 'Ver Tabelas'
+    titulo: 'Ver Tabelas',
+    modulo: 8
   },
 
   // ----- CONFIGURAÇÕES -----
   '#/configuracoes/usuarios': {
     view: 'views/configuracoes/usuarios.html',
     page: 'usuarios',
-    titulo: 'Gestão de Usuários'
+    titulo: 'Gestão de Usuários',
+    modulo: 7
   },
   '#/configuracoes/associacao': {
     view: 'views/configuracoes/associacao.html',
     page: 'configuracoes',
-    titulo: 'Associação'
+    titulo: 'Associação',
+    modulo: 8
   },
   '#/configuracoes/relacionamentos': {
     view: 'views/configuracoes/relacionamentos.html',
     page: 'relacionamentos',
-    titulo: 'Relacionamentos'
+    titulo: 'Relacionamentos',
+    modulo: 8
   },
   '#/configuracoes/config-gerais': {
     view: 'views/configuracoes/config-gerais.html',
     page: 'configuracoes',
-    titulo: 'Configurações Gerais'
+    titulo: 'Configurações Gerais',
+    modulo: 8
   },
 
   // ----- AJUDA -----
   '#/ajuda': {
     view: 'views/ajuda/ajuda.html',
     page: 'ajuda',
-    titulo: 'Ajuda'
+    titulo: 'Ajuda',
+    modulo: null
   },
 
   // ----- SHOWCASE (vitrine de componentes) -----
   '#/showcase': {
     view: 'views/showcase.html',
     page: 'showcase',
-    titulo: 'Showcase de Componentes'
+    titulo: 'Showcase de Componentes',
+    modulo: null
   },
 };
 
@@ -251,6 +271,15 @@ async function tratarRota() {
       document.title = `404 - Não encontrado | ${TITULO_BASE}`;
       console.warn(`[Router] Rota nao encontrada: ${hash}`);
       return;
+    }
+
+    // Verifica permissão de acesso ao módulo
+    if (rota.modulo !== null && rota.modulo !== undefined) {
+      if (!Sessao.temPermissao(rota.modulo)) {
+        renderizarErro(container, 'Você não tem permissão para acessar este módulo.');
+        document.title = `Acesso negado | ${TITULO_BASE}`;
+        return;
+      }
     }
 
     // --- ROTA VALIDA ---

@@ -46,4 +46,15 @@ iniciarSessao();
 $_SESSION['id_usuario'] = $usuario['id_usuario'];
 $_SESSION['fk_perfil']  = $usuario['fk_perfil'];
 
+// Carrega permissões do perfil (graceful: retorna [] se a tabela ainda não existe)
+try {
+    $stmtPerms = $pdo->prepare(
+        'SELECT fk_modulo, pode_acessar, pode_editar FROM permissao_perfil WHERE fk_perfil = :perfil'
+    );
+    $stmtPerms->execute([':perfil' => $usuario['fk_perfil']]);
+    $usuario['permissoes'] = $stmtPerms->fetchAll();
+} catch (PDOException $e) {
+    $usuario['permissoes'] = [];
+}
+
 jsonResposta(['usuario' => $usuario]);

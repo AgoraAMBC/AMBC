@@ -5,8 +5,8 @@
               Inicializa os modulos de layout e o router.
 ========================================================= */
 
-import Sessao  from './sessao.js';
-import Router  from './router.js';
+import Sessao  from './sessao.js?v=2';
+import Router  from './router.js?v=2';
 import Sidebar from '../layout/sidebar.js';
 import Topbar  from '../layout/topbar.js';
 import { configurar } from './formatadores.js';
