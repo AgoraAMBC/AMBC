@@ -6,7 +6,7 @@
 ========================================================= */
 
 import Sessao  from './sessao.js?v=2';
-import Router  from './router.js?v=2';
+import Router  from './router.js?v=3';
 import Sidebar from '../layout/sidebar.js';
 import Topbar  from '../layout/topbar.js';
 import { configurar } from './formatadores.js';
@@ -71,6 +71,14 @@ async function iniciarApp() {
   const perfil = Sessao.obter()?.fk_perfil;
   document.querySelectorAll('[data-apenas-admin]').forEach((el) => {
     el.hidden = perfil !== 1;
+  });
+
+  // Oculta itens que exigem permissão de edição no módulo indicado
+  document.querySelectorAll('[data-requer-editar]').forEach((el) => {
+    const moduloId = Number(el.dataset.requerEditar);
+    if (!Sessao.temPermissao(moduloId, 'pode_editar')) {
+      el.hidden = true;
+    }
   });
 
   // Roteador SPA

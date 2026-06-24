@@ -5,7 +5,7 @@
               Carrega views via fetch() e injeta no <main>.
 ========================================================= */
 
-import Sessao from './sessao.js?v=2';
+import Sessao from './sessao.js?v=3';
 
 /* ---------------------------------------------------------
    1. TABELA DE ROTAS
@@ -34,13 +34,15 @@ const rotas = {
     view: 'views/cadastro/novo-associado.html',
     page: 'cadastro-novo-associado',
     titulo: 'Novo Associado',
-    modulo: 2
+    modulo: 2,
+    permissao: 'pode_editar'
   },
   '#/cadastro/novo-parceiro': {
     view: 'views/cadastro/novo-parceiro.html',
     page: 'cadastro-novo-parceiro',
     titulo: 'Novo Parceiro',
-    modulo: 5
+    modulo: 5,
+    permissao: 'pode_editar'
   },
   '#/cadastro/dependentes': {
     view: 'views/cadastro/dependentes.html',
@@ -65,7 +67,8 @@ const rotas = {
     view: 'views/financeiro/registrar-lancamento.html',
     page: 'financeiro',
     titulo: 'Registrar Lançamento',
-    modulo: 4
+    modulo: 4,
+    permissao: 'pode_editar'
   },
   '#/financeiro/relatorios': {
     view: 'views/financeiro/relatorios.html',
@@ -275,7 +278,8 @@ async function tratarRota() {
 
     // Verifica permissão de acesso ao módulo
     if (rota.modulo !== null && rota.modulo !== undefined) {
-      if (!Sessao.temPermissao(rota.modulo)) {
+      const tipoPerm = rota.permissao || 'pode_acessar';
+      if (!Sessao.temPermissao(rota.modulo, tipoPerm)) {
         renderizarErro(container, 'Você não tem permissão para acessar este módulo.');
         document.title = `Acesso negado | ${TITULO_BASE}`;
         return;

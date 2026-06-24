@@ -102,8 +102,8 @@
               </button>
               <ul class="sidebar__submenu" id="submenu-cadastro">
                 <li><a href="#/cadastro/listar" class="sidebar__link"><span class="sidebar__texto">Listar Todos</span></a></li>
-                <li><a href="#/cadastro/novo-associado" class="sidebar__link"><span class="sidebar__texto">Novo Associado</span></a></li>
-                <li><a href="#/cadastro/novo-parceiro" class="sidebar__link"><span class="sidebar__texto">Novo Parceiro</span></a></li>
+                <li data-requer-editar="2"><a href="#/cadastro/novo-associado" class="sidebar__link"><span class="sidebar__texto">Novo Associado</span></a></li>
+                <li data-requer-editar="5"><a href="#/cadastro/novo-parceiro" class="sidebar__link"><span class="sidebar__texto">Novo Parceiro</span></a></li>
                 <li><a href="#/cadastro/dependentes" class="sidebar__link"><span class="sidebar__texto">Dependentes</span></a></li>
               </ul>
             </li>
@@ -117,7 +117,7 @@
               <ul class="sidebar__submenu" id="submenu-financeiro">
                 <li><a href="#/financeiro/visao-geral" class="sidebar__link"><span class="sidebar__texto">Visão Geral</span></a></li>
                 <!-- <li><a href="#/financeiro/novo-lancamento" class="sidebar__link"><span class="sidebar__texto">Novo Lançamento</span></a></li> -->
-                <li><a href="#/financeiro/registrar-lancamento" class="sidebar__link"><span class="sidebar__texto">Registrar Lançamento</span></a></li>
+                <li data-requer-editar="4"><a href="#/financeiro/registrar-lancamento" class="sidebar__link"><span class="sidebar__texto">Registrar Lançamento</span></a></li>
                 <li><a href="#/financeiro/relatorios" class="sidebar__link"><span class="sidebar__texto">Relatórios</span></a></li>
                 <li><a href="#/financeiro/contas-regentes" class="sidebar__link"><span class="sidebar__texto">Contas Regentes</span></a></li>
                 <li><a href="#/financeiro/contas-subordinadas" class="sidebar__link"><span class="sidebar__texto">Contas Subordinadas</span></a></li>
@@ -235,6 +235,6 @@
   <!-- ==========================================================
        JS — Entry point da SPA (ES Modules)
        ========================================================== -->
-  <script type="module" src="js/core/app.js?v=2"></script>
+  <script type="module" src="js/core/app.js?v=3"></script>
 </body>
 </html>
