@@ -219,7 +219,7 @@ function injetarHtml(container, html) {
 async function carregarModuloPagina(nomePagina) {
   try {
     // ✅ Usa nomePagina dinamicamente + cache-busting via versão fixa
-    const modulo = await import(`../paginas/${nomePagina}.js?v=10`);
+    const modulo = await import(`../paginas/${nomePagina}.js?v=11`);
     return modulo.default;
   } catch (erro) {
     console.warn(`[Router] Modulo js/paginas/${nomePagina}.js nao pode ser carregado:`, erro);

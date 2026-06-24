@@ -790,7 +790,9 @@ async function inicializarDocumentos() {
 async function carregarPermissoesPerfil() {
     try {
         const perms = await api.get('/permissoes/perfil/obter.php');
-        document.querySelectorAll('.cfg-gerais__perm').forEach(btn => {
+
+        // Módulos reais
+        document.querySelectorAll('.cfg-gerais__perm:not([data-modulo="apenas_leitura"])').forEach(btn => {
             const perfil = Number(btn.dataset.perfil);
             const modulo = Number(btn.dataset.modulo);
             const p = perms.find(x => Number(x.fk_perfil) === perfil && Number(x.fk_modulo) === modulo);
@@ -800,32 +802,49 @@ async function carregarPermissoesPerfil() {
             btn.setAttribute('aria-pressed', String(ativo));
             btn.querySelector('.material-icons').textContent = ativo ? 'check_circle' : 'remove_circle';
         });
+
+        // Linha "Apenas leitura": ativo se todos os módulos acessíveis do perfil têm pode_editar=0
+        [1, 2, 4, 3].forEach(perfil => {
+            const btn = document.querySelector(`.cfg-gerais__perm[data-modulo="apenas_leitura"][data-perfil="${perfil}"]`);
+            if (!btn) return;
+            const acessiveis = perms.filter(p => Number(p.fk_perfil) === perfil && Number(p.pode_acessar) === 1);
+            const apenasLeitura = acessiveis.length > 0 && acessiveis.every(p => Number(p.pode_editar) === 0);
+            btn.classList.toggle('cfg-gerais__perm--sim', apenasLeitura);
+            btn.classList.toggle('cfg-gerais__perm--nao', !apenasLeitura);
+            btn.setAttribute('aria-pressed', String(apenasLeitura));
+            btn.querySelector('.material-icons').textContent = apenasLeitura ? 'check_circle' : 'remove_circle';
+        });
     } catch (e) {
         Toast.erro('Erro ao carregar permissões: ' + e.message);
     }
 }
 
 async function salvarPermissoesPerfil() {
+    // Lê estado de "Apenas leitura" por perfil antes de processar módulos
+    const apenasLeitura = {};
+    document.querySelectorAll('.cfg-gerais__perm[data-modulo="apenas_leitura"]').forEach(btn => {
+        apenasLeitura[Number(btn.dataset.perfil)] = btn.classList.contains('cfg-gerais__perm--sim');
+    });
+
     const permissoes = [];
-    document.querySelectorAll('.cfg-gerais__perm').forEach(btn => {
+    document.querySelectorAll('.cfg-gerais__perm:not([data-modulo="apenas_leitura"])').forEach(btn => {
         const perfil  = Number(btn.dataset.perfil);
         const modulo  = Number(btn.dataset.modulo);
         const acessar = btn.classList.contains('cfg-gerais__perm--sim');
-        permissoes.push({
-            fk_perfil:    perfil,
-            fk_modulo:    modulo,
-            pode_acessar: acessar,
-            pode_editar:  perfil === 1 ? acessar : (modulo !== 10 && acessar && perfil !== 3),
-        });
+        // Admin sempre pode editar; outros dependem da flag "apenas leitura" do perfil
+        const editar  = perfil === 1 ? acessar : (apenasLeitura[perfil] ? false : acessar);
+
+        permissoes.push({ fk_perfil: perfil, fk_modulo: modulo, pode_acessar: acessar, pode_editar: editar });
+
         if (modulo === 2) {
             [3, 5].forEach(mod => permissoes.push({
-                fk_perfil:    perfil,
-                fk_modulo:    mod,
+                fk_perfil: perfil, fk_modulo: mod,
                 pode_acessar: acessar,
-                pode_editar:  perfil === 1 ? acessar : (acessar && perfil !== 3),
+                pode_editar: perfil === 1 ? acessar : (apenasLeitura[perfil] ? false : acessar),
             }));
         }
     });
+
     try {
         await api.post('/permissoes/perfil/salvar.php', { permissoes });
         Toast.sucesso('Permissões salvas com sucesso.');
