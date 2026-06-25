@@ -11,7 +11,6 @@
 
 import Sessao from '../core/sessao.js';
 import { api } from '../services/api.js';
-import ConfiguracoesService from '../services/configuracoes-service.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
@@ -268,41 +267,6 @@ function tratarResize() {
 /* ---------------------------------------------------------
    11. FUNCAO PUBLICA: inicializa a topbar
 --------------------------------------------------------- */
-function inicializarMenuUsuario() {
-  const btnUsuario = document.getElementById('btn-menu-usuario');
-  const dropdown   = document.getElementById('topbar-usuario-dropdown');
-  if (!btnUsuario || !dropdown) return;
-
-  // Abrir/fechar dropdown
-  btnUsuario.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const aberto = !dropdown.hidden;
-    dropdown.hidden = aberto;
-    btnUsuario.setAttribute('aria-expanded', String(!aberto));
-  });
-
-  // Fechar ao clicar fora
-  document.addEventListener('click', () => { dropdown.hidden = true; btnUsuario.setAttribute('aria-expanded', 'false'); });
-  dropdown.addEventListener('click', (e) => e.stopPropagation());
-
-  // Toggle de tema — sincroniza com estado atual
-  const toggle = document.getElementById('topbar-tema-toggle');
-  if (toggle) {
-    toggle.checked = document.documentElement.dataset.tema === 'escuro';
-    toggle.addEventListener('change', () => {
-      const tema = toggle.checked ? 'escuro' : 'claro';
-      if (tema === 'escuro') document.documentElement.dataset.tema = 'escuro';
-      else delete document.documentElement.dataset.tema;
-      ConfiguracoesService.salvar({ tema }).catch(() => {});
-    });
-  }
-
-  // Sair
-  document.getElementById('topbar-btn-sair')?.addEventListener('click', () => {
-    if (window.confirm('Deseja realmente sair do sistema?')) Sessao.encerrar();
-  });
-}
-
 function iniciar() {
   const botao   = document.querySelector(SELETOR_BOTAO_TOGGLE);
   const overlay = document.querySelector(SELETOR_OVERLAY);
@@ -336,7 +300,6 @@ function iniciar() {
   atualizarTitulo();
   atualizarUsuarioLogado();
   inicializarPainelNotificacoes();
-  inicializarMenuUsuario();
 
   console.log('[Topbar] Inicializada com sucesso');
 }
