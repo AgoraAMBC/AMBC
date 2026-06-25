@@ -433,15 +433,15 @@
 }
 
 .topbar__usuario-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: var(--altura-header);
+  right: var(--esp-lg);
   min-width: 230px;
-  background: var(--cor-superficie);
-  border: 1px solid var(--cor-borda);
+  background: var(--fundo-card);
+  border: var(--borda-padrao);
   border-radius: var(--raio-md);
-  box-shadow: var(--sombra-md);
-  z-index: 200;
+  box-shadow: var(--sombra-lg);
+  z-index: var(--z-modal);
   padding: var(--esp-xs) 0;
 }
 
