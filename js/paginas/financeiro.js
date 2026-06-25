@@ -8,7 +8,7 @@ import Toast from '../componentes/toast.js';
 import Modal from '../componentes/modal.js';
 import { criarAutocomplete } from '../componentes/autocomplete.js';
 import { api } from '../services/api.js';
-import Sessao from '../core/sessao.js';
+import Sessao from '../core/sessao.js?v=3';
 
 const sortState = { coluna: null, direcao: 'asc' };
 

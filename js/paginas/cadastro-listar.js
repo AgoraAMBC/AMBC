@@ -7,7 +7,7 @@ import Modal from '../componentes/modal.js';
 import Toast from '../componentes/toast.js';
 import { CadastrosService } from '../services/cadastros-service.js';
 import { AssociadosService } from '../services/associados-service.js';
-import Sessao from '../core/sessao.js';
+import Sessao from '../core/sessao.js?v=3';
 
 const estado = {
   termoBusca: '',
