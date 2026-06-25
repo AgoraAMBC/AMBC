@@ -292,10 +292,8 @@ function inicializarMenuUsuario() {
       const tema = toggle.checked ? 'escuro' : 'claro';
       if (tema === 'escuro') document.documentElement.dataset.tema = 'escuro';
       else delete document.documentElement.dataset.tema;
-      const cfg = JSON.parse(localStorage.getItem('ambc_configuracoes') || '{}');
-      cfg.tema = tema;
-      localStorage.setItem('ambc_configuracoes', JSON.stringify(cfg));
-      api.post('/configuracoes/salvar.php', { tema }).catch(() => {});
+      const idUsuario = Sessao.obter()?.id_usuario;
+      if (idUsuario) localStorage.setItem(`ambc_tema_${idUsuario}`, tema);
     });
   }
 

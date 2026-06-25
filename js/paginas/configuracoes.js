@@ -1,4 +1,5 @@
 import { ConfiguracoesService } from '../services/configuracoes-service.js';
+import Sessao from '../core/sessao.js';
 import { DocumentosService }   from '../services/documentos-service.js';
 import { PlanosService }       from '../services/planos-service.js';
 import Toast from '../componentes/toast.js';
@@ -282,13 +283,9 @@ async function salvarTema(tema) {
     document.querySelectorAll('[data-tema]').forEach(btn => {
         btn.classList.toggle('cfg-associacao__tema-opcao--ativo', btn.dataset.tema === tema);
     });
-    try {
-        await ConfiguracoesService.salvar({ tema });
-        Toast.sucesso(`Tema ${tema === 'escuro' ? 'escuro' : 'claro'} aplicado.`);
-    } catch (erro) {
-        console.error('[Configuracoes] Erro ao salvar tema:', erro);
-        Toast.erro('Erro ao salvar tema.');
-    }
+    const idUsuario = Sessao.obter()?.id_usuario;
+    if (idUsuario) localStorage.setItem(`ambc_tema_${idUsuario}`, tema);
+    Toast.sucesso(`Tema ${tema === 'escuro' ? 'escuro' : 'claro'} aplicado.`);
 }
 
 async function inicializarSeletorTema() {

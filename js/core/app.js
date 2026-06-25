@@ -52,7 +52,9 @@ async function iniciarApp() {
     const configs = await ConfiguracoesService.obter();
     configurar(configs.fuso_horario, configs.formato_data);
     aplicarFavicon(configs.favicon || null);
-    aplicarTema(configs.tema || 'claro');
+    const idUsuario = Sessao.obter()?.id_usuario;
+    const temaLocal = idUsuario ? localStorage.getItem(`ambc_tema_${idUsuario}`) : null;
+    aplicarTema(temaLocal || configs.tema || 'claro');
     if (configs.seg_expirar_sessao === 'true') {
       Sessao.iniciarTimerInatividade();
     }
