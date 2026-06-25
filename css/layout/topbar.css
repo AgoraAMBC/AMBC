@@ -163,16 +163,16 @@
 }
 
 /* Sino de notificações — sempre na cor primária */
-.topbar__sino {
+.topbar__acao.topbar__sino {
   color: var(--cor-primaria);
 }
 
-.topbar__sino:hover {
+.topbar__acao.topbar__sino:hover {
   color: var(--cor-primaria-escura, var(--cor-primaria));
 }
 
-.topbar__sino .material-icons {
-  font-size: 30px;
+.topbar__acao.topbar__sino .material-icons {
+  font-size: 34px;
 }
 
 /* Badge de notificação (bolinha vermelha com número) */
