@@ -10,7 +10,6 @@
 ========================================================= */
 
 import Sessao from '../core/sessao.js';
-import { api } from '../services/api.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
@@ -149,26 +148,7 @@ function atualizarUsuarioLogado() {
 }
 
 /* ---------------------------------------------------------
-   9. FUNCAO: atualiza badge de notificações
---------------------------------------------------------- */
-async function atualizarBadgeNotificacoes() {
-  const badge = document.getElementById('badge-notificacoes');
-  if (!badge) return;
-  try {
-    const { nao_lidas } = await api.get('/notificacoes/contagem.php');
-    if (nao_lidas > 0) {
-      badge.textContent = nao_lidas > 99 ? '99+' : nao_lidas;
-      badge.hidden = false;
-    } else {
-      badge.hidden = true;
-    }
-  } catch {
-    badge.hidden = true;
-  }
-}
-
-/* ---------------------------------------------------------
-   10. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
+   9. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
 --------------------------------------------------------- */
 function tratarTeclaEsc(evento) {
   if (evento.key !== 'Escape') return;
@@ -224,7 +204,6 @@ function iniciar() {
   // Atualizacoes na carga inicial
   atualizarTitulo();
   atualizarUsuarioLogado();
-  atualizarBadgeNotificacoes();
 
   console.log('[Topbar] Inicializada com sucesso');
 }

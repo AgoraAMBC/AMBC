@@ -171,6 +171,10 @@
   color: var(--cor-primaria-escura, var(--cor-primaria));
 }
 
+.topbar__sino .material-icons {
+  font-size: 30px;
+}
+
 /* Badge de notificação (bolinha vermelha com número) */
 .topbar__badge {
   position: absolute;
