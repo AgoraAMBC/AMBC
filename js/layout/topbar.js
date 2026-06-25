@@ -267,6 +267,43 @@ function tratarResize() {
 /* ---------------------------------------------------------
    11. FUNCAO PUBLICA: inicializa a topbar
 --------------------------------------------------------- */
+function inicializarMenuUsuario() {
+  const btnUsuario = document.getElementById('btn-menu-usuario');
+  const dropdown   = document.getElementById('topbar-usuario-dropdown');
+  if (!btnUsuario || !dropdown) return;
+
+  btnUsuario.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const aberto = !dropdown.hidden;
+    dropdown.hidden = aberto;
+    btnUsuario.setAttribute('aria-expanded', String(!aberto));
+  });
+
+  document.addEventListener('click', () => {
+    dropdown.hidden = true;
+    btnUsuario.setAttribute('aria-expanded', 'false');
+  });
+  dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+  const toggle = document.getElementById('topbar-tema-toggle');
+  if (toggle) {
+    toggle.checked = document.documentElement.dataset.tema === 'escuro';
+    toggle.addEventListener('change', () => {
+      const tema = toggle.checked ? 'escuro' : 'claro';
+      if (tema === 'escuro') document.documentElement.dataset.tema = 'escuro';
+      else delete document.documentElement.dataset.tema;
+      const cfg = JSON.parse(localStorage.getItem('ambc_configuracoes') || '{}');
+      cfg.tema = tema;
+      localStorage.setItem('ambc_configuracoes', JSON.stringify(cfg));
+      api.post('/configuracoes/salvar.php', { tema }).catch(() => {});
+    });
+  }
+
+  document.getElementById('topbar-btn-sair')?.addEventListener('click', () => {
+    if (window.confirm('Deseja realmente sair do sistema?')) Sessao.encerrar();
+  });
+}
+
 function iniciar() {
   const botao   = document.querySelector(SELETOR_BOTAO_TOGGLE);
   const overlay = document.querySelector(SELETOR_OVERLAY);
@@ -300,6 +337,7 @@ function iniciar() {
   atualizarTitulo();
   atualizarUsuarioLogado();
   inicializarPainelNotificacoes();
+  inicializarMenuUsuario();
 
   console.log('[Topbar] Inicializada com sucesso');
 }
