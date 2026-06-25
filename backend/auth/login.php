@@ -24,7 +24,7 @@ $stmt = $pdo->prepare(
     'SELECT u.id_usuario, u.nome, u.email, u.senha_hash, u.fk_perfil, u.ativo,
             p.descricao AS perfil
        FROM usuario u
-       LEFT JOIN perfil p ON p.id_perfil = u.fk_perfil
+       LEFT JOIN perfil_usuario p ON p.id_perfil = u.fk_perfil
       WHERE u.email = :email
       LIMIT 1'
 );
