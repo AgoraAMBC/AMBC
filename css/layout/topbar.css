@@ -334,24 +334,6 @@
   color: var(--cor-cinza-400);
 }
 
-.topbar__notif-rodape {
-  padding: var(--esp-xs) var(--esp-md);
-  border-top: 1px solid var(--cor-cinza-100);
-  text-align: center;
-}
-
-.topbar__notif-btn-lidas {
-  background: none;
-  border: none;
-  font-size: var(--fs-xs);
-  color: var(--cor-primaria);
-  cursor: pointer;
-  padding: var(--esp-xs) 0;
-}
-
-.topbar__notif-btn-lidas:hover {
-  text-decoration: underline;
-}
 
 /* ============================================
    🔗 BOTÃO WORDPRESS ADMIN

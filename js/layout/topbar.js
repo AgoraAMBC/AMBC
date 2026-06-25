@@ -163,19 +163,7 @@ function _tempoRelativo(dataStr) {
 
 function _renderizarNotificacoes(notificacoes) {
   const lista = document.getElementById('lista-notificacoes');
-  const badge = document.getElementById('badge-notificacoes');
   if (!lista) return;
-
-  const naoLidas = notificacoes.filter(n => Number(n.lida) === 0);
-
-  if (badge) {
-    if (naoLidas.length > 0) {
-      badge.textContent = naoLidas.length > 99 ? '99+' : naoLidas.length;
-      badge.hidden = false;
-    } else {
-      badge.hidden = true;
-    }
-  }
 
   if (!notificacoes.length) {
     lista.innerHTML = '<li class="topbar__notif-vazia">Nenhuma notificação</li>';
@@ -185,8 +173,7 @@ function _renderizarNotificacoes(notificacoes) {
   lista.innerHTML = notificacoes.map(n => {
     const naoLida = Number(n.lida) === 0;
     return `
-      <li class="topbar__notif-item${naoLida ? ' topbar__notif-item--nao-lida' : ''}"
-          data-id="${n.id_notificacao}">
+      <li class="topbar__notif-item${naoLida ? ' topbar__notif-item--nao-lida' : ''}">
         <div class="topbar__notif-corpo">
           <div class="topbar__notif-item-titulo">${n.titulo}</div>
           ${n.mensagem ? `<div class="topbar__notif-item-msg">${n.mensagem}</div>` : ''}
@@ -197,32 +184,7 @@ function _renderizarNotificacoes(notificacoes) {
   }).join('');
 }
 
-async function carregarNotificacoes() {
-  const lista = document.getElementById('lista-notificacoes');
-  if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Carregando…</li>';
-  try {
-    const { notificacoes } = await api.get('/notificacoes/listar.php');
-    _renderizarNotificacoes(notificacoes);
-  } catch {
-    if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Erro ao carregar</li>';
-  }
-}
-
-async function atualizarBadgeNotificacoes() {
-  try {
-    const { nao_lidas } = await api.get('/notificacoes/contagem.php');
-    const badge = document.getElementById('badge-notificacoes');
-    if (!badge) return;
-    if (nao_lidas > 0) {
-      badge.textContent = nao_lidas > 99 ? '99+' : nao_lidas;
-      badge.hidden = false;
-    } else {
-      badge.hidden = true;
-    }
-  } catch { /* silencioso */ }
-}
-
-function abrirPainelNotificacoes() {
+async function abrirPainelNotificacoes() {
   const painel = document.getElementById('painel-notificacoes');
   const btn    = document.getElementById('btn-notificacoes');
   if (!painel) return;
@@ -230,7 +192,18 @@ function abrirPainelNotificacoes() {
   painel.hidden = false;
   _painelAberto = true;
   btn?.setAttribute('aria-expanded', 'true');
-  carregarNotificacoes();
+
+  const lista = document.getElementById('lista-notificacoes');
+  if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Carregando…</li>';
+
+  try {
+    const { notificacoes } = await api.get('/notificacoes/listar.php');
+    _renderizarNotificacoes(notificacoes);
+    // Marca tudo como lido em segundo plano ao abrir
+    api.post('/notificacoes/marcar-lidas.php', {}).catch(() => {});
+  } catch {
+    if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Erro ao carregar</li>';
+  }
 }
 
 function fecharPainelNotificacoes() {
@@ -257,30 +230,6 @@ function inicializarPainelNotificacoes() {
   document.getElementById('link-config-notif')
     ?.addEventListener('click', fecharPainelNotificacoes);
 
-  // Marcar item individual como lido ao clicar
-  painel.addEventListener('click', async (e) => {
-    const item = e.target.closest('[data-id]');
-    if (!item) return;
-    const id = Number(item.dataset.id);
-    if (item.classList.contains('topbar__notif-item--nao-lida')) {
-      item.classList.remove('topbar__notif-item--nao-lida');
-      item.querySelector('.topbar__notif-dot')?.remove();
-      try { await api.post('/notificacoes/marcar-lidas.php', { id_notificacao: id }); } catch {}
-      atualizarBadgeNotificacoes();
-    }
-  });
-
-  // Marcar todas como lidas
-  document.getElementById('btn-marcar-lidas')
-    ?.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      try {
-        await api.post('/notificacoes/marcar-lidas.php', {});
-        await carregarNotificacoes();
-      } catch {}
-    });
-
-  // Fecha ao clicar fora
   document.addEventListener('click', (e) => {
     if (_painelAberto && !painel.contains(e.target) && e.target !== btn) {
       fecharPainelNotificacoes();
@@ -351,7 +300,6 @@ function iniciar() {
   atualizarTitulo();
   atualizarUsuarioLogado();
   inicializarPainelNotificacoes();
-  atualizarBadgeNotificacoes();
 
   console.log('[Topbar] Inicializada com sucesso');
 }
