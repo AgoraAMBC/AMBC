@@ -21,9 +21,11 @@ if ($email === '' || $senha === '') {
 $pdo = obterConexao();
 
 $stmt = $pdo->prepare(
-    'SELECT id_usuario, nome, email, senha_hash, fk_perfil, ativo
-       FROM usuario
-      WHERE email = :email
+    'SELECT u.id_usuario, u.nome, u.email, u.senha_hash, u.fk_perfil, u.ativo,
+            p.descricao AS perfil
+       FROM usuario u
+       LEFT JOIN perfil p ON p.id_perfil = u.fk_perfil
+      WHERE u.email = :email
       LIMIT 1'
 );
 $stmt->execute([':email' => $email]);
