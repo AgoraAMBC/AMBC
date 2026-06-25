@@ -468,12 +468,6 @@
   color: var(--cor-erro);
 }
 
-.topbar__usuario-dropdown-divider {
-  border: none;
-  border-top: 1px solid var(--cor-borda);
-  margin: var(--esp-xs) 0;
-}
-
 /* ============================================
    🌙 TOGGLE SOL/LUA (uiverse.io — namespaciado)
    ============================================ */
