@@ -86,6 +86,13 @@ try {
         ':cep'             => $cep ?: null,
     ]);
 
+    dispararNotificacao(
+        $pdo,
+        'Novo associado cadastrado',
+        "O associado {$nome} (matrícula {$novaMatricula}) foi registrado.",
+        'notif_novos_cadastros'
+    );
+
     jsonResposta([
         'mensagem'     => 'Associado cadastrado com sucesso.',
         'data' => [

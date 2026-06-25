@@ -10,7 +10,7 @@
 ========================================================= */
 
 import Sessao from '../core/sessao.js';
-import { ConfiguracoesService } from '../services/configuracoes-service.js';
+import { api } from '../services/api.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
@@ -153,6 +153,75 @@ function atualizarUsuarioLogado() {
 --------------------------------------------------------- */
 let _painelAberto = false;
 
+function _tempoRelativo(dataStr) {
+  const diff = Math.floor((Date.now() - new Date(dataStr).getTime()) / 1000);
+  if (diff < 60)   return 'agora mesmo';
+  if (diff < 3600) return `há ${Math.floor(diff / 60)} min`;
+  if (diff < 86400) return `há ${Math.floor(diff / 3600)}h`;
+  return `há ${Math.floor(diff / 86400)} dia(s)`;
+}
+
+function _renderizarNotificacoes(notificacoes) {
+  const lista = document.getElementById('lista-notificacoes');
+  const badge = document.getElementById('badge-notificacoes');
+  if (!lista) return;
+
+  const naoLidas = notificacoes.filter(n => Number(n.lida) === 0);
+
+  if (badge) {
+    if (naoLidas.length > 0) {
+      badge.textContent = naoLidas.length > 99 ? '99+' : naoLidas.length;
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+    }
+  }
+
+  if (!notificacoes.length) {
+    lista.innerHTML = '<li class="topbar__notif-vazia">Nenhuma notificação</li>';
+    return;
+  }
+
+  lista.innerHTML = notificacoes.map(n => {
+    const naoLida = Number(n.lida) === 0;
+    return `
+      <li class="topbar__notif-item${naoLida ? ' topbar__notif-item--nao-lida' : ''}"
+          data-id="${n.id_notificacao}">
+        <div class="topbar__notif-corpo">
+          <div class="topbar__notif-item-titulo">${n.titulo}</div>
+          ${n.mensagem ? `<div class="topbar__notif-item-msg">${n.mensagem}</div>` : ''}
+          <div class="topbar__notif-item-tempo">${_tempoRelativo(n.criado_em)}</div>
+        </div>
+        ${naoLida ? '<div class="topbar__notif-dot"></div>' : ''}
+      </li>`;
+  }).join('');
+}
+
+async function carregarNotificacoes() {
+  const lista = document.getElementById('lista-notificacoes');
+  if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Carregando…</li>';
+  try {
+    const { notificacoes } = await api.get('/notificacoes/listar.php');
+    _renderizarNotificacoes(notificacoes);
+  } catch {
+    if (lista) lista.innerHTML = '<li class="topbar__notif-vazia">Erro ao carregar</li>';
+  }
+}
+
+async function atualizarBadgeNotificacoes() {
+  try {
+    const { nao_lidas } = await api.get('/notificacoes/contagem.php');
+    const badge = document.getElementById('badge-notificacoes');
+    if (!badge) return;
+    if (nao_lidas > 0) {
+      badge.textContent = nao_lidas > 99 ? '99+' : nao_lidas;
+      badge.hidden = false;
+    } else {
+      badge.hidden = true;
+    }
+  } catch { /* silencioso */ }
+}
+
 function abrirPainelNotificacoes() {
   const painel = document.getElementById('painel-notificacoes');
   const btn    = document.getElementById('btn-notificacoes');
@@ -161,14 +230,7 @@ function abrirPainelNotificacoes() {
   painel.hidden = false;
   _painelAberto = true;
   btn?.setAttribute('aria-expanded', 'true');
-
-  // Carrega preferências ao abrir
-  ConfiguracoesService.obter().then(configs => {
-    painel.querySelectorAll('[data-notif-chave]').forEach(input => {
-      const chave = input.dataset.notifChave;
-      input.checked = configs[chave] === 'true';
-    });
-  }).catch(() => {});
+  carregarNotificacoes();
 }
 
 function fecharPainelNotificacoes() {
@@ -181,22 +243,6 @@ function fecharPainelNotificacoes() {
   btn?.setAttribute('aria-expanded', 'false');
 }
 
-function alternarPainelNotificacoes() {
-  if (_painelAberto) {
-    fecharPainelNotificacoes();
-  } else {
-    abrirPainelNotificacoes();
-  }
-}
-
-async function salvarPreferenciasNotificacao(chave, valor) {
-  try {
-    await ConfiguracoesService.salvar({ [chave]: valor ? 'true' : 'false' });
-  } catch {
-    // falha silenciosa — o toggle visual já mudou
-  }
-}
-
 function inicializarPainelNotificacoes() {
   const btn    = document.getElementById('btn-notificacoes');
   const painel = document.getElementById('painel-notificacoes');
@@ -204,19 +250,35 @@ function inicializarPainelNotificacoes() {
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    alternarPainelNotificacoes();
+    if (_painelAberto) fecharPainelNotificacoes();
+    else abrirPainelNotificacoes();
   });
 
-  // Fecha ao clicar no link "Configurar"
   document.getElementById('link-config-notif')
     ?.addEventListener('click', fecharPainelNotificacoes);
 
-  // Salva ao alterar qualquer toggle
-  painel.addEventListener('change', (e) => {
-    const input = e.target.closest('[data-notif-chave]');
-    if (!input) return;
-    salvarPreferenciasNotificacao(input.dataset.notifChave, input.checked);
+  // Marcar item individual como lido ao clicar
+  painel.addEventListener('click', async (e) => {
+    const item = e.target.closest('[data-id]');
+    if (!item) return;
+    const id = Number(item.dataset.id);
+    if (item.classList.contains('topbar__notif-item--nao-lida')) {
+      item.classList.remove('topbar__notif-item--nao-lida');
+      item.querySelector('.topbar__notif-dot')?.remove();
+      try { await api.post('/notificacoes/marcar-lidas.php', { id_notificacao: id }); } catch {}
+      atualizarBadgeNotificacoes();
+    }
   });
+
+  // Marcar todas como lidas
+  document.getElementById('btn-marcar-lidas')
+    ?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      try {
+        await api.post('/notificacoes/marcar-lidas.php', {});
+        await carregarNotificacoes();
+      } catch {}
+    });
 
   // Fecha ao clicar fora
   document.addEventListener('click', (e) => {
@@ -289,6 +351,7 @@ function iniciar() {
   atualizarTitulo();
   atualizarUsuarioLogado();
   inicializarPainelNotificacoes();
+  atualizarBadgeNotificacoes();
 
   console.log('[Topbar] Inicializada com sucesso');
 }
