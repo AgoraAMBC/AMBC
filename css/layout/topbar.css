@@ -162,6 +162,15 @@
   font-size: 22px;
 }
 
+/* Sino de notificações — sempre na cor primária */
+.topbar__sino {
+  color: var(--cor-primaria);
+}
+
+.topbar__sino:hover {
+  color: var(--cor-primaria-escura, var(--cor-primaria));
+}
+
 /* Badge de notificação (bolinha vermelha com número) */
 .topbar__badge {
   position: absolute;
