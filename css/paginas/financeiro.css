@@ -701,3 +701,11 @@
 .financeiro__grupo-mae:hover {
   background-color: #edf0f4;
 }
+
+[data-tema="escuro"] .financeiro__grupo-mae {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-tema="escuro"] .financeiro__grupo-mae:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+}
