@@ -285,6 +285,14 @@ function inicializarMenuUsuario() {
   });
   dropdown.addEventListener('click', (e) => e.stopPropagation());
 
+  const usuario = Sessao.obter();
+  if (usuario) {
+    const el = (id) => document.getElementById(id);
+    if (el('dropdown-nome'))   el('dropdown-nome').textContent  = usuario.nome   || '—';
+    if (el('dropdown-cargo'))  el('dropdown-cargo').textContent = usuario.perfil || '—';
+    if (el('dropdown-avatar')) el('dropdown-avatar').textContent = Sessao.obterIniciais?.() || (usuario.nome?.[0] || '?').toUpperCase();
+  }
+
   const toggle = document.getElementById('topbar-tema-toggle');
   if (toggle) {
     toggle.checked = document.documentElement.dataset.tema === 'escuro';

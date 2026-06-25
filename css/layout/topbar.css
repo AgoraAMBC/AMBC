@@ -445,6 +445,38 @@
   padding: var(--esp-xs) 0;
 }
 
+.topbar__usuario-dropdown-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-sm);
+  padding: var(--esp-sm) var(--esp-md);
+}
+
+.topbar__usuario-dropdown-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-full);
+  background-color: var(--cor-primaria);
+  color: var(--cor-primaria-contraste);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+}
+
+.topbar__usuario-dropdown-nome {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--cor-texto);
+}
+
+.topbar__usuario-dropdown-cargo {
+  font-size: var(--fs-xs);
+  color: var(--cor-texto-secundario);
+}
+
 .topbar__usuario-dropdown-item {
   display: flex;
   align-items: center;
