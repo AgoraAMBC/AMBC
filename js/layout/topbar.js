@@ -10,6 +10,7 @@
 ========================================================= */
 
 import Sessao from '../core/sessao.js';
+import { ConfiguracoesService } from '../services/configuracoes-service.js';
 
 /* ---------------------------------------------------------
    1. CONSTANTES INTERNAS
@@ -148,12 +149,95 @@ function atualizarUsuarioLogado() {
 }
 
 /* ---------------------------------------------------------
-   9. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
+   9. PAINEL DE NOTIFICAÇÕES
+--------------------------------------------------------- */
+let _painelAberto = false;
+
+function abrirPainelNotificacoes() {
+  const painel = document.getElementById('painel-notificacoes');
+  const btn    = document.getElementById('btn-notificacoes');
+  if (!painel) return;
+
+  painel.hidden = false;
+  _painelAberto = true;
+  btn?.setAttribute('aria-expanded', 'true');
+
+  // Carrega preferências ao abrir
+  ConfiguracoesService.obter().then(configs => {
+    painel.querySelectorAll('[data-notif-chave]').forEach(input => {
+      const chave = input.dataset.notifChave;
+      input.checked = configs[chave] === 'true';
+    });
+  }).catch(() => {});
+}
+
+function fecharPainelNotificacoes() {
+  const painel = document.getElementById('painel-notificacoes');
+  const btn    = document.getElementById('btn-notificacoes');
+  if (!painel) return;
+
+  painel.hidden = true;
+  _painelAberto = false;
+  btn?.setAttribute('aria-expanded', 'false');
+}
+
+function alternarPainelNotificacoes() {
+  if (_painelAberto) {
+    fecharPainelNotificacoes();
+  } else {
+    abrirPainelNotificacoes();
+  }
+}
+
+async function salvarPreferenciasNotificacao(chave, valor) {
+  try {
+    await ConfiguracoesService.salvar({ [chave]: valor ? 'true' : 'false' });
+  } catch {
+    // falha silenciosa — o toggle visual já mudou
+  }
+}
+
+function inicializarPainelNotificacoes() {
+  const btn    = document.getElementById('btn-notificacoes');
+  const painel = document.getElementById('painel-notificacoes');
+  if (!btn || !painel) return;
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    alternarPainelNotificacoes();
+  });
+
+  // Fecha ao clicar no link "Configurar"
+  document.getElementById('link-config-notif')
+    ?.addEventListener('click', fecharPainelNotificacoes);
+
+  // Salva ao alterar qualquer toggle
+  painel.addEventListener('change', (e) => {
+    const input = e.target.closest('[data-notif-chave]');
+    if (!input) return;
+    salvarPreferenciasNotificacao(input.dataset.notifChave, input.checked);
+  });
+
+  // Fecha ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (_painelAberto && !painel.contains(e.target) && e.target !== btn) {
+      fecharPainelNotificacoes();
+    }
+  });
+}
+
+/* ---------------------------------------------------------
+   10. FUNCAO: trata tecla ESC (fecha sidebar no mobile)
 --------------------------------------------------------- */
 function tratarTeclaEsc(evento) {
   if (evento.key !== 'Escape') return;
-  if (!ehMobile()) return;
 
+  if (_painelAberto) {
+    fecharPainelNotificacoes();
+    return;
+  }
+
+  if (!ehMobile()) return;
   const sidebar = document.querySelector(SELETOR_SIDEBAR);
   if (sidebar && sidebar.classList.contains(CLASSE_SIDEBAR_ABERTA)) {
     fecharSidebar();
@@ -204,6 +288,7 @@ function iniciar() {
   // Atualizacoes na carga inicial
   atualizarTitulo();
   atualizarUsuarioLogado();
+  inicializarPainelNotificacoes();
 
   console.log('[Topbar] Inicializada com sucesso');
 }

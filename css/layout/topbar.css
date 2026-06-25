@@ -196,6 +196,130 @@
 }
 
 /* ============================================
+   🔔 PAINEL DE NOTIFICAÇÕES (dropdown)
+   ============================================ */
+.topbar__notif-wrapper {
+  position: relative;
+}
+
+.topbar__notif-painel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  background: var(--cor-branco);
+  border: 1px solid var(--cor-cinza-200);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-md);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.topbar__notif-painel[hidden] {
+  display: none;
+}
+
+.topbar__notif-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--esp-sm) var(--esp-md);
+  border-bottom: 1px solid var(--cor-cinza-100);
+}
+
+.topbar__notif-titulo {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--cor-cinza-800);
+}
+
+.topbar__notif-link {
+  font-size: var(--fs-xs);
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+.topbar__notif-link:hover {
+  text-decoration: underline;
+}
+
+.topbar__notif-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.topbar__notif-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--esp-sm) var(--esp-md);
+  border-bottom: 1px solid var(--cor-cinza-100);
+}
+
+.topbar__notif-item:last-child {
+  border-bottom: none;
+}
+
+.topbar__notif-label {
+  font-size: var(--fs-sm);
+  color: var(--cor-cinza-700);
+  flex: 1;
+  padding-right: var(--esp-sm);
+}
+
+/* Switch toggle */
+.topbar__notif-toggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.topbar__notif-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.topbar__notif-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--cor-cinza-300);
+  border-radius: 20px;
+  transition: background var(--transicao-rapida);
+}
+
+.topbar__notif-slider::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  top: 3px;
+  background: var(--cor-branco);
+  border-radius: 50%;
+  transition: transform var(--transicao-rapida);
+}
+
+.topbar__notif-toggle input:checked + .topbar__notif-slider {
+  background: var(--cor-primaria);
+}
+
+.topbar__notif-toggle input:checked + .topbar__notif-slider::after {
+  transform: translateX(16px);
+}
+
+.topbar__notif-toggle input:focus-visible + .topbar__notif-slider {
+  outline: var(--borda-foco);
+  outline-offset: 2px;
+}
+
+/* ============================================
    🔗 BOTÃO WORDPRESS ADMIN
    ============================================ */
 .topbar__btn-wp {

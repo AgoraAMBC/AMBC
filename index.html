@@ -198,9 +198,55 @@
       </div>
 
       <div class="topbar__fim">
-        <button type="button" class="topbar__acao topbar__sino" id="btn-notificacoes" aria-label="Notificações">
-          <span class="material-icons">notifications</span>
-        </button>
+        <div class="topbar__notif-wrapper">
+          <button type="button" class="topbar__acao topbar__sino" id="btn-notificacoes"
+                  aria-label="Notificações" aria-haspopup="true" aria-expanded="false">
+            <span class="material-icons">notifications</span>
+          </button>
+          <div class="topbar__notif-painel" id="painel-notificacoes" hidden>
+            <div class="topbar__notif-cabecalho">
+              <span class="topbar__notif-titulo">Notificações</span>
+              <a href="#/configuracoes/config-gerais" class="topbar__notif-link" id="link-config-notif">Configurar</a>
+            </div>
+            <ul class="topbar__notif-lista">
+              <li class="topbar__notif-item">
+                <span class="topbar__notif-label">Alerta de vencimentos</span>
+                <label class="topbar__notif-toggle">
+                  <input type="checkbox" data-notif-chave="notif_vencimentos" />
+                  <span class="topbar__notif-slider"></span>
+                </label>
+              </li>
+              <li class="topbar__notif-item">
+                <span class="topbar__notif-label">Alertas de inadimplência</span>
+                <label class="topbar__notif-toggle">
+                  <input type="checkbox" data-notif-chave="notif_inadimplencia" />
+                  <span class="topbar__notif-slider"></span>
+                </label>
+              </li>
+              <li class="topbar__notif-item">
+                <span class="topbar__notif-label">Resumo financeiro semanal</span>
+                <label class="topbar__notif-toggle">
+                  <input type="checkbox" data-notif-chave="notif_resumo_semanal" />
+                  <span class="topbar__notif-slider"></span>
+                </label>
+              </li>
+              <li class="topbar__notif-item">
+                <span class="topbar__notif-label">Novos cadastros</span>
+                <label class="topbar__notif-toggle">
+                  <input type="checkbox" data-notif-chave="notif_novos_cadastros" />
+                  <span class="topbar__notif-slider"></span>
+                </label>
+              </li>
+              <li class="topbar__notif-item">
+                <span class="topbar__notif-label">Enviar para o Email</span>
+                <label class="topbar__notif-toggle">
+                  <input type="checkbox" data-notif-chave="notif_enviar_email" />
+                  <span class="topbar__notif-slider"></span>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <a href="https://ambc-rs.com.br/wp-admin/?platform=hpanel&amp;client_id=1021433107"
            target="_blank" rel="noopener noreferrer"
