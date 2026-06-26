@@ -207,6 +207,12 @@
   font-size: 0.85rem;
 }
 
+/* Nome e Idade — negrito para destaque */
+.dependentes__tabela tbody td:nth-child(2),
+.dependentes__tabela tbody td:nth-child(5) {
+  font-weight: var(--fw-bold);
+}
+
 /* Badges de parentesco */
 .dependentes__badge {
   display: inline-flex;

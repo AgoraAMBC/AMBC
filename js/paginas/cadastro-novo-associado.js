@@ -436,7 +436,7 @@ function renderizarDependentes() {
   }
   refs.tabelaDependentes.innerHTML = dependentes.map((d, i) => `
     <tr data-index="${i}">
-      <td>${d.nome}</td>
+      <td><strong>${d.nome}</strong></td>
       <td>${d.parentesco || '-'}</td>
       <td>${d.data_nascimento ? formatarDataBR(d.data_nascimento) : '-'}</td>
       <td class="col-acoes">

@@ -178,7 +178,7 @@ function renderizarLinhas(dependentes) {
     return `
       <tr data-id="${d.id_dependente}">
         <td>#${String(d.id_dependente).padStart(3, '0')}</td>
-        <td>${escaparHtml(d.nome)}</td>
+        <td><strong>${escaparHtml(d.nome)}</strong></td>
         <td>
           <button type="button" class="dependentes__link-associado" data-acao="ver-associado" data-id="${d.id_associado_pai}">
             ${escaparHtml(d.nome_associado ?? '—')}
@@ -189,7 +189,7 @@ function renderizarLinhas(dependentes) {
             ${escaparHtml(parentesco)}
           </span>
         </td>
-        <td>${idade} anos</td>
+        <td><strong>${idade} anos</strong></td>
         <td>${dataNasc}</td>
         <td>${escaparHtml(logradouro)}</td>
         <td>
@@ -445,11 +445,11 @@ function gerarPDF(tipo, dados) {
       const idade = calcularIdade(d.data_nascimento);
       conteudo += `<tr>
         <td>#${String(d.id_dependente).padStart(3, '0')}</td>
-        <td>${escaparHtml(d.nome)}</td>
+        <td><strong>${escaparHtml(d.nome)}</strong></td>
         <td>${escaparHtml(d.nome_associado ?? '—')}</td>
         <td>${escaparHtml(d.parentesco ?? '—')}</td>
         <td>${d.data_nascimento ? formatarData(d.data_nascimento) : '—'}</td>
-        <td>${idade}</td>
+        <td><strong>${idade}</strong></td>
         <td>${escaparHtml(d.genero ?? '—')}</td>
         <td>${escaparHtml(d.logradouro ?? '—')}</td>
       </tr>`;
