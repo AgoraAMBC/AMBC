@@ -8,4 +8,8 @@ export const DashboardService = {
   aniversariantes() {
     return api.get('/dashboard/aniversariantes.php');
   },
+
+  ultimosCadastros() {
+    return api.get('/dashboard/ultimos-cadastros.php');
+  },
 };

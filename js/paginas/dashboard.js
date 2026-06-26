@@ -16,6 +16,7 @@ const DashboardPage = {
     await Promise.all([
       this.carregarResumo(),
       this.carregarAniversariantes(),
+      this.carregarUltimosAssociados(),
     ]);
   },
 
@@ -227,21 +228,78 @@ const DashboardPage = {
       container.innerHTML = '<p class="dashboard-aniversariantes__vazio">Nenhum aniversariante este mês.</p>';
       return;
     }
-    container.innerHTML = dados.map(item => {
+    container.innerHTML = dados.map((item, index) => {
       const data = String(item.dia).padStart(2, '0') + '/' + String(item.mes).padStart(2, '0');
+      const nome = this._escapar(item.nome);
+      const inicial = nome.charAt(0).toUpperCase();
       const sub = item.tipo === 'dependente'
         ? `Dependente de ${this._escapar(item.associado_nome || '')}`
         : 'Associado';
       return `
-        <div class="aniversariante-item">
+        <div class="aniversariante-item" style="animation-delay:${(index * 0.06).toFixed(2)}s">
+          <span class="aniversariante-item__avatar">${inicial}</span>
+          <div class="aniversariante-item__info">
+            <span class="aniversariante-item__nome">${nome}</span>
+            <span class="aniversariante-item__subtipo">${sub}</span>
+          </div>
           <span class="aniversariante-item__data">${data}</span>
-          <span class="aniversariante-item__sep">-</span>
-          <span class="aniversariante-item__nome">${this._escapar(item.nome)}</span>
-          <span class="aniversariante-item__sep">-</span>
-          <span class="aniversariante-item__subtipo">${sub}</span>
         </div>
       `;
     }).join('');
+  },
+
+  async carregarUltimosAssociados() {
+    try {
+      const dados = await DashboardService.ultimosCadastros();
+      this.renderizarAtividades(dados);
+    } catch (erro) {
+      console.error('[DashboardPage] Erro ao carregar últimos associados:', erro);
+    }
+  },
+
+  renderizarAtividades(cadastros) {
+    const container = document.getElementById('lista-atividades');
+    if (!container) return;
+
+    if (!cadastros || !cadastros.length) {
+      container.innerHTML = '<p class="dashboard-atividades__vazio">Nenhum cadastro recente.</p>';
+      return;
+    }
+
+    container.innerHTML = cadastros.map((item, index) => {
+      const nome = this._escapar(item.nome);
+      const inicial = nome.charAt(0).toUpperCase();
+      const tempo = item.criado_em
+        ? this._tempoRelativo(item.criado_em)
+        : '';
+
+      const rotulo = item.tipo === 'associado' ? 'Novo associado!'
+        : item.tipo === 'dependente' ? 'Novo dependente!'
+        : 'Novo parceiro!';
+
+      return `
+        <div class="atividade-item" style="animation-delay:${(index * 0.12).toFixed(2)}s">
+          <span class="atividade-item__avatar">${inicial}</span>
+          <div class="atividade-item__info">
+            <span class="atividade-item__nome">${nome}</span>
+            <span class="atividade-item__meta">${rotulo} — ${tempo}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  },
+
+  _tempoRelativo(dataStr) {
+    const agora = new Date();
+    const data = new Date(dataStr + ' UTC');
+    const diffMs = agora - data;
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDias === 0) return 'Hoje';
+    if (diffDias === 1) return 'Ontem';
+    if (diffDias < 7) return `Há ${diffDias} dias`;
+    const diffSemanas = Math.floor(diffDias / 7);
+    if (diffSemanas < 5) return `Há ${diffSemanas} semana${diffSemanas > 1 ? 's' : ''}`;
+    return data.toLocaleDateString('pt-BR');
   },
 
   destroy() {
