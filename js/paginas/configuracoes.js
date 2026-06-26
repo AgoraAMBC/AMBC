@@ -288,17 +288,6 @@ async function salvarTema(tema) {
     Toast.sucesso(`Tema ${tema === 'escuro' ? 'escuro' : 'claro'} aplicado.`);
 }
 
-async function inicializarSeletorTema() {
-    try {
-        const config = await ConfiguracoesService.obter();
-        const temaAtual = config.tema || 'claro';
-        aplicarTema(temaAtual);
-        document.querySelectorAll('[data-tema]').forEach(btn => {
-            btn.classList.toggle('cfg-associacao__tema-opcao--ativo', btn.dataset.tema === temaAtual);
-            btn.addEventListener('click', () => salvarTema(btn.dataset.tema));
-        });
-    } catch { /* silencioso */ }
-}
 
 /* =========================================================
    Favicon da Associação
@@ -893,9 +882,6 @@ const ConfiguracoesPage = {
             await inicializarUploadFavicon();
         }
 
-        if (document.getElementById('tema-claro')) {
-            await inicializarSeletorTema();
-        }
     },
 
     destroy() {
