@@ -24,6 +24,10 @@
         <p class="financeiro__secao-texto">Somente lançamentos com status Pago ou Isento são exibidos.</p>
       </div>
       <div class="financeiro__filtros">
+        <button type="button" class="btn btn-perigo btn-sm" id="btn-estornar-selecionados" hidden>
+          <span class="material-icons" style="font-size:16px">undo</span>
+          Estornar selecionados (<span id="btn-estornar-count">0</span>)
+        </button>
         <input class="form-input" id="estorno-busca" type="text" placeholder="Buscar descrição ou pessoa..." style="width:220px" />
         <select class="form-input" id="estorno-tipo" aria-label="Filtrar por tipo">
           <option value="todos">Todos os tipos</option>
@@ -33,9 +37,10 @@
       </div>
     </div>
     <div class="tabela-responsiva">
-      <table class="tabela financeiro__tabela financeiro__tabela--sem-checkbox">
+      <table class="tabela financeiro__tabela" id="estorno-tabela">
         <thead>
           <tr>
+            <th style="width:36px"><input type="checkbox" id="estorno-selecionar-todos" title="Selecionar todos" /></th>
             <th>Descri&ccedil;&atilde;o</th>
             <th>Pessoa</th>
             <th>Natureza</th>

@@ -2188,6 +2188,8 @@ async function iniciarRegistrarLancamento() {
       [
         { btn: 'btn-liquidar-selecionados',      count: 'btn-sel-count'      },
         { btn: 'btn-liquidar-selecionados-topo', count: 'btn-sel-count-topo' },
+        { btn: 'btn-excluir-selecionados',       count: 'btn-excluir-count'       },
+        { btn: 'btn-excluir-selecionados-topo',  count: 'btn-excluir-count-topo'  },
       ].forEach(({ btn, count }) => {
         const el = document.getElementById(btn);
         if (el) {
@@ -2242,6 +2244,50 @@ async function iniciarRegistrarLancamento() {
     };
     document.getElementById('btn-liquidar-selecionados')?.addEventListener('click', abrirLoteSelecionados);
     document.getElementById('btn-liquidar-selecionados-topo')?.addEventListener('click', abrirLoteSelecionados);
+
+    // ── Excluir selecionados em lote ──
+    const excluirSelecionados = () => {
+      const ids = [];
+      tbody.querySelectorAll('.abertos-check:checked').forEach((cb) => {
+        ids.push(parseInt(cb.dataset.id));
+      });
+      tbody.querySelectorAll('.abertos-check-grupo:checked').forEach((cb) => {
+        const grupoId = parseInt(cb.dataset.grupo);
+        _abertosData.filter((p) => p.fk_parcelamento === grupoId).forEach((p) => {
+          if (!ids.includes(p.id)) ids.push(p.id);
+        });
+      });
+      if (!ids.length) { Toast.alerta('Nenhum lançamento selecionado.'); return; }
+      Modal.confirmar({
+        titulo: 'Excluir lançamentos?',
+        mensagem: `${ids.length} ${ids.length === 1 ? 'lançamento será excluído' : 'lançamentos serão excluídos'} permanentemente. Esta ação não pode ser desfeita.`,
+        icone: 'delete_forever',
+        variante: 'alerta',
+        textoConfirmar: `Sim, excluir ${ids.length}`,
+        estiloConfirmar: 'perigo',
+        aoConfirmar: async () => {
+          let sucesso = 0;
+          let erros = [];
+          for (const id of ids) {
+            try {
+              await api.post('/financeiro/lancamentos/excluir.php', { id });
+              sucesso++;
+            } catch (err) {
+              erros.push(err.message);
+            }
+          }
+          if (sucesso > 0) Toast.sucesso(`${sucesso} ${sucesso === 1 ? 'lançamento excluído' : 'lançamentos excluídos'} com sucesso.`);
+          erros.forEach((msg) => Toast.erro(msg));
+          _resetAbertosCache();
+          await recarregarAbertos();
+          const checkTodosEl = document.getElementById('abertos-selecionar-todos');
+          if (checkTodosEl) checkTodosEl.checked = false;
+          atualizarSelecionados();
+        },
+      });
+    };
+    document.getElementById('btn-excluir-selecionados')?.addEventListener('click', excluirSelecionados);
+    document.getElementById('btn-excluir-selecionados-topo')?.addEventListener('click', excluirSelecionados);
   }
 
   // ── Modal de liquidação simples — handlers ──
@@ -3215,30 +3261,213 @@ async function iniciarEstornoLiquidacao() {
     if (!tbody) return;
     const filtrados = filtrarEstorno();
 
-    tbody.innerHTML = filtrados.map((item) => `
-      <tr data-id="${item.id}">
+    // Separar parcelamentos de avulsos
+    const grupos = new Map();
+    const avulsos = [];
+    for (const item of filtrados) {
+      if (item.fk_parcelamento) {
+        if (!grupos.has(item.fk_parcelamento)) grupos.set(item.fk_parcelamento, []);
+        grupos.get(item.fk_parcelamento).push(item);
+      } else {
+        avulsos.push(item);
+      }
+    }
+
+    const gruposArray = [];
+    for (const [grupoId, parcelas] of grupos) {
+      const todasPagas    = parcelas.every((p) => p.status === 'pago');
+      const algumIsento   = parcelas.some((p) => p.status === 'isento');
+      const todasIsentas  = parcelas.every((p) => p.status === 'isento');
+      const statusGrupo   = todasIsentas ? 'isento' : todasPagas ? 'pago' : 'pendente';
+      const vencimentoGrupo = parcelas.map((p) => p.vencimento).filter(Boolean).sort().at(-1) || null;
+      gruposArray.push({ grupoId, parcelas, statusGrupo, vencimentoGrupo });
+    }
+
+    // Ordenar: isento primeiro, depois pago; dentro do mesmo status, por vencimento
+    const statusPrioridade = { isento: 0, pago: 1 };
+    gruposArray.sort((a, b) => {
+      const d = (statusPrioridade[a.statusGrupo] ?? 99) - (statusPrioridade[b.statusGrupo] ?? 99);
+      return d !== 0 ? d : (b.vencimentoGrupo || '').localeCompare(a.vencimentoGrupo || '');
+    });
+    avulsos.sort((a, b) => {
+      const d = (statusPrioridade[a.status] ?? 99) - (statusPrioridade[b.status] ?? 99);
+      return d !== 0 ? d : (b.vencimento || '').localeCompare(a.vencimento || '');
+    });
+
+    const linhas = [];
+
+    // Renderizar grupos
+    for (const grupo of gruposArray) {
+      const { grupoId, parcelas, statusGrupo, vencimentoGrupo } = grupo;
+      const ref           = parcelas[0];
+      const valorTotal    = parcelas.reduce((s, p) => s + p.valor, 0);
+      const valorPago     = parcelas.reduce((s, p) => s + (p.valor_pago || 0), 0);
+      const totalParcelas = ref.total_parcelas || parcelas.length;
+      const pagas         = parcelas.filter((p) => p.status === 'pago' || p.status === 'isento').length;
+
+      linhas.push(`
+      <tr class="financeiro__grupo-mae" style="cursor:pointer;font-weight:600"
+          data-grupo="${grupoId}" data-grupo-aberto="false">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" class="estorno-check-grupo" data-grupo="${grupoId}" />
+        </td>
+        <td>
+          <span class="material-icons" style="font-size:16px;vertical-align:middle;margin-right:4px">chevron_right</span>
+          ${escaparHtml(ref.descricao.replace(/\s*[—–-]\s*Parcela.*$/i, ''))}
+          <span style="font-weight:400;color:var(--cor-texto-secundario);font-size:0.85em"> — ${pagas}/${totalParcelas}</span>
+        </td>
+        <td>${escaparHtml(ref.pessoa) || '—'}</td>
+        <td>${badgeTipo(ref.tipo)}</td>
+        <td>${escaparHtml(ref.conta)}</td>
+        <td>${formatarData(vencimentoGrupo)}</td>
+        <td>${badgeStatus(statusGrupo)}</td>
+        <td class="tabela__num">${formatarMoeda(valorTotal)}</td>
+        <td class="tabela__acoes">
+          <button type="button" class="btn btn-perigo btn-sm" data-acao-estornar-grupo="${grupoId}" title="Estornar grupo">
+            <span class="material-icons" style="font-size:16px">undo</span>
+            Estornar
+          </button>
+        </td>
+      </tr>`);
+
+      for (const p of parcelas) {
+        linhas.push(`
+        <tr class="financeiro__grupo-filho" data-grupo-filho="${grupoId}" hidden
+            style="cursor:pointer;background:var(--cor-superficie-2,#f8f9fa)"
+            data-id="${p.id}" data-descricao="${escaparHtml(p.descricao)}"
+            data-pessoa="${escaparHtml(p.pessoa || '')}" data-vencimento="${p.vencimento}"
+            data-valor="${p.valor}" data-status="${p.status || ''}">
+          <td></td>
+          <td style="padding-left:2rem">
+            <span class="financeiro__linha-principal" style="font-size:0.9em">${escaparHtml(p.descricao)}</span>
+          </td>
+          <td>${escaparHtml(p.pessoa) || '—'}</td>
+          <td>${badgeTipo(p.tipo)}</td>
+          <td>${escaparHtml(p.conta)}</td>
+          <td>${formatarData(p.vencimento)}</td>
+          <td>${badgeStatus(p.status)}</td>
+          <td class="tabela__num">${formatarMoeda(p.valor)}</td>
+          <td class="tabela__acoes">
+            <button type="button" class="btn btn-perigo btn-sm" data-acao-estornar="${p.id}" title="Estornar parcela">
+              <span class="material-icons" style="font-size:16px">undo</span>
+              Estornar
+            </button>
+          </td>
+        </tr>`);
+      }
+    }
+
+    // Renderizar avulsos
+    for (const item of avulsos) {
+      linhas.push(`
+      <tr style="cursor:pointer" data-id="${item.id}" data-descricao="${escaparHtml(item.descricao)}"
+          data-pessoa="${escaparHtml(item.pessoa || '')}" data-vencimento="${item.vencimento}"
+          data-valor="${item.valor}" data-status="${item.status || ''}">
+        <td onclick="event.stopPropagation()">
+          <input type="checkbox" class="estorno-check" data-id="${item.id}" />
+        </td>
         <td><span class="financeiro__linha-principal">${escaparHtml(item.descricao)}</span></td>
         <td>${escaparHtml(item.pessoa) || '—'}</td>
         <td>${badgeTipo(item.tipo)}</td>
         <td>${escaparHtml(item.conta)}</td>
         <td>${formatarData(item.vencimento)}</td>
         <td>${badgeStatus(item.status)}</td>
-        <td class="tabela__num ${item.tipo === 'receita' ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">
-          ${item.tipo === 'receita' ? '+' : '-'} ${formatarMoeda(item.valor)}
-        </td>
+        <td class="tabela__num">${formatarMoeda(item.valor)}</td>
         <td class="tabela__acoes">
           <button type="button" class="btn btn-perigo btn-sm" data-acao-estornar="${item.id}" title="Estornar lançamento">
             <span class="material-icons" style="font-size:16px">undo</span>
             Estornar
           </button>
         </td>
-      </tr>
-    `).join('');
+      </tr>`);
+    }
 
+    tbody.innerHTML = linhas.join('');
     if (vazio) vazio.hidden = filtrados.length > 0;
+    if (typeof atualizarEstornarSelecionados === 'function') atualizarEstornarSelecionados();
+  }
+
+  function atualizarEstornarSelecionados() {
+    const checks = [...document.querySelectorAll('#estorno-tbody .estorno-check, #estorno-tbody .estorno-check-grupo')];
+    const marcados = checks.filter((c) => c.checked).length;
+    const el = document.getElementById('btn-estornar-selecionados');
+    if (el) {
+      el.hidden = marcados === 0;
+      const countEl = document.getElementById('btn-estornar-count');
+      if (countEl) countEl.textContent = marcados;
+    }
+    const checkTodosEl = document.getElementById('estorno-selecionar-todos');
+    if (checkTodosEl) {
+      checkTodosEl.checked       = checks.length > 0 && marcados === checks.length;
+      checkTodosEl.indeterminate = marcados > 0 && marcados < checks.length;
+    }
   }
 
   renderizarEstorno();
+
+  // ── Checkbox selecionar todos ──
+  const estornoTbody = document.getElementById('estorno-tbody');
+  const checkTodosEstorno = document.getElementById('estorno-selecionar-todos');
+  if (checkTodosEstorno) {
+    const hTodos = () => {
+      estornoTbody.querySelectorAll('.estorno-check, .estorno-check-grupo').forEach((cb) => {
+        cb.checked = checkTodosEstorno.checked;
+      });
+      atualizarEstornarSelecionados();
+    };
+    checkTodosEstorno.addEventListener('change', hTodos);
+    cleanup.push(() => checkTodosEstorno.removeEventListener('change', hTodos));
+  }
+
+  const hCheckEstorno = (e) => {
+    if (e.target.classList.contains('estorno-check') || e.target.classList.contains('estorno-check-grupo')) {
+      atualizarEstornarSelecionados();
+    }
+  };
+  estornoTbody?.addEventListener('change', hCheckEstorno);
+  cleanup.push(() => estornoTbody?.removeEventListener('change', hCheckEstorno));
+
+  // ── Estornar selecionados em lote ──
+  const estornarSelecionados = () => {
+    const ids = [];
+    estornoTbody.querySelectorAll('.estorno-check:checked').forEach((cb) => {
+      ids.push(parseInt(cb.dataset.id));
+    });
+    estornoTbody.querySelectorAll('.estorno-check-grupo:checked').forEach((cb) => {
+      const grupoId = parseInt(cb.dataset.grupo);
+      todosLancamentos.filter((p) => p.fk_parcelamento === grupoId).forEach((p) => {
+        if (!ids.includes(p.id)) ids.push(p.id);
+      });
+    });
+    if (!ids.length) { Toast.alerta('Nenhum lançamento selecionado.'); return; }
+    Modal.confirmar({
+      titulo: 'Estornar lançamentos?',
+      mensagem: `${ids.length} ${ids.length === 1 ? 'lançamento será estornado' : 'lançamentos serão estornados'}. O status voltará para Aberto e o valor será retirado dos totais.`,
+      icone: 'undo',
+      variante: 'alerta',
+      textoConfirmar: `Sim, estornar ${ids.length}`,
+      estiloConfirmar: 'perigo',
+      aoConfirmar: async () => {
+        let sucesso = 0;
+        let erros = [];
+        for (const id of ids) {
+          try {
+            await api.post('/financeiro/lancamentos/estornar.php', { id });
+            todosLancamentos = todosLancamentos.filter((l) => l.id !== id);
+            sucesso++;
+          } catch (err) {
+            erros.push(err.message);
+          }
+        }
+        if (sucesso > 0) Toast.sucesso(`${sucesso} ${sucesso === 1 ? 'lançamento estornado' : 'lançamentos estornados'} com sucesso.`);
+        erros.forEach((msg) => Toast.erro(msg));
+        renderizarEstorno();
+        if (checkTodosEstorno) checkTodosEstorno.checked = false;
+        atualizarEstornarSelecionados();
+      },
+    });
+  };
+  document.getElementById('btn-estornar-selecionados')?.addEventListener('click', estornarSelecionados);
 
   ['estorno-tipo'].forEach((id) => {
     const el = document.getElementById(id);
@@ -3255,32 +3484,82 @@ async function iniciarEstornoLiquidacao() {
 
   const tbody = document.getElementById('estorno-tbody');
   const hEstornar = (e) => {
+    // Botão estornar individual
     const btn = e.target.closest('[data-acao-estornar]');
-    if (!btn) return;
-    const id   = Number(btn.dataset.acaoEstornar);
-    const item = todosLancamentos.find((l) => l.id === id);
-    if (!id || !item) return;
+    if (btn) {
+      e.stopPropagation();
+      const id   = Number(btn.dataset.acaoEstornar);
+      const item = todosLancamentos.find((l) => l.id === id);
+      if (!id || !item) return;
+      Modal.confirmar({
+        titulo: 'Estornar Lançamento',
+        mensagem: `Tem certeza que deseja estornar <strong>${escaparHtml(item.descricao)}</strong>?<br>O status voltará para <em>Aberto</em> e o valor será retirado dos totais.`,
+        icone: 'undo',
+        variante: 'alerta',
+        textoConfirmar: 'Estornar',
+        estiloConfirmar: 'perigo',
+        aoConfirmar: async () => {
+          try {
+            btn.disabled = true;
+            await api.post('/financeiro/lancamentos/estornar.php', { id });
+            Toast.sucesso('Lançamento estornado com sucesso.');
+            todosLancamentos = todosLancamentos.filter((l) => l.id !== id);
+            renderizarEstorno();
+          } catch (err) {
+            Toast.erro(err.message || 'Não foi possível estornar o lançamento.');
+            btn.disabled = false;
+          }
+        },
+      });
+      return;
+    }
 
-    Modal.confirmar({
-      titulo: 'Estornar Lançamento',
-      mensagem: `Tem certeza que deseja estornar <strong>${escaparHtml(item.descricao)}</strong>?<br>O status voltará para <em>Aberto</em> e o valor será retirado dos totais.`,
-      icone: 'undo',
-      variante: 'alerta',
-      textoConfirmar: 'Estornar',
-      estiloConfirmar: 'perigo',
-      aoConfirmar: async () => {
-        try {
-          btn.disabled = true;
-          await api.post('/financeiro/lancamentos/estornar.php', { id });
-          Toast.sucesso('Lançamento estornado com sucesso.');
-          todosLancamentos = todosLancamentos.filter((l) => l.id !== id);
+    // Botão estornar grupo inteiro
+    const btnGrupo = e.target.closest('[data-acao-estornar-grupo]');
+    if (btnGrupo) {
+      e.stopPropagation();
+      const grupoId = parseInt(btnGrupo.dataset.acaoEstornarGrupo);
+      const parcelas = todosLancamentos.filter((p) => p.fk_parcelamento === grupoId);
+      const ref = parcelas[0];
+      const nome = ref ? ref.descricao.replace(/\s*[—–-]\s*Parcela.*$/i, '') : 'Grupo';
+      Modal.confirmar({
+        titulo: 'Estornar grupo?',
+        mensagem: `Tem certeza que deseja estornar <strong>${escaparHtml(nome)}</strong> (${parcelas.length} ${parcelas.length === 1 ? 'parcela' : 'parcelas'})?<br>O status de todas voltará para <em>Aberto</em>.`,
+        icone: 'undo',
+        variante: 'alerta',
+        textoConfirmar: `Sim, estornar ${parcelas.length}`,
+        estiloConfirmar: 'perigo',
+        aoConfirmar: async () => {
+          let sucesso = 0;
+          for (const p of parcelas) {
+            try {
+              await api.post('/financeiro/lancamentos/estornar.php', { id: p.id });
+              todosLancamentos = todosLancamentos.filter((l) => l.id !== p.id);
+              sucesso++;
+            } catch (err) {
+              Toast.erro(err.message);
+            }
+          }
+          if (sucesso > 0) Toast.sucesso(`${sucesso} ${sucesso === 1 ? 'parcela estornada' : 'parcelas estornadas'} com sucesso.`);
           renderizarEstorno();
-        } catch (err) {
-          Toast.erro(err.message || 'Não foi possível estornar o lançamento.');
-          btn.disabled = false;
-        }
-      },
-    });
+        },
+      });
+      return;
+    }
+
+    // Linha-mãe de grupo: toggle expansão
+    const mae = e.target.closest('tr.financeiro__grupo-mae');
+    if (mae) {
+      const grupoId = mae.dataset.grupo;
+      const aberto  = mae.dataset.grupoAberto === 'true';
+      mae.dataset.grupoAberto = String(!aberto);
+      const icone = mae.querySelector('.material-icons');
+      if (icone) icone.textContent = aberto ? 'chevron_right' : 'expand_more';
+      tbody.querySelectorAll(`tr[data-grupo-filho="${grupoId}"]`).forEach((tr) => {
+        tr.hidden = aberto;
+      });
+      return;
+    }
   };
 
   tbody?.addEventListener('click', hEstornar);

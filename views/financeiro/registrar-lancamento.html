@@ -163,6 +163,10 @@
         <p class="financeiro__secao-texto">Clique em um lançamento pendente para registrar o pagamento.</p>
       </div>
       <div style="display:flex;gap:var(--esp-sm);align-items:center;flex-wrap:nowrap">
+        <button type="button" class="btn btn-perigo btn-sm" id="btn-excluir-selecionados-topo" hidden>
+          <span class="material-icons" style="font-size:16px">delete</span>
+          Excluir selecionados (<span id="btn-excluir-count-topo">0</span>)
+        </button>
         <button type="button" class="btn btn-primario btn-sm" id="btn-liquidar-selecionados-topo" hidden>
           <span class="material-icons" style="font-size:16px">playlist_add_check</span>
           Liquidar selecionados (<span id="btn-sel-count-topo">0</span>)
@@ -218,6 +222,10 @@
     </div>
     <div id="abertos-paginacao" hidden style="display:flex;justify-content:space-between;align-items:center;gap:var(--esp-sm);padding:var(--esp-sm) var(--esp-md);border-top:1px solid var(--cor-borda);flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:var(--esp-sm)">
+        <button type="button" class="btn btn-perigo btn-sm" id="btn-excluir-selecionados" hidden>
+          <span class="material-icons" style="font-size:16px">delete</span>
+          Excluir selecionados (<span id="btn-excluir-count">0</span>)
+        </button>
         <button type="button" class="btn btn-primario btn-sm" id="btn-liquidar-selecionados" hidden>
           <span class="material-icons" style="font-size:16px">playlist_add_check</span>
           Liquidar selecionados (<span id="btn-sel-count">0</span>)
