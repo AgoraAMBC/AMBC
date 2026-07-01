@@ -9,7 +9,7 @@ verificarAutenticacao();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonErro('Metodo nao permitido', 405);
 
-if (($_SESSION['fk_perfil'] ?? 0) != 1) {
+if (!empty($_SESSION['id_usuario']) && ($_SESSION['fk_perfil'] ?? 0) != 1) {
     jsonErro('Acesso restrito a administradores.', 403);
 }
 
