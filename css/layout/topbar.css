@@ -610,4 +610,24 @@
   .topbar__usuario-seta {
     display: none;
   }
+
+  /* Dropdowns viram gavetas fixas abaixo da topbar */
+  .topbar__notif-painel {
+    position: fixed;
+    top: var(--altura-header);
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    transform: none;
+    border-radius: 0 0 var(--raio-lg) var(--raio-lg);
+  }
+
+  .topbar__usuario-dropdown {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    border-radius: 0 0 var(--raio-md) var(--raio-md);
+  }
 }

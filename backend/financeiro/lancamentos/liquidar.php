@@ -44,11 +44,14 @@ try {
         jsonResposta(['sucesso' => true, 'mensagem' => 'Lançamento cancelado com sucesso']);
     }
 
-    $stmt = $pdo->prepare('SELECT valor FROM lancamento WHERE id_lancamento = :id LIMIT 1');
+    $stmt = $pdo->prepare('SELECT valor, COALESCE(valor_pago, 0) AS valor_pago_atual FROM lancamento WHERE id_lancamento = :id LIMIT 1');
     $stmt->execute([':id' => $id_lancamento]);
-    $valor_total = (float)$stmt->fetchColumn();
+    $row              = $stmt->fetch(PDO::FETCH_ASSOC);
+    $valor_total      = (float)$row['valor'];
+    $valor_pago_atual = (float)$row['valor_pago_atual'];
+    $total_pago       = $valor_pago_atual + $valor_pago;
 
-    $novo_status = ($valor_pago >= $valor_total) ? 2 : 1;
+    $novo_status = ($total_pago >= $valor_total) ? 2 : 1;
     $mensagem    = ($novo_status === 2)
         ? 'Lançamento liquidado com sucesso'
         : 'Pagamento parcial registrado. Lançamento permanece em aberto';
@@ -56,14 +59,14 @@ try {
     $pdo->prepare('
         UPDATE lancamento
         SET fk_status_conta    = :status,
-            valor_pago         = :valor_pago,
+            valor_pago         = :total_pago,
             data_pagamento     = :data_pagamento,
             fk_forma_pagamento = :fk_forma_pagamento,
             atualizado_em      = NOW()
         WHERE id_lancamento = :id
     ')->execute([
         ':status'             => $novo_status,
-        ':valor_pago'         => $valor_pago,
+        ':total_pago'         => $total_pago,
         ':data_pagamento'     => $data_pagamento,
         ':fk_forma_pagamento' => $fk_forma_pagamento,
         ':id'                 => $id_lancamento,

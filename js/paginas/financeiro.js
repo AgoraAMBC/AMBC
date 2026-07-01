@@ -1265,7 +1265,7 @@ async function executarLiquidacaoLote(recarregar) {
 }
 
 // ── Modal simples ───────────────────────────────────────────────────
-function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelamento = null) {
+function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelamento = null, valorPago = 0) {
   const hoje = new Date();
   const hojeISO = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
 
@@ -1274,7 +1274,8 @@ function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelam
   document.getElementById('liquidar-pessoa').textContent     = pessoa || '—';
   document.getElementById('liquidar-vencimento').textContent = formatarData(vencimento);
   document.getElementById('liquidar-valor').textContent      = formatarMoeda(valor);
-  document.getElementById('liquidar-valor-pago').value       = valor;
+  const _saldo = Math.max(0, valor - valorPago);
+  document.getElementById('liquidar-valor-pago').value       = _saldo;
   document.getElementById('liquidar-data-pagamento').value   = hojeISO;
   document.getElementById('liquidar-forma-pagamento').value  = '1';
 
@@ -1301,7 +1302,7 @@ function abrirModalLiquidar(id, descricao, pessoa, vencimento, valor, fkParcelam
       const atualizarTotal = () => {
         const extras   = [...listaEl.querySelectorAll('input[type=checkbox]:checked')]
           .reduce((s, cb) => s + parseFloat(cb.dataset.parcelaValor || 0), 0);
-        const total    = valor + extras;
+        const total    = _saldo + extras;
         const campoEl  = document.getElementById('liquidar-valor-pago');
         const totalEl  = document.getElementById('liquidar-total-selecionado');
         if (campoEl)  campoEl.value         = total.toFixed(2);
@@ -2078,6 +2079,7 @@ async function iniciarRegistrarLancamento() {
             row.dataset.vencimento,
             parseFloat(row.dataset.valor),
             row.dataset.grupoFilho ? parseInt(row.dataset.grupoFilho) : null,
+            parseFloat(row.dataset.valorPago || 0),
           );
         }
         return;
@@ -2163,7 +2165,7 @@ async function iniciarRegistrarLancamento() {
       document.getElementById('resumo-vencimento').textContent = formatarData(row.dataset.vencimento);
       document.getElementById('resumo-conta').textContent      = row.dataset.conta    || '—';
       document.getElementById('resumo-subconta').textContent   = row.dataset.subconta || '—';
-      document.getElementById('lancamento-valor-pago').value   = row.dataset.valor;
+      document.getElementById('lancamento-valor-pago').value   = _valorEmAberto;
       document.getElementById('lancamento-pagamento').value    = _hojeISO();
 
       abrirModalLiquidar(
@@ -2173,6 +2175,7 @@ async function iniciarRegistrarLancamento() {
         row.dataset.vencimento,
         parseFloat(row.dataset.valor),
         row.dataset.grupoFilho ? parseInt(row.dataset.grupoFilho) : null,
+        parseFloat(row.dataset.valorPago || 0),
       );
     };
     tbody.addEventListener('click', tbodyHandler);

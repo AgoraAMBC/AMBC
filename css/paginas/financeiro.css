@@ -578,6 +578,18 @@
   margin-bottom: var(--esp-md);
 }
 
+@media (max-width: 768px) {
+  .financeiro__filtros--relatorio {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .financeiro__filtros--relatorio {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 760px) {
   .financeiro__painel-cabecalho--card {
     align-items: stretch;
