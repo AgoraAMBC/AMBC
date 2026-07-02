@@ -18,6 +18,13 @@ body {
   overflow-x: hidden;
 }
 
+@media (max-width: 1024px) {
+  /* overflow-x:hidden no body desativa touch scroll no iOS Safari */
+  body {
+    overflow-x: auto;
+  }
+}
+
 /* --------------------------------------------------------------------------
    2. Scrollbar customizada (Webkit — Chrome, Edge, Safari)
    -------------------------------------------------------------------------- */

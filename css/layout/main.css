@@ -36,6 +36,15 @@
   scroll-behavior: smooth;
 }
 
+@media (max-width: 1024px) {
+  /* No mobile o scroll é da janela — div com overflow-y:auto + altura fixa
+     bloqueia o touch scroll no iOS/Android */
+  .app-shell__conteudo {
+    overflow-y: visible;
+    height: auto;
+  }
+}
+
 /* Customização da barra de rolagem (WebKit: Chrome, Edge, Safari) */
 .app-shell__conteudo::-webkit-scrollbar {
   width: 10px;
