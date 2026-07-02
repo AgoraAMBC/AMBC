@@ -107,7 +107,8 @@
 .cadastro-listar__tabela-wrapper {
   background: var(--fundo-card);
   flex: 1;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .cadastro-listar__tabela {
