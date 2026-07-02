@@ -75,6 +75,7 @@
 @media (max-width: 1024px) {
   .app-shell {
     grid-template-columns: 1fr;
+    grid-template-rows: var(--altura-header) auto; /* auto: conteúdo cresce, body scrolls */
     grid-template-areas:
       "topbar"
       "conteudo";
@@ -93,8 +94,11 @@
     left: 0;
   }
 
+  /* No mobile o scroll é da janela, não da div */
   .app-shell__conteudo {
     margin-left: 0;
+    overflow-y: visible;
+    height: auto;
   }
 }
 
