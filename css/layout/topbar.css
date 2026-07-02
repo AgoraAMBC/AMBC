@@ -611,6 +611,10 @@
     display: none;
   }
 
+  .topbar__switch {
+    display: none; /* toggle acessível pelo dropdown do usuário em mobile */
+  }
+
   /* Dropdowns viram gavetas fixas abaixo da topbar */
   .topbar__notif-painel {
     position: fixed;

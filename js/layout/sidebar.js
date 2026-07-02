@@ -114,7 +114,10 @@ function fecharSidebarMobile() {
   const overlay = document.querySelector(SELETOR_OVERLAY);
 
   if (sidebar) sidebar.classList.remove(CLASSE_SIDEBAR_ABERTA);
-  if (overlay) overlay.setAttribute('aria-hidden', 'true');
+  if (overlay) {
+    overlay.classList.remove('is-visivel');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
 }
 
 /* ---------------------------------------------------------
