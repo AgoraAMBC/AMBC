@@ -73,15 +73,13 @@
    📱 RESPONSIVIDADE — Tablet (≤ 1024px)
    ============================================ */
 @media (max-width: 1024px) {
+  /* Topbar e sidebar são position:fixed — grid não é necessário no mobile.
+     display:block deixa o documento fluir naturalmente e o body scrollar. */
   .app-shell {
-    grid-template-columns: 1fr;
-    grid-template-rows: var(--altura-header) auto; /* auto: conteúdo cresce, body scrolls */
-    grid-template-areas:
-      "topbar"
-      "conteudo";
+    display: block;
+    min-height: 100vh;
   }
 
-  /* Sidebar vira off-canvas (escondida por padrão) */
   .app-shell__sidebar {
     transform: translateX(-100%);
   }
@@ -94,9 +92,9 @@
     left: 0;
   }
 
-  /* No mobile o scroll é da janela, não da div */
   .app-shell__conteudo {
     margin-left: 0;
+    margin-top: var(--altura-header); /* empurra abaixo da topbar fixa */
     overflow-y: visible;
     height: auto;
   }

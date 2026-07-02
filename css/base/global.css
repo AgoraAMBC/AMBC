@@ -11,6 +11,14 @@ html {
   height: 100%;
 }
 
+@media (max-width: 1024px) {
+  /* height:100% no html trava o documento no tamanho do viewport —
+     impede scroll nativo no iOS Safari */
+  html {
+    height: auto;
+  }
+}
+
 body {
   min-height: 100vh;
   background-color: var(--cor-cinza-50);
