@@ -118,6 +118,7 @@ function fecharSidebarMobile() {
     overlay.classList.remove('is-visivel');
     overlay.setAttribute('aria-hidden', 'true');
   }
+  document.body.style.overflow = '';
 }
 
 /* ---------------------------------------------------------
