@@ -663,3 +663,24 @@ body.modal-open {
   background: var(--cor-erro-clara);
   color: var(--cor-erro);
 }
+
+/* ============================================================
+   CAMPOS OBRIGATÓRIOS E ESTADO DE ERRO
+   ============================================================ */
+.cadastro-associado__campo--obrigatorio label::after {
+  content: ' *';
+  color: var(--cor-erro, #dc2626);
+  font-weight: 700;
+}
+
+.cadastro-associado__campo input.input--erro,
+.cadastro-associado__campo select.input--erro {
+  border-color: var(--cor-erro, #dc2626) !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+  background: #fff5f5 !important;
+}
+
+[data-tema="escuro"] .cadastro-associado__campo input.input--erro,
+[data-tema="escuro"] .cadastro-associado__campo select.input--erro {
+  background: rgba(220, 38, 38, 0.1) !important;
+}

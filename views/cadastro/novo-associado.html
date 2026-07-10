@@ -35,13 +35,13 @@
           <input type="text" id="matricula" name="matricula"
             placeholder="Gerada automaticamente" readonly />
         </div>
-        <div class="cadastro-associado__campo span-3">
+        <div class="cadastro-associado__campo span-3 cadastro-associado__campo--obrigatorio">
           <label for="fk_categoria">Categoria</label>
           <select id="fk_categoria" name="fk_categoria">
             <option value="">Selecione...</option>
           </select>
         </div>
-        <div class="cadastro-associado__campo span-3">
+        <div class="cadastro-associado__campo span-3 cadastro-associado__campo--obrigatorio">
           <label for="fk_status">Status</label>
           <select id="fk_status" name="fk_status">
             <option value="">Selecione...</option>
@@ -53,11 +53,11 @@
         </div>
 
         <!-- Linha 2: Nome | CPF | E-mail -->
-        <div class="cadastro-associado__campo span-5">
+        <div class="cadastro-associado__campo span-5 cadastro-associado__campo--obrigatorio">
           <label for="nome">Nome Completo</label>
           <input type="text" id="nome" name="nome" placeholder="Digite o nome completo" />
         </div>
-        <div class="cadastro-associado__campo span-2">
+        <div class="cadastro-associado__campo span-2 cadastro-associado__campo--obrigatorio">
           <label for="cpf_cnpj">CPF</label>
           <input type="text" id="cpf_cnpj" name="cpf_cnpj" placeholder="000.000.000-00" />
         </div>

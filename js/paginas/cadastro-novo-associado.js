@@ -734,9 +734,31 @@ function aoVisualizarExcluir() {
   });
 }
 
+function _validarFormulario() {
+  const camposObrigatorios = [
+    { el: refs.nome,        label: 'Nome Completo' },
+    { el: refs.cpf,         label: 'CPF' },
+    { el: refs.fkCategoria, label: 'Categoria' },
+    { el: refs.fkStatus,    label: 'Status' },
+  ];
+
+  camposObrigatorios.forEach(({ el }) => el?.classList.remove('input--erro'));
+
+  const faltando = camposObrigatorios.filter(({ el }) => !el?.value?.trim());
+  if (faltando.length) {
+    faltando.forEach(({ el }) => el?.classList.add('input--erro'));
+    Toast.alerta('Campos obrigatórios não preenchidos: ' + faltando.map(f => f.label).join(', ') + '.');
+    faltando[0].el?.focus();
+    return false;
+  }
+  return true;
+}
+
 async function aoEnviarFormulario(event) {
   event.preventDefault();
   if (estado.modo === 'visualizar') { aoCancelar(); return; }
+
+  if (!_validarFormulario()) return;
 
   const dados = coletarDadosFormulario();
   console.log('[NovoAssociado] Payload para salvar:', dados);
@@ -852,6 +874,12 @@ function registrarEventos() {
   refs.btnBuscarCep?.addEventListener('click', aoBuscarCep);
   refs.cpf?.addEventListener('input', aoDigitarCpf);
   refs.cep?.addEventListener('input', aplicarMascaraCep);
+
+  // Limpa borda de erro ao preencher campo obrigatório
+  [refs.nome, refs.cpf, refs.fkCategoria, refs.fkStatus].forEach(el => {
+    el?.addEventListener('input',  () => el.classList.remove('input--erro'));
+    el?.addEventListener('change', () => el.classList.remove('input--erro'));
+  });
 
   // Telefone
   refs.btnAddTelefone?.addEventListener('click', aoAbrirModalTelefone);
