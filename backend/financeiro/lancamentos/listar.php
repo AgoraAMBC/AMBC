@@ -17,6 +17,11 @@ try {
     $inicio = trim($_GET['inicio'] ?? '');
     $fim = trim($_GET['fim'] ?? '');
     $idAssociado = isset($_GET['id_associado']) ? (int)$_GET['id_associado'] : 0;
+    $idParceiro = isset($_GET['id_parceiro']) ? (int)$_GET['id_parceiro'] : 0;
+    $contaRegente = isset($_GET['conta_regente']) ? (int)$_GET['conta_regente'] : 0;
+    $contaSubordinada = isset($_GET['conta_subordinada']) ? (int)$_GET['conta_subordinada'] : 0;
+    $tipoLancamento = isset($_GET['tipo_lancamento']) ? (int)$_GET['tipo_lancamento'] : 0;
+    $formaPagamento = isset($_GET['forma_pagamento']) ? (int)$_GET['forma_pagamento'] : 0;
     $limite = max(1, min(500, (int)($_GET['limite'] ?? 100)));
 
     $where = ['1=1'];
@@ -25,6 +30,31 @@ try {
     if ($idAssociado > 0) {
         $where[] = 'l.fk_associado = :id_associado';
         $params[':id_associado'] = $idAssociado;
+    }
+
+    if ($idParceiro > 0) {
+        $where[] = 'l.fk_parceiro = :id_parceiro';
+        $params[':id_parceiro'] = $idParceiro;
+    }
+
+    if ($contaRegente > 0) {
+        $where[] = 'l.fk_conta_regente = :conta_regente';
+        $params[':conta_regente'] = $contaRegente;
+    }
+
+    if ($contaSubordinada > 0) {
+        $where[] = 'l.fk_conta_subordinada = :conta_subordinada';
+        $params[':conta_subordinada'] = $contaSubordinada;
+    }
+
+    if ($tipoLancamento > 0) {
+        $where[] = 'l.fk_tipo_lancamento = :tipo_lancamento';
+        $params[':tipo_lancamento'] = $tipoLancamento;
+    }
+
+    if ($formaPagamento > 0) {
+        $where[] = 'l.fk_forma_pagamento = :forma_pagamento';
+        $params[':forma_pagamento'] = $formaPagamento;
     }
 
     if (in_array($tipo, ['receita', 'despesa'], true)) {
@@ -41,6 +71,8 @@ try {
         } elseif ($status === 'atrasado') {
             $where[] = "LOWER(sc.descricao) = 'aberto'";
             $where[] = 'l.data_vencimento < CURRENT_DATE';
+        } elseif ($status === 'isento') {
+            $where[] = "LOWER(sc.descricao) = 'isento'";
         } elseif ($status === 'cancelado') {
             $where[] = "LOWER(sc.descricao) = 'cancelado'";
         }

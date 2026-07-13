@@ -16,6 +16,7 @@ const lancamentos = [];
 let _lancamentosData = [];
 let cleanup = [];
 let dominiosFinanceiros = null;
+let _relatorioPessoaSelecionada = null;
 
 function _formatarDataISO(data) {
   const ano = data.getFullYear();
@@ -235,6 +236,12 @@ async function carregarLancamentos(filtros = {}) {
     if (filtros.status && filtros.status !== 'todos') params.set('status', filtros.status);
     if (filtros.inicio) params.set('inicio', filtros.inicio);
     if (filtros.fim) params.set('fim', filtros.fim);
+    if (filtros.contaRegente) params.set('conta_regente', String(filtros.contaRegente));
+    if (filtros.contaSubordinada) params.set('conta_subordinada', String(filtros.contaSubordinada));
+    if (filtros.tipoLancamento) params.set('tipo_lancamento', String(filtros.tipoLancamento));
+    if (filtros.formaPagamento) params.set('forma_pagamento', String(filtros.formaPagamento));
+    if (filtros.idAssociado) params.set('id_associado', String(filtros.idAssociado));
+    if (filtros.idParceiro) params.set('id_parceiro', String(filtros.idParceiro));
 
     const resposta = await api.get(`/financeiro/lancamentos/listar.php?${params.toString()}`);
     const dados = normalizarLancamentos(resposta.dados || resposta.lancamentos || []);
@@ -2359,6 +2366,18 @@ async function iniciarRegistrarLancamento() {
   atualizar();
 }
 
+async function popularFiltrosRelatorio() {
+  try {
+    const dominios = await carregarDominiosFinanceiros();
+
+    preencherSelect('relatorio-conta', dominios.contas_regentes || [], 'id_conta_regente', 'descricao', 'Todas as contas');
+    preencherSelect('relatorio-tipo-lanc', dominios.tipos || [], 'id_tipo_lancamento', 'descricao', 'Todos os tipos');
+    preencherSelect('relatorio-forma-pag', dominios.formas_pagamento || [], 'id_forma_pagamento', 'descricao', 'Todas as formas');
+  } catch (erro) {
+    console.error('[Relatorios] Erro ao carregar dominios:', erro);
+  }
+}
+
 async function iniciarRelatorios() {
   const hoje = new Date();
   const anoMes = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
@@ -2367,21 +2386,38 @@ async function iniciarRelatorios() {
   if (inputInicio && !inputInicio.value) inputInicio.value = anoMes;
   if (inputFim    && !inputFim.value)    inputFim.value    = anoMes;
 
-  await atualizarRelatorio();
+  _relatorioPessoaSelecionada = null;
+  await popularFiltrosRelatorio();
+  await atualizarRelatorio(false);
 
-  const filtros = [
-    document.getElementById('relatorio-inicio'),
-    document.getElementById('relatorio-fim'),
-    document.getElementById('relatorio-tipo'),
-  ].filter(Boolean);
-
-  filtros.forEach((filtro) => {
+  const btnGerar = document.getElementById('btn-gerar-relatorio');
+  if (btnGerar) {
     const handler = async () => {
-      await atualizarRelatorio();
+      await atualizarRelatorio(true);
     };
-    filtro.addEventListener('change', handler);
-    cleanup.push(() => filtro.removeEventListener('change', handler));
-  });
+    btnGerar.addEventListener('click', handler);
+    cleanup.push(() => btnGerar.removeEventListener('click', handler));
+  }
+
+  let autocompletePessoa = null;
+  const inputPessoa = document.getElementById('relatorio-pessoa');
+  if (inputPessoa) {
+    autocompletePessoa = criarAutocomplete(inputPessoa, {
+      buscar: async (termo) => {
+        const resp = await api.get(`/pessoas/buscar.php?busca=${encodeURIComponent(termo)}&limite=10`);
+        return resp.dados || [];
+      },
+      aoSelecionar: (item) => {
+        _relatorioPessoaSelecionada = item ? { id: item.id, tipo: item.tipo } : null;
+      },
+      aoLimpar: () => {
+        _relatorioPessoaSelecionada = null;
+      },
+      minimoCaracteres: 2,
+      delay: 300,
+    });
+    cleanup.push(() => autocompletePessoa.destruir());
+  }
 
   const btn = document.getElementById('btn-exportar-relatorio');
   if (btn) {
@@ -2570,21 +2606,37 @@ function exportarRelatorioCSV() {
   Toast.sucesso('Relatório exportado com sucesso.');
 }
 
-async function atualizarRelatorio() {
+async function atualizarRelatorio(mostrarPreview = false) {
   const mesInicio = document.getElementById('relatorio-inicio')?.value || '';
   const mesFim = document.getElementById('relatorio-fim')?.value || '';
   const tipo = document.getElementById('relatorio-tipo')?.value || 'todos';
+  const status = document.getElementById('relatorio-status')?.value || 'todos';
+  const contaRegente = document.getElementById('relatorio-conta')?.value || '0';
+  const tipoLancamento = document.getElementById('relatorio-tipo-lanc')?.value || '0';
+  const formaPagamento = document.getElementById('relatorio-forma-pag')?.value || '0';
+  const pessoaSel = _relatorioPessoaSelecionada;
 
   await carregarLancamentos({
-    limite: 200,
+    limite: 500,
     tipo,
+    status,
     inicio: mesInicio ? `${mesInicio}-01` : '',
     fim: mesFim ? ultimoDiaMes(mesFim) : '',
+    contaRegente: Number(contaRegente) || 0,
+    tipoLancamento: Number(tipoLancamento) || 0,
+    formaPagamento: Number(formaPagamento) || 0,
+    idAssociado: pessoaSel?.tipo === 'associado' ? pessoaSel.id : 0,
+    idParceiro: pessoaSel?.tipo === 'parceiro' ? pessoaSel.id : 0,
   });
 
   renderizarMetricas('relatorio-metricas', calcularResumo(lancamentos));
-  renderizarBarrasRelatorio();
-  renderizarResumoContas();
+
+  const preview = document.getElementById('relatorio-preview');
+  if (mostrarPreview && preview) {
+    renderizarBarrasRelatorio();
+    renderizarResumoContas();
+    preview.classList.add('financeiro__preview--visivel');
+  }
 }
 
 function renderizarBarrasRelatorio() {

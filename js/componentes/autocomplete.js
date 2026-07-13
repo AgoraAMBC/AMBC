@@ -8,7 +8,7 @@ function escaparHtml(texto) {
 }
 
 export function criarAutocomplete(input, opcoes) {
-  const { buscar, aoSelecionar, minimoCaracteres = 2, delay = 300 } = opcoes;
+  const { buscar, aoSelecionar, aoLimpar, minimoCaracteres = 2, delay = 300 } = opcoes;
 
   const id = `autocomplete-${++uid}`;
   let timeoutId = null;
@@ -70,6 +70,7 @@ export function criarAutocomplete(input, opcoes) {
 
     if (termo.length < minimoCaracteres) {
       fechar();
+      if (termo.length === 0 && typeof aoLimpar === 'function') aoLimpar();
       return;
     }
 
@@ -163,6 +164,7 @@ export function criarAutocomplete(input, opcoes) {
     input.dataset.autocompleteId = '';
     input.dataset.autocompleteTipo = '';
     fechar();
+    if (typeof aoLimpar === 'function') aoLimpar();
   };
 
   return { destruir, limpar, valor: () => itemSelecionado };

@@ -11,16 +11,27 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 try {
     $pdo = obterConexao();
+    $ano = date('Y');
 
-    // Usa o próximo valor da sequence do id_associado
     $stmt = $pdo->query("
-        SELECT COALESCE(MAX(id_associado), 0) + 1 AS proxima
-        FROM associado
+        SELECT matricula FROM associado
+        WHERE matricula IS NOT NULL AND matricula != ''
     ");
+    $matriculas = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-    $row     = $stmt->fetch(PDO::FETCH_ASSOC);
-    $numero  = (int)($row['proxima'] ?? 1);
-    $proxima = str_pad((string)$numero, 4, '0', STR_PAD_LEFT);
+    $maior = 0;
+    foreach ($matriculas as $m) {
+        if (preg_match('/ASS-(\d{4})-(\d{4})$/', $m, $match)) {
+            $num = (int) $match[2];
+        } elseif (preg_match('/(\d+)$/', $m, $match)) {
+            $num = (int) $match[1];
+        } else {
+            continue;
+        }
+        if ($num > $maior) $maior = $num;
+    }
+
+    $proxima = sprintf('ASS-%d-%04d', $ano, $maior + 1);
 
     jsonResposta(['matricula' => $proxima]);
 
