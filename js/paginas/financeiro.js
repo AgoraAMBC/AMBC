@@ -47,17 +47,17 @@ function _calcularParcelas(valorTotal, primeiroVencimento, totalParcelas) {
   return parcelas;
 }
 
-function init() {
+async function init() {
   cleanup = [];
   const view = document.querySelector('[data-financeiro-view]')?.dataset.financeiroView;
 
-  if (view === 'visao-geral') iniciarVisaoGeral();
-  if (view === 'novo-lancamento') iniciarNovoLancamento();
-  if (view === 'registrar-lancamento') iniciarRegistrarLancamento();
-  if (view === 'relatorios') iniciarRelatorios();
-  if (view === 'contas-regentes') iniciarContasRegentes();
-  if (view === 'contas-subordinadas') iniciarContasSubordinadas();
-  if (view === 'estorno-liquidacao') iniciarEstornoLiquidacao();
+  if (view === 'visao-geral') await iniciarVisaoGeral();
+  if (view === 'novo-lancamento') await iniciarNovoLancamento();
+  if (view === 'registrar-lancamento') await iniciarRegistrarLancamento();
+  if (view === 'relatorios') await iniciarRelatorios();
+  if (view === 'contas-regentes') await iniciarContasRegentes();
+  if (view === 'contas-subordinadas') await iniciarContasSubordinadas();
+  if (view === 'estorno-liquidacao') await iniciarEstornoLiquidacao();
 
   console.log(`[FinanceiroPage] Tela carregada: ${view}`);
 }
@@ -293,7 +293,10 @@ function normalizarLancamentos(lista) {
 
 function normalizarTipo(tipo) {
   const texto = String(tipo || '').toLowerCase();
-  return texto === 'despesa' ? 'despesa' : 'receita';
+  if (texto === 'despesa') return 'despesa';
+  if (texto === 'receita') return 'receita';
+  if (tipo) console.warn(`[Financeiro] Tipo desconhecido: "${tipo}", assumindo receita`);
+  return 'receita';
 }
 
 function normalizarStatus(status) {
