@@ -74,6 +74,34 @@
         <div class="financeiro__lista-contas" id="relatorio-contas"></div>
       </div>
     </section>
+
+    <section class="financeiro__painel" style="margin-top:var(--esp-lg)">
+      <div class="financeiro__painel-cabecalho">
+        <h2 class="financeiro__secao-titulo">Lan&ccedil;amentos do per&iacute;odo</h2>
+        <span class="financeiro__secao-texto" id="relatorio-contador"></span>
+      </div>
+      <div class="tabela-responsiva">
+        <table class="tabela financeiro__tabela financeiro__tabela--sem-checkbox">
+          <thead>
+            <tr>
+              <th>Vencimento</th>
+              <th>Descri&ccedil;&atilde;o</th>
+              <th>Pessoa</th>
+              <th>Natureza</th>
+              <th>Conta</th>
+              <th>Status</th>
+              <th class="tabela__num">Valor</th>
+            </tr>
+          </thead>
+          <tbody id="relatorio-tabela-body"></tbody>
+        </table>
+        <div class="tabela-vazia" id="relatorio-tabela-vazia" hidden>
+          <span class="material-icons tabela-vazia__icone">receipt_long</span>
+          <h3 class="tabela-vazia__titulo">Nenhum lan&ccedil;amento encontrado</h3>
+          <p class="tabela-vazia__mensagem">Ajuste os filtros e clique em <strong>Gerar Relatório</strong> novamente.</p>
+        </div>
+      </div>
+    </section>
   </div>
   </div><!-- /.gu-card -->
 </section>

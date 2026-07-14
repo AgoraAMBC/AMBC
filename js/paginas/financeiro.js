@@ -2638,6 +2638,7 @@ async function atualizarRelatorio(mostrarPreview = false) {
   if (mostrarPreview && preview) {
     renderizarBarrasRelatorio();
     renderizarResumoContas();
+    renderizarTabelaRelatorio();
     preview.classList.add('financeiro__preview--visivel');
   }
 }
@@ -2721,6 +2722,40 @@ function renderizarResumoContas() {
       <span>${escaparHtml(conta)}</span>
       <strong class="${valor >= 0 ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">${formatarMoeda(valor)}</strong>
     </div>
+  `).join('');
+}
+
+function renderizarTabelaRelatorio() {
+  const tbody     = document.getElementById('relatorio-tabela-body');
+  const vazio     = document.getElementById('relatorio-tabela-vazia');
+  const contador  = document.getElementById('relatorio-contador');
+  if (!tbody) return;
+
+  if (contador) {
+    contador.textContent = `${lancamentos.length} registro${lancamentos.length !== 1 ? 's' : ''}`;
+  }
+
+  if (!lancamentos.length) {
+    tbody.closest('table').hidden = true;
+    if (vazio) vazio.hidden = false;
+    return;
+  }
+
+  if (vazio) vazio.hidden = true;
+  tbody.closest('table').hidden = false;
+
+  tbody.innerHTML = lancamentos.map((l) => `
+    <tr>
+      <td>${formatarData(l.vencimento)}</td>
+      <td>${escaparHtml(l.descricao || '')}</td>
+      <td>${escaparHtml(l.pessoa || '—')}</td>
+      <td>${badgeTipo(l.tipo)}</td>
+      <td>${escaparHtml(l.conta || '')}</td>
+      <td>${badgeStatus(l.status)}</td>
+      <td class="tabela__num ${l.tipo === 'receita' ? 'financeiro__valor-receita' : 'financeiro__valor-despesa'}">
+        ${(l.tipo === 'receita' ? '+ ' : '- ') + formatarMoeda(l.valor)}
+      </td>
+    </tr>
   `).join('');
 }
 
