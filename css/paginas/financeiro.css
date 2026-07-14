@@ -616,6 +616,9 @@
   .financeiro__filtros-linha {
     grid-template-columns: 1fr;
   }
+  .financeiro__filtros-linha--8 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 760px) {
@@ -653,11 +656,21 @@
   }
 
   .financeiro__acoes,
-  .financeiro__filtros,
-  .financeiro__filtros .form-input,
   .financeiro__busca,
   .financeiro__cabecalho .btn {
     width: 100%;
+  }
+
+  .financeiro__filtros:not(.financeiro__filtros--relatorio) {
+    width: 100%;
+  }
+
+  .financeiro__filtros:not(.financeiro__filtros--relatorio) .form-input {
+    width: 100%;
+  }
+
+  .financeiro__filtros-linha--8 {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .financeiro__barra-grupo {
