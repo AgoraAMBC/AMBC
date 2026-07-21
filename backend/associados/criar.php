@@ -43,9 +43,31 @@ try {
     $stmtVerifica->execute([':cpf' => $cpf_cnpj]);
     if ($stmtVerifica->fetch()) jsonErro('CPF/CNPJ já cadastrado', 409);
 
-    $stmtMatricula = $pdo->query("SELECT MAX(CAST(matricula AS UNSIGNED)) FROM associado WHERE matricula REGEXP '^[0-9]+$'");
-    $ultimaMatricula = $stmtMatricula->fetchColumn();
-    $novaMatricula = str_pad((string)(($ultimaMatricula ?? 0) + 1), 4, '0', STR_PAD_LEFT);
+    $matriculaRecebida = $body['matricula'] ?? '';
+    if ($matriculaRecebida && preg_match('/^ASS-\d{4}-\d{4}$/', $matriculaRecebida)) {
+        $novaMatricula = $matriculaRecebida;
+    } else {
+        $ano = date('Y');
+        $stmtMatricula = $pdo->query("
+            SELECT matricula FROM associado
+            WHERE matricula IS NOT NULL AND matricula != ''
+        ");
+        $matriculas = $stmtMatricula->fetchAll(PDO::FETCH_COLUMN);
+
+        $maior = 0;
+        foreach ($matriculas as $m) {
+            if (preg_match('/ASS-(\d{4})-(\d{4})$/', $m, $match)) {
+                $num = (int) $match[2];
+            } elseif (preg_match('/(\d+)$/', $m, $match)) {
+                $num = (int) $match[1];
+            } else {
+                continue;
+            }
+            if ($num > $maior) $maior = $num;
+        }
+
+        $novaMatricula = sprintf('ASS-%d-%04d', $ano, $maior + 1);
+    }
 
     $sql = "
         INSERT INTO associado (

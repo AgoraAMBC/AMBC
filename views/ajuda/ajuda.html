@@ -11,7 +11,78 @@
       </div>
     </header>
 
+    <!-- ==================== GERAL ==================== -->
     <div class="card" style="margin-top: var(--esp-lg)">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo">
+          <span class="material-icons">info</span>
+          Geral
+        </h3>
+      </div>
+      <div class="card__corpo">
+        <dl style="display:flex;flex-direction:column;gap:var(--esp-md);margin:0">
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como acessar o sistema?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Abra o navegador e acesse o endereço informado pela administração. Insira seu <strong>e-mail</strong> e <strong>senha</strong> na tela de login e clique em <strong>Entrar</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">O que fazer se esqueci minha senha?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Entre em contato com um <strong>administrador do sistema</strong> e solicite uma nova senha. Somente administradores podem redefinir senhas de usuários.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Por que fui desconectado automaticamente?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">O sistema encerra a sessão após <strong>30 minutos</strong> de inatividade por segurança. Um aviso aparece 2 minutos antes do encerramento. Basta clicar em <strong>Continuar</strong> para manter a sessão ativa.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como navegar entre as páginas do sistema?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Use o <strong>menu lateral</strong> à esquerda para acessar cada módulo. O menu agrupa as opções por seção (Principal, Cadastro, Financeiro, Tabelas, Configurações). Clique em <strong>Ajuda</strong> a qualquer momento para consultar esta página.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Por que algumas opções do menu estão bloqueadas?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">O sistema possui perfis de acesso. Algumas funcionalidades são restritas a <strong>administradores</strong> ou exigem permissão específica. Se precisar de acesso, solicite ao administrador em <strong>Configurações → Gestão de Usuários</strong>.</dd>
+          </div>
+
+        </dl>
+      </div>
+    </div>
+
+    <!-- ==================== DASHBOARD ==================== -->
+    <div class="card" style="margin-top: var(--esp-md)">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo">
+          <span class="material-icons">dashboard</span>
+          Painel (Dashboard)
+        </h3>
+      </div>
+      <div class="card__corpo">
+        <dl style="display:flex;flex-direction:column;gap:var(--esp-md);margin:0">
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">O que significa cada card do painel?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">O painel exibe quatro resumos: <strong>Total de Associados</strong> (ativos), <strong>Total de Dependentes</strong>, <strong>Total de Parceiros</strong> e <strong>Resultado do Mês</strong> (receitas menos despesas, com percentual de variação).</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como visualizar os aniversariantes do mês?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Na seção <strong>Aniversariantes do Mês</strong> do painel, é exibida a lista de associados e dependentes que fazem aniversário no mês atual, com nome, tipo e data.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">O que são as Atividades Recentes?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">A seção <strong>Atividades Recentes</strong> mostra os últimos cadastros realizados no sistema (associados, dependentes e parceiros), com indicação de tempo relativo (ex: "há 2 horas").</dd>
+          </div>
+
+        </dl>
+      </div>
+    </div>
+
+    <!-- ==================== CADASTROS ==================== -->
+    <div class="card" style="margin-top: var(--esp-md)">
       <div class="card__cabecalho">
         <h3 class="card__titulo">
           <span class="material-icons">person_add</span>
@@ -27,8 +98,28 @@
           </div>
 
           <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como cadastrar um novo parceiro?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Cadastro → Novo Parceiro</strong>, preencha o nome, CPF/CNPJ e os dados de endereço. Informe o tipo de pessoa (PF ou PJ) e o tipo de serviço. Clique em <strong>Salvar</strong>.</dd>
+          </div>
+
+          <div>
             <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como adicionar um dependente?</dt>
             <dd style="margin:0;color:var(--texto-suave)">Abra o cadastro do associado titular, vá até a aba <strong>Dependentes</strong> e clique em <strong>Adicionar Dependente</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como pesquisar e filtrar cadastros?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Cadastro → Listar Todos</strong>. Use os filtros no topo da tabela para buscar por <strong>nome ou documento</strong>, filtrar por <strong>tipo</strong> (Associado, Parceiro, Dependente) e por <strong>situação</strong> (Ativo, Inativo).</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como editar um associado existente?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Na listagem de cadastros, clique no ícone de <strong>lápis</strong> na linha do associado desejado. Altere os campos necessários e clique em <strong>Salvar</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como visualizar os dados de um cadastro?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Na listagem, clique no ícone de <strong>olho</strong> na linha do registro. Os dados serão abertos em modo <strong>somente leitura</strong>. Você também pode <strong>duplo-clique</strong> em qualquer linha para abrir a visualização.</dd>
           </div>
 
           <div>
@@ -36,10 +127,21 @@
             <dd style="margin:0;color:var(--texto-suave)">Na listagem de cadastros, clique no ícone de opções do associado e selecione <strong>Inativar</strong>. O registro é mantido no histórico.</dd>
           </div>
 
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como consultar os dependentes de um associado?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Abra o cadastro do associado titular e acesse a aba <strong>Dependentes</strong>. Você verá a lista completa de dependentes vinculados. Também é possível acessar <strong>Cadastro → Dependentes</strong> para uma visão geral de todos os dependentes do sistema.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como gerar relatórios de dependentes?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Cadastro → Dependentes</strong>, aplique os filtros desejados (rua, bairro, faixa etária, parentesco) e clique em <strong>Gerar Relatório</strong>. Escolha entre Lista Completa, Crianças por Rua ou Estatísticas, e exporte em PDF ou Excel.</dd>
+          </div>
+
         </dl>
       </div>
     </div>
 
+    <!-- ==================== FINANCEIRO ==================== -->
     <div class="card" style="margin-top: var(--esp-md)">
       <div class="card__cabecalho">
         <h3 class="card__titulo">
@@ -60,10 +162,76 @@
             <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Financeiro → Visão Geral</strong>. Use o seletor de mês no canto superior direito para filtrar o período desejado.</dd>
           </div>
 
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como parcelar um lançamento?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Ao registrar um lançamento, selecione o modo <strong>Parcelado</strong> no campo <strong>Modo de Pagamento</strong>. Informe o número de parcelas e a data da primeira parcela. O sistema calcula automaticamente o valor de cada parcela.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como vincular um lançamento a um associado ou parceiro?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">No formulário de lançamento, use o campo <strong>Pessoa Vinculada</strong> para buscar e selecionar o associado ou parceiro. O campo possui busca por nome.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como liquidar (pagar) um lançamento?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Na tela <strong>Financeiro → Registrar Lançamento</strong>, clique duplo sobre o lançamento pendente na tabela inferior. Os dados serão carregados no painel à direita. Informe o <strong>valor pago</strong> e a <strong>data de pagamento</strong>, depois clique em <strong>Liquidar</strong> ou <strong>Salvar e Liquidar</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como estornar uma liquidação de pagamento?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Financeiro → Estorno de Liquidações</strong> (somente administradores). Selecione os lançamentos desejados usando as checkboxes e clique em <strong>Estornar Selecionados</strong>. O status voltará para <strong>Pendente</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como consultar relatórios financeiros?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Financeiro → Relatórios</strong>. Escolha o tipo de relatório (Fluxo de Caixa, Por Categoria, Por Associado, Por Período, DRE Simplificado ou Inadimplência), aplique os filtros e exporte em <strong>PDF</strong> ou <strong>Excel</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como cadastrar contas regentes e subordinadas?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Financeiro → Contas Regentes</strong> para cadastrar categorias principais (ex: "Receita de Condomínio"). Em seguida, acesse <strong>Financeiro → Contas Subordinadas</strong> para criar subcontas vinculadas a uma conta regente (ex: "Taxa de Cond. Residencial").</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">O que são os Relacionamentos financeiros?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Relacionamentos</strong>. Lá você define regras que conectam um <strong>Tipo de Lançamento</strong> a uma Conta Regente e Conta Subordinada específicas. Isso faz com que o sistema preencha automaticamente as contas ao criar lançamentos do mesmo tipo.</dd>
+          </div>
+
         </dl>
       </div>
     </div>
 
+    <!-- ==================== TABELAS AUXILIARES ==================== -->
+    <div class="card" style="margin-top: var(--esp-md)">
+      <div class="card__cabecalho">
+        <h3 class="card__titulo">
+          <span class="material-icons">table_chart</span>
+          Tabelas Auxiliares
+        </h3>
+      </div>
+      <div class="card__corpo">
+        <dl style="display:flex;flex-direction:column;gap:var(--esp-md);margin:0">
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">O que são as tabelas auxiliares?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">São listas de referência utilizadas nos cadastros: <strong>Gênero</strong>, <strong>Parentesco</strong>, <strong>Profissão</strong>, <strong>Estado Civil</strong> e <strong>Status</strong>. Elas alimentam os campos dropdown do sistema.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como acessar as tabelas auxiliares?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Tabelas → Ver Tabelas</strong>. Você verá uma interface com abas para cada tabela. Clique na aba desejada para visualizar os registros.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como cadastrar ou editar um registro na tabela auxiliar?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Na aba da tabela desejada, clique em <strong>Novo Registro</strong> para adicionar ou clique no ícone de <strong>lápis</strong> para editar. Preencha a descrição e salve. Para excluir, clique no ícone de <strong>lixeira</strong> e confirme.</dd>
+          </div>
+
+        </dl>
+      </div>
+    </div>
+
+    <!-- ==================== CONFIGURAÇÕES ==================== -->
     <div class="card" style="margin-top: var(--esp-md)">
       <div class="card__cabecalho">
         <h3 class="card__titulo">
@@ -75,8 +243,8 @@
         <dl style="display:flex;flex-direction:column;gap:var(--esp-md);margin:0">
 
           <div>
-            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como ativar notificações por e-mail?</dt>
-            <dd style="margin:0;color:var(--texto-suave)">Em <strong>Configurações → Configurações Gerais</strong>, ative os alertas desejados e habilite o toggle <strong>Enviar para o Email</strong>.</dd>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como alterar os dados institucionais da associação?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Associação</strong> e edita as informações na aba <strong>Dados Institucionais</strong> (nome, CNPJ, endereço, telefone, etc.). Clique em <strong>Salvar</strong> para aplicar as alterações.</dd>
           </div>
 
           <div>
@@ -85,8 +253,43 @@
           </div>
 
           <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como alterar o favicon do sistema?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Associação</strong> e faça o upload de um ícone na aba de <strong>Favicon</strong>. Formato aceito: PNG, máximo 500 KB.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como alterar o tema (claro/escuro)?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Associação</strong> e ative ou desative o toggle <strong>Modo Escuro</strong> na aba de <strong>Tema</strong>. A preferência é salva automaticamente.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como gerenciar planos de associação?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Associação</strong> e vá até a aba <strong>Planos de Associação</strong>. Lá você pode criar, editar, ativar ou inativar planos, definindo nome, preço, período (anuidade/mensalidade/semestral) e benefícios inclusos.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como cadastrar documentos institucionais?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Associação</strong> e vá até a aba <strong>Documentos Institucionais</strong>. Clique em <strong>Novo Documento</strong>, informe o assunto, tipo, versão e faça o upload do arquivo. Documentos podem ser baixados ou removidos.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como ativar notificações por e-mail?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Em <strong>Configurações → Configurações Gerais</strong>, ative os alertas desejados e habilite o toggle <strong>Enviar para o Email</strong>.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como configurar o prazo de alerta de vencimento?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Em <strong>Configurações → Configurações Gerais</strong>, na seção <strong>Segurança</strong>, defina a quantidade de dias (1 a 30) para o sistema alertar sobre lançamentos próximos do vencimento.</dd>
+          </div>
+
+          <div>
             <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como cadastrar ou editar usuários do sistema?</dt>
-            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Usuários</strong>. Apenas administradores têm permissão para criar e editar usuários.</dd>
+            <dd style="margin:0;color:var(--texto-suave)">Acesse <strong>Configurações → Gestão de Usuários</strong>. Apenas administradores têm permissão para criar e editar usuários.</dd>
+          </div>
+
+          <div>
+            <dt style="font-weight:var(--fw-semibold);color:var(--texto-principal);margin-bottom:4px">Como definir permissões de acesso para um usuário?</dt>
+            <dd style="margin:0;color:var(--texto-suave)">Ao criar ou editar um usuário, marque as checkboxes de <strong>Acessar</strong> e <strong>Editar</strong> para cada módulo do sistema (Cadastro, Financeiro, Configurações, etc.). Somente administradores podem alterar permissões.</dd>
           </div>
 
         </dl>
