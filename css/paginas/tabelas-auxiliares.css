@@ -216,3 +216,11 @@
   color: var(--texto-suave);
   font-size: var(--fs-sm);
 }
+
+/* ── Responsivo ──────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .tabaux,
+  .dep-pagina {
+    padding: 0;
+  }
+}

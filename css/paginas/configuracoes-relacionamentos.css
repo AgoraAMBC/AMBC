@@ -207,9 +207,9 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .cfg-rel {
-    padding: var(--esp-md);
+    padding: 0;
   }
 
   .cfg-rel__banner {

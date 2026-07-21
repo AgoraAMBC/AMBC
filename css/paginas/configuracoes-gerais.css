@@ -113,6 +113,20 @@
   overflow-x: auto;
 }
 
+@media (max-width: 768px) {
+  .cfg-gerais__tabela-wrapper {
+    background:
+      linear-gradient(90deg, var(--fundo-card) 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(90deg, rgba(255, 255, 255, 0), var(--fundo-card) 70%) 100% 0,
+      linear-gradient(90deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)),
+      linear-gradient(270deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-color: var(--fundo-card);
+    background-size: 24px 100%, 24px 100%, 8px 100%, 8px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+}
+
 .cfg-gerais__tabela-permissoes .cfg-gerais__th-perfil {
   text-align: center;
   width: 130px;
@@ -158,9 +172,9 @@
 }
 
 /* ── Responsivo ── */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .cfg-gerais {
-    padding: var(--esp-md);
+    padding: 0;
   }
 
   .cfg-gerais__linha {

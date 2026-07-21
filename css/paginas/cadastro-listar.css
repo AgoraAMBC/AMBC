@@ -111,6 +111,20 @@
   overflow-y: hidden;
 }
 
+@media (max-width: 768px) {
+  .cadastro-listar__tabela-wrapper {
+    background:
+      linear-gradient(90deg, var(--fundo-card) 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(90deg, rgba(255, 255, 255, 0), var(--fundo-card) 70%) 100% 0,
+      linear-gradient(90deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)),
+      linear-gradient(270deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-color: var(--fundo-card);
+    background-size: 24px 100%, 24px 100%, 8px 100%, 8px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+}
+
 .cadastro-listar__tabela {
   width: 100%;
   border-collapse: collapse;
@@ -387,5 +401,37 @@
 
   .cadastro-listar__pessoa-email {
     display: none;
+  }
+
+  .cadastro-listar__acao {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cadastro-listar__acoes {
+    gap: 0.375rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .view--cadastro-listar {
+    padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .cadastro-listar__tabela thead th,
+  .cadastro-listar__tabela tbody td {
+    padding: 0.5rem 0.4rem;
+  }
+
+  .cadastro-listar__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+
+  .cadastro-listar__pessoa-nome {
+    font-size: 0.85rem;
   }
 }

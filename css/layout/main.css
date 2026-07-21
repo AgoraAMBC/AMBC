@@ -178,3 +178,12 @@
     font-size: var(--fonte-tam-xl);
   }
 }
+
+/* Celular real (até 640px): remove o respiro externo do app-shell.
+   Quem cria o espaçamento a partir daqui é o próprio conteúdo da página
+   (.gu-card__topo, .dashboard__corpo, etc.), não a área de conteúdo. */
+@media (max-width: 640px) {
+  .app-shell__conteudo {
+    padding: 0;
+  }
+}

@@ -16,6 +16,22 @@
   box-shadow: var(--sombra-sm);
 }
 
+/* Sombra nas bordas indicando que há mais conteúdo pra rolar
+   (some sozinha quando chega no início/fim do scroll) */
+@media (max-width: 768px) {
+  .tabela-responsiva {
+    background:
+      linear-gradient(90deg, var(--fundo-card) 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(90deg, rgba(255, 255, 255, 0), var(--fundo-card) 70%) 100% 0,
+      linear-gradient(90deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)),
+      linear-gradient(270deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-color: var(--fundo-card);
+    background-size: 24px 100%, 24px 100%, 8px 100%, 8px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+}
+
 /* Scrollbar discreta (Webkit) */
 .tabela-responsiva::-webkit-scrollbar {
   height: 8px;

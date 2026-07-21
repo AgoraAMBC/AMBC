@@ -16,6 +16,16 @@
   overflow: hidden;
 }
 
+/* No celular o card "flutuante" some: o conteúdo passa a ocupar a
+   largura inteira da tela, sem a moldura cinza ao redor. */
+@media (max-width: 640px) {
+  .gu-card {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
 /* ── Topo do card (título + botão) ─────────────────────────────── */
 .gu-card__topo {
   display: flex;
@@ -117,6 +127,20 @@
 /* ── Tabela ─────────────────────────────────────────────────────── */
 .gu-tabela-wrapper {
   overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .gu-tabela-wrapper {
+    background:
+      linear-gradient(90deg, var(--fundo-card) 30%, rgba(255, 255, 255, 0)),
+      linear-gradient(90deg, rgba(255, 255, 255, 0), var(--fundo-card) 70%) 100% 0,
+      linear-gradient(90deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)),
+      linear-gradient(270deg, rgba(0, 0, 0, .15), rgba(0, 0, 0, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-color: var(--fundo-card);
+    background-size: 24px 100%, 24px 100%, 8px 100%, 8px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
 }
 
 .gu-tabela {

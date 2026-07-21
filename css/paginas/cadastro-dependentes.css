@@ -507,6 +507,15 @@
     display: none;
   }
 
+  .dependentes__acao {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dependentes__acoes {
+    gap: 0.375rem;
+  }
+
   .dependentes__rodape {
     flex-direction: column;
     gap: var(--espaco-2, 0.5rem);
@@ -539,5 +548,11 @@
   .dependentes__tabela tbody td:nth-child(7),
   .dependentes__tabela tbody td:nth-child(8) {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .view--dependentes {
+    padding: 0;
   }
 }
