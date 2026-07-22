@@ -24,6 +24,10 @@ const diagramas = [
   },
 ];
 
+function escaparHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function gerarHtml(titulo, subtitulo, mermaidCode, largura, altura) {
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -83,7 +87,7 @@ function gerarHtml(titulo, subtitulo, mermaidCode, largura, altura) {
     <p class="meta">Gerado em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
   </div>
   <div class="diagrama">
-    <pre class="mermaid">${mermaidCode}</pre>
+    <pre class="mermaid">${escaparHtml(mermaidCode)}</pre>
   </div>
   <div class="rodape">AMBC V2 — Sistema de Gestão da Associação de Moradores do Bairro Califórnia</div>
   <script type="module">
