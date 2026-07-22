@@ -787,9 +787,11 @@ async function aoEnviarFormulario(event) {
     window.location.hash = '#/cadastro/listar';
   } catch (erro) {
     console.error('[NovoAssociado] Erro ao salvar:', erro);
-    const msg = erro?.erro || erro?.mensagem || '';
+    const msg = erro?.message || erro?.erro || erro?.mensagem || '';
     if (msg.includes('já cadastrado') || msg.includes('409')) {
       Toast.alerta('CPF/CNPJ já cadastrado no sistema.');
+    } else if (msg) {
+      Toast.erro(msg);
     } else {
       Toast.erro('Erro ao salvar. Verifique os dados e tente novamente.');
     }

@@ -57,7 +57,7 @@ try {
         ':cpf_cnpj'        => $cpf_cnpj,
         ':data_nascimento' => $body['data_nascimento'] ?? null,
         ':observacao'      => $body['observacao'] ?? null,
-        ':ativo'           => isset($body['ativo']) ? ($body['ativo'] ? 'true' : 'false') : 'true',
+        ':ativo'           => isset($body['ativo']) ? ($body['ativo'] ? 1 : 0) : 1,
         ':data_entrada'    => $body['data_entrada'] ?? null,
         ':fk_genero'      => $body['fk_genero'] ?: null,
         ':fk_estadocivil'  => $body['fk_estadocivil'] ?: null,
