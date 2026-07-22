@@ -1,0 +1,229 @@
+erDiagram
+
+    %% ============================================================
+    %% ENTIDADES PRINCIPAIS — PESSOAS
+    %% ============================================================
+
+    ASSOCIADO {
+        int id_associado PK
+        string matricula UK
+        string nome
+        string cpf_cnpj UK
+        date data_nascimento
+        string email
+        string logradouro
+        string numero
+        string bairro
+        string cidade
+        string cep
+        string uf FK
+        bool ativo
+        date data_entrada
+        int fk_categoria FK
+        int fk_status FK
+        int fk_genero FK
+        int fk_estadocivil FK
+        int fk_profissao FK
+    }
+
+    DEPENDENTE {
+        int id_dependente PK
+        string nome
+        date data_nascimento
+        string cpf
+        bool ativo
+        int fk_associado FK
+        int fk_parentesco FK
+        int fk_genero FK
+    }
+
+    TELEFONE {
+        int id_telefone PK
+        char ddd
+        string numero
+        int fk_associado FK
+        int fk_tipo_telefone FK
+    }
+
+    PARCEIRO {
+        int id_parceiro PK
+        string nome_razao_social
+        string cpf_cnpj UK
+        string email
+        char tipo_pessoa
+        string tipo_servico
+        bool ativo
+        string logradouro
+        string cidade
+        string uf FK
+    }
+
+    TELEFONE_PARCEIRO {
+        int id_telefone PK
+        char ddd
+        string numero
+        int fk_parceiro FK
+    }
+
+    USUARIO {
+        int id_usuario PK
+        string nome
+        string email UK
+        bool ativo
+        bool primeiro_acesso
+        datetime ultimo_acesso
+        int fk_perfil FK
+        int fk_associado FK
+    }
+
+    PERFIL_USUARIO {
+        int id_perfil PK
+        string descricao
+    }
+
+    PERMISSAO_USUARIO {
+        int id_permissao PK
+        bool pode_acessar
+        bool pode_editar
+        int fk_usuario FK
+        int fk_modulo FK
+    }
+
+    MODULO_SISTEMA {
+        int id_modulo PK
+        string descricao
+    }
+
+    %% ============================================================
+    %% ENTIDADES FINANCEIRAS
+    %% ============================================================
+
+    LANCAMENTO {
+        int id_lancamento PK
+        string descricao
+        decimal valor
+        decimal valor_pago
+        date data_lancamento
+        date data_vencimento
+        date data_pagamento
+        int numero_parcela
+        int total_parcelas
+        int fk_associado FK
+        int fk_parceiro FK
+        int fk_conta_regente FK
+        int fk_conta_subordinada FK
+        int fk_tipo_lancamento FK
+        int fk_forma_pagamento FK
+        int fk_status_conta FK
+    }
+
+    CONTA_REGENTE {
+        int id_conta_regente PK
+        string descricao
+        string tipo
+        bool ativo
+    }
+
+    CONTA_SUBORDINADA {
+        int id_conta_subordinada PK
+        string descricao
+        bool ativo
+        int fk_conta_regente FK
+    }
+
+    TIPO_LANCAMENTO {
+        int id_tipo_lancamento PK
+        string descricao
+    }
+
+    RELACIONAMENTO_LANCAMENTO {
+        int id_relacionamento PK
+        enum natureza
+        enum modo
+        bool ativo
+        int fk_tipo_lancamento FK
+        int fk_conta_regente FK
+        int fk_conta_subordinada FK
+    }
+
+    STATUS_CONTA {
+        int id_status_conta PK
+        string descricao
+    }
+
+    FORMA_PAGAMENTO {
+        int id_forma_pagamento PK
+        string descricao
+    }
+
+    PLANO_ASSOCIACAO {
+        int id_plano PK
+        string nome
+        decimal preco
+        string periodo
+        json beneficios
+        bool ativo
+    }
+
+    DOCUMENTO {
+        int id_documento PK
+        string assunto
+        int numero
+        int ano
+        string categoria
+        text conteudo
+        string arquivo_path
+    }
+
+    %% ============================================================
+    %% TABELAS AUXILIARES
+    %% ============================================================
+
+    CATEGORIA        { int id PK "string descricao" }
+    GENERO           { int id PK "string descricao" }
+    ESTADO_CIVIL     { int id PK "string descricao" }
+    PROFISSAO        { int id PK "string descricao" }
+    PARENTESCO       { int id PK "string descricao" }
+    STATUS_PESSOA    { int id PK "string descricao" }
+    UF               { string sigla PK "string descricao" }
+
+    %% ============================================================
+    %% RELACIONAMENTOS
+    %% ============================================================
+
+    %% Pessoas
+    ASSOCIADO       ||--o{ DEPENDENTE          : "tem"
+    ASSOCIADO       ||--o{ TELEFONE            : "possui"
+    ASSOCIADO       ||--o{ LANCAMENTO          : "gera"
+    ASSOCIADO       }o--o| USUARIO             : "vinculado a"
+    PARCEIRO        ||--o{ LANCAMENTO          : "gera"
+    PARCEIRO        ||--o{ TELEFONE_PARCEIRO   : "possui"
+
+    %% Usuários e permissões
+    PERFIL_USUARIO  ||--o{ USUARIO             : "classifica"
+    USUARIO         ||--o{ PERMISSAO_USUARIO   : "tem"
+    MODULO_SISTEMA  ||--o{ PERMISSAO_USUARIO   : "controla"
+
+    %% Financeiro
+    CONTA_REGENTE   ||--o{ CONTA_SUBORDINADA   : "contém"
+    CONTA_REGENTE   ||--o{ LANCAMENTO          : "classifica"
+    CONTA_SUBORDINADA ||--o{ LANCAMENTO        : "detalha"
+    TIPO_LANCAMENTO ||--o{ LANCAMENTO          : "tipifica"
+    STATUS_CONTA    ||--o{ LANCAMENTO          : "define status"
+    FORMA_PAGAMENTO ||--o{ LANCAMENTO          : "define forma"
+
+    %% Relacionamento financeiro
+    TIPO_LANCAMENTO   ||--o{ RELACIONAMENTO_LANCAMENTO : "relaciona"
+    CONTA_REGENTE     ||--o{ RELACIONAMENTO_LANCAMENTO : "vincula"
+    CONTA_SUBORDINADA ||--o{ RELACIONAMENTO_LANCAMENTO : "vincula"
+
+    %% Auxiliares
+    CATEGORIA     ||--o{ ASSOCIADO   : "classifica"
+    STATUS_PESSOA ||--o{ ASSOCIADO   : "define status"
+    GENERO        ||--o{ ASSOCIADO   : "identifica"
+    GENERO        ||--o{ DEPENDENTE  : "identifica"
+    ESTADO_CIVIL  ||--o{ ASSOCIADO   : "descreve"
+    PROFISSAO     ||--o{ ASSOCIADO   : "descreve"
+    PARENTESCO    ||--o{ DEPENDENTE  : "descreve"
+    UF            ||--o{ ASSOCIADO   : "localiza"
+    UF            ||--o{ PARCEIRO    : "localiza"
