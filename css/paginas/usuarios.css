@@ -24,6 +24,12 @@
     box-shadow: none;
     border: none;
   }
+
+  /* Remove o ícone ao lado do título/subtítulo — sobra mais espaço
+     pro texto em telas estreitas. */
+  .gu-card__icone {
+    display: none;
+  }
 }
 
 /* ── Topo do card (título + botão) ─────────────────────────────── */
