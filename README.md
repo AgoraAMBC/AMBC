@@ -1,69 +1,178 @@
-# 🏡 AMBC - V2
+# AMBC — Sistema de Gestão da Associação
 
-Plataforma de gestão da **Associação dos Moradores do Bairro Califórnia (AMBC)**.
+Plataforma web para gestão da **Associação dos Moradores do Bairro Califórnia (AMBC)** — associados, dependentes, parceiros, financeiro e configurações administrativas.
 
-## 📌 Sobre
+---
 
-Sistema web para gestão de associados, parceiros, financeiro e configurações
-administrativas da associação.
+## Histórico de repositórios
 
-## 🛠️ Stack
+| Versão | Repositório | Situação |
+|--------|------------|----------|
+| Protótipo / testes | [AgoraAMBC/AMBC\_Testes](https://github.com/AgoraAMBC/AMBC_Testes) | Arquivado |
+| V2 (desenvolvimento) | [fabiomachado1212-lgtm/ambc-v2](https://github.com/fabiomachado1212-lgtm/ambc-v2) | Arquivado |
+| **V2 — versão final** | **[AgoraAMBC/AMBC](https://github.com/AgoraAMBC/AMBC)** | ✅ Ativo |
 
-### Frontend
-- HTML5 + CSS3 + JavaScript Vanilla (ES6+)
-- Arquitetura SPA com hash routing
-- Material Icons
+---
 
-### Backend (em definição)
-- PHP
-- PostgreSQL
-- API REST (JSON)
+## Stack
 
-## 📁 Estrutura do projeto
+**Frontend**
+- HTML5 + CSS3 + JavaScript Vanilla ES6+
+- Arquitetura SPA com hash routing (`#/rota`)
+- Material Icons (Google CDN)
+
+**Backend**
+- PHP 8.x — API REST (JSON)
+- MySQL 8.x
+- Servidor embutido PHP para desenvolvimento
+
+---
+
+## Estrutura do projeto
 
 ```
-AMBC-V2/
-├── assets/        # Imagens, ícones, fontes
-├── css/           # Estilos (base, layout, components, pages)
-├── js/            # Scripts (core, components, pages, mock)
-├── views/         # Templates HTML das telas
-├── docs/          # Documentação
-└── index.html     # Entrada da SPA
+AMBC/
+├── index.html              # Entrada da SPA / app shell
+├── login.html              # Tela de login
+├── router.php              # Roteador PHP para o servidor de desenvolvimento
+├── .env                    # Variáveis de ambiente (não versionado)
+├── .env.example            # Modelo do .env
+│
+├── css/
+│   ├── base/               # Variáveis, reset, tipografia, global
+│   ├── layout/             # App shell, sidebar, topbar, main
+│   ├── componentes/        # Botões, cards, modais, toasts, etc.
+│   └── paginas/            # Estilos específicos por tela
+│
+├── js/
+│   ├── core/               # Router, sessão, estado global
+│   ├── layout/             # Sidebar, topbar
+│   ├── componentes/        # Toast, modal, etc.
+│   ├── paginas/            # Lógica de cada tela
+│   └── services/           # Comunicação com a API
+│
+├── views/                  # Fragmentos HTML por módulo
+│   ├── cadastro/
+│   ├── financeiro/
+│   └── configuracoes/
+│
+├── backend/                # API PHP
+│   ├── config/             # Conexão com banco, helpers
+│   ├── auth/               # Login, logout, sessão
+│   ├── associados/
+│   ├── financeiro/
+│   └── ...
+│
+├── docs/                   # Documentação técnica e diagramas
+└── local/                  # Scripts utilitários para desenvolvimento local
 ```
 
-## 🚀 Como rodar localmente
+---
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/fabiomachado1212-lgtm/ambc-v2
-   ```
-2. Abra no VS Code
-3. Instale a extensão **Live Server**
-4. Clique com o botão direito em `index.html` → **Open with Live Server**
+## Como executar localmente
 
-## 🌿 Fluxo de trabalho (Git)
+### Pré-requisitos
 
-- `main` → versão estável (produção)
-- `develop` → integração de novas features
-- `feature/nome-da-feature` → desenvolvimento individual
+- [PHP 8.1+](https://www.php.net/downloads) — para o backend
+- [MySQL 8.0+](https://dev.mysql.com/downloads/) — banco de dados
+- [VS Code](https://code.visualstudio.com/) + extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) — para o frontend
 
-### Padrão de commits (Conventional Commits)
+### 1. Clone o repositório
 
-- `feat:` nova funcionalidade
-- `fix:` correção de bug
-- `docs:` documentação
-- `style:` formatação, CSS
-- `refactor:` refatoração sem mudança de comportamento
-- `chore:` tarefas gerais, configurações
+```bash
+git clone https://github.com/AgoraAMBC/AMBC.git
+cd AMBC
+```
 
-**Exemplo:** `feat: adiciona tela de novo associado`
+### 2. Configure o banco de dados
 
-## 👥 Equipe
+Crie um banco MySQL e importe o schema:
 
-- **Frontend**: Fabio
-- **Backend**: (a definir)
-- **Banco de dados**: (a definir)
+```bash
+mysql -u root -p -e "CREATE DATABASE ambc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -p ambc < docs/schema.sql   # ou importe o dump via phpMyAdmin
+```
 
-## 📄 Licença
+### 3. Configure as variáveis de ambiente
 
-Uso interno da AMBC.
+Copie o arquivo de exemplo e preencha com seus dados:
+
+```bash
+cp .env.example .env
+```
+
+Edite o `.env`:
+
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=ambc
+DB_USER=root
+DB_PASS=sua_senha
+DB_CHARSET=utf8mb4
+
+SESSION_NAME=ambc_session
+SESSION_LIFETIME=28800
+```
+
+### 4. Inicie o backend PHP
+
+No terminal, na raiz do projeto:
+
+```bash
+php -S localhost:8081 router.php
+```
+
+Ou no Windows, execute o atalho:
+
+```
+local/iniciar-backend.bat
+```
+
+O backend ficará disponível em `http://localhost:8081`.
+
+### 5. Inicie o frontend
+
+No VS Code, clique com o botão direito em `index.html` → **Open with Live Server**.
+
+O frontend abrirá em `http://localhost:5500`.
+
+> **Por que portas diferentes?**
+> O Live Server (`:5500`) serve os arquivos estáticos e o PHP (`:8081`) responde as chamadas de API. As requisições do frontend já apontam para `:8081` automaticamente.
+
+### 6. Acesse o sistema
+
+Abra `http://localhost:5500/login.html` e entre com as credenciais configuradas no banco.
+
+---
+
+## Fluxo de trabalho (Git)
+
+- `main` — versão estável, espelha a produção
+- Commits seguem o padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
+
+| Prefixo | Quando usar |
+|---------|-------------|
+| `feat:` | Nova funcionalidade |
+| `fix:` | Correção de bug |
+| `style:` | CSS, formatação visual |
+| `refactor:` | Refatoração sem mudar comportamento |
+| `docs:` | Documentação |
+| `chore:` | Configurações, scripts auxiliares |
+
+---
+
+## Documentação
+
+Os arquivos na pasta `docs/` incluem:
+
+- `diagrama-casos-de-uso.pdf` — Diagrama UML de casos de uso
+- `modelo-conceitual.pdf` — Modelo conceitual do banco de dados (ER)
+- `ROADMAP.md` — Plano de desenvolvimento em fases
+- `specificacao.md` — Especificação funcional completa
+
+---
+
+## Licença
+
+Uso interno — Associação dos Moradores do Bairro Califórnia.
