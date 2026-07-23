@@ -86,12 +86,23 @@ cd AMBC
 
 ### 2. Configure o banco de dados
 
-Crie um banco MySQL e importe o schema:
+Crie um banco MySQL e importe o schema (estrutura + dados de referência, sem dados pessoais):
 
 ```bash
 mysql -u root -p -e "CREATE DATABASE ambc CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-mysql -u root -p ambc < docs/schema.sql   # ou importe o dump via phpMyAdmin
+mysql -u root -p ambc < docs/schema.sql
 ```
+
+Ou pelo **phpMyAdmin**: crie o banco `ambc` → aba **SQL** → cole o conteúdo de `docs/schema.sql` → Execute.
+
+O script cria automaticamente um usuário administrador inicial:
+
+| Campo | Valor |
+|-------|-------|
+| Login | `admin@ambc.com` |
+| Senha | `admin123` |
+
+> **Altere a senha após o primeiro acesso.**
 
 ### 3. Configure as variáveis de ambiente
 
