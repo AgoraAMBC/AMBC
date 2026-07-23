@@ -1,16 +1,33 @@
 # AMBC — Sistema de Gestão da Associação
 
-Plataforma web para gestão da **Associação dos Moradores do Bairro Califórnia (AMBC)** — associados, dependentes, parceiros, financeiro e configurações administrativas.
+Plataforma de gestão da **Associação dos Moradores do Bairro Califórnia (AMBC)**.
+
+O ecossistema da AMBC é composto por dois sistemas complementares:
+
+| Sistema | Descrição | Link |
+|---------|-----------|------|
+| 🌐 **Site institucional** | WordPress — comunicação pública, notícias e informações para moradores | [ambc-rs.com.br](https://ambc-rs.com.br/) |
+| ⚙️ **Sistema de gestão** | Este repositório — painel administrativo interno (associados, financeiro, etc.) | — |
 
 ---
 
-## Histórico de repositórios
+## Repositórios do projeto
+
+### Sistema de Gestão (este repositório)
 
 | Versão | Repositório | Situação |
 |--------|------------|----------|
 | Protótipo / testes | [AgoraAMBC/AMBC\_Testes](https://github.com/AgoraAMBC/AMBC_Testes) | Arquivado |
 | V2 (desenvolvimento) | [fabiomachado1212-lgtm/ambc-v2](https://github.com/fabiomachado1212-lgtm/ambc-v2) | Arquivado |
 | **V2 — versão final** | **[AgoraAMBC/AMBC](https://github.com/AgoraAMBC/AMBC)** | ✅ Ativo |
+
+### Site Institucional (WordPress)
+
+| Repositório | Situação |
+|------------|----------|
+| [AgoraAMBC/AMBC\_WP\_Teste](https://github.com/AgoraAMBC/AMBC_WP_Teste) | ✅ Ativo |
+
+Site no ar: **[https://ambc-rs.com.br](https://ambc-rs.com.br/)**
 
 ---
 
